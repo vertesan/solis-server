@@ -1,0 +1,2290 @@
+syntax = "proto3";
+package penum;
+option go_package = "vertesan/solis-server/proto/penum";
+
+enum AccessoryCategoryType {
+  AccessoryCategoryType_Unknown = 0;
+  AccessoryCategoryType_Part1 = 1;
+  AccessoryCategoryType_Part2 = 2;
+}
+enum AccessoryEnhanceMaterialType {
+  AccessoryEnhanceMaterialType_Unknown = 0;
+  AccessoryEnhanceMaterialType_ExcludeAllDeck = 1;
+  AccessoryEnhanceMaterialType_ExcludeLeagueDeck = 2;
+  AccessoryEnhanceMaterialType_AllUserAccessory = 3;
+}
+enum AccessoryParameterType {
+  AccessoryParameterType_Unknown = 0;
+  AccessoryParameterType_Dance = 1;
+  AccessoryParameterType_Vocal = 2;
+  AccessoryParameterType_Visual = 3;
+  AccessoryParameterType_Stamina = 4;
+  AccessoryParameterType_Mental = 5;
+  AccessoryParameterType_Technique = 6;
+}
+enum ActivityAbilityType {
+  ActivityAbilityType_Unknown = 0;
+  ActivityAbilityType_CharacterActivityExpUp = 1;
+  ActivityAbilityType_FanEventSpecialFanProbabilityUp = 1001;
+  ActivityAbilityType_FanEventManagerExpUp = 1002;
+  ActivityAbilityType_PromotionManagerExpUp = 2001;
+  ActivityAbilityType_PromotionGoldUp = 2002;
+  ActivityAbilityType_PromotionAccessoryMultiStepRewardUp = 2003;
+  ActivityAbilityType_PromotionGachaTicketMultiStepRewardUp = 2004;
+  ActivityAbilityType_PromotionPhotoInkMultiStepRewardUp = 2005;
+  ActivityAbilityType_RefreshStaminaUp = 3001;
+  ActivityAbilityType_LessonManagerExpUp = 4001;
+  ActivityAbilityType_LessonGoldUp = 4002;
+  ActivityAbilityType_LessonCardEnhanceItemUp = 4003;
+}
+enum ActivityCampaignEffectType {
+  ActivityCampaignEffectType_Unknown = 0;
+  ActivityCampaignEffectType_FanEventCoreFanConversionRate = 1001;
+  ActivityCampaignEffectType_PromotionCardEnhanceItemUp = 2001;
+  ActivityCampaignEffectType_PromotionGoldUp = 2002;
+  ActivityCampaignEffectType_PromotionMultiStepRewardSpeedUp = 2003;
+  ActivityCampaignEffectType_PromotionFanUp = 2004;
+  ActivityCampaignEffectType_RefreshGoldConsumptionDown = 3001;
+  ActivityCampaignEffectType_LessonGoldUp = 4001;
+  ActivityCampaignEffectType_LessonExpUp = 4002;
+  ActivityCampaignEffectType_LessonCardEnhanceItemUp = 4003;
+  ActivityCampaignEffectType_LessonCardSupportReleaseUp = 4004;
+}
+enum ActivityFanEventHappeningType {
+  ActivityFanEventHappeningType_Unknown = 0;
+  ActivityFanEventHappeningType_Cheer = 1;
+  ActivityFanEventHappeningType_SpecialFan = 2;
+}
+enum ActivityFanEventType {
+  ActivityFanEventType_Unknown = 0;
+  ActivityFanEventType_Handshake = 1;
+  ActivityFanEventType_Sign = 2;
+  ActivityFanEventType_PhotoSession = 3;
+}
+enum AnniversaryTransitionActionType {
+  AnniversaryTransitionActionType_Unknown = 0;
+  AnniversaryTransitionActionType_Exit = 1;
+  AnniversaryTransitionActionType_Contents = 2;
+}
+enum AreaType {
+  AreaType_Unknown = 0;
+  AreaType_Main = 1;
+  AreaType_Contest = 2;
+  AreaType_Daily = 3;
+  AreaType_Tower = 4;
+  AreaType_SubTower = 5;
+  AreaType_Tutorial = 101;
+  AreaType_Exercise = 102;
+}
+enum AssetDownloadType {
+  AssetDownloadType_Unknown = 0;
+  AssetDownloadType_First = 1;
+  AssetDownloadType_Second = 2;
+}
+enum AttributeType {
+  AttributeType_Unknown = 0;
+  AttributeType_Dance = 1;
+  AttributeType_Vocal = 2;
+  AttributeType_Visual = 3;
+}
+enum BacksideAreaType {
+  BacksideAreaType_Unknown = 0;
+  BacksideAreaType_Rehearsal = 1;
+  BacksideAreaType_Real = 2;
+}
+enum BacksideDifficultyType {
+  BacksideDifficultyType_Unknown = 0;
+  BacksideDifficultyType_Absolute = 1;
+  BacksideDifficultyType_Relative = 2;
+  BacksideDifficultyType_RelativeSelect = 3;
+}
+enum BacksidePanelAttributeType {
+  BacksidePanelAttributeType_Unknown = 0;
+  BacksidePanelAttributeType_None = 1;
+  BacksidePanelAttributeType_Dance = 2;
+  BacksidePanelAttributeType_Vocal = 3;
+  BacksidePanelAttributeType_Visual = 4;
+}
+enum BacksidePanelType {
+  BacksidePanelType_Unknown = 0;
+  BacksidePanelType_Goal = 1;
+  BacksidePanelType_Live = 2;
+  BacksidePanelType_Pvp = 3;
+  BacksidePanelType_Training = 4;
+  BacksidePanelType_SpTraining = 5;
+  BacksidePanelType_Photo = 6;
+  BacksidePanelType_Accessory = 7;
+  BacksidePanelType_Recovery = 8;
+  BacksidePanelType_Blank = 9;
+}
+enum BacksidePracticeRankType {
+  BacksidePracticeRankType_Unknown = 0;
+  BacksidePracticeRankType_D = 1;
+  BacksidePracticeRankType_C = 2;
+  BacksidePracticeRankType_B = 3;
+  BacksidePracticeRankType_A = 4;
+  BacksidePracticeRankType_S = 5;
+  BacksidePracticeRankType_Splus = 6;
+}
+enum BacksideStageType {
+  BacksideStageType_Unknown = 0;
+  BacksideStageType_Practice = 1;
+  BacksideStageType_Final = 2;
+}
+enum BacksideType {
+  BacksideType_Unknown = 0;
+  BacksideType_Normal = 1;
+  BacksideType_Mini = 2;
+  BacksideType_Simple = 3;
+}
+enum BoxGachaItemType {
+  BoxGachaItemType_Unknown = 0;
+  BoxGachaItemType_Reward = 1;
+  BoxGachaItemType_MarathonLiveBonusGroup = 2;
+}
+enum CampaignCodeGroupType {
+  CampaignCodeGroupType_Unknown = 0;
+  CampaignCodeGroupType_Unique = 1;
+  CampaignCodeGroupType_Common = 2;
+}
+enum CardDisplayType {
+  CardDisplayType_Unknown = 0;
+  CardDisplayType_BeforeLimitBreak = 1;
+  CardDisplayType_AfterLimitBreak = 2;
+  CardDisplayType_AfterEvolution = 3;
+}
+enum CardImageType {
+  CardImageType_Unknown = 0;
+  CardImageType_Standing = 1;
+  CardImageType_Still = 2;
+  CardImageType_Movie = 3;
+}
+enum CardLevelReleaseType {
+  CardLevelReleaseType_Unknown = 0;
+  CardLevelReleaseType_Skill = 1;
+  CardLevelReleaseType_LiveAbility = 2;
+  CardLevelReleaseType_ActivityAbility = 3;
+  CardLevelReleaseType_Story = 4;
+  CardLevelReleaseType_Photo = 7;
+}
+enum CardType {
+  CardType_Unknown = 0;
+  CardType_Appeal = 1;
+  CardType_Technique = 2;
+  CardType_Support = 3;
+}
+enum CharacterPersonalityType {
+  CharacterPersonalityType_Unknown = 0;
+  CharacterPersonalityType_A = 1;
+  CharacterPersonalityType_B = 2;
+  CharacterPersonalityType_C = 3;
+  CharacterPersonalityType_D = 4;
+  CharacterPersonalityType_E = 5;
+}
+enum CharacterSdPersonalityType {
+  CharacterSdPersonalityType_Unknown = 0;
+  CharacterSdPersonalityType_Lively = 1;
+  CharacterSdPersonalityType_Pure = 2;
+  CharacterSdPersonalityType_Elegant = 3;
+  CharacterSdPersonalityType_Stylish = 4;
+  CharacterSdPersonalityType_Carefree = 5;
+}
+enum CharacterType {
+  CharacterType_Unknown = 0;
+  CharacterType_Normal = 1;
+  CharacterType_Npc = 2;
+  CharacterType_Memories = 3;
+  CharacterType_Collaboration = 4;
+}
+enum CompanyEnjoyCharacterMissionCategoryType {
+  CompanyEnjoyCharacterMissionCategoryType_Unknown = 0;
+  CompanyEnjoyCharacterMissionCategoryType_Enjoy = 1;
+  CompanyEnjoyCharacterMissionCategoryType_Training = 2;
+  CompanyEnjoyCharacterMissionCategoryType_Action = 3;
+}
+enum CompanyEnjoyObtainPointItemGrowthType {
+  CompanyEnjoyObtainPointItemGrowthType_Unknown = 0;
+  CompanyEnjoyObtainPointItemGrowthType__1 = 1;
+  CompanyEnjoyObtainPointItemGrowthType__2 = 2;
+  CompanyEnjoyObtainPointItemGrowthType__3 = 3;
+}
+enum CompanyPointType {
+  CompanyPointType_Unknown = 0;
+  CompanyPointType_Enjoy = 1;
+  CompanyPointType_Trust = 2;
+  CompanyPointType_Salary = 3;
+}
+enum CompanyTrustMissionCategoryType {
+  CompanyTrustMissionCategoryType_Unknown = 0;
+  CompanyTrustMissionCategoryType_Area = 1;
+  CompanyTrustMissionCategoryType_TowerArea = 2;
+  CompanyTrustMissionCategoryType_PhotoShooting = 3;
+  CompanyTrustMissionCategoryType_Growth = 4;
+}
+enum DayOfWeekType {
+  DayOfWeekType_Unknown = 0;
+  DayOfWeekType_Sunday = 1;
+  DayOfWeekType_Monday = 2;
+  DayOfWeekType_Tuesday = 3;
+  DayOfWeekType_Wednesday = 4;
+  DayOfWeekType_Thursday = 5;
+  DayOfWeekType_Friday = 6;
+  DayOfWeekType_Saturday = 7;
+}
+enum DeckEditType {
+  DeckEditType_Unknown = 0;
+  DeckEditType_Manual = 1;
+  DeckEditType_Auto = 2;
+  DeckEditType_ManualAuto = 3;
+  DeckEditType_QuestAuto = 4;
+}
+enum DiceItemType {
+  DiceItemType_Unknown = 0;
+  DiceItemType_AdvancePanel = 1;
+  DiceItemType_WarpShopPanel = 2;
+  DiceItemType_ExchangeMoney = 3;
+}
+enum DicePanelType {
+  DicePanelType_Unknown = 0;
+  DicePanelType_Start = 1;
+  DicePanelType_AdvancePanel = 2;
+  DicePanelType_ObtainMedal = 3;
+  DicePanelType_Shop = 4;
+  DicePanelType_Story = 5;
+  DicePanelType_Quest = 6;
+  DicePanelType_ObtainMoney = 7;
+  DicePanelType_ObtainLiveBonus = 8;
+  DicePanelType_BattleQuest = 9;
+  DicePanelType_GoalQuest = 10;
+  DicePanelType_ForceStory = 11;
+}
+enum DiceQuestDifficultyType {
+  DiceQuestDifficultyType_Unknown = 0;
+  DiceQuestDifficultyType_VeryEasy = 1;
+  DiceQuestDifficultyType_Easy = 2;
+  DiceQuestDifficultyType_Normal = 3;
+  DiceQuestDifficultyType_Hard = 4;
+  DiceQuestDifficultyType_VeryHard = 5;
+}
+enum DivisionCannotMoveReasonType {
+  DivisionCannotMoveReasonType_Unknown = 0;
+  DivisionCannotMoveReasonType_NotAffiliate = 1;
+  DivisionCannotMoveReasonType_ProhibitionDays = 2;
+  DivisionCannotMoveReasonType_NotAggregate = 3;
+  DivisionCannotMoveReasonType_OpenGvg = 4;
+  DivisionCannotMoveReasonType_AggregatePvp = 5;
+}
+enum DokanTargetType {
+  DokanTargetType_Unknown = 0;
+  DokanTargetType_Home = 1;
+  DokanTargetType_Shop = 2;
+  DokanTargetType_Tour = 3;
+  DokanTargetType_Backside = 4;
+  DokanTargetType_Marathon = 5;
+  DokanTargetType_PhotoContest = 6;
+  DokanTargetType_Race = 7;
+  DokanTargetType_Ladder = 8;
+  DokanTargetType_Love = 9;
+  DokanTargetType_Dream = 10;
+  DokanTargetType_Dice = 11;
+  DokanTargetType_Duty = 12;
+  DokanTargetType_ShowcaseToyShop = 13;
+  DokanTargetType_Company = 14;
+  DokanTargetType_ShowcaseTop = 15;
+  DokanTargetType_PhotoExpression = 16;
+  DokanTargetType_PhotoPanorama = 17;
+  DokanTargetType_FishHeaven = 18;
+}
+enum DokanType {
+  DokanType_Unknown = 0;
+  DokanType_Adv = 1;
+  DokanType_Notice = 2;
+  DokanType_Shop = 3;
+  DokanType_VerticalAdv = 4;
+  DokanType_VerticalMovie = 5;
+  DokanType_HorizontalMovie = 6;
+  DokanType_Story = 7;
+  DokanType_Free = 8;
+}
+enum DreamAreaRankType {
+  DreamAreaRankType_Unknown = 0;
+  DreamAreaRankType_D = 1;
+  DreamAreaRankType_C = 2;
+  DreamAreaRankType_B = 3;
+  DreamAreaRankType_A = 4;
+  DreamAreaRankType_S = 5;
+  DreamAreaRankType_Splus = 6;
+}
+enum ErrorCode {
+  ErrorCode_Unknown = 0;
+  ErrorCode_OutdatedApp = 1001;
+  ErrorCode_OutdatedMasterData = 1002;
+  ErrorCode_DateChanged = 1003;
+  ErrorCode_InMaintenance = 1004;
+  ErrorCode_InFunctionMaintenance = 1005;
+  ErrorCode_PurchasedWebstore = 1006;
+  ErrorCode_InvalidArgument = 2001;
+  ErrorCode_InternalServerError = 2002;
+  ErrorCode_RequestLocked = 2003;
+  ErrorCode_Unauthenticated = 2004;
+  ErrorCode_LockFailed = 2005;
+  ErrorCode_UserDeleted = 2006;
+  ErrorCode_ContainsNgword = 3001;
+  ErrorCode_OpponentNotFound = 3002;
+  ErrorCode_PasswordMigrationFailed = 3003;
+  ErrorCode_PasswordInvalid = 3004;
+  ErrorCode_ReachedMaxAmount = 3005;
+  ErrorCode_AccountBan = 3006;
+  ErrorCode_ForumBan = 3007;
+  ErrorCode_PurchaseBan = 3008;
+  ErrorCode_MigrationTargetNotFound = 3009;
+  ErrorCode_ConditionInvalid = 3010;
+  ErrorCode_ResourceNotEnough = 3011;
+  ErrorCode_InvalidBirthday = 3012;
+  ErrorCode_MarketItemExpired = 3013;
+  ErrorCode_MarketResetStatusExpired = 3014;
+  ErrorCode_PurchaseRecoverFailed = 3015;
+  ErrorCode_DivisionMoveOutOfTerm = 3016;
+  ErrorCode_GvgMatchMismatched = 3017;
+  ErrorCode_LiveResultNotFound = 3019;
+  ErrorCode_PvpSeasonNotOpened = 3020;
+  ErrorCode_GvgSeasonNotOpened = 3021;
+  ErrorCode_FunctionLocked = 3022;
+  ErrorCode_ActivityStaminaAlreadyMax = 3023;
+  ErrorCode_EventConditionInvalid = 3024;
+  ErrorCode_RecoveryPurchaseTransactionNotFound = 3025;
+  ErrorCode_AlreadyMaximumStamina = 3028;
+  ErrorCode_NotInCoolTime = 3029;
+  ErrorCode_InviteWrongCode = 3030;
+  ErrorCode_InviteHostGuestLimit = 3031;
+  ErrorCode_InviteEnterCodeNotAllowed = 3032;
+  ErrorCode_LeagueSeasonNotOpened = 3034;
+  ErrorCode_LeagueInBattle = 3035;
+  ErrorCode_LeagueInBattleExtension = 3036;
+  ErrorCode_SpecialPhotoShootingConditionInvalid = 3037;
+  ErrorCode_LoveSeasonNotOpened = 3038;
+  ErrorCode_GppReceiveRewardFailed = 3039;
+}
+enum EventMissionType {
+  EventMissionType_Unknown = 0;
+  EventMissionType_Event = 1;
+  EventMissionType_Campaign = 2;
+}
+enum ExerciseHintType {
+  ExerciseHintType_Unknown = 0;
+  ExerciseHintType_Initial = 1;
+  ExerciseHintType_AfterFailed = 2;
+}
+enum ExtraStoryPartType {
+  ExtraStoryPartType_Unknown = 0;
+  ExtraStoryPartType_Normal = 1;
+  ExtraStoryPartType_Limited = 2;
+}
+enum ExtraStoryType {
+  ExtraStoryType_Unknown = 0;
+  ExtraStoryType_Story = 1;
+  ExtraStoryType_Theater = 2;
+}
+enum ForumListReplyRequestType {
+  ForumListReplyRequestType_Unknown = 0;
+  ForumListReplyRequestType_Newest = 1;
+  ForumListReplyRequestType_Newer = 2;
+  ForumListReplyRequestType_Older = 3;
+  ForumListReplyRequestType_Oldest = 4;
+  ForumListReplyRequestType_Around = 5;
+}
+enum FunctionLockType {
+  FunctionLockType_Unknown = 0;
+  FunctionLockType_ActivityFanEvent = 1;
+  FunctionLockType_ActivityPromotion = 2;
+  FunctionLockType_ActivityRefresh = 3;
+  FunctionLockType_QuestContest = 4;
+  FunctionLockType_QuestDaily = 5;
+  FunctionLockType_QuestTower = 6;
+  FunctionLockType_Pvp = 7;
+  FunctionLockType_PhotoReroll = 8;
+  FunctionLockType_PhotoEnhance = 9;
+  FunctionLockType_AccessoryEnhance = 10;
+  FunctionLockType_CardSupport = 11;
+  FunctionLockType_Guild = 12;
+  FunctionLockType_Division = 13;
+  FunctionLockType_Hierarchy = 14;
+  FunctionLockType_CardReset = 15;
+  FunctionLockType_PhotoShooting = 16;
+  FunctionLockType_Forum = 17;
+  FunctionLockType_Diary = 18;
+  FunctionLockType_AccessoryLimitBreak = 19;
+  FunctionLockType_QuestSubTower = 20;
+  FunctionLockType_Invite = 21;
+  FunctionLockType_PhotoRetouch = 22;
+  FunctionLockType_InviteHost = 23;
+  FunctionLockType_BuddyUse = 24;
+  FunctionLockType_AuthDelete = 25;
+  FunctionLockType_BuddyUseQuestContest = 26;
+  FunctionLockType_Exercise = 27;
+  FunctionLockType_BuddyUseMarathon = 28;
+  FunctionLockType_CardRankUp = 29;
+  FunctionLockType_League = 30;
+  FunctionLockType_LiveResultDetail = 31;
+  FunctionLockType_Birthday = 32;
+  FunctionLockType_StoryPointDisplayHide = 33;
+  FunctionLockType_HomeNewStoryButtonDisplayChange = 34;
+  FunctionLockType_PhotoListFilterDream = 35;
+  FunctionLockType_Roulette = 36;
+  FunctionLockType_PhotoShootingStory = 37;
+  FunctionLockType_HomeRenewal = 38;
+  FunctionLockType_Company = 39;
+  FunctionLockType_Showcase = 40;
+  FunctionLockType_ShowcaseGallery = 41;
+  FunctionLockType_StaffLevelLimitBreak = 42;
+  FunctionLockType_ShowcaseLike = 43;
+  FunctionLockType_QuestContestMultipleTicketsPlay = 44;
+  FunctionLockType_CompanyBulkReceive = 45;
+  FunctionLockType_CardEvolution = 46;
+  FunctionLockType_PhotoExpressionShooting = 47;
+  FunctionLockType_ExtraCharacterLive = 48;
+  FunctionLockType_PhotoPanoramaShooting = 49;
+  FunctionLockType_Satellite = 50;
+  FunctionLockType_TowerAutoPlay = 51;
+  FunctionLockType_PersonalAccessoryFilter = 52;
+}
+enum FunctionMaintenanceType {
+  FunctionMaintenanceType_Unknown = 0;
+  FunctionMaintenanceType_Gacha = 1;
+  FunctionMaintenanceType_Exchange = 2;
+  FunctionMaintenanceType_Shop = 3;
+  FunctionMaintenanceType_Market = 4;
+  FunctionMaintenanceType_Division = 5;
+  FunctionMaintenanceType_Forum = 6;
+  FunctionMaintenanceType_Guild = 7;
+  FunctionMaintenanceType_Gvg = 8;
+}
+enum GachaAnimationEmbeddedType {
+  GachaAnimationEmbeddedType_Unknown = 0;
+  GachaAnimationEmbeddedType_All1 = 1;
+  GachaAnimationEmbeddedType_All2 = 2;
+  GachaAnimationEmbeddedType_Single1 = 101;
+  GachaAnimationEmbeddedType_Single2 = 102;
+}
+enum GachaContinuousResultType {
+  GachaContinuousResultType_Unknown = 0;
+  GachaContinuousResultType_Continue = 1;
+  GachaContinuousResultType_ContinueWithEffect = 2;
+  GachaContinuousResultType_Finish = 3;
+}
+enum GachaLimitType {
+  GachaLimitType_Unknown = 0;
+  GachaLimitType_Total = 1;
+  GachaLimitType_Daily = 2;
+}
+enum GachaRewardPatternType {
+  GachaRewardPatternType_Unknown = 0;
+  GachaRewardPatternType_SelectCard = 1;
+  GachaRewardPatternType_NotSelectCard = 2;
+  GachaRewardPatternType_Premium = 3;
+}
+enum GachaType {
+  GachaType_Unknown = 0;
+  GachaType_Normal = 1;
+  GachaType_Item = 2;
+  GachaType_Premium = 3;
+  GachaType_Continuous = 4;
+  GachaType_Stamp = 5;
+  GachaType_ShowcaseToy = 6;
+}
+enum GiftFilterType {
+  GiftFilterType_Unknown = 0;
+  GiftFilterType_Stone = 1;
+  GiftFilterType_Card = 2;
+  GiftFilterType_Photo = 3;
+  GiftFilterType_Accessory = 4;
+  GiftFilterType_Gold = 5;
+  GiftFilterType_Other = 999;
+}
+enum GiftSortType {
+  GiftSortType_Unknown = 0;
+  GiftSortType_PostedDatetime = 1;
+  GiftSortType_LimitDatetime = 2;
+}
+enum GraphicType {
+  GraphicType_Unknown = 0;
+  GraphicType_Highest = 1;
+  GraphicType_High = 2;
+  GraphicType_Middle = 3;
+  GraphicType_Low = 4;
+}
+enum GvgChallengeConsumptionType {
+  GvgChallengeConsumptionType_Unknown = 0;
+  GvgChallengeConsumptionType_Free = 1;
+  GvgChallengeConsumptionType_Item = 2;
+  GvgChallengeConsumptionType_Stone = 3;
+}
+enum GvgMatchResultType {
+  GvgMatchResultType_Unknown = 0;
+  GvgMatchResultType_Win = 1;
+  GvgMatchResultType_Lose = 2;
+  GvgMatchResultType_Draw = 3;
+}
+enum HelpDisplayTargetType {
+  HelpDisplayTargetType_Unknown = 0;
+  HelpDisplayTargetType_AccessoryTop = 1;
+  HelpDisplayTargetType_AccountTop = 2;
+  HelpDisplayTargetType_ActivityPhotography = 3;
+  HelpDisplayTargetType_ActivityTop = 4;
+  HelpDisplayTargetType_CardDetail = 5;
+  HelpDisplayTargetType_CardList = 6;
+  HelpDisplayTargetType_CardPortalTop = 7;
+  HelpDisplayTargetType_CardPreview = 8;
+  HelpDisplayTargetType_CardReset = 9;
+  HelpDisplayTargetType_CardStory = 10;
+  HelpDisplayTargetType_CardSupport = 11;
+  HelpDisplayTargetType_CardSupportEdit = 12;
+  HelpDisplayTargetType_CardZoom = 13;
+  HelpDisplayTargetType_ChapterList = 14;
+  HelpDisplayTargetType_CharacterCostume = 15;
+  HelpDisplayTargetType_CharacterDetails = 16;
+  HelpDisplayTargetType_CharacterList = 17;
+  HelpDisplayTargetType_CharacterTop = 18;
+  HelpDisplayTargetType_ConditionRewardShop = 19;
+  HelpDisplayTargetType_ContestLiveDeckSelect = 20;
+  HelpDisplayTargetType_ContestLiveQuestSelect = 21;
+  HelpDisplayTargetType_DailyLiveDeckSelect = 22;
+  HelpDisplayTargetType_DailyLiveQuestSelect = 23;
+  HelpDisplayTargetType_DailyLiveTop = 24;
+  HelpDisplayTargetType_DeckAccessoryEdit = 25;
+  HelpDisplayTargetType_DeckCardEdit = 26;
+  HelpDisplayTargetType_DeckEdit = 27;
+  HelpDisplayTargetType_DeckPhotoEdit = 28;
+  HelpDisplayTargetType_EpisodeList = 29;
+  HelpDisplayTargetType_EventStory = 30;
+  HelpDisplayTargetType_ExchangeDetail = 31;
+  HelpDisplayTargetType_ExchangeTop = 32;
+  HelpDisplayTargetType_FanEvent = 33;
+  HelpDisplayTargetType_FanEventCharacter = 34;
+  HelpDisplayTargetType_FanEventList = 35;
+  HelpDisplayTargetType_FanEventResult = 36;
+  HelpDisplayTargetType_ForumList = 37;
+  HelpDisplayTargetType_ForumThread = 38;
+  HelpDisplayTargetType_GachaCharacterPreview = 39;
+  HelpDisplayTargetType_GameSettingTop = 40;
+  HelpDisplayTargetType_GiftTop = 41;
+  HelpDisplayTargetType_GuildLive = 42;
+  HelpDisplayTargetType_GuildSelect = 43;
+  HelpDisplayTargetType_GuildTop = 44;
+  HelpDisplayTargetType_GuildTraining = 45;
+  HelpDisplayTargetType_GvgLiveDeckSelect = 46;
+  HelpDisplayTargetType_GvgLivePlayerSelect = 47;
+  HelpDisplayTargetType_GvgLiveResult = 48;
+  HelpDisplayTargetType_HomeDiary = 49;
+  HelpDisplayTargetType_HomeEventBannerList = 50;
+  HelpDisplayTargetType_HomeTalk = 51;
+  HelpDisplayTargetType_HomeTop = 52;
+  HelpDisplayTargetType_ItemGacha = 53;
+  HelpDisplayTargetType_ItemGachaResult = 54;
+  HelpDisplayTargetType_ItemList = 55;
+  HelpDisplayTargetType_LivePhotography = 56;
+  HelpDisplayTargetType_LiveTop = 57;
+  HelpDisplayTargetType_LoginBonusShop = 58;
+  HelpDisplayTargetType_LoginBonusTop = 59;
+  HelpDisplayTargetType_MainLiveAreaSelect = 60;
+  HelpDisplayTargetType_MainLiveDeckSelect = 61;
+  HelpDisplayTargetType_MainLiveQuestSelect = 62;
+  HelpDisplayTargetType_MainLiveResult = 63;
+  HelpDisplayTargetType_Market = 64;
+  HelpDisplayTargetType_MessageDetail = 65;
+  HelpDisplayTargetType_MessageHistory = 66;
+  HelpDisplayTargetType_MessageTop = 67;
+  HelpDisplayTargetType_MissionTop = 68;
+  HelpDisplayTargetType_NormalGacha = 69;
+  HelpDisplayTargetType_NormalGachaAnimation = 70;
+  HelpDisplayTargetType_NormalGachaAnimationTop = 71;
+  HelpDisplayTargetType_NormalGachaResult = 72;
+  HelpDisplayTargetType_NormalShop = 73;
+  HelpDisplayTargetType_PhotoDetail = 74;
+  HelpDisplayTargetType_PhotoEnhance = 75;
+  HelpDisplayTargetType_PhotographyTop = 76;
+  HelpDisplayTargetType_PhotoList = 77;
+  HelpDisplayTargetType_PhotoReroll = 78;
+  HelpDisplayTargetType_ProfileRequest = 79;
+  HelpDisplayTargetType_ProfileSetting = 80;
+  HelpDisplayTargetType_ProfileTop = 81;
+  HelpDisplayTargetType_Promotion = 82;
+  HelpDisplayTargetType_PromotionCharacter = 83;
+  HelpDisplayTargetType_PromotionList = 84;
+  HelpDisplayTargetType_PromotionResult = 85;
+  HelpDisplayTargetType_PvpLiveDeckSelect = 86;
+  HelpDisplayTargetType_PvpLivePlayerSelect = 87;
+  HelpDisplayTargetType_PvpLiveResult = 88;
+  HelpDisplayTargetType_Refresh = 89;
+  HelpDisplayTargetType_RefreshCharacter = 90;
+  HelpDisplayTargetType_RefreshLevelSelect = 91;
+  HelpDisplayTargetType_RefreshList = 92;
+  HelpDisplayTargetType_RefreshResult = 93;
+  HelpDisplayTargetType_SalaryActivity = 94;
+  HelpDisplayTargetType_SalaryPayslipList = 95;
+  HelpDisplayTargetType_ShopTop = 96;
+  HelpDisplayTargetType_StoneShop = 97;
+  HelpDisplayTargetType_StoryPlayer = 98;
+  HelpDisplayTargetType_StoryPreviewPlayer = 99;
+  HelpDisplayTargetType_StoryTop = 100;
+  HelpDisplayTargetType_TourActivity = 101;
+  HelpDisplayTargetType_TourArea = 102;
+  HelpDisplayTargetType_TourDeckEdit = 103;
+  HelpDisplayTargetType_TourLiveBattleDeckSelect = 104;
+  HelpDisplayTargetType_TourLiveBattleResult = 105;
+  HelpDisplayTargetType_TourLiveDeckSelect = 106;
+  HelpDisplayTargetType_TourLiveResult = 107;
+  HelpDisplayTargetType_TourTop = 108;
+  HelpDisplayTargetType_TowerLiveDeckSelect = 109;
+  HelpDisplayTargetType_TowerLiveQuestSelect = 110;
+  HelpDisplayTargetType_VenusAchiever = 111;
+  HelpDisplayTargetType_VenusRanking = 112;
+  HelpDisplayTargetType_VenusReward = 113;
+  HelpDisplayTargetType_VenusTop = 114;
+  HelpDisplayTargetType_HomeCostume = 115;
+  HelpDisplayTargetType_BacksideAreaSelect = 116;
+  HelpDisplayTargetType_BacksideDeckEdit = 117;
+  HelpDisplayTargetType_BacksideDeckSelect = 118;
+  HelpDisplayTargetType_BacksideLiveStart = 119;
+  HelpDisplayTargetType_BacksideLiveBattleStart = 120;
+  HelpDisplayTargetType_BacksideStage = 121;
+  HelpDisplayTargetType_BacksideTop = 122;
+  HelpDisplayTargetType_MarathonTop = 123;
+  HelpDisplayTargetType_MarathonLiveQuestSelect = 124;
+  HelpDisplayTargetType_MarathonLiveDeckSelect = 125;
+  HelpDisplayTargetType_MarathonLiveBattleDeckSelect = 126;
+  HelpDisplayTargetType_TowerLiveTop = 127;
+  HelpDisplayTargetType_PhotoContestTop = 128;
+  HelpDisplayTargetType_PhotoContestPhotoList = 129;
+  HelpDisplayTargetType_PhotoContestMission = 130;
+  HelpDisplayTargetType_PhotoContestPhotographyTop = 131;
+  HelpDisplayTargetType_PhotoContestLivePhotography = 132;
+  HelpDisplayTargetType_PhotoContestActivityPhotography = 133;
+  HelpDisplayTargetType_RaceTop = 134;
+  HelpDisplayTargetType_RaceMain = 135;
+  HelpDisplayTargetType_RaceLesson = 136;
+  HelpDisplayTargetType_RaceDeckEdit = 137;
+  HelpDisplayTargetType_RaceLiveBattleDeckSelect = 138;
+  HelpDisplayTargetType_RaceLiveDeckSelect = 139;
+  HelpDisplayTargetType_RaceVenusLiveDeckSelect = 140;
+  HelpDisplayTargetType_PremiumGacha = 141;
+  HelpDisplayTargetType_LadderTop = 142;
+  HelpDisplayTargetType_PhotoRetouch = 143;
+  HelpDisplayTargetType_FriendCardEdit = 144;
+  HelpDisplayTargetType_DeckFriendCardEdit = 145;
+  HelpDisplayTargetType_FriendSearch = 146;
+  HelpDisplayTargetType_FriendTop = 147;
+  HelpDisplayTargetType_FriendCode = 148;
+  HelpDisplayTargetType_ExerciseTop = 149;
+  HelpDisplayTargetType_ExerciseDeckEdit = 150;
+  HelpDisplayTargetType_ExerciseDeckPhotoEdit = 151;
+  HelpDisplayTargetType_ExerciseDeckAccessoryEdit = 152;
+  HelpDisplayTargetType_ExerciseLiveDeckSelect = 153;
+  HelpDisplayTargetType_ExerciseLiveBattleDeckSelect = 154;
+  HelpDisplayTargetType_ExerciseLiveResult = 155;
+  HelpDisplayTargetType_MarathonRaidList = 156;
+  HelpDisplayTargetType_MarathonRaidTop = 157;
+  HelpDisplayTargetType_MarathonRaidLiveQuestSelect = 158;
+  HelpDisplayTargetType_MarathonRaidLiveDeckSelect = 159;
+  HelpDisplayTargetType_MarathonRaidLiveBattleDeckSelect = 160;
+  HelpDisplayTargetType_LeagueTop = 161;
+  HelpDisplayTargetType_LeagueLiveNews = 162;
+  HelpDisplayTargetType_LeagueLiveDeckSelect = 163;
+  HelpDisplayTargetType_LeagueLastSeasonRecord = 164;
+  HelpDisplayTargetType_SpecialStory = 165;
+  HelpDisplayTargetType_ExtraStory = 166;
+  HelpDisplayTargetType_SpecialPhotographyTop = 167;
+  HelpDisplayTargetType_SpecialLivePhotography = 168;
+  HelpDisplayTargetType_SpecialActivityPhotography = 169;
+  HelpDisplayTargetType_LoveEpisodeList = 170;
+  HelpDisplayTargetType_LoveHome = 171;
+  HelpDisplayTargetType_LoveSave = 172;
+  HelpDisplayTargetType_LoveLoad = 173;
+  HelpDisplayTargetType_LoveMission = 174;
+  HelpDisplayTargetType_LoveSetting = 175;
+  HelpDisplayTargetType_LoveStatus = 176;
+  HelpDisplayTargetType_BirthdayTop = 177;
+  HelpDisplayTargetType_TheaterTop = 178;
+  HelpDisplayTargetType_DreamTop = 179;
+  HelpDisplayTargetType_DreamGeneratePhotoSelect = 180;
+  HelpDisplayTargetType_DreamGenerateMaterialSelect = 181;
+  HelpDisplayTargetType_DreamTrainingPhotoSelect = 182;
+  HelpDisplayTargetType_DreamLiveQuestSelect = 183;
+  HelpDisplayTargetType_DreamLiveDeckSelect = 184;
+  HelpDisplayTargetType_LoveCharacterSelect = 185;
+  HelpDisplayTargetType_Mosaic = 186;
+  HelpDisplayTargetType_DiceMain = 187;
+  HelpDisplayTargetType_DiceShop = 188;
+  HelpDisplayTargetType_DiceStory = 189;
+  HelpDisplayTargetType_DiceTop = 190;
+  HelpDisplayTargetType_DiceLiveDeckSelect = 191;
+  HelpDisplayTargetType_DiceLiveQuestSelect = 192;
+  HelpDisplayTargetType_DiceLiveBattleDeckSelect = 193;
+  HelpDisplayTargetType_DiceLiveBattleQuestSelect = 194;
+  HelpDisplayTargetType_RouletteTop = 195;
+  HelpDisplayTargetType_ShelfTop = 196;
+  HelpDisplayTargetType_ShelfAlbumSelect = 197;
+  HelpDisplayTargetType_ShelfHome = 198;
+  HelpDisplayTargetType_StoryPhotography = 199;
+  HelpDisplayTargetType_GroupStoryPhotography = 200;
+  HelpDisplayTargetType_CardStoryPhotography = 201;
+  HelpDisplayTargetType_StoryPhotographySelect = 202;
+  HelpDisplayTargetType_StoryPhotographyResult = 203;
+  HelpDisplayTargetType_DutyTop = 204;
+  HelpDisplayTargetType_CompanyReward = 205;
+  HelpDisplayTargetType_CompanyTop = 206;
+  HelpDisplayTargetType_CompanyEnjoyMemory = 207;
+  HelpDisplayTargetType_CompanyEnjoyMission = 208;
+  HelpDisplayTargetType_CompanyEnjoyPortal = 209;
+  HelpDisplayTargetType_CompanyEnjoyReward = 210;
+  HelpDisplayTargetType_CompanyEnjoyTop = 211;
+  HelpDisplayTargetType_CompanyTrustMissionList = 212;
+  HelpDisplayTargetType_CompanyTrustTop = 213;
+  HelpDisplayTargetType_CompanyRanking = 214;
+  HelpDisplayTargetType_CompanyTrustReward = 215;
+  HelpDisplayTargetType_ShowcaseTop = 216;
+  HelpDisplayTargetType_ShowcaseToyShopTop = 217;
+  HelpDisplayTargetType_ShowcaseToyCatalog = 218;
+  HelpDisplayTargetType_ShowcaseGallery = 220;
+  HelpDisplayTargetType_ShowcaseList = 221;
+  HelpDisplayTargetType_ShowcaseMain = 222;
+  HelpDisplayTargetType_ShowcaseEdit = 223;
+  HelpDisplayTargetType_ShowcaseToySelect = 224;
+  HelpDisplayTargetType_ShowcaseToyList = 225;
+  HelpDisplayTargetType_ShowcaseToyGacha = 229;
+  HelpDisplayTargetType_CompanyEnjoyRanking = 230;
+  HelpDisplayTargetType_ExpressionPhotography = 231;
+  HelpDisplayTargetType_LoveExtraEpisodeList = 232;
+  HelpDisplayTargetType_LoveExtraHome = 233;
+  HelpDisplayTargetType_LoveExtraSave = 234;
+  HelpDisplayTargetType_LoveExtraLoad = 235;
+  HelpDisplayTargetType_LoveExtraMission = 236;
+  HelpDisplayTargetType_LoveExtraSetting = 237;
+  HelpDisplayTargetType_LoveExtraStatus = 238;
+  HelpDisplayTargetType_PanoramaMusicSelect = 239;
+  HelpDisplayTargetType_PanoramaSetting = 241;
+  HelpDisplayTargetType_PanoramaTitle = 242;
+}
+enum HelpType {
+  HelpType_Unknown = 0;
+  HelpType_Help = 1;
+  HelpType_Faq = 2;
+  HelpType_Tips = 3;
+  HelpType_AccountRecovery = 4;
+}
+enum HierarchyRewardType {
+  HierarchyRewardType_Unknown = 0;
+  HierarchyRewardType_HierarchyDetailGrade = 1;
+  HierarchyRewardType_HierarchyPoint = 2;
+}
+enum HomeActionType {
+  HomeActionType_Unknown = 0;
+  HomeActionType_Tap = 1;
+  HomeActionType_NonTap = 2;
+}
+enum HomeBackgroundVersionType {
+  HomeBackgroundVersionType_Unknown = 0;
+  HomeBackgroundVersionType__1 = 1;
+  HomeBackgroundVersionType__2 = 2;
+}
+enum HomePlaceType {
+  HomePlaceType_Unknown = 0;
+  HomePlaceType_Any = 1;
+  HomePlaceType_Dormitory = 2;
+  HomePlaceType_Office = 3;
+  HomePlaceType_LessonRoom = 4;
+}
+enum HomePositionType {
+  HomePositionType_Unknown = 0;
+  HomePositionType_Home = 1;
+  HomePositionType_Training = 2;
+  HomePositionType_Activity = 3;
+  HomePositionType_Idol = 4;
+}
+enum InquiryTemplateType {
+  InquiryTemplateType_Unknown = 0;
+  InquiryTemplateType_AccountRecovery = 1;
+}
+enum ItemType {
+  ItemType_Unknown = 0;
+  ItemType_CardEnhance = 1;
+  ItemType_CardLimitBreak = 2;
+  ItemType_CardSkill = 3;
+  ItemType_CardAbility = 4;
+  ItemType_IdolMedal = 5;
+  ItemType_PhotoReroll = 6;
+  ItemType_PhotoEnhance = 7;
+  ItemType_GachaTicket = 8;
+  ItemType_GachaPoint = 9;
+  ItemType_ExchangeMaterial = 10;
+  ItemType_PhotoShooting = 11;
+  ItemType_CardSupportRelease = 12;
+  ItemType_PhotoShootingLevelChange = 13;
+  ItemType_AccessoryLimitBreak = 14;
+  ItemType_PhotoInk = 15;
+  ItemType_CardRank = 16;
+  ItemType_SpecialPhotoShooting = 17;
+  ItemType_StaffLevelLimitBreak = 18;
+  ItemType_ActivityRefreshShorten = 1001;
+  ItemType_ActivityPromotionShorten = 1002;
+  ItemType_ActivityFanEventSuperMode = 1003;
+  ItemType_ActivityFanEventSpeedUp = 1004;
+  ItemType_ActivityFanEventCheerPointUp = 1005;
+  ItemType_ActivityFanEventRewardUp = 1006;
+  ItemType_ActivityLessonPromote = 1007;
+  ItemType_ActivityPromotionSpecialShorten = 1008;
+  ItemType_QuestDailyGoldTicket = 2001;
+  ItemType_QuestDailyCardEnhanceTicket = 2002;
+  ItemType_QuestDailyPhotoTicketTicket = 2003;
+  ItemType_QuestContestTicket = 2004;
+  ItemType_PvpTicket = 2005;
+  ItemType_QuestDailySpecialTicket = 2006;
+  ItemType_EventMedal = 3001;
+  ItemType_BoxGachaPoint = 4001;
+  ItemType_MarathonStaminaRecovery = 5001;
+  ItemType_MarathonQuestUnlock = 5002;
+  ItemType_MarathonRaidStaminaRecovery = 5003;
+  ItemType_PhotoContestSubmitting = 6001;
+  ItemType_PhotoContestCreating = 6002;
+  ItemType_RacePoint = 7001;
+  ItemType_RaceLiveBonusReset = 7002;
+  ItemType_LadderPoint = 8001;
+  ItemType_LoveStoryRead = 9001;
+  ItemType_LoveHiddenFavorabilityObtain = 9002;
+  ItemType_LoveLessonPromote = 9003;
+  ItemType_DreamGenerateArea = 10001;
+  ItemType_DiceShopCurrency = 11001;
+  ItemType_DiceStaminaRecovery = 11002;
+  ItemType_EventPhotoCreating = 12001;
+  ItemType_CompanyEnjoyObtainPoint = 13001;
+}
+enum JoinedGuildType {
+  JoinedGuildType_Unknown = 0;
+  JoinedGuildType_Join = 1;
+  JoinedGuildType_NotJoin = 2;
+}
+enum LadderPanelType {
+  LadderPanelType_Unknown = 0;
+  LadderPanelType_Reward = 1;
+  LadderPanelType_Message = 2;
+}
+enum LeagueDeckType {
+  LeagueDeckType_Unknown = 0;
+  LeagueDeckType_A = 1;
+  LeagueDeckType_B = 2;
+}
+enum LeagueSeasonCardResultType {
+  LeagueSeasonCardResultType_Unknown = 0;
+  LeagueSeasonCardResultType_HighestScore = 1;
+  LeagueSeasonCardResultType_SkillActivationRate = 2;
+  LeagueSeasonCardResultType_MvpCount = 3;
+}
+enum LeagueSeasonResultType {
+  LeagueSeasonResultType_Unknown = 0;
+  LeagueSeasonResultType_Upgrade = 1;
+  LeagueSeasonResultType_Stay = 2;
+  LeagueSeasonResultType_Downgrade = 3;
+}
+enum LeagueStatusType {
+  LeagueStatusType_Unknown = 0;
+  LeagueStatusType_Prepare = 1;
+  LeagueStatusType_Battle = 2;
+  LeagueStatusType_BattleExtension = 3;
+  LeagueStatusType_NotOpened = 4;
+}
+enum LinkType {
+  LinkType_Unknown = 0;
+  LinkType_Activity = 1;
+  LinkType_Quest = 2;
+  LinkType_QuestMain = 3;
+  LinkType_QuestTower = 4;
+  LinkType_QuestPvp = 5;
+  LinkType_QuestContest = 6;
+  LinkType_QuestDaily = 7;
+  LinkType_QuestGvg = 8;
+  LinkType_Gacha = 9;
+  LinkType_Idol = 10;
+  LinkType_Card = 11;
+  LinkType_Character = 12;
+  LinkType_Deck = 13;
+  LinkType_Photo = 14;
+  LinkType_Accessory = 15;
+  LinkType_Story = 16;
+  LinkType_Guild = 17;
+  LinkType_Mission = 18;
+  LinkType_Notice = 19;
+  LinkType_Message = 20;
+  LinkType_Shop = 21;
+  LinkType_Exchange = 22;
+  LinkType_Option = 23;
+  LinkType_Profile = 24;
+  LinkType_Item = 25;
+  LinkType_Diary = 26;
+  LinkType_Salary = 27;
+  LinkType_Hierarchy = 28;
+  LinkType_LoginBonus = 29;
+  LinkType_PhotoReport = 30;
+  LinkType_Help = 31;
+  LinkType_Shooting = 32;
+  LinkType_CardSupport = 33;
+  LinkType_CardReset = 34;
+  LinkType_Friend = 35;
+  LinkType_Market = 36;
+  LinkType_Forum = 37;
+  LinkType_PhotoStory = 38;
+  LinkType_PhotoExpression = 39;
+  LinkType_EventMission = 100;
+  LinkType_Tour = 101;
+  LinkType_Backside = 102;
+  LinkType_Marathon = 103;
+  LinkType_PhotoContest = 104;
+  LinkType_Race = 105;
+  LinkType_Ladder = 106;
+  LinkType_Love = 107;
+  LinkType_Birthday = 108;
+  LinkType_ProfileFavoriteCharacter = 109;
+  LinkType_Dream = 110;
+  LinkType_Dice = 111;
+  LinkType_Shelf = 112;
+  LinkType_Roulette = 113;
+  LinkType_Duty = 114;
+  LinkType_Showcase = 115;
+  LinkType_ShowcaseToyShop = 116;
+  LinkType_ExtraStory = 117;
+  LinkType_PhotoPanoramaShooting = 118;
+  LinkType_FishHeaven = 119;
+  LinkType_WebView = 999;
+  LinkType_ExternalWebPage = 1000;
+}
+enum LiveAbilityLevelBackgroundRankType {
+  LiveAbilityLevelBackgroundRankType_Unknown = 0;
+  LiveAbilityLevelBackgroundRankType_First = 1;
+  LiveAbilityLevelBackgroundRankType_Second = 2;
+  LiveAbilityLevelBackgroundRankType_Third = 3;
+}
+enum LiveAbilityType {
+  LiveAbilityType_Unknown = 0;
+  LiveAbilityType_DanceAdd = 1;
+  LiveAbilityType_DanceMultiply = 2;
+  LiveAbilityType_VocalAdd = 3;
+  LiveAbilityType_VocalMultiply = 4;
+  LiveAbilityType_VisualAdd = 5;
+  LiveAbilityType_VisualMultiply = 6;
+  LiveAbilityType_StaminaAdd = 7;
+  LiveAbilityType_StaminaMultiply = 8;
+  LiveAbilityType_MentalAdd = 9;
+  LiveAbilityType_MentalMultiply = 10;
+  LiveAbilityType_TechniqueAdd = 11;
+  LiveAbilityType_TechniqueMultiply = 12;
+  LiveAbilityType_PassiveSkill = 13;
+  LiveAbilityType_ManagerExp = 14;
+  LiveAbilityType_Gold = 15;
+  LiveAbilityType_CardExp = 16;
+  LiveAbilityType_BeatScoreAdd = 17;
+  LiveAbilityType_BeatScoreMultiply = 18;
+  LiveAbilityType_ActiveSkillScoreAdd = 19;
+  LiveAbilityType_ActiveSkillScoreMultiply = 20;
+  LiveAbilityType_SpecialSkillScoreAdd = 21;
+  LiveAbilityType_SpecialSkillScoreMultiply = 22;
+  LiveAbilityType_CriticalScoreMultiply = 23;
+  LiveAbilityType_AudienceAmountUp = 24;
+  LiveAbilityType_AccessoryParameterUp = 25;
+  LiveAbilityType_PhotoLevelUp = 26;
+}
+enum LiveResultType {
+  LiveResultType_Unknown = 0;
+  LiveResultType_Success = 1;
+  LiveResultType_Normal = 2;
+  LiveResultType_Failed = 3;
+}
+enum LiveSkipType {
+  LiveSkipType_Unknown = 0;
+  LiveSkipType_None = 1;
+  LiveSkipType_Always = 2;
+  LiveSkipType_AfterPlay = 3;
+  LiveSkipType_AlwaysFullSkip = 4;
+}
+enum LiveTipType {
+  LiveTipType_Unknown = 0;
+  LiveTipType_NotPossessed = 1;
+  LiveTipType_LowActivatingRate = 2;
+  LiveTipType_InCoolTime = 3;
+  LiveTipType_StaminaShortage = 4;
+  LiveTipType_Miss = 5;
+  LiveTipType_SkillHeavyWeight = 6;
+  LiveTipType_AudienceShortage = 7;
+  LiveTipType_LevelShortage = 8;
+  LiveTipType_DeckUnbalance = 9;
+  LiveTipType_Other = 10;
+}
+enum LiveType {
+  LiveType_Unknown = 0;
+  LiveType_Score = 1;
+  LiveType_Battle = 2;
+}
+enum LoadingDisplayTargetType {
+  LoadingDisplayTargetType_Unknown = 0;
+  LoadingDisplayTargetType_FirstDownload = 1;
+  LoadingDisplayTargetType_Update = 2;
+  LoadingDisplayTargetType_Home = 3;
+  LoadingDisplayTargetType_GachaDraw = 4;
+  LoadingDisplayTargetType_ActivityFanEventBefore = 101;
+  LoadingDisplayTargetType_ActivityPromotionBefore = 102;
+  LoadingDisplayTargetType_ActivityRefreshBefore = 103;
+  LoadingDisplayTargetType_QuestMainAreaBefore = 201;
+  LoadingDisplayTargetType_QuestMainAreaAfter = 202;
+  LoadingDisplayTargetType_QuestContestAreaBefore = 203;
+  LoadingDisplayTargetType_QuestContestAreaAfter = 204;
+  LoadingDisplayTargetType_QuestPvpBefore = 205;
+  LoadingDisplayTargetType_QuestPvpAfter = 206;
+  LoadingDisplayTargetType_QuestTowerAreaBefore = 207;
+  LoadingDisplayTargetType_QuestTowerAreaAfter = 208;
+  LoadingDisplayTargetType_QuestGvgBefore = 209;
+  LoadingDisplayTargetType_QuestGvgAfter = 210;
+  LoadingDisplayTargetType_QuestDailyAreaBefore = 211;
+  LoadingDisplayTargetType_QuestDailyAreaAfter = 212;
+  LoadingDisplayTargetType_DreamAreaBefore = 213;
+  LoadingDisplayTargetType_PhotoModeBefore = 301;
+  LoadingDisplayTargetType_PhotoModeAfter = 302;
+  LoadingDisplayTargetType_Other = 999;
+  LoadingDisplayTargetType_All = 1000;
+  LoadingDisplayTargetType_ActivityBefore = 1001;
+  LoadingDisplayTargetType_QuestBefore = 1002;
+  LoadingDisplayTargetType_QuestAfter = 1003;
+}
+enum LoadingType {
+  LoadingType_Unknown = 0;
+  LoadingType_Movie = 1;
+  LoadingType_Introduction = 2;
+  LoadingType_Image = 3;
+  LoadingType_Text = 4;
+  LoadingType_ImageText = 5;
+  LoadingType_Comic = 6;
+  LoadingType_Dream = 7;
+}
+enum LoginBonusType {
+  LoginBonusType_Unknown = 0;
+  LoginBonusType_Normal = 1;
+  LoginBonusType_Event = 2;
+}
+enum LoveBaseType {
+  LoveBaseType_Unknown = 0;
+  LoveBaseType_Standard = 1;
+  LoveBaseType_Extra = 2;
+}
+enum LoveHintType {
+  LoveHintType_Unknown = 0;
+  LoveHintType_ChoiceGroup = 1;
+  LoveHintType_Choice = 2;
+}
+enum LoveHomeActionType {
+  LoveHomeActionType_Unknown = 0;
+  LoveHomeActionType_Tap = 1;
+  LoveHomeActionType_NonTap = 2;
+  LoveHomeActionType_Present = 3;
+}
+enum LoveType {
+  LoveType_Unknown = 0;
+  LoveType_Normal = 1;
+  LoveType_Event = 2;
+}
+enum MarathonRaidProgressType {
+  MarathonRaidProgressType_Unknown = 0;
+  MarathonRaidProgressType_Joinable = 1;
+  MarathonRaidProgressType_Progressing = 2;
+  MarathonRaidProgressType_Finished = 3;
+  MarathonRaidProgressType_History = 4;
+}
+enum MarathonRaidStatusType {
+  MarathonRaidStatusType_Unknown = 0;
+  MarathonRaidStatusType_Joined = 1;
+  MarathonRaidStatusType_Finished = 2;
+}
+enum MarathonType {
+  MarathonType_Unknown = 0;
+  MarathonType_Normal = 1;
+  MarathonType_Raid = 2;
+}
+enum MessageInstantType {
+  MessageInstantType_Unknown = 0;
+  MessageInstantType_Login = 1;
+  MessageInstantType_Live = 2;
+  MessageInstantType_Activity = 3;
+}
+enum MessageRarityType {
+  MessageRarityType_Unknown = 0;
+  MessageRarityType_Normal = 1;
+  MessageRarityType_Rare = 2;
+  MessageRarityType_Srare = 3;
+}
+enum MessageStatusType {
+  MessageStatusType_Unknown = 0;
+  MessageStatusType_Unlocked = 1;
+  MessageStatusType_Scheduled = 2;
+  MessageStatusType_Received = 3;
+  MessageStatusType_Finished = 4;
+}
+enum MessageType {
+  MessageType_Unknown = 0;
+  MessageType_Story = 1;
+  MessageType_Instant = 2;
+}
+enum MissionCategoryType {
+  MissionCategoryType_Unknown = 0;
+  MissionCategoryType_Daily = 1;
+  MissionCategoryType_Weekly = 2;
+  MissionCategoryType_Normal = 3;
+  MissionCategoryType_Photo = 6;
+}
+enum MissionStatusType {
+  MissionStatusType_Unknown = 0;
+  MissionStatusType_Progress = 1;
+  MissionStatusType_Clear = 2;
+  MissionStatusType_NotReceived = 3;
+  MissionStatusType_Received = 4;
+}
+enum MissionType {
+  MissionType_Unknown = 0;
+  MissionType_LoginCount = 1;
+  MissionType_LoginTotalCount = 2;
+  MissionType_MissionClearCount = 3;
+  MissionType_ConditionClear = 4;
+  MissionType_QuestMainClearCount = 5;
+  MissionType_QuestContestClearCount = 6;
+  MissionType_QuestDailyClearCount = 7;
+  MissionType_QuestPvpClearCount = 8;
+  MissionType_QuestTowerClearCount = 9;
+  MissionType_QuestGvgClearCount = 10;
+  MissionType_QuestAllClearCount = 11;
+  MissionType_CardLevelUpCount = 12;
+  MissionType_CardLevelAchievement = 13;
+  MissionType_CardSkillLevelUpCount = 14;
+  MissionType_CardAbilityLevelUpCount = 15;
+  MissionType_CardLimitBreakCount = 16;
+  MissionType_CharacterLevelUpCount = 17;
+  MissionType_CharacterLevelAchievement = 18;
+  MissionType_CharacterSkillLevelUpCount = 19;
+  MissionType_CharacterAbilityLevelUpCount = 20;
+  MissionType_CharacterLimitBreakCount = 21;
+  MissionType_ActivityLevelAchievement = 22;
+  MissionType_PhotoLevelUpCount = 23;
+  MissionType_PhotoLevelAchievement = 24;
+  MissionType_PhotoRerollCount = 25;
+  MissionType_ContestTotalScoreAchievement = 26;
+  MissionType_DeckMaxPowerAchievement = 27;
+  MissionType_AccessoryEnhanceCount = 28;
+  MissionType_AccessoryRarityAchievement = 29;
+  MissionType_FriendApproveTotalCount = 30;
+  MissionType_MarketExchangeCount = 31;
+  MissionType_MarketExchangeTotalCount = 32;
+  MissionType_PhotoShootCount = 33;
+  MissionType_PhotoShootTotalCount = 34;
+  MissionType_PointGoldAmount = 35;
+  MissionType_PointGoldTotalAmount = 36;
+  MissionType_DataMigration = 37;
+  MissionType_UrlTransition = 38;
+  MissionType_StaffTrainTotalCount = 39;
+  MissionType_ProfileSetting = 40;
+  MissionType_ForumLikeCount = 41;
+  MissionType_ForumLikeTotalCount = 42;
+  MissionType_ItemAmount = 43;
+  MissionType_PostProfileToTwitter = 44;
+  MissionType_QuestPvpPlayCount = 45;
+  MissionType_GuildCheckInCount = 46;
+  MissionType_GuildCheckInTotalCount = 47;
+  MissionType_ManagerLevelAchievement = 48;
+  MissionType_ReliabilityAchievement = 49;
+  MissionType_AccessoryLimitBreakCount = 50;
+  MissionType_AccessoryLimitBreakPhaseAchievement = 51;
+  MissionType_QuestSubTowerClearCount = 52;
+  MissionType_PhotoRetouchCount = 53;
+  MissionType_PhotoRetouchTotalCount = 54;
+  MissionType_AccessoryUsedAmount = 55;
+  MissionType_AnimeStoryPointUsedAmount = 56;
+  MissionType_GameStoryPointUsedAmount = 57;
+  MissionType_GroupStoryPointUsedAmount = 58;
+  MissionType_GoldUsedAmount = 59;
+  MissionType_GuildMedalUsedAmount = 60;
+  MissionType_PvpMedalUsedAmount = 61;
+  MissionType_ItemUsedAmount = 62;
+  MissionType_PhotoRecipeUsedAmount = 63;
+  MissionType_StoneUsedAmount = 64;
+  MissionType_PaidStoneUsedAmount = 65;
+  MissionType_CharacterQuestAllClearCount = 66;
+  MissionType_CharacterQuestPvpPlayCount = 67;
+  MissionType_CharacterPhotoShootCount = 68;
+  MissionType_CharacterStartActivityFanEventCount = 69;
+  MissionType_CharacterStartActivityPromotionCount = 70;
+  MissionType_CharacterStartActivityRefreshmentCount = 71;
+  MissionType_PhotoShootingStoryShootTotalCount = 72;
+  MissionType_PhotoActivateShootingStoryTicketUseTotalCount = 73;
+  MissionType_PhotoActivateShootingStoryTicketUseCount = 74;
+  MissionType_QuestAllScoreAchievement = 75;
+  MissionType_CharacterHomeTalkReadAchievement = 76;
+  MissionType_CharacterTotalCardLevelAchievement = 77;
+  MissionType_CharacterTotalCardRarityAchievement = 78;
+  MissionType_CharacterTotalCardSkillLevelAchievement = 79;
+  MissionType_CharacterQuestContestScoreAchievement = 80;
+  MissionType_CharacterQuestPvpScoreAchievement = 81;
+  MissionType_AreaAllMainQuestClearCountAchievement = 82;
+  MissionType_AreaAllTowerQuestClearCountAchievement = 83;
+  MissionType_AreaSubTowerQuestClearCountAchievement = 84;
+  MissionType_PhotoExpressionShootingCount = 86;
+  MissionType_PhotoExpressionShootingSpecifiedPoseShootCount = 87;
+  MissionType_PhotoExpressionShootingSpecifiedCharacterShootCount = 88;
+  MissionType_PhotoPanoramaShootingCount = 89;
+  MissionType_PhotoPanoramaShootingTotalCount = 90;
+  MissionType_PhotoSpecifiedMusicShootingCount = 91;
+  MissionType_FishHeavenScoreAchievement = 92;
+  MissionType_TourAreaClearCount = 1001;
+  MissionType_TourRivalClearCount = 1002;
+  MissionType_TourBossClearCountWithCharacter = 1003;
+  MissionType_TourBossClearCountWithCard = 1004;
+  MissionType_TourScoreAchievement = 1005;
+  MissionType_BacksideStageClearCount = 1101;
+  MissionType_BacksideAreaClearCount = 1102;
+  MissionType_BacksidePracticeScoreAchievement = 1103;
+  MissionType_BacksideFinalScoreAchievement = 1104;
+  MissionType_BacksideSurpriseCount = 1105;
+  MissionType_MarathonQuestClearCount = 1201;
+  MissionType_MarathonQuestClearDifficulty = 1202;
+  MissionType_MarathonRaidClearCount = 1203;
+  MissionType_MarathonRaidHostCount = 1204;
+  MissionType_MarathonRaidJoinCount = 1205;
+  MissionType_RacePanelClearCount = 1301;
+  MissionType_RaceQuestClearCount = 1302;
+  MissionType_RaceEnhanceLiveBonusAchievement = 1303;
+  MissionType_LadderPanelReachedCount = 1401;
+  MissionType_LadderConsumptionPointAmount = 1402;
+  MissionType_LadderReachedStep = 1403;
+  MissionType_LoveLevelAchievement = 1501;
+  MissionType_LoveStoryEndUnlockCount = 1502;
+  MissionType_DreamAreaGenerateCount = 1601;
+  MissionType_DreamAreaGenerateTotalCount = 1602;
+  MissionType_DreamQuestClearCount = 1603;
+  MissionType_DreamQuestClearTotalCount = 1604;
+  MissionType_DreamQuestClearDifficultyLevelAchievement = 1605;
+  MissionType_DreamSeasonQuestClearDifficultyLevelAchievement = 1606;
+  MissionType_MosaicExchangedCount = 1701;
+  MissionType_DicePanelMoveCount = 1801;
+  MissionType_DiceAreaClearCount = 1802;
+  MissionType_ShelfPhotoSaveCount = 1901;
+  MissionType_ShelfPhotoCreatingCount = 1902;
+  MissionType_ShelfAlbumCompleteAchievement = 1903;
+  MissionType_ShelfAlbumPhotoCreatingCount = 1904;
+  MissionType_RouletteDrawCount = 2001;
+  MissionType_DutySpecifiedExchangedRewardCount = 2101;
+  MissionType_DutyExchangedRewardCount = 2102;
+  MissionType_DutyPointAmount = 2103;
+  MissionType_ShowcaseLikedTotalCount = 2201;
+  MissionType_ShowcaseLikeTotalCount = 2202;
+  MissionType_ShowcaseSaveAchievement = 2203;
+  MissionType_ShowcasePhotoShootingTotalCount = 2204;
+  MissionType_ShowcaseSpecifiedHashtagIdSaveCount = 2205;
+  MissionType_CompanyCharacterUseObtainEnjoyPointItemCount = 2301;
+  MissionType_CompanyUseObtainEnjoyPointItemTotalCount = 2302;
+}
+enum MoodType {
+  MoodType_Unknown = 0;
+  MoodType_BlackHeart = 1;
+  MoodType_BlackDiamond = 2;
+  MoodType_BlackSpade = 3;
+  MoodType_BlackClub = 4;
+  MoodType_WhiteHeart = 5;
+  MoodType_WhiteDiamond = 6;
+  MoodType_WhiteSpade = 7;
+  MoodType_WhiteClub = 8;
+}
+enum MotionResultRankType {
+  MotionResultRankType_Unknown = 0;
+  MotionResultRankType_Failed = 1;
+  MotionResultRankType_Normal = 2;
+  MotionResultRankType_Success = 3;
+}
+enum MusicChartType {
+  MusicChartType_Unknown = 0;
+  MusicChartType_Beat = 1;
+  MusicChartType_ActiveSkill = 2;
+  MusicChartType_SpecialSkill = 3;
+}
+enum NoticeCategoryType {
+  NoticeCategoryType_Unknown = 0;
+  NoticeCategoryType_Notice = 1;
+  NoticeCategoryType_Malfunction = 2;
+  NoticeCategoryType_Pr = 3;
+}
+enum NotificationType {
+  NotificationType_Unknown = 0;
+  NotificationType_Activity = 1;
+  NotificationType_LoginBonus = 2;
+  NotificationType_Gift = 3;
+}
+enum PanoramaCameraType {
+  PanoramaCameraType_Unknown = 0;
+  PanoramaCameraType_StageCamera = 1;
+  PanoramaCameraType_DollyCamera = 2;
+  PanoramaCameraType_OshiCamera = 3;
+  PanoramaCameraType_DroneCamera = 4;
+  PanoramaCameraType_AutoCamera = 5;
+}
+enum ParameterType {
+  ParameterType_Unknown = 0;
+  ParameterType_Dance = 1;
+  ParameterType_Vocal = 2;
+  ParameterType_Visual = 3;
+  ParameterType_Stamina = 4;
+  ParameterType_Mental = 5;
+  ParameterType_Technique = 6;
+}
+enum PhotoAbilityGradeType {
+  PhotoAbilityGradeType_Unknown = 0;
+  PhotoAbilityGradeType_Normal = 1;
+  PhotoAbilityGradeType_Silver = 2;
+  PhotoAbilityGradeType_Gold = 3;
+}
+enum PhotoAbilityTargetType {
+  PhotoAbilityTargetType_Unknown = 0;
+  PhotoAbilityTargetType_Self = 1;
+  PhotoAbilityTargetType_All = 2;
+  PhotoAbilityTargetType_Center = 3;
+  PhotoAbilityTargetType_Neighbor = 4;
+  PhotoAbilityTargetType_Character = 5;
+  PhotoAbilityTargetType_CharacterGroup = 6;
+}
+enum PhotoAbilityType {
+  PhotoAbilityType_Unknown = 0;
+  PhotoAbilityType_DanceAdd = 1;
+  PhotoAbilityType_DanceMultiply = 2;
+  PhotoAbilityType_VocalAdd = 3;
+  PhotoAbilityType_VocalMultiply = 4;
+  PhotoAbilityType_VisualAdd = 5;
+  PhotoAbilityType_VisualMultiply = 6;
+  PhotoAbilityType_StaminaAdd = 7;
+  PhotoAbilityType_StaminaMultiply = 8;
+  PhotoAbilityType_MentalAdd = 9;
+  PhotoAbilityType_MentalMultiply = 10;
+  PhotoAbilityType_TechniqueAdd = 11;
+  PhotoAbilityType_TechniqueMultiply = 12;
+  PhotoAbilityType_PassiveSkill = 13;
+  PhotoAbilityType_ManagerExp = 14;
+  PhotoAbilityType_Gold = 15;
+  PhotoAbilityType_CardExp = 16;
+  PhotoAbilityType_BeatScoreAdd = 17;
+  PhotoAbilityType_BeatScoreMultiply = 18;
+  PhotoAbilityType_ActiveSkillScoreAdd = 19;
+  PhotoAbilityType_ActiveSkillScoreMultiply = 20;
+  PhotoAbilityType_SpecialSkillScoreAdd = 21;
+  PhotoAbilityType_SpecialSkillScoreMultiply = 22;
+  PhotoAbilityType_CriticalScoreMultiply = 23;
+  PhotoAbilityType_AudienceAmountUp = 24;
+  PhotoAbilityType_ReceivedStrengthEffectValueIncrease = 27;
+  PhotoAbilityType_ReceivedStrengthEffectCountIncrease = 28;
+  PhotoAbilityType_AffectStrengthEffectValueIncrease = 29;
+  PhotoAbilityType_AffectStrengthEffectCountIncrease = 30;
+  PhotoAbilityType_CoolTimeReductionSkill1 = 31;
+  PhotoAbilityType_CoolTimeReductionSkill2 = 32;
+  PhotoAbilityType_CoolTimeReductionSkill3 = 33;
+}
+enum PhotoContestBaseEvaluationType {
+  PhotoContestBaseEvaluationType_Unknown = 0;
+  PhotoContestBaseEvaluationType_Pose = 1;
+  PhotoContestBaseEvaluationType_SizeFull = 2;
+  PhotoContestBaseEvaluationType_SizeUpper = 3;
+  PhotoContestBaseEvaluationType_DirectionFront = 4;
+  PhotoContestBaseEvaluationType_DirectionSide = 5;
+  PhotoContestBaseEvaluationType_Position = 6;
+}
+enum PhotoContestBaseGuideRankType {
+  PhotoContestBaseGuideRankType_Unknown = 0;
+  PhotoContestBaseGuideRankType_D = 1;
+  PhotoContestBaseGuideRankType_C = 2;
+  PhotoContestBaseGuideRankType_B = 3;
+  PhotoContestBaseGuideRankType_A = 4;
+  PhotoContestBaseGuideRankType_S = 5;
+}
+enum PhotoContestEvaluationRankType {
+  PhotoContestEvaluationRankType_Unknown = 0;
+  PhotoContestEvaluationRankType_D = 1;
+  PhotoContestEvaluationRankType_C = 2;
+  PhotoContestEvaluationRankType_B = 3;
+  PhotoContestEvaluationRankType_A = 4;
+  PhotoContestEvaluationRankType_S = 5;
+}
+enum PhotoImageRequestType {
+  PhotoImageRequestType_Unknown = 0;
+  PhotoImageRequestType_Original = 1;
+  PhotoImageRequestType_Thumbnail = 2;
+  PhotoImageRequestType_Both = 3;
+}
+enum PhotoImageType {
+  PhotoImageType_Unknown = 0;
+  PhotoImageType_Asset = 1;
+  PhotoImageType_User = 2;
+  PhotoImageType_Generated = 3;
+}
+enum PhotoLookingType {
+  PhotoLookingType_Unknown = 0;
+  PhotoLookingType_None = 1;
+  PhotoLookingType_Eyes = 2;
+  PhotoLookingType_Body = 3;
+}
+enum PhotoPoseMotionType {
+  PhotoPoseMotionType_Unknown = 0;
+  PhotoPoseMotionType_Motion = 1;
+  PhotoPoseMotionType_OneFrame = 2;
+}
+enum PhotoPoseType {
+  PhotoPoseType_Unknown = 0;
+  PhotoPoseType_Standing = 1;
+  PhotoPoseType_Sitting = 2;
+  PhotoPoseType_Lying = 3;
+}
+enum PhotoShootingActionType {
+  PhotoShootingActionType_Unknown = 0;
+  PhotoShootingActionType_ActivityPromotion = 1;
+  PhotoShootingActionType_ActivityRefresh = 2;
+  PhotoShootingActionType_Quest = 3;
+  PhotoShootingActionType_Story = 4;
+}
+enum PhotoShootingMotionType {
+  PhotoShootingMotionType_Unknown = 0;
+  PhotoShootingMotionType_PersonalityFive = 1;
+  PhotoShootingMotionType_PersonalityThree = 2;
+}
+enum PlatformType {
+  PlatformType_Unknown = 0;
+  PlatformType_Ios = 1;
+  PlatformType_Android = 2;
+  PlatformType_Sbps = 4;
+}
+enum PointType {
+  PointType_Unknown = 0;
+  PointType_Gold = 1;
+  PointType_AnimeStory = 2;
+  PointType_GameStory = 3;
+  PointType_GroupStory = 4;
+  PointType_GuildMedal = 5;
+  PointType_PvpMedal = 6;
+  PointType_ActivatePhotoShootingStoryTicket = 7;
+}
+enum ProfileBackgroundType {
+  ProfileBackgroundType_Unknown = 0;
+  ProfileBackgroundType_Default = 1;
+  ProfileBackgroundType_Card = 2;
+  ProfileBackgroundType_Photo = 3;
+}
+enum ProfileColorType {
+  ProfileColorType_Unknown = 0;
+  ProfileColorType_Black1 = 1;
+  ProfileColorType_Black2 = 2;
+  ProfileColorType_White1 = 3;
+  ProfileColorType_White2 = 4;
+}
+enum ProfileInformationType {
+  ProfileInformationType_Unknown = 0;
+  ProfileInformationType_Many1 = 1;
+  ProfileInformationType_Many2 = 2;
+  ProfileInformationType_Less1 = 3;
+  ProfileInformationType_Less2 = 4;
+}
+enum ProfileLayoutType {
+  ProfileLayoutType_Unknown = 0;
+  ProfileLayoutType_A = 1;
+  ProfileLayoutType_B = 2;
+  ProfileLayoutType_C = 3;
+  ProfileLayoutType_D = 4;
+}
+enum ProviderType {
+  ProviderType_Unknown = 0;
+  ProviderType_Apple = 1;
+  ProviderType_Google = 2;
+  ProviderType_Facebook = 3;
+  ProviderType_Twitter = 4;
+  ProviderType_Password = 99;
+}
+enum PsylliumColorType {
+  PsylliumColorType_Unknown = 0;
+  PsylliumColorType_Red = 1;
+  PsylliumColorType_Green = 2;
+  PsylliumColorType_Blue = 3;
+  PsylliumColorType_Pink = 4;
+  PsylliumColorType_Yellow = 5;
+  PsylliumColorType_Orange = 6;
+  PsylliumColorType_LightGreen = 7;
+  PsylliumColorType_Cyan = 8;
+  PsylliumColorType_SakuraPink = 9;
+  PsylliumColorType_Emerald = 10;
+  PsylliumColorType_Purple = 11;
+  PsylliumColorType_Violet = 12;
+  PsylliumColorType_AquaBlue = 13;
+  PsylliumColorType_LightBlue = 14;
+  PsylliumColorType_LightYellow = 15;
+  PsylliumColorType_White = 16;
+}
+enum RaceActivityLessonRewardType {
+  RaceActivityLessonRewardType_Unknown = 0;
+  RaceActivityLessonRewardType_RacePoint = 1;
+  RaceActivityLessonRewardType_RaceMedal = 2;
+}
+enum RacePanelType {
+  RacePanelType_Unknown = 0;
+  RacePanelType_Normal = 1;
+  RacePanelType_Item = 2;
+  RacePanelType_Live = 3;
+  RacePanelType_Story = 4;
+}
+enum RaceRankingType {
+  RaceRankingType_Unknown = 0;
+  RaceRankingType_Total = 1;
+  RaceRankingType_Daily = 2;
+}
+enum ResetTimingType {
+  ResetTimingType_Unknown = 0;
+  ResetTimingType_Daily = 1;
+  ResetTimingType_Weekly = 2;
+  ResetTimingType_Monthly = 3;
+  ResetTimingType_Never = 4;
+}
+enum ResourceType {
+  ResourceType_Unknown = 0;
+  ResourceType_Item = 1;
+  ResourceType_Card = 2;
+  ResourceType_Accessory = 3;
+  ResourceType_Character = 4;
+  ResourceType_Costume = 5;
+  ResourceType_PhotoSituation = 6;
+  ResourceType_PhotoAllInOne = 7;
+  ResourceType_Gold = 8;
+  ResourceType_PvpMedal = 9;
+  ResourceType_Story = 10;
+  ResourceType_GuildMedal = 11;
+  ResourceType_Message = 12;
+  ResourceType_Telephone = 13;
+  ResourceType_ManagerExp = 14;
+  ResourceType_Stone = 15;
+  ResourceType_PaidStone = 16;
+  ResourceType_Emblem = 17;
+  ResourceType_AnimeStoryPoint = 18;
+  ResourceType_GameStoryPoint = 19;
+  ResourceType_GroupStoryPoint = 20;
+  ResourceType_PhotoGift = 21;
+  ResourceType_HierarchyFixedPoint = 22;
+  ResourceType_HierarchyVariablePoint = 23;
+  ResourceType_CardRarityExp = 24;
+  ResourceType_CardRarityExpLimitChange = 25;
+  ResourceType_Decoration = 26;
+  ResourceType_PhotoRecipe = 27;
+  ResourceType_Hair = 28;
+  ResourceType_ActivatePhotoShootingStoryTicket = 29;
+  ResourceType_DutyPoint = 30;
+  ResourceType_CompanyPoint = 31;
+  ResourceType_ShowcaseToy = 32;
+  ResourceType_ShowcaseMusic = 33;
+  ResourceType_PhotoPose = 34;
+  ResourceType_Set = 999;
+}
+enum ResultRankType {
+  ResultRankType_Unknown = 0;
+  ResultRankType_D = 1;
+  ResultRankType_C = 2;
+  ResultRankType_B = 3;
+  ResultRankType_A = 4;
+  ResultRankType_S = 5;
+  ResultRankType_Splus = 6;
+}
+enum RewardSortResourceType {
+  RewardSortResourceType_Unknown = 0;
+  RewardSortResourceType_PaidStone = 1;
+  RewardSortResourceType_Stone = 2;
+  RewardSortResourceType_ManagerExp = 3;
+  RewardSortResourceType_Gold = 4;
+  RewardSortResourceType_ActivityStamina = 5;
+  RewardSortResourceType_AnimeStoryPoint = 6;
+  RewardSortResourceType_GameStoryPoint = 7;
+  RewardSortResourceType_GroupStoryPoint = 8;
+  RewardSortResourceType_FanAmount = 9;
+  RewardSortResourceType_CoreFanRate = 10;
+  RewardSortResourceType_MusicMasteryPoint = 11;
+  RewardSortResourceType_ActivityExp = 12;
+  RewardSortResourceType_Card = 13;
+  RewardSortResourceType_PhotoAllInOne = 15;
+  RewardSortResourceType_PhotoSituation = 16;
+  RewardSortResourceType_Accessory = 17;
+  RewardSortResourceType_Costume = 18;
+  RewardSortResourceType_Emblem = 19;
+  RewardSortResourceType_PvpMedal = 20;
+  RewardSortResourceType_GuildMedal = 21;
+  RewardSortResourceType_ItemPhotoShooting = 22;
+  RewardSortResourceType_ItemGachaTicket = 23;
+  RewardSortResourceType_ItemQuestContestTicket = 24;
+  RewardSortResourceType_ItemQuestDailyGoldTicket = 25;
+  RewardSortResourceType_ItemQuestDailyCardEnhanceTicket = 26;
+  RewardSortResourceType_ItemQuestDailyPhotoTicketTicket = 27;
+  RewardSortResourceType_ItemActivityRefreshShorten = 28;
+  RewardSortResourceType_ItemActivityPromotionShorten = 29;
+  RewardSortResourceType_ItemActivityFanEventSuperMode = 30;
+  RewardSortResourceType_ItemActivityFanEventSpeedUp = 31;
+  RewardSortResourceType_ItemActivityFanEventCheerPointUp = 32;
+  RewardSortResourceType_ItemCardEnhance = 33;
+  RewardSortResourceType_ItemCardLimitBreak = 34;
+  RewardSortResourceType_ItemCardSkill = 35;
+  RewardSortResourceType_ItemCardAbility = 36;
+  RewardSortResourceType_ItemIdolMedal = 37;
+  RewardSortResourceType_ItemPhotoReroll = 38;
+  RewardSortResourceType_ItemPhotoEnhance = 39;
+  RewardSortResourceType_ItemPvpTicket = 40;
+  RewardSortResourceType_ItemEventMedal = 41;
+  RewardSortResourceType_ItemCardSupportRelease = 42;
+  RewardSortResourceType_ItemGachaPoint = 43;
+  RewardSortResourceType_CardRarityExp = 44;
+  RewardSortResourceType_CardRarityExpLimitChange = 45;
+  RewardSortResourceType_Decoration = 46;
+  RewardSortResourceType_ItemExchangeMaterial = 47;
+  RewardSortResourceType_ItemPhotoShootingLevelChange = 48;
+  RewardSortResourceType_ItemAccessoryLimitBreak = 49;
+  RewardSortResourceType_ItemBoxGachaPoint = 50;
+  RewardSortResourceType_ItemMarathonStaminaRecovery = 51;
+  RewardSortResourceType_ItemMarathonQuestUnlock = 52;
+  RewardSortResourceType_ItemPhotoContestSubmitting = 53;
+  RewardSortResourceType_ItemRacePoint = 54;
+  RewardSortResourceType_ItemRaceLiveBonusReset = 55;
+  RewardSortResourceType_ItemQuestDailySpecialTicket = 56;
+  RewardSortResourceType_ItemLadderPoint = 57;
+  RewardSortResourceType_PhotoRecipe = 58;
+  RewardSortResourceType_ItemPhotoInk = 59;
+  RewardSortResourceType_Hair = 60;
+  RewardSortResourceType_ItemMarathonRaidStaminaRecovery = 61;
+  RewardSortResourceType_ItemActivityFanEventRewardUp = 62;
+  RewardSortResourceType_ItemActivityLessonPromote = 63;
+  RewardSortResourceType_ItemActivityPromotionSpecialShorten = 65;
+  RewardSortResourceType_ItemCardRank = 66;
+  RewardSortResourceType_ItemLoveStoryRead = 67;
+  RewardSortResourceType_ItemLoveHiddenFavorabilityObtain = 68;
+  RewardSortResourceType_ItemLoveLessonPromote = 69;
+  RewardSortResourceType_ItemDreamGenerateArea = 70;
+  RewardSortResourceType_ItemShelfPhotoCreating = 71;
+  RewardSortResourceType_ActivatePhotoShootingStoryTicket = 72;
+  RewardSortResourceType_DutyPoint = 73;
+  RewardSortResourceType_CompanyPoint = 74;
+  RewardSortResourceType_ItemCompanyEnjoyObtainPoint = 75;
+  RewardSortResourceType_ShowcaseToy = 76;
+  RewardSortResourceType_ShowcaseMusic = 77;
+  RewardSortResourceType_PhotoPose = 78;
+}
+enum RewardSortTargetType {
+  RewardSortTargetType_Unknown = 0;
+  RewardSortTargetType_Item = 1;
+  RewardSortTargetType_ActivityFanEventRewardDetail = 2;
+  RewardSortTargetType_ActivityFanEventResult = 3;
+  RewardSortTargetType_ActivityFanEventMainReward = 4;
+  RewardSortTargetType_QuestResult = 5;
+  RewardSortTargetType_QuestTowerFirstClearReward = 6;
+  RewardSortTargetType_ItemGacha = 7;
+  RewardSortTargetType_ShopItem = 8;
+  RewardSortTargetType_ActivityPromotionRewardDetail = 9;
+  RewardSortTargetType_ActivityPromotionResult = 10;
+  RewardSortTargetType_ActivityPromotionMainReward = 11;
+  RewardSortTargetType_PremiumGachaProbability = 12;
+  RewardSortTargetType_MarathonRaidQuestReward = 13;
+}
+enum RouletteBackgroundColorType {
+  RouletteBackgroundColorType_Unknown = 0;
+  RouletteBackgroundColorType_Normal = 1;
+  RouletteBackgroundColorType_Rare = 2;
+  RouletteBackgroundColorType_Srare = 3;
+}
+enum RouletteButtonColorType {
+  RouletteButtonColorType_Unknown = 0;
+  RouletteButtonColorType_Normal = 1;
+  RouletteButtonColorType_Rare = 2;
+  RouletteButtonColorType_Srare = 3;
+}
+enum RouletteCharacterType {
+  RouletteCharacterType_Unknown = 0;
+  RouletteCharacterType_Normal = 1;
+  RouletteCharacterType_Rare = 2;
+  RouletteCharacterType_Srare = 3;
+}
+enum RouletteObtainEffectType {
+  RouletteObtainEffectType_Unknown = 0;
+  RouletteObtainEffectType_Normal = 1;
+  RouletteObtainEffectType_Rare = 2;
+  RouletteObtainEffectType_Srare = 3;
+}
+enum RouletteRarityType {
+  RouletteRarityType_Unknown = 0;
+  RouletteRarityType_D = 1;
+  RouletteRarityType_C = 2;
+  RouletteRarityType_B = 3;
+  RouletteRarityType_A = 4;
+  RouletteRarityType_S = 5;
+}
+enum RouletteSpecialEffectType {
+  RouletteSpecialEffectType_Unknown = 0;
+  RouletteSpecialEffectType_None = 1;
+  RouletteSpecialEffectType_Reversal = 2;
+  RouletteSpecialEffectType_Secret = 3;
+}
+enum RuleType {
+  RuleType_Unknown = 0;
+  RuleType_Usage = 1;
+  RuleType_PrivacyPolicy = 2;
+  RuleType_FundSettlement = 3;
+  RuleType_CommercialTransaction = 4;
+  RuleType_ServiceGuideline = 5;
+  RuleType_Licence = 6;
+  RuleType_ExternalTransmission = 7;
+}
+enum SalaryDetailType {
+  SalaryDetailType_Unknown = 0;
+  SalaryDetailType_BasicSalary = 1;
+  SalaryDetailType_ActivityBonus = 2;
+  SalaryDetailType_GvgHighestPointBonus = 3;
+  SalaryDetailType_CardLevelBonus = 4;
+  SalaryDetailType_FanAmountBonus = 5;
+  SalaryDetailType_FanEventScoreBonus = 6;
+  SalaryDetailType_ContestScoreBonus = 8;
+  SalaryDetailType_HierarchyGradeBonus = 9;
+}
+enum ScreenChangeVoiceType {
+  ScreenChangeVoiceType_Unknown = 0;
+  ScreenChangeVoiceType_ActivityTop = 1;
+  ScreenChangeVoiceType_LiveTop = 2;
+  ScreenChangeVoiceType_CardPortalTop = 3;
+  ScreenChangeVoiceType_DeckEdit = 4;
+  ScreenChangeVoiceType_PhotoList = 5;
+  ScreenChangeVoiceType_AccessoryTop = 6;
+  ScreenChangeVoiceType_StoryTop = 7;
+  ScreenChangeVoiceType_GiftTop = 8;
+  ScreenChangeVoiceType_ShopTop = 9;
+  ScreenChangeVoiceType_ExchangeTop = 10;
+  ScreenChangeVoiceType_MissionTop = 11;
+  ScreenChangeVoiceType_ItemList = 12;
+  ScreenChangeVoiceType_GameSettingTop = 13;
+  ScreenChangeVoiceType_ProfileTop = 14;
+  ScreenChangeVoiceType_GuildTop = 15;
+  ScreenChangeVoiceType_TourTop = 16;
+}
+enum ShelfTemplateType {
+  ShelfTemplateType_Unknown = 0;
+  ShelfTemplateType_Template1 = 1;
+  ShelfTemplateType_Template2 = 2;
+  ShelfTemplateType_Template3 = 3;
+  ShelfTemplateType_Template4 = 4;
+  ShelfTemplateType_Template5 = 5;
+  ShelfTemplateType_Template6 = 6;
+  ShelfTemplateType_Template7 = 7;
+  ShelfTemplateType_Template8 = 8;
+  ShelfTemplateType_Template9 = 9;
+  ShelfTemplateType_Template10 = 10;
+}
+enum ShopConditionRewardStatusType {
+  ShopConditionRewardStatusType_Unknown = 0;
+  ShopConditionRewardStatusType_InProgress = 1;
+  ShopConditionRewardStatusType_Achieved = 2;
+  ShopConditionRewardStatusType_Received = 3;
+}
+enum ShopType {
+  ShopType_Unknown = 0;
+  ShopType_StoneShop = 1;
+  ShopType_NormalShop = 2;
+  ShopType_LoginBonusShop = 3;
+  ShopType_ConditionRewardShop = 4;
+  ShopType_ShowcaseToyShop = 5;
+  ShopType_DefaultStoneShop = 1001;
+  ShopType_DefaultNormalShop = 1002;
+  ShopType_DefaultShowcaseToyShop = 1003;
+  ShopType_OnlyShowcaseShop = 2001;
+}
+enum ShowcaseHashtagCategoryType {
+  ShowcaseHashtagCategoryType_Unknown = 0;
+  ShowcaseHashtagCategoryType_Group = 1;
+  ShowcaseHashtagCategoryType_Character = 2;
+}
+enum ShowcaseToyPutType {
+  ShowcaseToyPutType_Unknown = 0;
+  ShowcaseToyPutType_Floor = 1;
+  ShowcaseToyPutType_Wall = 2;
+}
+enum SimpleCharacterPersonalityType {
+  SimpleCharacterPersonalityType_Unknown = 0;
+  SimpleCharacterPersonalityType_A = 1;
+  SimpleCharacterPersonalityType_Bc = 2;
+  SimpleCharacterPersonalityType_De = 3;
+}
+enum SkillCategoryType {
+  SkillCategoryType_Unknown = 0;
+  SkillCategoryType_Special = 1;
+  SkillCategoryType_Active = 2;
+  SkillCategoryType_Passive = 3;
+}
+enum SkillEfficacyIconType {
+  SkillEfficacyIconType_Unknown = 0;
+  SkillEfficacyIconType_Dance = 1;
+  SkillEfficacyIconType_Vocal = 2;
+  SkillEfficacyIconType_Visual = 3;
+  SkillEfficacyIconType_Score = 4;
+  SkillEfficacyIconType_Beat = 5;
+  SkillEfficacyIconType_Appeal = 6;
+  SkillEfficacyIconType_CriticalCoefficient = 7;
+  SkillEfficacyIconType_Eye = 8;
+  SkillEfficacyIconType_Stealth = 9;
+  SkillEfficacyIconType_Ban = 10;
+  SkillEfficacyIconType_Stamina = 11;
+  SkillEfficacyIconType_Combo = 12;
+}
+enum SkillEfficacyType {
+  SkillEfficacyType_Unknown = 0;
+  SkillEfficacyType_ScoreGet = 1;
+  SkillEfficacyType_FixScoreGet = 2;
+  SkillEfficacyType_ScoreGetByMoreFanAmount = 3;
+  SkillEfficacyType_ScoreGetByLessFanAmount = 4;
+  SkillEfficacyType_ScoreGetByMoreFanEngage = 5;
+  SkillEfficacyType_ScoreGetByMoreStamina = 6;
+  SkillEfficacyType_ScoreGetByLessStamina = 7;
+  SkillEfficacyType_ScoreGetByMoreComboCount = 8;
+  SkillEfficacyType_ScoreGetByStrengthEffectCount = 9;
+  SkillEfficacyType_ScoreGetByTrigger = 10;
+  SkillEfficacyType_StaminaConsumptionReduction = 11;
+  SkillEfficacyType_ComboContinuation = 12;
+  SkillEfficacyType_DanceUp = 13;
+  SkillEfficacyType_VocalUp = 14;
+  SkillEfficacyType_VisualUp = 15;
+  SkillEfficacyType_ScoreUp = 16;
+  SkillEfficacyType_BeatScoreUp = 17;
+  SkillEfficacyType_ActiveSkillScoreUp = 18;
+  SkillEfficacyType_CriticalRateUp = 19;
+  SkillEfficacyType_CriticalBonusPermilUp = 20;
+  SkillEfficacyType_AudienceAmountIncrease = 21;
+  SkillEfficacyType_StaminaRecovery = 22;
+  SkillEfficacyType_FixStaminaRecovery = 23;
+  SkillEfficacyType_WeaknessEffectRecovery = 24;
+  SkillEfficacyType_StrengthEffectCountIncrease = 25;
+  SkillEfficacyType_StrengthEffectValueIncrease = 26;
+  SkillEfficacyType_CoolTimeReduction = 27;
+  SkillEfficacyType_AudienceAmountReduction = 28;
+  SkillEfficacyType_SkillImpossible = 29;
+  SkillEfficacyType_DanceDown = 30;
+  SkillEfficacyType_VocalDown = 31;
+  SkillEfficacyType_VisualDown = 32;
+  SkillEfficacyType_StaminaConsumptionIncrease = 33;
+  SkillEfficacyType_SpecialSkillScoreUp = 34;
+  SkillEfficacyType_TargetStaminaRecovery = 35;
+  SkillEfficacyType_ScoreGetByStatusEffectTypeGrade = 36;
+  SkillEfficacyType_SkillSuccessRateUp = 37;
+  SkillEfficacyType_TensionUp = 38;
+  SkillEfficacyType_ScoreGetBySkillActivationCount = 39;
+  SkillEfficacyType_WeaknessEffectPrevention = 40;
+  SkillEfficacyType_ComboScoreUp = 41;
+  SkillEfficacyType_PassiveSkillScoreUp = 42;
+  SkillEfficacyType_ScoreGetByMoreStaminaUse = 43;
+  SkillEfficacyType_WeaknessEffectInversion = 44;
+  SkillEfficacyType_StrengthEffectMigrationBeforeActiveSkill = 45;
+  SkillEfficacyType_StrengthEffectMigrationBeforeSpecialSkill = 46;
+  SkillEfficacyType_ScoreGetByDeckSupporter = 47;
+  SkillEfficacyType_ScoreGetByDeckBuffer = 48;
+  SkillEfficacyType_StaminaConsumption = 49;
+  SkillEfficacyType_CoolTimeIncrease = 50;
+  SkillEfficacyType_StrengthEffectErasing = 51;
+  SkillEfficacyType_StrengthEffectAssignment = 52;
+  SkillEfficacyType_LiveAbilityCoolTimeReduction = 53;
+  SkillEfficacyType_ScoreGetBySkillSuccessRateUp = 54;
+  SkillEfficacyType_ScoreGetAndStaminaConsumptionByMoreStaminaUse = 55;
+  SkillEfficacyType_VocalBoost = 56;
+  SkillEfficacyType_DanceBoost = 57;
+  SkillEfficacyType_VisualBoost = 58;
+  SkillEfficacyType_SpecialScoreMultiplierAdd = 59;
+  SkillEfficacyType_ActiveScoreMultiplierAdd = 60;
+  SkillEfficacyType_PassiveScoreMultiplierAdd = 61;
+  SkillEfficacyType_StaminaContinuousRecovery = 62;
+  SkillEfficacyType_StaminaContinuousConsumption = 63;
+  SkillEfficacyType_ActiveSkillChanceAssignment = 64;
+  SkillEfficacyType_StrengthEffectErasingAll = 65;
+  SkillEfficacyType_StrengthEffectAssignmentAll = 66;
+  SkillEfficacyType_ScoreGetByLessComboCount = 67;
+  SkillEfficacyType_ScoreGetByCharacterCount = 68;
+  SkillEfficacyType_ScoreGetByLessTotalScore = 69;
+  SkillEfficacyType_ScoreGetByScoreRatio = 70;
+  SkillEfficacyType_StrengthEffectGradeLimit = 71;
+  SkillEfficacyType_StatusEffectChange = 72;
+  SkillEfficacyType_PassiveSkillCoolTimeReset = 73;
+  SkillEfficacyType_PassiveSkillImpossible = 74;
+  SkillEfficacyType_CoverWeaknessEffect = 75;
+  SkillEfficacyType_LimitBreakDanceUp = 76;
+  SkillEfficacyType_LimitBreakVocalUp = 77;
+  SkillEfficacyType_LimitBreakVisualUp = 78;
+  SkillEfficacyType_LimitBreakBeatScoreUp = 79;
+  SkillEfficacyType_LimitBreakActiveSkillScoreUp = 80;
+  SkillEfficacyType_LimitBreakCriticalBonusPermilUp = 81;
+  SkillEfficacyType_LimitBreakAudienceAmountIncrease = 82;
+  SkillEfficacyType_LimitBreakSpecialSkillScoreUp = 83;
+  SkillEfficacyType_LimitBreakSkillSuccessRateUp = 84;
+  SkillEfficacyType_LimitBreakTensionUp = 85;
+  SkillEfficacyType_LimitBreakComboScoreUp = 86;
+  SkillEfficacyType_LimitBreakPassiveSkillScoreUp = 87;
+  SkillEfficacyType_LimitBreakVocalBoost = 88;
+  SkillEfficacyType_LimitBreakDanceBoost = 89;
+  SkillEfficacyType_LimitBreakVisualBoost = 90;
+  SkillEfficacyType_LimitBreakAudienceAmountReduction = 91;
+  SkillEfficacyType_LimitBreakScoreUp = 92;
+  SkillEfficacyType_AddEffectValueScoreUp = 93;
+  SkillEfficacyType_AddEffectValueDanceUp = 94;
+  SkillEfficacyType_AddEffectValueVocalUp = 95;
+  SkillEfficacyType_AddEffectValueVisualUp = 96;
+  SkillEfficacyType_AddEffectValueBeatScoreUp = 97;
+  SkillEfficacyType_AddEffectValueActiveSkillScoreUp = 98;
+  SkillEfficacyType_AddEffectValueCriticalBonusPermilUp = 99;
+  SkillEfficacyType_AddEffectValueAudienceAmountIncrease = 100;
+  SkillEfficacyType_AddEffectValueSpecialSkillScoreUp = 101;
+  SkillEfficacyType_AddEffectValueSkillSuccessRateUp = 102;
+  SkillEfficacyType_AddEffectValuePassiveSkillScoreUp = 103;
+  SkillEfficacyType_AddEffectValueAudienceAmountReduction = 104;
+  SkillEfficacyType_AddEffectValueDanceDown = 105;
+  SkillEfficacyType_AddEffectValueVocalDown = 106;
+  SkillEfficacyType_AddEffectValueVisualDown = 107;
+  SkillEfficacyType_WeaknessEffectReflection = 108;
+  SkillEfficacyType_BeatBoost = 109;
+  SkillEfficacyType_AddEffectValueTensionUp = 110;
+  SkillEfficacyType_StrengthEffectValueDecrease = 111;
+  SkillEfficacyType_StrengthEffectCountDecrease = 112;
+  SkillEfficacyType_ScoreGetByStrengthEffectCountLimitIncrease = 113;
+}
+enum SkillFailureType {
+  SkillFailureType_Unknown = 0;
+  SkillFailureType_StaminaShortage = 1;
+  SkillFailureType_InCoolTime = 2;
+  SkillFailureType_NoRemainingCount = 3;
+  SkillFailureType_CategoryMismatch = 4;
+  SkillFailureType_InSkillImpossibleEffect = 5;
+  SkillFailureType_OpponentActivation = 6;
+  SkillFailureType_Miss = 7;
+  SkillFailureType_AllSkillEfficacyTriggerFail = 8;
+}
+enum SkillPossessionType {
+  SkillPossessionType_Unknown = 0;
+  SkillPossessionType_Card = 1;
+  SkillPossessionType_Photo = 2;
+  SkillPossessionType_Ability = 3;
+  SkillPossessionType_Quest = 4;
+}
+enum SkillTargetType {
+  SkillTargetType_Unknown = 0;
+  SkillTargetType_Self = 1;
+  SkillTargetType_All = 2;
+  SkillTargetType_Center = 3;
+  SkillTargetType_DanceHigher = 4;
+  SkillTargetType_DanceLower = 5;
+  SkillTargetType_VocalHigher = 6;
+  SkillTargetType_VocalLower = 7;
+  SkillTargetType_VisualHigher = 8;
+  SkillTargetType_VisualLower = 9;
+  SkillTargetType_StaminaHigher = 10;
+  SkillTargetType_StaminaLower = 11;
+  SkillTargetType_Status = 12;
+  SkillTargetType_Trigger = 13;
+  SkillTargetType_CardType = 14;
+  SkillTargetType_Neighbor = 15;
+  SkillTargetType_Vocal = 16;
+  SkillTargetType_Dance = 17;
+  SkillTargetType_Visual = 18;
+  SkillTargetType_PositionAttributeVocal = 19;
+  SkillTargetType_PositionAttributeDance = 20;
+  SkillTargetType_PositionAttributeVisual = 21;
+  SkillTargetType_OpponentCenter = 22;
+  SkillTargetType_OpponentCardType = 23;
+  SkillTargetType_OpponentAll = 24;
+  SkillTargetType_OpponentSamePosition = 25;
+  SkillTargetType_OpponentVocal = 26;
+  SkillTargetType_OpponentDance = 27;
+  SkillTargetType_OpponentVisual = 28;
+  SkillTargetType_OpponentStatus = 29;
+  SkillTargetType_OpponentPositionAttributeVocal = 30;
+  SkillTargetType_OpponentPositionAttributeDance = 31;
+  SkillTargetType_OpponentPositionAttributeVisual = 32;
+  SkillTargetType_OpponentHigherStrengthEffectGrade = 33;
+  SkillTargetType_HigherStrengthEffectGrade = 34;
+  SkillTargetType_StaminaMoreThanEqual = 35;
+  SkillTargetType_StaminaLessThanEqual = 36;
+  SkillTargetType_OpponentStaminaMoreThanEqual = 37;
+  SkillTargetType_OpponentStaminaLessThanEqual = 38;
+}
+enum SkillTriggerType {
+  SkillTriggerType_Unknown = 0;
+  SkillTriggerType_Beat = 1;
+  SkillTriggerType_LiveStart = 2;
+  SkillTriggerType_Combo = 3;
+  SkillTriggerType_MoreThanCharacterCount = 4;
+  SkillTriggerType_BeforeActiveSkillBySomeone = 5;
+  SkillTriggerType_BeforeSpecialSkillBySomeone = 6;
+  SkillTriggerType_BeforeCritical = 7;
+  SkillTriggerType_BeforeCriticalBySomeone = 8;
+  SkillTriggerType_Critical = 9;
+  SkillTriggerType_Status = 10;
+  SkillTriggerType_SomeoneStatus = 11;
+  SkillTriggerType_StaminaLower = 12;
+  SkillTriggerType_StaminaHigher = 13;
+  SkillTriggerType_SomeoneStaminaLower = 14;
+  SkillTriggerType_FanEngageHigher = 15;
+  SkillTriggerType_Center = 16;
+  SkillTriggerType_MoodType = 17;
+  SkillTriggerType_Music = 18;
+  SkillTriggerType_StatusGroup = 19;
+  SkillTriggerType_SomeoneStatusGroup = 20;
+  SkillTriggerType_PositionAttributeVocal = 21;
+  SkillTriggerType_PositionAttributeDance = 22;
+  SkillTriggerType_PositionAttributeVisual = 23;
+  SkillTriggerType_CenterStatus = 24;
+  SkillTriggerType_CardTypeStatus = 25;
+  SkillTriggerType_SomeoneRecovered = 26;
+  SkillTriggerType_AllAttributeType = 27;
+  SkillTriggerType_MostLeft = 28;
+  SkillTriggerType_MostRight = 29;
+  SkillTriggerType_SecondFromLeft = 30;
+  SkillTriggerType_SecondFromRight = 31;
+  SkillTriggerType_AllStatus = 32;
+  SkillTriggerType_ComboLessEqual = 33;
+  SkillTriggerType_SkillFailure = 34;
+  SkillTriggerType_MoreThanPositionCardTypeCount = 35;
+  SkillTriggerType_BeforeActiveSkill = 36;
+  SkillTriggerType_BeforeSpecialSkill = 37;
+  SkillTriggerType_SkillFailureSelf = 38;
+  SkillTriggerType_StatusEffectGradeHigher = 39;
+  SkillTriggerType_StatusEffectGradeLower = 40;
+  SkillTriggerType_SomeoneStatusEffectGradeHigher = 41;
+  SkillTriggerType_AfterActiveSkillBySomeone = 42;
+  SkillTriggerType_AfterActiveSkillByOpponentSomeone = 43;
+  SkillTriggerType_AfterActiveSkillByOpponentSamePosition = 44;
+}
+enum SpecialSkillCameraOrientationType {
+  SpecialSkillCameraOrientationType_Unknown = 0;
+  SpecialSkillCameraOrientationType_V = 1;
+  SpecialSkillCameraOrientationType_H = 2;
+}
+enum SpecialSkillResultType {
+  SpecialSkillResultType_Unknown = 0;
+  SpecialSkillResultType_Fail = 1;
+  SpecialSkillResultType_Low = 2;
+  SpecialSkillResultType_Middle = 3;
+  SpecialSkillResultType_High = 4;
+}
+enum StageSizeType {
+  StageSizeType_Unknown = 0;
+  StageSizeType_Small = 1;
+  StageSizeType_Middle = 2;
+  StageSizeType_Large = 3;
+}
+enum StageType {
+  StageType_Unknown = 0;
+  StageType_Small = 1;
+  StageType_Medium = 2;
+  StageType_Large = 3;
+}
+enum StatusEffectGroupType {
+  StatusEffectGroupType_Unknown = 0;
+  StatusEffectGroupType_Strength = 1;
+  StatusEffectGroupType_Weakness = 2;
+}
+enum StatusEffectType {
+  StatusEffectType_Unknown = 0;
+  StatusEffectType_DanceUp = 1;
+  StatusEffectType_VocalUp = 2;
+  StatusEffectType_VisualUp = 3;
+  StatusEffectType_ScoreUp = 4;
+  StatusEffectType_BeatScoreUp = 5;
+  StatusEffectType_ActiveSkillScoreUp = 6;
+  StatusEffectType_CriticalRateUp = 7;
+  StatusEffectType_CriticalBonusPermilUp = 8;
+  StatusEffectType_StaminaConsumptionReduction = 9;
+  StatusEffectType_ComboContinuation = 10;
+  StatusEffectType_AudienceAmountIncrease = 11;
+  StatusEffectType_SpecialSkillScoreUp = 12;
+  StatusEffectType_SkillSuccessRateUp = 13;
+  StatusEffectType_TensionUp = 14;
+  StatusEffectType_WeaknessEffectPrevention = 15;
+  StatusEffectType_ComboScoreUp = 16;
+  StatusEffectType_PassiveSkillScoreUp = 17;
+  StatusEffectType_VocalBoost = 18;
+  StatusEffectType_DanceBoost = 19;
+  StatusEffectType_VisualBoost = 20;
+  StatusEffectType_SpecialScoreMultiplierAdd = 21;
+  StatusEffectType_ActiveScoreMultiplierAdd = 22;
+  StatusEffectType_PassiveScoreMultiplierAdd = 23;
+  StatusEffectType_StaminaContinuousRecovery = 24;
+  StatusEffectType_ActiveSkillChanceAssignment = 25;
+  StatusEffectType_CoverWeaknessEffect = 26;
+  StatusEffectType_LimitBreakDanceUp = 27;
+  StatusEffectType_LimitBreakVocalUp = 28;
+  StatusEffectType_LimitBreakVisualUp = 29;
+  StatusEffectType_LimitBreakBeatScoreUp = 30;
+  StatusEffectType_LimitBreakActiveSkillScoreUp = 31;
+  StatusEffectType_LimitBreakCriticalBonusPermilUp = 32;
+  StatusEffectType_LimitBreakAudienceAmountIncrease = 33;
+  StatusEffectType_LimitBreakSpecialSkillScoreUp = 34;
+  StatusEffectType_LimitBreakSkillSuccessRateUp = 35;
+  StatusEffectType_LimitBreakTensionUp = 36;
+  StatusEffectType_LimitBreakComboScoreUp = 37;
+  StatusEffectType_LimitBreakPassiveSkillScoreUp = 38;
+  StatusEffectType_LimitBreakVocalBoost = 39;
+  StatusEffectType_LimitBreakDanceBoost = 40;
+  StatusEffectType_LimitBreakVisualBoost = 41;
+  StatusEffectType_LimitBreakAudienceAmountReduction = 42;
+  StatusEffectType_LimitBreakScoreUp = 43;
+  StatusEffectType_AddEffectValueScoreUp = 44;
+  StatusEffectType_AddEffectValueDanceUp = 45;
+  StatusEffectType_AddEffectValueVocalUp = 46;
+  StatusEffectType_AddEffectValueVisualUp = 47;
+  StatusEffectType_AddEffectValueBeatScoreUp = 48;
+  StatusEffectType_AddEffectValueActiveSkillScoreUp = 49;
+  StatusEffectType_AddEffectValueCriticalBonusPermilUp = 50;
+  StatusEffectType_AddEffectValueAudienceAmountIncrease = 51;
+  StatusEffectType_AddEffectValueSpecialSkillScoreUp = 52;
+  StatusEffectType_AddEffectValueSkillSuccessRateUp = 53;
+  StatusEffectType_AddEffectValuePassiveSkillScoreUp = 54;
+  StatusEffectType_AddEffectValueAudienceAmountReduction = 55;
+  StatusEffectType_WeaknessEffectReflection = 56;
+  StatusEffectType_BeatBoost = 57;
+  StatusEffectType_AddEffectValueTensionUp = 58;
+  StatusEffectType_ScoreGetByStrengthEffectCountLimitUp = 59;
+  StatusEffectType_DanceDown = 1001;
+  StatusEffectType_VocalDown = 1002;
+  StatusEffectType_VisualDown = 1003;
+  StatusEffectType_SkillImpossible = 1004;
+  StatusEffectType_StaminaConsumptionIncrease = 1005;
+  StatusEffectType_AudienceAmountReduction = 1006;
+  StatusEffectType_StaminaContinuousConsumption = 1007;
+  StatusEffectType_StrengthEffectGradeLimit = 1008;
+  StatusEffectType_PassiveSkillImpossible = 1009;
+  StatusEffectType_AddEffectValueDanceDown = 1010;
+  StatusEffectType_AddEffectValueVocalDown = 1011;
+  StatusEffectType_AddEffectValueVisualDown = 1012;
+}
+enum StoryAdvPlayType {
+  StoryAdvPlayType_Unknown = 0;
+  StoryAdvPlayType_Adv = 1;
+  StoryAdvPlayType_LiveMovie = 2;
+  StoryAdvPlayType_VerticalAdv = 3;
+  StoryAdvPlayType_VerticalMovie = 4;
+  StoryAdvPlayType_HorizontalMovie = 5;
+  StoryAdvPlayType_Branch = 6;
+}
+enum StoryPartType {
+  StoryPartType_Unknown = 0;
+  StoryPartType_Main = 1;
+  StoryPartType_Group = 2;
+  StoryPartType_Original = 3;
+}
+enum StoryStatusType {
+  StoryStatusType_Unknown = 0;
+  StoryStatusType_Unread = 1;
+  StoryStatusType_Read = 2;
+}
+enum TelephoneStatusType {
+  TelephoneStatusType_Unknown = 0;
+  TelephoneStatusType_Unlocked = 1;
+  TelephoneStatusType_Scheduled = 2;
+  TelephoneStatusType_Received = 3;
+  TelephoneStatusType_Finished = 4;
+}
+enum TitleBackgroundType {
+  TitleBackgroundType_Unknown = 0;
+  TitleBackgroundType_Image = 1;
+  TitleBackgroundType_Movie = 2;
+}
+enum TourAreaType {
+  TourAreaType_Unknown = 0;
+  TourAreaType_Normal = 1;
+  TourAreaType_Extra = 2;
+}
+enum TourEnemyType {
+  TourEnemyType_Unknown = 0;
+  TourEnemyType_Absolute = 1;
+  TourEnemyType_Relative = 2;
+  TourEnemyType_RelativeSelect = 3;
+}
+enum TourStepType {
+  TourStepType_Unknown = 0;
+  TourStepType_Activity = 1;
+  TourStepType_Refresh = 2;
+  TourStepType_SpRefresh = 3;
+  TourStepType_Scout = 4;
+  TourStepType_Live = 5;
+  TourStepType_SpLive = 6;
+  TourStepType_RivalPvp = 7;
+  TourStepType_BossPvp = 8;
+}
+enum TourType {
+  TourType_Unknown = 0;
+  TourType_Live = 1;
+  TourType_Mini = 2;
+}
+enum TutorialNavigationPositionType {
+  TutorialNavigationPositionType_Unknown = 0;
+  TutorialNavigationPositionType_Top = 1;
+  TutorialNavigationPositionType_Upper = 2;
+  TutorialNavigationPositionType_Middle = 3;
+  TutorialNavigationPositionType_Lower = 4;
+  TutorialNavigationPositionType_Bottom = 5;
+}
+enum TutorialNavigationType {
+  TutorialNavigationType_Unknown = 0;
+  TutorialNavigationType_Character = 1;
+  TutorialNavigationType_System = 2;
+  TutorialNavigationType_Tips = 3;
+}
+enum TutorialType {
+  TutorialType_Unknown = 0;
+  TutorialType_GameStart = 1;
+  TutorialType_PhotoCreateShooting = 2;
+  TutorialType_ActivityFanEvent = 3;
+  TutorialType_ActivityPromotion = 4;
+  TutorialType_ActivityRefresh = 5;
+  TutorialType_QuestContest = 6;
+  TutorialType_Pvp = 7;
+  TutorialType_QuestDaily = 8;
+  TutorialType_QuestTower = 9;
+  TutorialType_CardSupport = 10;
+  TutorialType_Guild = 11;
+  TutorialType_Hierarchy = 12;
+  TutorialType_Diary = 13;
+  TutorialType_PhotoEnhance = 14;
+  TutorialType_PhotoReroll = 15;
+  TutorialType_AccessoryEnhance = 16;
+  TutorialType_PhotoReport = 17;
+  TutorialType_Gvg = 18;
+  TutorialType_CardReset = 19;
+  TutorialType_Salary = 20;
+  TutorialType_Forum = 21;
+  TutorialType_SkillEnhance = 22;
+  TutorialType_Backside = 23;
+  TutorialType_Memories = 24;
+  TutorialType_Marathon = 25;
+  TutorialType_AccessoryLimitBreak = 26;
+  TutorialType_Race = 27;
+  TutorialType_Ladder = 28;
+  TutorialType_PhotoRetouch = 29;
+  TutorialType_Collaboration = 30;
+  TutorialType_MarathonRaid = 31;
+  TutorialType_League = 32;
+  TutorialType_CardRank = 33;
+  TutorialType_Love = 34;
+  TutorialType_Anniversary = 35;
+  TutorialType_DreamBasePhotoChoose = 36;
+  TutorialType_DreamGeneratedAreaPhotoChoose = 37;
+  TutorialType_Shelf = 38;
+  TutorialType_CompanyEnjoyBonusMemoriesCharacter = 39;
+  TutorialType_StaffLevelLimitBreak = 40;
+  TutorialType_Company = 41;
+  TutorialType_Showcase = 42;
+  TutorialType_ShowcaseGallery = 43;
+  TutorialType_CompanyEnjoy = 44;
+  TutorialType_CardEvolution = 45;
+  TutorialType_PhotoExpression = 46;
+  TutorialType_Satellite = 47;
+  TutorialType_PhotoPanoramaShooting = 48;
+  TutorialType_FishHeaven = 49;
+}
+enum WatchAdvertisementType {
+  WatchAdvertisementType_Unknown = 0;
+  WatchAdvertisementType_Roulette = 1;
+}
+

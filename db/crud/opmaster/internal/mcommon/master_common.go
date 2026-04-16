@@ -1,0 +1,121 @@
+package mcommon
+
+import (
+	"context"
+	"fmt"
+	"iter"
+	"vertesan/solis-server/db/internal/depot"
+	"vertesan/solis-server/utils/rich"
+
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"google.golang.org/protobuf/proto"
+)
+
+type MongoMaster interface {
+	GetData() []byte
+}
+
+func FindOne[T interface{}, U interface{},
+	W interface {
+		*T
+		MongoMaster
+	},
+	V interface {
+		*U
+		proto.Message
+	},
+](
+	ctx context.Context,
+	dbName string,
+	filter interface{},
+) (V, error) {
+	data := W(new(T))
+	err := depot.Master.Collection(dbName).FindOne(
+		ctx, filter,
+	).Decode(data)
+	if err != nil {
+		return nil, fmt.Errorf("failed to decode value from master db: %w", err)
+	}
+	pit := V(new(U))
+	if err := proto.Unmarshal(data.GetData(), pit); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal bytes to proto object: %w", err)
+	}
+	return pit, nil
+}
+
+func FindMany[T interface{}, U interface{},
+	W interface {
+		*T
+		MongoMaster
+	},
+	V interface {
+		*U
+		proto.Message
+	},
+](
+	ctx context.Context,
+	dbName string,
+	filter interface{},
+	opts ...options.Lister[options.FindOptions],
+) ([]V, error) {
+	src := []W{}
+	cursor, err := depot.Master.Collection(dbName).Find(
+		ctx, filter, opts...,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get all protos from master db: %w", err)
+	}
+	if err := cursor.All(ctx, &src); err != nil {
+		return nil, fmt.Errorf("failed to decode mongo object: %w", err)
+	}
+	dst := make([]V, 0, len(src))
+	for _, it := range src {
+		pit := V(new(U))
+		if err := proto.Unmarshal(it.GetData(), pit); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal bytes to proto: %w", err)
+		}
+		dst = append(dst, pit)
+	}
+	return dst, nil
+}
+
+func YieldMany[T interface{}, U interface{},
+	W interface {
+		*T
+		MongoMaster
+	},
+	V interface {
+		*U
+		proto.Message
+	},
+](
+	ctx context.Context,
+	dbName string,
+	filter interface{},
+	opts ...options.Lister[options.FindOptions],
+) iter.Seq[V] {
+	return func(yield func(V) bool) {
+		cursor, err := depot.Master.Collection(dbName).Find(
+			ctx, filter, opts...,
+		)
+		if err != nil {
+			rich.Error("failed to get protos from master db: %v", err)
+			return
+		}
+		for cursor.Next(ctx) {
+			obj := new(W)
+			if err := cursor.Decode(obj); err != nil {
+				rich.Error("failed to decode mongo object: %v", err)
+				return
+			}
+			p := V(new(U))
+			if err := proto.Unmarshal((*obj).GetData(), p); err != nil {
+				rich.Error("failed to unmarshal bytes to proto: %v", err)
+				return
+			}
+			if !yield(p) {
+				return
+			}
+		}
+	}
+}

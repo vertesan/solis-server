@@ -1,0 +1,518 @@
+syntax = "proto3";
+package ptransaction;
+option go_package = "vertesan/solis-server/proto/ptransaction";
+import "penum.proto";
+
+message Payslip {
+  int32 managerLevel = 1;
+  int32 loginDays = 2;
+  int32 absenceDays = 3;
+  int32 basicSalary = 4;
+  int32 activityHours = 5;
+  int32 activityBonus = 6;
+  int64 gvgHighestPoint = 7;
+  int32 gvgHighestPointBonus = 8;
+  int32 totalCardLevel = 9;
+  int32 cardLevelBonus = 10;
+  int64 totalFanAmount = 11;
+  int32 fanAmountBonus = 12;
+  int64 totalFanEventScore = 13;
+  int32 fanEventScoreBonus = 14;
+  int64 totalContestScore = 15;
+  int32 contestScoreBonus = 16;
+  repeated int64 loginTimes = 17;
+  string mostGrownCharacterId = 18;
+  string hierarchyDetailGradeId = 19;
+  int64 hierarchyPoint = 20;
+  int32 hierarchyGradeBonus = 21;
+  int32 hierarchyRank = 22;
+  int32 year = 23;
+  int32 month = 24;
+  int32 archiveCompanyPoint = 25;
+  int32 archiveCompanyPointCoefficientPermil = 26;
+}
+message User {
+  string name = 1;
+  int64 managerExp = 2;
+  int64 deckSequence = 3;
+  string guildId = 4;
+  int64 lastGuildCheckTime = 5;
+  string divisionId = 6;
+  string firstDivisionId = 7;
+  string emblemId = 8;
+  int64 deckMaxOverallValue = 9;
+  int64 lastCreatedForumThreadDatetime = 10;
+  int64 gameStartTime = 11;
+  int64 lastLoginTime = 12;
+  int32 cardSupportLevel = 13;
+  int32 cardSupportReleaseCount = 14;
+  string nextPhotoImageId = 15;
+  int64 divisionMovedTime = 16;
+  bool isReviewed = 17;
+  repeated string questMainAreaLastClearCharacterIds = 18;
+  int32 highestSalary = 19;
+  int64 tutorialClearedTime = 20;
+  int64 comebackStartTime = 21;
+  int32 photoLimitExtendedCount = 22;
+  string inviteHostUserId = 23;
+  string buddyCardId = 24;
+  repeated string nextPhotoImageIds = 25;
+  int64 lastHomeTalkDrawTime = 26;
+  int32 managerLevel = 100;
+  int32 cardSupportMaxNumber = 101;
+}
+message UserAccessory {
+  string accessoryId = 1;
+  int64 amount = 2;
+}
+message UserArea {
+  string areaId = 1;
+  int32 clearQuestCount = 2;
+  int32 dailyClearCount = 3;
+  int64 lastClearedTime = 4;
+}
+message UserCard {
+  string cardId = 1;
+  int64 totalExp = 2;
+  int32 rarityTotalExp = 3;
+  int32 skillLevel1 = 4;
+  int32 skillLevel2 = 5;
+  int32 skillLevel3 = 6;
+  int32 liveAbilityLevel = 7;
+  int32 activityAbilityLevel = 8;
+  int64 obtainedTime = 9;
+  bool supported = 10;
+  int64 lastEnhanceTime = 11;
+  int32 rankTotalExp = 12;
+  penum.CardDisplayType displayType = 13;
+  int32 skillLevel4 = 14;
+  int64 evolutionLevelTotalExp = 15;
+  int32 level = 100;
+  int32 rarity = 101;
+  int64 vocal = 102;
+  int64 dance = 103;
+  int64 visual = 104;
+  int64 stamina = 105;
+  int64 mental = 106;
+  int64 technique = 107;
+  string skillId1 = 108;
+  string skillId2 = 109;
+  string skillId3 = 110;
+  string liveAbilityId = 111;
+  string activityAbilityId = 112;
+  int32 photoEquipableCount = 113;
+  int32 baseLevel = 114;
+  int64 baseVocal = 115;
+  int64 baseDance = 116;
+  int64 baseVisual = 117;
+  int64 baseStamina = 118;
+  int32 baseSkillLevel1 = 119;
+  int32 baseSkillLevel2 = 120;
+  int32 baseSkillLevel3 = 121;
+  int32 baseLiveAbilityLevel = 122;
+  int32 baseActivityAbilityLevel = 123;
+  string baseSkillId1 = 124;
+  string baseSkillId2 = 125;
+  string baseSkillId3 = 126;
+  string baseLiveAbilityId = 127;
+  string baseActivityAbilityId = 128;
+  int32 basePhotoEquipableCount = 129;
+  int32 rank = 130;
+  int32 evolutionLevel = 131;
+  string skillId4 = 132;
+  int32 baseSkillLevel4 = 133;
+  string baseSkillId4 = 134;
+}
+message UserCharacter {
+  string characterId = 1;
+  int64 activityExp = 2;
+  int32 activityStamina = 3;
+  int32 lightFanAmount = 4;
+  int32 middleFanAmount = 5;
+  int32 heavyFanAmount = 6;
+  string favoriteCostumeId = 7;
+  int64 staminaUpdatedTime = 8;
+  bool inActivity = 9;
+  int32 reliability = 10;
+  int64 liveHighestScore = 11;
+  int32 characterOnlyPhotoAmount = 12;
+  string liveCostumeId = 13;
+  string favoriteHairId = 14;
+  string liveHairId = 15;
+  int64 companyEnjoyPoint = 16;
+  int64 lastHomeTalkFirstReadTime = 17;
+  int32 activityLevel = 100;
+  int32 audienceCandidateAmount = 101;
+  repeated ptransaction.CompanyBonusParameterInfo companyBonusParameterInfos = 102;
+}
+message UserCharacterMusic {
+  string characterId = 1;
+  string musicId = 2;
+  int32 masteryPoint = 3;
+  int32 masteryLevel = 100;
+}
+message UserCostume {
+  string costumeId = 1;
+  bool checked = 2;
+  int64 obtainedTime = 3;
+}
+message UserDecoration {
+  string decorationId = 1;
+}
+message UserDutyPoint {
+  string dutyPointId = 1;
+  int64 amount = 2;
+}
+message UserEmblem {
+  string emblemId = 1;
+}
+message UserHair {
+  string hairId = 1;
+  bool checked = 2;
+}
+message UserHierarchy {
+  string bestDetailGradeId = 1;
+  int64 currentFixedPoint = 2;
+  int64 currentVariablePoint = 3;
+  int64 bestTotalPoint = 4;
+  int64 currentPointUpdateDatetime = 5;
+  repeated string receivedRewardIds = 6;
+  repeated string receivedDivisionRewardIds = 7;
+}
+message UserHomePosition {
+  penum.HomePositionType homePositionType = 1;
+  string characterId = 2;
+  bool isCharacterRandom = 3;
+  bool isCostumeRandom = 4;
+}
+message UserHomeTalk {
+  string homeTalkId = 1;
+}
+message UserItem {
+  string itemId = 1;
+  int64 expiredTime = 2;
+  int64 amount = 3;
+}
+message UserLoginBonus {
+  string loginBonusId = 1;
+  int64 lastLoginTime = 2;
+  int32 loginCount = 3;
+  int32 receiveCount = 4;
+  string loginBonusTextId = 5;
+}
+message UserMessage {
+  string messageId = 1;
+  penum.MessageStatusType messageStatusType = 2;
+  repeated string selectMessageDetailIds = 3;
+  int64 arrivedTime = 4;
+}
+message UserMessageSchedule {
+  string messageId = 1;
+  int64 scheduledTime = 2;
+}
+message UserMission {
+  string missionId = 1;
+  int64 currentThreshold = 2;
+  int64 progress = 3;
+  penum.MissionStatusType statusType = 4;
+  int64 lastUpdateTime = 5;
+}
+message UserMusic {
+  string musicId = 1;
+}
+message UserPhoto {
+  string photoId = 1;
+  string assetId = 2;
+  penum.PhotoImageType imageType = 3;
+  repeated string characterIds = 4;
+  string name = 5;
+  int32 rarity = 6;
+  string placeName = 7;
+  string eventName = 8;
+  bool locked = 9;
+  int32 level = 10;
+  bool rerollable = 11;
+  repeated ptransaction.UserPhotoAbility abilities = 12;
+  int64 shootingTime = 13;
+  string focusCharacterId = 14;
+  string photoRecipeId = 15;
+  bool isDreamBase = 16;
+  int32 dreamMaterialPhotoRarity = 17;
+  int32 dreamMaterialPhotoLevel = 18;
+  string dreamMaterialPhotoRecipeId = 19;
+}
+message UserPhotoAbility {
+  string photoAbilityId = 1;
+  int64 effectValue = 2;
+  string missionId = 3;
+  int32 grade = 4;
+  bool isAvailable = 5;
+}
+message UserPhotoPose {
+  string photoPoseId = 1;
+}
+message UserPhotoRecipe {
+  string photoRecipeId = 1;
+  int64 amount = 2;
+}
+message UserProfile {
+  string favoriteCardId = 1;
+  string favoritePhotoId = 2;
+  repeated string favoriteCharacterIds = 3;
+  string message = 4;
+  int64 birthMonth = 5;
+  int64 birthDay = 6;
+  penum.ProfileBackgroundType backgroundType = 7;
+  penum.ProfileLayoutType layoutType = 8;
+  ptransaction.TwitterInfo twitterInfo = 9;
+  string decorationId = 10;
+  penum.ProfileInformationType informationType = 11;
+  penum.ProfileColorType colorType = 12;
+  penum.CardDisplayType favoriteCardDisplayType = 13;
+}
+message UserQuest {
+  string questId = 1;
+  int32 dailyClearCount = 2;
+  int64 lastClearedTime = 3;
+  int64 highestScore = 4;
+  int64 highestScoreTime = 5;
+  int64 highestRank = 6;
+  int64 currentRankingHighestScore = 7;
+  int64 currentRankingHighestScoreTime = 8;
+  int64 currentRankingHighestRank = 9;
+  string currentRankingSeasonID = 10;
+  penum.ResultRankType highestScoreRank = 100;
+}
+message UserShowcase {
+  int32 number = 1;
+  string name = 2;
+  string comment = 3;
+  string musicId = 4;
+  repeated string hashTagIds = 5;
+  bool isOpen = 6;
+  string thumbnailAssetId = 8;
+  string showcaseFrameId = 9;
+}
+message UserShowcaseMusic {
+  string showcaseMusicId = 1;
+}
+message UserShowcaseMyset {
+  int32 number = 1;
+  string name = 2;
+  string showcaseFrameId = 4;
+  bool isSave = 5;
+}
+message UserShowcaseToy {
+  string showcaseToyId = 1;
+  int64 amount = 2;
+}
+message UserStory {
+  string storyId = 1;
+  penum.StoryStatusType statusType = 2;
+  bool isInvalid = 3;
+  bool isUseActivatePhotoShootingStoryTicket = 4;
+  bool isPhotoShot = 5;
+}
+message UserTelephone {
+  string telephoneId = 1;
+  int64 unlockedTime = 2;
+  int64 scheduledTime = 3;
+  penum.TelephoneStatusType telephoneStatusType = 4;
+}
+message ConsumptionResult {
+  penum.ResourceType resourceType = 1;
+  string resourceId = 2;
+  int64 amount = 3;
+  int64 beforeAmount = 4;
+  int64 afterAmount = 5;
+}
+message MasterTag {
+  string version = 1;
+  repeated ptransaction.MasterTagPack masterTagPacks = 2;
+}
+message MasterTagPack {
+  string type = 1;
+  string fileName = 2;
+  int32 fileSize = 3;
+  string cryptoKey = 4;
+  string downloadUrl = 5;
+}
+message Reward {
+  penum.ResourceType resourceType = 1;
+  string resourceId = 2;
+  int64 amount = 3;
+}
+message RewardResult {
+  penum.ResourceType resourceType = 1;
+  string resourceId = 2;
+  int64 beforeAmount = 4;
+  int64 afterAmount = 5;
+  bool isNew = 6;
+  bool isTruncate = 7;
+  bool isGift = 8;
+  repeated ptransaction.RewardResult duplicateRewardResults = 9;
+  repeated ptransaction.Reward additionalGifts = 10;
+  int64 amountI64 = 11;
+  int32 increasedAfterEvolutionLevel = 12;
+}
+message UserActivityFanEventProgress {
+  penum.ResultRankType bestScoreRankType = 1;
+  int64 bestScoreRankPlus = 2;
+}
+message UserBalance {
+  int32 freeBalance = 1;
+  int32 paidBalance = 2;
+}
+message UserBuddy {
+  int64 dailyRentalAmount = 1;
+}
+message UserCardSupport {
+  int32 number = 1;
+  string cardId = 2;
+  int64 removableTime = 4;
+}
+message CompanyBonusParameterInfo {
+  penum.ParameterType bonusParameterType = 1;
+  int64 bonusParameterUpPermil = 2;
+}
+message UserCompany {
+  int64 enjoyPoint = 1;
+  int64 trustPoint = 2;
+  int64 salaryPoint = 3;
+  bool isAlreadyTransitioned = 4;
+}
+message UserDeck {
+  int32 number = 1;
+  string name = 2;
+}
+message UserDeckPosition {
+  int32 number = 1;
+  int32 position = 2;
+  string cardId = 3;
+  string part1AccessoryId = 4;
+  string part2AccessoryId = 5;
+  repeated string photoIds = 6;
+  string costumeId = 7;
+  string hairId = 8;
+}
+message UserDuty {
+  string dutyId = 1;
+  int64 currentReceivedTotalObtainRewardNumber = 2;
+  int64 totalObtainPointAmount = 3;
+  repeated int64 currentExchangedRewardNumbers = 4;
+}
+message UserGachaButton {
+  string gachaButtonId = 1;
+  int64 drawTime = 2;
+  int32 todayCount = 3;
+  int32 totalCount = 4;
+}
+message UserGift {
+  string giftId = 1;
+  penum.ResourceType resourceType = 2;
+  string resourceId = 3;
+  int64 amount = 4;
+  string message = 5;
+  int64 postedTime = 6;
+  int64 limitTime = 7;
+  ptransaction.PhotoGift photoGift = 8;
+}
+message PhotoGift {
+  string name = 1;
+}
+message UserGiftHistory {
+  string giftId = 1;
+  penum.ResourceType resourceType = 2;
+  string resourceId = 3;
+  int64 amount = 4;
+  string message = 5;
+  int64 postedTime = 6;
+  int64 receivedTime = 7;
+  ptransaction.PhotoGiftHistory photoGift = 8;
+}
+message PhotoGiftHistory {
+  string name = 1;
+}
+message UserInvite {
+  string inviteCode = 1;
+  int64 receivedHostRewardTotalAmount = 2;
+}
+message UserLeagueDeckPosition {
+  string leagueSeasonId = 1;
+  penum.LeagueDeckType deckType = 2;
+  int32 position = 3;
+  string cardId = 4;
+  string part1AccessoryId = 5;
+  string part2AccessoryId = 6;
+  repeated string photoIds = 7;
+  string costumeId = 8;
+  string hairId = 9;
+}
+message UserLove {
+  string loveId = 1;
+  repeated string unlockedLoveStoryEndIDs = 2;
+  int64 hiddenFavorability = 3;
+  bool isReadingStory = 4;
+}
+message UserNotification {
+  penum.NotificationType notificationType = 1;
+  bool valid = 2;
+  int64 startTime = 3;
+}
+message UserPhotoReport {
+  repeated ptransaction.UserPhoto photos = 1;
+  bool received = 2;
+}
+message UserPoint {
+  penum.PointType pointType = 1;
+  int64 amount = 2;
+}
+message TwitterInfo {
+  string twitterUserID = 1;
+  string twitterScreenName = 2;
+}
+message UserPublic {
+  string serverUserId = 1;
+  string publicUserId = 2;
+}
+message UserShowcaseLike {
+  int64 dailyLikeCount = 1;
+  int64 rewardLikeCount = 2;
+}
+message UserStaff {
+  penum.ParameterType parameterType = 1;
+  int32 level = 2;
+  int32 levelLimitBreakRank = 3;
+}
+message UserStaffTrainingReset {
+  int32 staffTrainingResetCount = 1;
+}
+message UserTotalCount {
+  int64 loginCount = 1;
+  int64 marketExchangeCount = 3;
+  int64 photoShootCount = 4;
+  int64 staffTrainCount = 5;
+  int64 pointGoldAmount = 6;
+  int64 forumLikeCount = 7;
+  int64 forumCreateReplyCount = 8;
+  int64 activityFanEventCount = 9;
+  int64 activityPromotionMinutes = 10;
+  int64 activityRefreshCount = 11;
+  int64 guildCheckInCount = 12;
+  int64 photoRetouchCount = 13;
+  int64 dreamAreaGenerateCount = 14;
+}
+message UserTourArea {
+  string tourId = 1;
+  repeated ptransaction.UserTourDeck decks = 2;
+  bool isRetired = 3;
+}
+message UserTourDeck {
+  int32 position = 1;
+  string cardId = 2;
+}
+message UserTutorial {
+  penum.TutorialType tutorialType = 1;
+  int64 step = 2;
+}
+
