@@ -3,7 +3,7 @@ package servers
 import (
 	"context"
 	"vertesan/solis-server/makino/user"
-	"vertesan/solis-server/network/rpc/internal"
+	"vertesan/solis-server/network/rpc/internal/metadata"
 	pb "vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/utils/rich"
 
@@ -16,7 +16,7 @@ type UserServer struct {
 }
 
 func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse, error) {
-	suid, err := internal.GetSuid(ctx)
+	suid, err := metadata.GetSuid(ctx)
 	if err != nil {
 		rich.Error("failed to get suid: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "bad token")

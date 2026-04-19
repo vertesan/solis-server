@@ -1,4 +1,4 @@
-package internal
+package metadata
 
 import (
 	"context"
@@ -8,13 +8,6 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 )
-
-type AuthTokenPayload struct {
-	Sub string `json:"sub"`
-	Exp int64  `json:"exp"`
-	Iat int64  `json:"iat"`
-	Itn string `json:"itn"`
-}
 
 func GetSuid(ctx context.Context) (*uuid.UUID, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
