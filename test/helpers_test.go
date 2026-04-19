@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"vertesan/solis-server/network"
+	"vertesan/solis-server/db/crud/opsolis"
 	"vertesan/solis-server/utils"
 	"vertesan/solis-server/utils/config"
 	"vertesan/solis-server/utils/jwto"
@@ -36,7 +36,8 @@ type TestConfig struct {
 	FirebaseProductKey string
 	XAppVersion        string
 	XPlatform          string
-	TestUserPID        string
+	TestUserPublicId   string
+	TestUserSuid       string
 	TestUserPass       string
 
 	GrpcConn   *grpc.ClientConn
@@ -53,8 +54,9 @@ var (
 		FirebaseProductKey: "AIzaSyCabjC7_mOU21qkcNobnhN1khTi1-1F-kA",
 		XAppVersion:        "4.10.4",
 		XPlatform:          "Android",
-		TestUserPID:        "00000000",
-		TestUserPass:       "passw0rd",
+		TestUserPublicId:   "00000000",
+		TestUserSuid:       "00000000-0000-0000-0000-000000000000",
+		TestUserPass:       "password",
 	}
 )
 
@@ -71,7 +73,7 @@ func getTokenedGrpcCtx() (context.Context, context.CancelFunc, error) {
 	ctx, cancel := getBasicGrpcCtx()
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": testConfig.TestUserPID,
+		"sub": testConfig.TestUserSuid,
 		"iat": time.Now().Unix(),
 		"exp": time.Now().Add(time.Hour * 24 * 3).Unix(),
 		"itn": utils.RandomString(8),
@@ -91,8 +93,12 @@ func getFullGrpcCtx() (context.Context, context.CancelFunc, error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	profile, err := opsolis.FindServerProfile(context.Background())
+	if err != nil {
+		return nil, nil, err
+	}
 	ctx = metadata.AppendToOutgoingContext(ctx,
-		"x-master-version", network.GetMasterVersion(),
+		"x-master-version", profile.MasterVersion,
 	)
 	return ctx, cancel, nil
 }

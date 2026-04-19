@@ -4,20 +4,17 @@ import (
 	"fmt"
 	"testing"
 	"vertesan/solis-server/network/http/admin"
+	"vertesan/solis-server/proto/papi"
 
 	"github.com/gofiber/fiber/v3/client"
 )
 
 func TestUserGet(t *testing.T) {
-	publicUserId := "00000000"
-	serverUserId := "00000000-0000-0000-0000-000000000000"
-	password := "password"
-
 	// delete existing user and ignore errors
 	testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
 		Body: &admin.UserDeleteRequest{
-			ServerUserId: serverUserId,
+			ServerUserId: testConfig.TestUserSuid,
 		},
 	})
 
@@ -25,9 +22,9 @@ func TestUserGet(t *testing.T) {
 	resp, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/create", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
 		Body: &admin.UserCreateRequest{
-			PublicUserId: publicUserId,
-			ServerUserId: serverUserId,
-			Password:     password,
+			PublicUserId: testConfig.TestUserPublicId,
+			ServerUserId: testConfig.TestUserSuid,
+			Password:     testConfig.TestUserPass,
 		},
 	})
 	if err != nil {
@@ -38,14 +35,23 @@ func TestUserGet(t *testing.T) {
 	}
 
 	// get created user
-	
-
+	uClient := papi.NewUserClient(testConfig.GrpcConn)
+	ctx1, cancel1, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	defer cancel1()
+	resp1, err := uClient.Get(ctx1, &papi.Empty{})
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+	t.Logf("UserGetResponse:\n%v", resp1)
 
 	// send user delete request
 	resp2, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
 		Body: &admin.UserDeleteRequest{
-			ServerUserId: serverUserId,
+			ServerUserId: testConfig.TestUserSuid,
 		},
 	})
 	if err != nil {
