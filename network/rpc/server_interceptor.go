@@ -33,16 +33,44 @@ var (
 	}
 )
 
-func verifyToken(token []string) error {
-	if len(token) == 0 {
-		return errMissingToken
+var unaryServerInterceptor grpc.UnaryServerInterceptor = func(
+	ctx context.Context,
+	req any,
+	info *grpc.UnaryServerInfo,
+	handler grpc.UnaryHandler,
+) (resp any, err error) {
+	rich.Info("[gRPC] %s", info.FullMethod)
+
+	// retrieve metadata
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, errMissingMetadata
 	}
-	gameAuthToken := token[0]
-	_, _, err := jwto.ParseHS256Token(gameAuthToken)
+
+	// verify metadata
+	if err := verifyMetadata(md, info); err != nil {
+		rich.Error("failed verifying metadata: %v", err)
+		return nil, err
+	}
+
+	// TODO: check x-app-request-id
+
+	// send metadata back
+	header := metadata.New(map[string]string{
+		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
+		"cache-control": "no-store",
+	})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		rich.Error("failed sending header: %v", err)
+		return nil, err
+	}
+
+	// invoke RPC
+	m, err := handler(ctx, req)
 	if err != nil {
-		return err
+		rich.Error("RPC failed with error: %v", err)
 	}
-	return nil
+	return m, err
 }
 
 func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
@@ -93,42 +121,14 @@ func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
 	return nil
 }
 
-var unaryServerInterceptor grpc.UnaryServerInterceptor = func(
-	ctx context.Context,
-	req any,
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (resp any, err error) {
-	rich.Info("[gRPC] %s", info.FullMethod)
-
-	// retrieve metadata
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, errMissingMetadata
+func verifyToken(token []string) error {
+	if len(token) == 0 {
+		return errMissingToken
 	}
-
-	// verify metadata
-	if err := verifyMetadata(md, info); err != nil {
-		rich.Error("failed verifying metadata: %v", err)
-		return nil, err
-	}
-
-	// TODO: check x-app-request-id
-
-	// send metadata back
-	header := metadata.New(map[string]string{
-		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
-		"cache-control": "no-store",
-	})
-	if err := grpc.SendHeader(ctx, header); err != nil {
-		rich.Error("failed sending header: %v", err)
-		return nil, err
-	}
-
-	// invoke RPC
-	m, err := handler(ctx, req)
+	gameAuthToken := token[0]
+	_, _, err := jwto.ParseHS256Token(gameAuthToken)
 	if err != nil {
-		rich.Error("RPC failed with error: %v", err)
+		return err
 	}
-	return m, err
+	return nil
 }
