@@ -342,10 +342,11 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserTutorial
-		if err := opuser.UpsertUserTutorial(ctx, suid, &ptransaction.UserTutorial{
-			TutorialType: penum.TutorialType_TutorialType_GameStart,
-			Step:         150,
-		}); err != nil {
+		userTutorials, err := tutorial.SpawnUserInitialTutorial()
+		if err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertManyUserTutorials(ctx, suid, userTutorials); err != nil {
 			return nil, err
 		}
 
