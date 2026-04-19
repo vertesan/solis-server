@@ -24,7 +24,7 @@ func FindAllUserCostumes(ctx context.Context, suid string) ([]*ptransaction.User
 		ctx,
 		uname.UserCostume,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"costumeId": "1"}),
+		options.Find().SetSort(bson.D{{Key: "costumeId", Value: 1}}),
 	)
 }
 

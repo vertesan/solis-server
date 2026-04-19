@@ -16,7 +16,7 @@ func FindUserItems(ctx context.Context, suid string, itemId string) ([]*ptransac
 		ctx,
 		uname.UserItem,
 		bson.M{"SUID": suid, "itemId": itemId},
-		options.Find().SetSort(bson.M{"expiredTime": 1}),
+		options.Find().SetSort(bson.D{{Key: "expiredTime", Value: 1}}),
 	)
 }
 
@@ -25,7 +25,7 @@ func FindAllUserItems(ctx context.Context, suid string) ([]*ptransaction.UserIte
 		ctx,
 		uname.UserItem,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"itemId": 1, "expiredTime": 1}),
+		options.Find().SetSort(bson.D{{Key: "itemId", Value: 1}, {Key: "expiredTime", Value: 1}}),
 	)
 }
 

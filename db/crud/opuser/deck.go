@@ -24,7 +24,7 @@ func FindAllUserDecks(ctx context.Context, suid string) ([]*ptransaction.UserDec
 		ctx,
 		uname.UserDeck,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"number": 1}),
+		options.Find().SetSort(bson.D{{Key: "number", Value: 1}}),
 	)
 }
 

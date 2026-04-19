@@ -26,7 +26,7 @@ func FindAllUserAccessories(ctx context.Context, suid string) ([]*ptransaction.U
 		ctx,
 		uname.UserAccessory,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"accessoryId": "1"}),
+		options.Find().SetSort(bson.D{{Key: "accessoryId", Value: 1}}),
 	)
 }
 

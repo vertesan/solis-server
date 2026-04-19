@@ -32,7 +32,7 @@ func FindAllUserDeckPositions(ctx context.Context, suid string) ([]*ptransaction
 		ctx,
 		uname.UserDeckPosition,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"number": 1, "position": 1}),
+		options.Find().SetSort(bson.D{{Key: "number", Value: 1}, {Key: "position", Value: 1}}),
 	)
 }
 

@@ -24,7 +24,7 @@ func FindAllUserPhotos(ctx context.Context, suid string) ([]*ptransaction.UserPh
 		ctx,
 		uname.UserPhoto,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"ShootingTime": "-1"}),
+		options.Find().SetSort(bson.D{{Key: "ShootingTime", Value: -1}}),
 	)
 }
 

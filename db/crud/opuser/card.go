@@ -24,7 +24,7 @@ func FindAllUserCards(ctx context.Context, suid string) ([]*ptransaction.UserCar
 		ctx,
 		uname.UserCard,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.M{"cardId": "1"}),
+		options.Find().SetSort(bson.D{{Key: "cardId", Value: 1}}),
 	)
 }
 

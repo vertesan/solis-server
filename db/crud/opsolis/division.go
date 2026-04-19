@@ -15,7 +15,7 @@ func FindAllDivisions(ctx context.Context) ([]*papi.DivisionInfo, error) {
 		context.Background(),
 		sname.Division,
 		bson.M{},
-		options.Find().SetSort(bson.M{"levelAvg": 1}),
+		options.Find().SetSort(bson.D{{Key: "levelAvg", Value: 1}}),
 	)
 }
 

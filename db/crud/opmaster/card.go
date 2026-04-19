@@ -51,6 +51,6 @@ func FindCardLevelReleases(ctx context.Context, id string, lteLevel int32) ([]*p
 		ctx, mname.CardLevelRelease, bson.D{
 			{Key: "Id", Value: id},
 			{Key: "Level", Value: bson.M{"$lte": lteLevel}},
-		}, options.Find().SetSort(bson.M{"Level": 1}),
+		}, options.Find().SetSort(bson.D{{Key: "Level", Value: 1}}),
 	)
 }
