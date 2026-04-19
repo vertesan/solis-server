@@ -26,7 +26,67 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteAllUserCostumes(ctx, suid); err != nil {
 			return nil, err
 		}
-		
+		if err := opuser.DeleteAllUserDecks(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserDeckPositions(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserPublic(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserPoints(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserStaffs(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserMessages(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserProfile(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserEmblems(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserBalance(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserTotalCount(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserPhotoReport(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserNotifications(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserHierarchy(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserTutorials(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserHomePositions(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserBuddy(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserHairs(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserCompany(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserShowcaseLike(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteAllUserPhotoPoses(ctx, suid); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, nil, nil)
 	if err != nil {

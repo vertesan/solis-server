@@ -12,20 +12,20 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreateUserRequest struct {
+type UserCreateRequest struct {
 	PublicUserId string `json:"publicUserId,omitempty"`
 	ServerUserId string `json:"serverUserId,omitempty"`
 	Password     string `json:"password,omitempty"`
 }
 
-type CreateUserResponse struct {
+type UserCreateResponse struct {
 	PublicUserId string `json:"publicUserId,omitempty"`
 	ServerUserId string `json:"serverUserId,omitempty"`
 	Password     string `json:"password,omitempty"`
 }
 
 var CreateUser fiber.Handler = func(c fiber.Ctx) error {
-	request := &CreateUserRequest{}
+	request := &UserCreateRequest{}
 	if err := json.Unmarshal(c.Body(), request); err != nil {
 		return fiber.NewError(400, "bad request body")
 	}
@@ -56,7 +56,7 @@ var CreateUser fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(500, err.Error())
 	}
 
-	return c.JSON(&CreateUserResponse{
+	return c.JSON(&UserCreateResponse{
 		PublicUserId: publicUserId,
 		ServerUserId: serverUserId,
 		Password:     password,

@@ -8,14 +8,23 @@ import (
 	"github.com/gofiber/fiber/v3/client"
 )
 
-func TestCreateDeleteUser(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	publicUserId := "00000000"
 	serverUserId := "00000000-0000-0000-0000-000000000000"
 	password := "password"
 
+	// delete existing user and ignore errors
+	testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
+		Header: getAdminAuthHeader(),
+		Body: &admin.UserDeleteRequest{
+			ServerUserId: serverUserId,
+		},
+	})
+
+	// send user create request
 	resp, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/create", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
-		Body: &admin.CreateUserRequest{
+		Body: &admin.UserCreateRequest{
 			PublicUserId: publicUserId,
 			ServerUserId: serverUserId,
 			Password:     password,
@@ -28,10 +37,15 @@ func TestCreateDeleteUser(t *testing.T) {
 		t.Fatalf("test create user error, bad status code: %d", resp.StatusCode())
 	}
 
+	// get created user
+	
+
+
+	// send user delete request
 	resp2, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
-		Body: &admin.CreateUserRequest{
-			PublicUserId: publicUserId,
+		Body: &admin.UserDeleteRequest{
+			ServerUserId: serverUserId,
 		},
 	})
 	if err != nil {

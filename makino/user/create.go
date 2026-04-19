@@ -14,6 +14,8 @@ import (
 	"vertesan/solis-server/makino/user/character"
 	"vertesan/solis-server/makino/user/costume"
 	"vertesan/solis-server/makino/user/deck"
+	"vertesan/solis-server/makino/user/tutorial"
+	"vertesan/solis-server/proto/penum"
 	"vertesan/solis-server/proto/ptransaction"
 	"vertesan/solis-server/utils/jwto"
 
@@ -227,6 +229,173 @@ func CreateUser(publicUserId string, suid string, password string) error {
 				},
 			},
 		)
+
+		// UserPublic
+		if err := opuser.UpsertUserPublic(ctx, &ptransaction.UserPublic{
+			ServerUserId: suid,
+			PublicUserId: publicUserId,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserPoint
+		if err := opuser.UpsertUserPoint(ctx, suid, &ptransaction.UserPoint{
+			PointType: penum.PointType_PointType_Gold,
+			Amount:    1000,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserStaff
+		for _, pt := range []penum.ParameterType{
+			penum.ParameterType_ParameterType_Dance,
+			penum.ParameterType_ParameterType_Vocal,
+			penum.ParameterType_ParameterType_Visual,
+			penum.ParameterType_ParameterType_Stamina,
+			penum.ParameterType_ParameterType_Mental,
+			penum.ParameterType_ParameterType_Technique,
+		} {
+			if err := opuser.UpsertUserStaff(ctx, suid, &ptransaction.UserStaff{
+				ParameterType:       pt,
+				Level:               1,
+				LevelLimitBreakRank: 0,
+			}); err != nil {
+				return nil, err
+			}
+		}
+
+		// UserMessage
+		if err := opuser.UpsertUserMessage(ctx, suid, &ptransaction.UserMessage{
+			MessageId:              "message-skr-tutorial-001",
+			MessageStatusType:      penum.MessageStatusType_MessageStatusType_Finished,
+			ArrivedTime:            milliNow,
+			SelectMessageDetailIds: []string{},
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserProfile
+		if err := opuser.UpsertUserProfile(ctx, suid, &ptransaction.UserProfile{
+			Message:                 "よろしくお願いします",
+			BackgroundType:          penum.ProfileBackgroundType_ProfileBackgroundType_Default,
+			LayoutType:              penum.ProfileLayoutType_ProfileLayoutType_A,
+			TwitterInfo:             &ptransaction.TwitterInfo{},
+			InformationType:         penum.ProfileInformationType_ProfileInformationType_Many1,
+			ColorType:               penum.ProfileColorType_ProfileColorType_Black1,
+			FavoriteCardId:          "",
+			FavoritePhotoId:         "",
+			FavoriteCharacterIds:    []string{},
+			BirthMonth:              0,
+			BirthDay:                0,
+			DecorationId:            "",
+			FavoriteCardDisplayType: 0,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserEmblem
+		if err := opuser.UpsertUserEmblem(ctx, suid, &ptransaction.UserEmblem{
+			EmblemId: "emb-001",
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserBalance
+		if err := opuser.UpsertUserBalance(ctx, suid, &ptransaction.UserBalance{
+			FreeBalance: 0,
+			PaidBalance: 0,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserTotalCount
+		if err := opuser.UpsertUserTotalCount(ctx, suid, &ptransaction.UserTotalCount{
+			LoginCount:      1,
+			PointGoldAmount: 1000,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserPhotoReport
+		if err := opuser.UpsertUserPhotoReport(ctx, suid, &ptransaction.UserPhotoReport{
+			Photos:   []*ptransaction.UserPhoto{},
+			Received: false,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserNotification
+		if err := opuser.UpsertManyUserNotifications(ctx, suid, []*ptransaction.UserNotification{
+			{NotificationType: penum.NotificationType_NotificationType_Activity, Valid: false, StartTime: 0},
+			{NotificationType: penum.NotificationType_NotificationType_LoginBonus, Valid: true, StartTime: 0},
+			{NotificationType: penum.NotificationType_NotificationType_Gift, Valid: true, StartTime: 0},
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserHierarchy
+		if err := opuser.UpsertUserHierarchy(ctx, suid, &ptransaction.UserHierarchy{
+			ReceivedRewardIds:         []string{},
+			ReceivedDivisionRewardIds: []string{},
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserTutorial
+		if err := opuser.UpsertUserTutorial(ctx, suid, &ptransaction.UserTutorial{
+			TutorialType: penum.TutorialType_TutorialType_GameStart,
+			Step:         150,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserHomePosition
+		if err := opuser.UpsertManyUserHomePositions(ctx, suid, []*ptransaction.UserHomePosition{
+			{HomePositionType: penum.HomePositionType_HomePositionType_Home, CharacterId: "char-skr"},
+			{HomePositionType: penum.HomePositionType_HomePositionType_Training, CharacterId: "char-ktn"},
+			{HomePositionType: penum.HomePositionType_HomePositionType_Activity, CharacterId: "char-rui"},
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserBuddy
+		if err := opuser.UpsertUserBuddy(ctx, suid, &ptransaction.UserBuddy{
+			DailyRentalAmount: 0,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserHair
+		for _, hairId := range consts.UserInitialHairIds {
+			if err := opuser.UpsertUserHair(ctx, suid, &ptransaction.UserHair{
+				HairId:  hairId,
+				Checked: true,
+			}); err != nil {
+				return nil, err
+			}
+		}
+
+		// UserCompany
+		if err := opuser.UpsertUserCompany(ctx, suid, &ptransaction.UserCompany{}); err != nil {
+			return nil, err
+		}
+
+		// UserShowcaseLike
+		if err := opuser.UpsertUserShowcaseLike(ctx, suid, &ptransaction.UserShowcaseLike{
+			RewardLikeCount: 30,
+			DailyLikeCount:  0,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserPhotoPose
+		for _, poseId := range consts.UserInitialPhotoPoseIds {
+			if err := opuser.UpsertUserPhotoPose(ctx, suid, &ptransaction.UserPhotoPose{
+				PhotoPoseId: poseId,
+			}); err != nil {
+				return nil, err
+			}
+		}
 
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction

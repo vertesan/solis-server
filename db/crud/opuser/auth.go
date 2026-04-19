@@ -23,9 +23,9 @@ func InsertUserAuth(ctx context.Context, userAuth *ustruct.UserAuth) error {
 }
 
 func DeleteUserAuth(ctx context.Context, suid string) error {
-	if _, err := depot.User.Collection(uname.UserAuth).DeleteOne(
+	if _, err := depot.User.Collection(uname.UserAuth).DeleteMany(
 		ctx,
-		bson.M{"ServerUserId": suid},
+		bson.M{"serverUserId": suid},
 	); err != nil {
 		return err
 	}

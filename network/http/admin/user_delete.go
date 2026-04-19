@@ -12,12 +12,12 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-type DeleteUserRequest struct {
+type UserDeleteRequest struct {
 	ServerUserId string `json:"serverUserId,omitempty"`
 }
 
 var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
-	request := &DeleteUserRequest{}
+	request := &UserDeleteRequest{}
 	if err := json.Unmarshal(c.Body(), request); err != nil {
 		return fiber.NewError(400, "bad request body")
 	}

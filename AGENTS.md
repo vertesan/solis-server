@@ -72,9 +72,15 @@ Three databases: `solis`, `master`, `user`.
 
 You can use MongoDB MCP server to retrieve or manipulate data if you need.
 
-## Testing
+## Testing Rules
 
-Tests live in `test/`, each test function is supposed to test an entire scenario flow. Create data at the start and remember to do cleanups at the end if mock data is required to complete the test.
+- Integration tests live in `test/`, each test function is supposed to test an entire scenario flow
+- Write tests to make sure everything works as expect once you completed a scenario. If the test fails, fix the issue and test again until success
+- Remember to do cleanups at the end of each test if mock data is created in the database during the test
+
+## Tools
+
+- Use `jq` if you need to slice or filter or map or transform structured JSON data
 
 ## Precautions
 

@@ -115,7 +115,7 @@ func Delete(
 	collection string,
 	filter map[string]any,
 ) error {
-	if _, err := database.Collection(collection).DeleteOne(ctx, filter); err != nil {
+	if _, err := database.Collection(collection).DeleteMany(ctx, filter); err != nil {
 		return fmt.Errorf("failed to Delete for [%s].[%s]: %w", database.Name(), collection, err)
 	}
 	return nil
