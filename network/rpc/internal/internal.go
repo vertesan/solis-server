@@ -3,9 +3,8 @@ package internal
 import (
 	"context"
 	"errors"
-	"strings"
+	"vertesan/solis-server/utils/jwto"
 
-	"github.com/goccy/go-json"
 	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 )
@@ -31,21 +30,17 @@ func GetSuid(ctx context.Context) (*uuid.UUID, error) {
 		return nil, errors.New("missing x-auth-token")
 	}
 
-	parts := strings.Split(token, ".")
-	if len(parts) != 3 {
-		return nil, errors.New("invalid token format")
-	}
-	_, payload, _ := parts[0], parts[1], parts[2]
-
-	var authTokenPayload AuthTokenPayload
-	err := json.Unmarshal([]byte(payload), &authTokenPayload)
+	_, claim, err := jwto.ParseHS256Token(token)
 	if err != nil {
 		return nil, err
 	}
-	if authTokenPayload.Sub == "" {
-		return nil, errors.New("missing sub")
+
+	subStr, err := claim.GetSubject()
+	if err != nil {
+		return nil, err
 	}
-	sub, err := uuid.Parse(authTokenPayload.Sub)
+
+	sub, err := uuid.Parse(subStr)
 	if err != nil {
 		return nil, err
 	}
