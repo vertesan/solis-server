@@ -21,5 +21,9 @@ func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse,
 		rich.Error("failed to get suid: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "bad token")
 	}
-	return user.GetUser(context.Background(), suid.String())
+	usr, err := user.GetUser(context.Background(), suid.String())
+	if err != nil {
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return usr, nil
 }
