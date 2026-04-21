@@ -63,6 +63,11 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.A
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
+	if err := opuser.UpdateUserAuthLastLoginTime(context.Background(), userAuth.ServerUserId, time.Now().UnixMilli()); err != nil {
+		rich.Error("failed to update last login time during user login: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+
 	return &pb.AuthLoginResponse{
 		GameAuthToken: gameAuthToken,
 		UserPublic: &ptransaction.UserPublic{

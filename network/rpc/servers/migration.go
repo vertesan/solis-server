@@ -46,7 +46,7 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 
 	// create one-time token
 	oneTimeToken := uuid.New().String()
-	err = opuser.UpdateOneTimeToken(context.Background(), userAuth.ServerUserId, oneTimeToken)
+	err = opuser.UpdateUserAuthOneTimeToken(context.Background(), userAuth.ServerUserId, oneTimeToken)
 	if err != nil {
 		rich.Error("failed to UpdateOneTimeToken: %v", err)
 		return nil, status.Error(codes.Internal, "internal error")

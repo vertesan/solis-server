@@ -67,7 +67,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	var refreshToken string
 	if userAuth.LastRefreshAt.Add(time.Hour * 24 * 7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
-		if err := opuser.InsertRefreshToken(context.Background(), userAuth.FirebaseId, refreshToken); err != nil {
+		if err := opuser.InsertUserAuthRefreshToken(context.Background(), userAuth.FirebaseId, refreshToken); err != nil {
 			return fiber.NewError(500, "internal error")
 		}
 	} else {

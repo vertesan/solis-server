@@ -32,7 +32,7 @@ func DeleteUserAuth(ctx context.Context, suid string) error {
 	return nil
 }
 
-func UpdateOneTimeToken(ctx context.Context, suid string, oneTimeToken string) error {
+func UpdateUserAuthOneTimeToken(ctx context.Context, suid string, oneTimeToken string) error {
 	result, err := depot.User.Collection(uname.UserAuth).UpdateOne(
 		ctx,
 		bson.M{"serverUserId": suid},
@@ -49,7 +49,21 @@ func UpdateOneTimeToken(ctx context.Context, suid string, oneTimeToken string) e
 	return nil
 }
 
-func InsertRefreshToken(ctx context.Context, firebaseId string, refreshToken string) error {
+func UpdateUserAuthLastLoginTime(ctx context.Context, suid string, epoch int64) error {
+	_, err := depot.User.Collection(uname.UserAuth).UpdateOne(
+		ctx,
+		bson.M{"serverUserId": suid},
+		bson.M{
+			"$set": bson.M{"lastLoginAt": epoch},
+		},
+	)
+	if err != nil {
+		return fmt.Errorf("failed update last login time for userAuth: %w", err)
+	}
+	return nil
+}
+
+func InsertUserAuthRefreshToken(ctx context.Context, firebaseId string, refreshToken string) error {
 	result, err := depot.User.Collection(uname.UserAuth).UpdateOne(
 		ctx,
 		bson.M{"firebaseId": firebaseId},
