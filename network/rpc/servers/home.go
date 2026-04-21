@@ -2,7 +2,7 @@ package servers
 
 import (
 	"context"
-	"vertesan/solis-server/makino/user"
+	"vertesan/solis-server/makino/home"
 	"vertesan/solis-server/network/rpc/internal/metadata"
 	pb "vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/utils/rich"
@@ -21,7 +21,7 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 		rich.Error("failed to get suid: %v", err)
 		return nil, status.Error(codes.Unauthenticated, "bad token")
 	}
-	resp, err := user.Login(context.Background(), suid.String())
+	resp, err := home.Login(context.Background(), suid.String())
 	if err != nil {
 		rich.Error("failed to login: %v", err)
 		return nil, status.Error(codes.Internal, "internal error")
