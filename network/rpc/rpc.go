@@ -69,5 +69,6 @@ func InitServer() *grpc.Server {
 	pb.RegisterAuthServer(server, &ss.AuthServer{})
 	pb.RegisterMasterServer(server, &ss.MasterServer{})
 	pb.RegisterUserServer(server, &ss.UserServer{})
+	pb.RegisterHomeServer(server, &ss.HomeServer{})
 	return server
 }

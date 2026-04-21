@@ -9,8 +9,8 @@ import (
 	"github.com/gofiber/fiber/v3/client"
 )
 
-func TestUserGet(t *testing.T) {
-	// delete existing user and ignore errors
+func TestUser(t *testing.T) {
+	// delete existing user if there is
 	testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
 		Body: &admin.UserDeleteRequest{
@@ -34,20 +34,37 @@ func TestUserGet(t *testing.T) {
 		t.Fatalf("test create user error, bad status code: %d", resp.StatusCode())
 	}
 
-	// get created user
-	uClient := papi.NewUserClient(testConfig.GrpcConn)
-	ctx1, cancel1, err := getFullGrpcCtx()
-	if err != nil {
-		t.Fatalf("%v", err)
+	// test `/api.User/Get`
+	{
+		uClient := papi.NewUserClient(testConfig.GrpcConn)
+		ctx, cancel, err := getFullGrpcCtx()
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		defer cancel()
+		resp, err := uClient.Get(ctx, &papi.Empty{})
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		t.Logf("UserGetResponse:\n%v", resp)
 	}
-	defer cancel1()
-	resp1, err := uClient.Get(ctx1, &papi.Empty{})
-	if err != nil {
-		t.Fatalf("%v", err)
-	}
-	t.Logf("UserGetResponse:\n%v", resp1)
 
-	// send user delete request
+	// test `/api.Home/Login`
+	{
+		hClient := papi.NewHomeClient(testConfig.GrpcConn)
+		ctx, cancel, err := getFullGrpcCtx()
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		defer cancel()
+		resp, err := hClient.Login(ctx, &papi.HomeLoginRequest{})
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		t.Logf("HomeLoginResponse:\n%v", resp)
+	}
+
+	// do cleanups, send user delete request
 	resp2, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/admin/user/delete", testConfig.HttpUrl), client.Config{
 		Header: getAdminAuthHeader(),
 		Body: &admin.UserDeleteRequest{
