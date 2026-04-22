@@ -6,6 +6,7 @@ import (
 	"vertesan/solis-server/db/def/user/uname"
 	"vertesan/solis-server/db/def/user/ustruct"
 	"vertesan/solis-server/proto/papi"
+	"vertesan/solis-server/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
@@ -53,4 +54,24 @@ func DeleteAllUserGachaInfos(ctx context.Context, suid string) error {
 		uname.UserGachaInfo,
 		bson.M{"SUID": suid},
 	)
+}
+
+
+func FindAllUserGachaButtons(ctx context.Context, suid string) ([]*ptransaction.UserGachaButton, error) {
+	infos, err := FindAllUserGachaInfos(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
+	buttons := make([]*ptransaction.UserGachaButton, 0)
+	for _, info := range infos {
+		for _, btn := range info.Buttons {
+			buttons = append(buttons, &ptransaction.UserGachaButton{
+				GachaButtonId: btn.Id,
+				DrawTime:      btn.DrawTime,
+				TodayCount:    btn.TodayCount,
+				TotalCount:    btn.TotalCount,
+			})
+		}
+	}
+	return buttons, nil
 }
