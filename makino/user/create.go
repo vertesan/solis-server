@@ -431,6 +431,13 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserLessonProgress
+		lessonProgress := proto.Clone(consts.UserInitialLessonProgress).(*papi.ActivityLessonProgress)
+		lessonProgress.LastReceiveTime = milliNow
+		lessonProgress.MaxRewardTime = milliNow
+		if err := opuser.UpsertUserLessonProgress(ctx, suid, lessonProgress); err != nil {
+			return nil, err
+		}
 
 		// UserShopIds
 		if err := opuser.UpsertUserShopId(

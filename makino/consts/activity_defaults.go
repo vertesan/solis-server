@@ -5,6 +5,19 @@ import (
 	"vertesan/solis-server/proto/penum"
 )
 
+var UserInitialLessonProgress = &papi.ActivityLessonProgress{
+	StepRewardGold:              5,
+	StepRewardManagerExp:        8,
+	StepRewardCardEnhanceItem:   3,
+	RewardGoldAmount:            515,
+	RewardManagerExpAmount:      1648,
+	RewardCardEnhanceItemAmount: 309,
+	LastReceiveTime:             1776084749138,
+	MaxRewardTime:               1776127949138,
+	CurrentAreaId:               "area-main-001",
+	DailyPromoteCount:           0,
+}
+
 var UserInitialFanEventInfo = &papi.FanEventInfo{
 	FanEvents: []*papi.FanEvent{
 		{
