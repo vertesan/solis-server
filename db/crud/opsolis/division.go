@@ -12,7 +12,7 @@ import (
 
 func FindAllDivisions(ctx context.Context) ([]*papi.DivisionInfo, error) {
 	return scommon.FindAll[papi.DivisionInfo](
-		context.Background(),
+		ctx,
 		sname.Division,
 		bson.M{},
 		options.Find().SetSort(bson.D{{Key: "levelAvg", Value: 1}}),

@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func GetMigration(ctx context.Context) (*sstruct.Migration, error) {
+func FindMigration(ctx context.Context) (*sstruct.Migration, error) {
 	return scommon.FindOne[sstruct.Migration](
 		ctx,
 		sname.Migration,

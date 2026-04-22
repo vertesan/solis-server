@@ -13,7 +13,7 @@ import (
 // Check if this is the first startup, and potential future database migration
 func MigrationCheck() error {
 	var migrationFlag int32
-	migration, err := opsolis.GetMigration(context.Background())
+	migration, err := opsolis.FindMigration(context.Background())
 	if err != nil {
 		if !errors.Is(err, mongo.ErrNoDocuments) {
 			return err
