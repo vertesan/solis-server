@@ -1,0 +1,56 @@
+package opuser
+
+import (
+	"context"
+	"vertesan/solis-server/db/crud/opuser/internal/ucommon"
+	"vertesan/solis-server/db/def/user/uname"
+	"vertesan/solis-server/db/def/user/ustruct"
+	"vertesan/solis-server/proto/papi"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
+)
+
+func FindUserGachaInfo(ctx context.Context, suid string, id string) (*papi.GachaInfo, error) {
+	return ucommon.FindOne[papi.GachaInfo](
+		ctx,
+		uname.UserGachaInfo,
+		bson.M{"SUID": suid, "id": id},
+	)
+}
+
+func FindAllUserGachaInfos(ctx context.Context, suid string) ([]*papi.GachaInfo, error) {
+	return ucommon.FindAll[papi.GachaInfo](
+		ctx,
+		uname.UserGachaInfo,
+		bson.M{"SUID": suid},
+	)
+}
+
+func UpsertUserGachaInfo(ctx context.Context, suid string, info *papi.GachaInfo) error {
+	return ucommon.UpsertOne(
+		ctx,
+		uname.UserGachaInfo,
+		bson.M{"SUID": suid, "id": info.Id},
+		&ustruct.UserStruct[*papi.GachaInfo]{
+			SUID: suid,
+			Data: info,
+		},
+	)
+}
+
+func UpsertManyUserGachaInfos(ctx context.Context, suid string, infos []*papi.GachaInfo) error {
+	for _, info := range infos {
+		if err := UpsertUserGachaInfo(ctx, suid, info); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func DeleteAllUserGachaInfos(ctx context.Context, suid string) error {
+	return ucommon.Delete(
+		ctx,
+		uname.UserGachaInfo,
+		bson.M{"SUID": suid},
+	)
+}

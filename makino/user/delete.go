@@ -86,6 +86,9 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteAllUserPhotoPoses(ctx, suid); err != nil {
 			return nil, err
 		}
+		if err := opuser.DeleteAllUserGachaInfos(ctx, suid); err != nil {
+			return nil, err
+		}
 
 		return nil, nil
 	}, nil, nil)

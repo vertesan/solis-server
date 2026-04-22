@@ -15,6 +15,7 @@ import (
 	"vertesan/solis-server/makino/user/costume"
 	"vertesan/solis-server/makino/user/deck"
 	"vertesan/solis-server/makino/user/tutorial"
+	"vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/proto/penum"
 	"vertesan/solis-server/proto/ptransaction"
 	"vertesan/solis-server/utils/jwto"
@@ -22,6 +23,7 @@ import (
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
+	"google.golang.org/protobuf/proto"
 )
 
 func CreateUser(publicUserId string, suid string, password string) error {
@@ -398,8 +400,22 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			}
 		}
 
-		// user gacha info
-		
+		// UserGachaInfo
+		gachaInfos := make([]*papi.GachaInfo, 0, len(consts.UserInitialGachaInfos))
+		for _, info := range consts.UserInitialGachaInfos {
+			cloned := proto.Clone(info).(*papi.GachaInfo)
+			for _, btn := range cloned.Buttons {
+				btn.DrawTime = milliNow
+			}
+			for _, exc := range cloned.Exchanges {
+				exc.ExchangedTime = milliNow
+			}
+			gachaInfos = append(gachaInfos, cloned)
+		}
+		if err := opuser.UpsertManyUserGachaInfos(ctx, suid, gachaInfos); err != nil {
+			return nil, err
+		}
+
 
 		// UserShopIds
 		if err := opuser.UpsertUserShopId(
