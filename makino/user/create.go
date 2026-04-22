@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"time"
+	"vertesan/solis-server/db/crud/opmaster"
 	"vertesan/solis-server/db/crud/opsolis"
 	"vertesan/solis-server/db/crud/opuser"
 	"vertesan/solis-server/db/def/user/ustruct"
@@ -480,6 +481,29 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		if err := opuser.UpsertUserHierarchyNotiInfo(ctx, suid, &papi.HierarchyNotiInfo{
 			CurrentDetailGradeId: consts.UserInitialHierarchyNotiCurrentDetailGradeId,
 		}); err != nil {
+			return nil, err
+		}
+
+		// UserEventStoryInfo
+		eventStories, err := opmaster.FindAllEventStories(ctx)
+		if err != nil {
+			return nil, err
+		}
+		eventStoryInfos := make([]*papi.EventStoryInfo, 0, len(eventStories))
+		for _, es := range eventStories {
+			episodes := make([]*papi.EventStoryEpisodeInfo, 0, len(es.Episodes))
+			for _, ep := range es.Episodes {
+				episodes = append(episodes, &papi.EventStoryEpisodeInfo{
+					Episode:  ep.Episode,
+					Unlocked: true,
+				})
+			}
+			eventStoryInfos = append(eventStoryInfos, &papi.EventStoryInfo{
+				Id:       es.Id,
+				Episodes: episodes,
+			})
+		}
+		if err := opuser.UpsertManyUserEventStoryInfos(ctx, suid, eventStoryInfos); err != nil {
 			return nil, err
 		}
 
