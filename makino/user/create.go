@@ -523,6 +523,25 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserPhotoMusic
+		musics, err := opmaster.FindAllMusics(ctx)
+		if err != nil {
+			return nil, err
+		}
+		photoMusics := make([]*papi.PhotoMusic, 0, len(musics))
+		for _, m := range musics {
+			if !m.Is3DAvailable {
+				continue
+			}
+			photoMusics = append(photoMusics, &papi.PhotoMusic{
+				MusicId:    m.Id,
+				IsUnlocked: true,
+			})
+		}
+		if err := opuser.UpsertManyUserPhotoMusics(ctx, suid, photoMusics); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {
