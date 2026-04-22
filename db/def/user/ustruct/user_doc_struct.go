@@ -28,3 +28,8 @@ type UserShopId struct {
 	SUID    string   `bson:"SUID"`
 	ShopIds []string `bson:"shopIds"`
 }
+
+type UserExchangeBooth struct {
+	SUID     string   `bson:"SUID"`
+	BoothIds []string `bson:"boothIds"`
+}

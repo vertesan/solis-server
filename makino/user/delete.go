@@ -101,6 +101,15 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteUserLessonProgress(ctx, suid); err != nil {
 			return nil, err
 		}
+		if err := opuser.DeleteUserExchangeBooth(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserNotiStoneShopItem(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserNotiNormalShopItem(ctx, suid); err != nil {
+			return nil, err
+		}
 
 		return nil, nil
 	}, nil, nil)

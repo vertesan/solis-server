@@ -415,7 +415,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		if err := opuser.UpsertManyUserGachaInfos(ctx, suid, gachaInfos); err != nil {
 			return nil, err
 		}
-		
+
 		// UserFanEventInfo
 		if err := opuser.UpsertUserFanEventInfo(ctx, suid, proto.Clone(consts.UserInitialFanEventInfo).(*papi.FanEventInfo)); err != nil {
 			return nil, err
@@ -444,6 +444,30 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			ctx,
 			&ustruct.UserShopId{SUID: suid, ShopIds: consts.UserInitialShopIds},
 		); err != nil {
+			return nil, err
+		}
+
+		// UserExchangeBooth
+		if err := opuser.UpsertUserExchangeBooth(
+			ctx,
+			&ustruct.UserExchangeBooth{SUID: suid, BoothIds: consts.UserInitialExchangeBoothIds},
+		); err != nil {
+			return nil, err
+		}
+
+		// UserNotiStoneShopItem
+		if err := opuser.UpsertUserNotiStoneShopItem(ctx, suid, &papi.NotiShopItem{
+			ShopId:      "shop_top_dia",
+			ShopItemIds: consts.UserInitialNotiStoneShopItemIds,
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserNotiNormalShopItem
+		if err := opuser.UpsertUserNotiNormalShopItem(ctx, suid, &papi.NotiShopItem{
+			ShopId:      "shop_top_shop",
+			ShopItemIds: consts.UserInitialNotiNormalShopItemIds,
+		}); err != nil {
 			return nil, err
 		}
 

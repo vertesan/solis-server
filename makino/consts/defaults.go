@@ -138,4 +138,47 @@ var (
 		"shop_top_dia",
 		"shop_top_shop",
 	}
+	UserInitialExchangeBoothIds = []string{
+		"exchange-acc-limit-001",
+		"exchange-friend-medal-23-0926",
+		"exchange-gacha_point-26-0401-0430",
+		"exchange-idle_medal-26-0401-0430",
+		"exchange-league_medal-26-0401-0430",
+		"exchange-mini-tour_medal-22-0408",
+		"exchange-photo-ink-basic-03",
+		"exchange-photo-medal",
+		"exchange-pvp_medal-26-0401-0430",
+		"exchange-rarity_exp_medal-21-1228",
+	}
+	UserInitialNotiStoneShopItemIds = []string{
+		"shop_item_stone-10000",
+		"shop_item_stone-120",
+		"shop_item_stone-1960",
+		"shop_item_stone-2940",
+		"shop_item_stone-490",
+		"shop_item_stone-4900",
+		"shop_item_stone-980",
+	}
+	UserInitialNotiNormalShopItemIds = []string{
+		"shop_item_gacha_ticket_piece-010",
+		"shop_item_normal-daily-01",
+		"shop_item_normal-daily-stone-01",
+		"shop_item_normal-monthly-01",
+		"shop_item_normal-monthly-02",
+		"shop_item_normal-monthly-05-25-0701",
+		"shop_item_normal-monthly-14-23-0624",
+		"shop_item_normal-monthly-15-23-0624",
+		"shop_item_normal-monthly-16-23-0624",
+		"shop_item_normal-monthly-stone-01",
+		"shop_item_normal-monthly-stone-02",
+		"shop_item_normal-monthly-stone-05",
+		"shop_item_normal-monthly-stone-06",
+		"shop_item_normal-monthly-stone-07",
+		"shop_item_normal-monthly-stone-08",
+		"shop_item_normal-monthly-stone-09-23-0624",
+		"shop_item_normal-showcase-medal-toy-01",
+		"shop_item_normal-weekly-01",
+		"shop_item_normal-weekly-08-23-0624",
+		"shop_top_normal-weekly-stone-21-0721-02",
+	}
 )
