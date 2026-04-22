@@ -80,7 +80,7 @@ You can use MongoDB MCP server to retrieve or manipulate data if you need.
 
 ## Tools
 
-- You can use `jq` if you need to retrieve structured JSON data, or other tools if you think come in handy
+- You can use `jq` if you need to retrieve structured JSON data, or other tools if you think could come in handy
 
 ## Precautions
 
