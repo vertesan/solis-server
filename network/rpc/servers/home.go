@@ -28,3 +28,7 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 	}
 	return resp, nil
 }
+
+// func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
+
+// }

@@ -6,6 +6,7 @@ import (
 	"vertesan/solis-server/db/def/solis/sstruct"
 	"vertesan/solis-server/db/transaction"
 	"vertesan/solis-server/proto/papi"
+	"vertesan/solis-server/proto/penum"
 )
 
 func level1Migration() error {
@@ -37,6 +38,31 @@ func level1Migration() error {
 		}); err != nil {
 			return nil, err
 		}
+
+		// campaignEffects (empty)
+
+		// bannerInfo
+		// menu banners
+		opsolis.UpsertMenuBanner(ctx, &papi.Banner{
+			Id:              "banner-pr-raido-21-0826-02",
+			AssetId:         "img_banner_s_pr-radio-21-0831",
+			LinkType:        penum.LinkType_LinkType_ExternalWebPage,
+			LinkDetail:      "https://youtube.com/playlist?list=PL0eMwNDVvw1Sa1Fp6eQj7yUw2BF5z86Ad",
+			Order:           150,
+			ViewConditionId: "cd-week-radio-tuesday",
+		})
+
+		// exchangeBoothIds
+
+		// notiStoneShopItem
+
+		// notiNormalShopItem
+
+		// notiShowcaseShopItem
+
+		// eventInfo
+
+		// functionMaintenanceInfos
 
 		// update migration flag
 		if err := opsolis.UpsertMigration(ctx, &sstruct.Migration{Migration: 1}); err != nil {

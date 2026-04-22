@@ -398,6 +398,17 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			}
 		}
 
+		// user gacha info
+		
+
+		// UserShopIds
+		if err := opuser.UpsertUserShopId(
+			ctx,
+			&ustruct.UserShopId{SUID: suid, ShopIds: consts.UserInitialShopIds},
+		); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {

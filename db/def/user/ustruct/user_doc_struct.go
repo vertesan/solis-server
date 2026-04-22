@@ -23,3 +23,8 @@ type UserAuth struct {
 	LastLoginAt   int64     `bson:"lastLoginAt"`
 	LastRefreshAt time.Time `bson:"lastRefreshAt"`
 }
+
+type UserShopId struct {
+	SUID    string   `bson:"SUID"`
+	ShopIds []string `bson:"shopIds"`
+}

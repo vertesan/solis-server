@@ -132,4 +132,10 @@ var (
 		"photo-pose-standing-idol",
 		"photo-pose-standing-peace",
 	}
+	UserInitialShopIds = []string{
+		"shop_login_login-pack-01",
+		"shop_login_login-pack-02",
+		"shop_top_dia",
+		"shop_top_shop",
+	}
 )
