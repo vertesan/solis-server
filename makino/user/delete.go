@@ -119,6 +119,9 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteAllUserEventStoryInfos(ctx, suid); err != nil {
 			return nil, err
 		}
+		if err := opuser.DeleteAllUserPhotoActivities(ctx, suid); err != nil {
+			return nil, err
+		}
 
 		return nil, nil
 	}, nil, nil)
