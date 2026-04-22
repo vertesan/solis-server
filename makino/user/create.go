@@ -476,6 +476,13 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserHierarchyNotiInfo
+		if err := opuser.UpsertUserHierarchyNotiInfo(ctx, suid, &papi.HierarchyNotiInfo{
+			CurrentDetailGradeId: consts.UserInitialHierarchyNotiCurrentDetailGradeId,
+		}); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {

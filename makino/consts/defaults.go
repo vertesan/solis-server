@@ -159,6 +159,8 @@ var (
 		"shop_item_stone-4900",
 		"shop_item_stone-980",
 	}
+	UserInitialHierarchyNotiCurrentDetailGradeId = "hie-007-003"
+
 	UserInitialNotiNormalShopItemIds = []string{
 		"shop_item_gacha_ticket_piece-010",
 		"shop_item_normal-daily-01",

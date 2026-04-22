@@ -113,6 +113,9 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteUserEventInfo(ctx, suid); err != nil {
 			return nil, err
 		}
+		if err := opuser.DeleteUserHierarchyNotiInfo(ctx, suid); err != nil {
+			return nil, err
+		}
 
 		return nil, nil
 	}, nil, nil)
