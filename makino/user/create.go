@@ -415,6 +415,21 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		if err := opuser.UpsertManyUserGachaInfos(ctx, suid, gachaInfos); err != nil {
 			return nil, err
 		}
+		
+		// UserFanEventInfo
+		if err := opuser.UpsertUserFanEventInfo(ctx, suid, proto.Clone(consts.UserInitialFanEventInfo).(*papi.FanEventInfo)); err != nil {
+			return nil, err
+		}
+
+		// UserPromotionInfo
+		if err := opuser.UpsertUserPromotionInfo(ctx, suid, proto.Clone(consts.UserInitialPromotionInfo).(*papi.PromotionInfo)); err != nil {
+			return nil, err
+		}
+
+		// UserRefreshInfo
+		if err := opuser.UpsertUserRefreshInfo(ctx, suid, proto.Clone(consts.UserInitialRefreshInfo).(*papi.RefreshInfo)); err != nil {
+			return nil, err
+		}
 
 
 		// UserShopIds
