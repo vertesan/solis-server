@@ -572,6 +572,22 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserPhotoExpression
+		photoExpressions, err := opmaster.FindAllPhotoExpressions(ctx)
+		if err != nil {
+			return nil, err
+		}
+		userPhotoExpressions := make([]*papi.PhotoExpression, 0, len(photoExpressions))
+		for _, pe := range photoExpressions {
+			userPhotoExpressions = append(userPhotoExpressions, &papi.PhotoExpression{
+				PhotoExpressionId: pe.Id,
+				IsUnlocked:        true,
+			})
+		}
+		if err := opuser.UpsertManyUserPhotoExpressions(ctx, suid, userPhotoExpressions); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {
