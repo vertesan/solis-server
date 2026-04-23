@@ -92,6 +92,10 @@ func Enter(ctx context.Context, suid string) (*papi.HomeEnterResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	userCurrentQuestArea, err := opuser.FindUserCurrentQuestArea(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
 
 	return &papi.HomeEnterResponse{
 		GachaInfos:              gachaInfos,
@@ -104,17 +108,22 @@ func Enter(ctx context.Context, suid string) (*papi.HomeEnterResponse, error) {
 		ExchangeBoothIds:        exchangeBooth.BoothIds,
 		NotiStoneShopItem:       notiStoneShopItem,
 		NotiNormalShopItem:      notiNormalShopItem,
-		NotiShowcaseShopItem:    notiShowcaseShopItem,
+		CurrentMainAreaId:       userCurrentQuestArea.CurrentMainAreaId,
 		EventInfo:               eventInfo,
 		HierarchyNotiInfo:       hierarchyNotiInfo,
+		CurrentTowerQuestId:     userCurrentQuestArea.CurrentTowerQuestId,
 		EventStoryInfos:         eventStoryInfos,
 		PhotoActivities:         photoActivities,
 		PhotoMusics:             photoMusics,
 		PhotoStages:             photoStages,
+		LessonInfo:              &papi.LessonInfo{LessonProgress: lessonProgress},
+		EventButtonDisplayInfos: []*papi.EventButtonDisplayInfo{}, // TODO
 		ExtraStoryPartInfos:     extraStoryPartInfos,
-		PhotoExpressions:        photoExpressions,
+		SpecialHomeActionInfos:  []*papi.SpecialHomeActionInfo{}, // TODO
+		NotiShowcaseShopItem:    notiShowcaseShopItem,
 		ShowcaseToyShopIds:      showcaseToyShopIds.ShopIds,
 		UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
+		PhotoExpressions:        photoExpressions,
 		CommonResponse: &papi.CommonResponse{
 			UpdatedData: &papi.UpdatedData{},
 			DeletedData: &papi.DeletedData{},

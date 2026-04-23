@@ -563,12 +563,18 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserShowcaseToyShopId
-		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &ustruct.UserShowcaseToyShopId{SUID: suid, ShopIds: consts.UserInitialShowcaseToyShopIds}); err != nil {
+		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &ustruct.UserShowcaseToyShopId{
+			SUID:    suid,
+			ShopIds: consts.UserInitialShowcaseToyShopIds,
+		}); err != nil {
 			return nil, err
 		}
 
 		// UserUnlockedShowcaseNumber
-		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &ustruct.UserUnlockedShowcaseNumber{SUID: suid, Numbers: consts.UserInitialUnlockedShowcaseNumbers}); err != nil {
+		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &ustruct.UserUnlockedShowcaseNumber{
+			SUID:    suid,
+			Numbers: consts.UserInitialUnlockedShowcaseNumbers,
+		}); err != nil {
 			return nil, err
 		}
 
@@ -585,6 +591,15 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			})
 		}
 		if err := opuser.UpsertManyUserPhotoExpressions(ctx, suid, userPhotoExpressions); err != nil {
+			return nil, err
+		}
+
+		// UserCurrentQuestArea
+		if err := opuser.UpsertUserCurrentQuestArea(ctx, &ustruct.UserCurrentQuestArea{
+			SUID:                suid,
+			CurrentMainAreaId:   consts.UserInitialCurrentMainAreaId,
+			CurrentTowerQuestId: consts.UserInitialCurrentTowerQuestId,
+		}); err != nil {
 			return nil, err
 		}
 

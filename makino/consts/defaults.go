@@ -184,4 +184,7 @@ var (
 		"shop_top_normal-weekly-stone-21-0721-02",
 	}
 	UserInitialUnlockedShowcaseNumbers = []int32{1, 2, 3, 4, 5}
+
+	UserInitialCurrentMainAreaId = "area-main-001"
+	UserInitialCurrentTowerQuestId = "qt-tower-001"
 )

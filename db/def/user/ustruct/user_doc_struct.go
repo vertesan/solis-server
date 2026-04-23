@@ -43,3 +43,9 @@ type UserUnlockedShowcaseNumber struct {
 	SUID    string  `bson:"SUID"`
 	Numbers []int32 `bson:"numbers"`
 }
+
+type UserCurrentQuestArea struct {
+	SUID                string `bson:"SUID"`
+	CurrentMainAreaId   string `bson:"currentMainAreaId"`
+	CurrentTowerQuestId string `bson:"currentTowerQuestId"`
+}
