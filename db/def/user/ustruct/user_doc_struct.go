@@ -33,3 +33,8 @@ type UserExchangeBooth struct {
 	SUID     string   `bson:"SUID"`
 	BoothIds []string `bson:"boothIds"`
 }
+
+type UserShowcaseToyShopId struct {
+	SUID    string   `bson:"SUID"`
+	ShopIds []string `bson:"shopIds"`
+}

@@ -557,6 +557,16 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserNotiShowcaseShopItem
+		if err := opuser.UpsertUserNotiShowcaseShopItem(ctx, suid, proto.Clone(consts.UserInitialNotiShowcaseShopItem).(*papi.NotiShopItem)); err != nil {
+			return nil, err
+		}
+
+		// UserShowcaseToyShopId
+		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &ustruct.UserShowcaseToyShopId{SUID: suid, ShopIds: consts.UserInitialShowcaseToyShopIds}); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {

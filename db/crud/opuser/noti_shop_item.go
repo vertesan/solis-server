@@ -65,3 +65,31 @@ func DeleteUserNotiNormalShopItem(ctx context.Context, suid string) error {
 		bson.M{"SUID": suid},
 	)
 }
+
+func FindUserNotiShowcaseShopItem(ctx context.Context, suid string) (*papi.NotiShopItem, error) {
+	return ucommon.FindOne[papi.NotiShopItem](
+		ctx,
+		uname.UserNotiShowcaseShopItem,
+		bson.M{"SUID": suid},
+	)
+}
+
+func UpsertUserNotiShowcaseShopItem(ctx context.Context, suid string, item *papi.NotiShopItem) error {
+	return ucommon.UpsertOne(
+		ctx,
+		uname.UserNotiShowcaseShopItem,
+		bson.M{"SUID": suid},
+		&ustruct.UserStruct[*papi.NotiShopItem]{
+			SUID: suid,
+			Data: item,
+		},
+	)
+}
+
+func DeleteUserNotiShowcaseShopItem(ctx context.Context, suid string) error {
+	return ucommon.Delete(
+		ctx,
+		uname.UserNotiShowcaseShopItem,
+		bson.M{"SUID": suid},
+	)
+}
