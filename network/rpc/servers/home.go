@@ -29,6 +29,16 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 	return resp, nil
 }
 
-// func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
-
-// }
+func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
+	suid, err := metadata.GetSuid(ctx)
+	if err != nil {
+		rich.Error("failed to get suid: %v", err)
+		return nil, status.Error(codes.Unauthenticated, "bad token")
+	}
+	resp, err := home.Enter(context.Background(), suid.String())
+	if err != nil {
+		rich.Error("failed to enter home: %v", err)
+		return nil, status.Error(codes.Internal, "internal error")
+	}
+	return resp, nil
+}
