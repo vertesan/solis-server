@@ -137,6 +137,9 @@ func DeleteUser(suid string) error {
 		if err := opuser.DeleteUserShowcaseToyShopId(ctx, suid); err != nil {
 			return nil, err
 		}
+		if err := opuser.DeleteUserUnlockedShowcaseNumber(ctx, suid); err != nil {
+			return nil, err
+		}
 
 		return nil, nil
 	}, nil, nil)

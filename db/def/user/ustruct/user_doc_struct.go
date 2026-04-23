@@ -38,3 +38,8 @@ type UserShowcaseToyShopId struct {
 	SUID    string   `bson:"SUID"`
 	ShopIds []string `bson:"shopIds"`
 }
+
+type UserUnlockedShowcaseNumber struct {
+	SUID    string  `bson:"SUID"`
+	Numbers []int32 `bson:"numbers"`
+}

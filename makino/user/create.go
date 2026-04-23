@@ -567,6 +567,11 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserUnlockedShowcaseNumber
+		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &ustruct.UserUnlockedShowcaseNumber{SUID: suid, Numbers: consts.UserInitialUnlockedShowcaseNumbers}); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {

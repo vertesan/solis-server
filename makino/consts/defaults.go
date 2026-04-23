@@ -183,4 +183,5 @@ var (
 		"shop_item_normal-weekly-08-23-0624",
 		"shop_top_normal-weekly-stone-21-0721-02",
 	}
+	UserInitialUnlockedShowcaseNumbers = []int32{1, 2, 3, 4, 5}
 )
