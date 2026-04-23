@@ -15,6 +15,7 @@ import (
 	"vertesan/solis-server/makino/user/character"
 	"vertesan/solis-server/makino/user/costume"
 	"vertesan/solis-server/makino/user/deck"
+	"vertesan/solis-server/makino/user/extrastory"
 	"vertesan/solis-server/makino/user/tutorial"
 	"vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/proto/penum"
@@ -544,6 +545,15 @@ func CreateUser(publicUserId string, suid string, password string) error {
 
 		// UserPhotoStage
 		if err := opuser.UpsertManyUserPhotoStages(ctx, suid, consts.UserInitialPhotoStages); err != nil {
+			return nil, err
+		}
+
+		// UserExtraStoryPartInfo
+		extraStoryPartInfos, err := extrastory.SpawnUserInitialExtraStoryPartInfos(ctx)
+		if err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertManyUserExtraStoryPartInfos(ctx, suid, extraStoryPartInfos); err != nil {
 			return nil, err
 		}
 
