@@ -542,6 +542,11 @@ func CreateUser(publicUserId string, suid string, password string) error {
 			return nil, err
 		}
 
+		// UserPhotoStage
+		if err := opuser.UpsertManyUserPhotoStages(ctx, suid, consts.UserInitialPhotoStages); err != nil {
+			return nil, err
+		}
+
 		return nil, nil
 	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
 	if err != nil {
