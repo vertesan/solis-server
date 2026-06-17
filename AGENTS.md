@@ -18,15 +18,15 @@ solis-server/
 │   │   ├── master/mstruct/ BSON struct definitions for master data documents, each wraps a DataHolder (raw protobuf bytes)
 │   │   ├── user/uname/     Constant strings for user DB collection names
 │   │   └── user/ustruct/   BSON struct definitions for user data documents
-│   ├── crud/
+│   ├── store/
 │   │   ├── opuser/         User-specific data CRUD
 │   │   ├── opmaster/       Master data queries
 │   │   └── opsolis/        Server global data CRUD
 │   ├── internal/
 │   │   └── depot/          Shared MongoDB client and database handles (Client, Solis, Master, User)
 │   └── transaction/        MongoDB transaction wrapper with snapshot reads / majority writes
-├── makino/                 Game-specific logic, usually invoked by gRPC services and admin APIs
-├── network/
+├── makino/                 Service layer, game-specific logic, usually invoked by gRPC services and admin API handlers. Not all handlers have a corresponding service (especially for simple APIs)
+├── network/                The handler layer
 │   ├── rpc/                gRPC servers (:50051) for game communication
 │   └── http/               HTTP/Fiber server (:50052) for auth endpoints, asset downloads, admin API
 ├── proto/                  Protobuf definitions: enums, master data, transactions, API services
