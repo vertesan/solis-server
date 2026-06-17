@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"

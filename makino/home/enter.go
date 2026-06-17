@@ -2,8 +2,8 @@ package home
 
 import (
 	"context"
-	"vertesan/solis-server/db/crud/opsolis"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opsolis"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/proto/papi"
 )
 

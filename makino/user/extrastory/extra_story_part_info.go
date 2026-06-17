@@ -3,7 +3,7 @@ package extrastory
 import (
 	"context"
 	"fmt"
-	"vertesan/solis-server/db/crud/opmaster"
+	"vertesan/solis-server/db/store/opmaster"
 	"vertesan/solis-server/makino/consts"
 	"vertesan/solis-server/proto/papi"
 )

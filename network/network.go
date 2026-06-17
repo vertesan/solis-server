@@ -3,7 +3,7 @@ package network
 import (
 	"context"
 	"vertesan/solis-server/db"
-	"vertesan/solis-server/db/crud/opsolis"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/network/http"
 	"vertesan/solis-server/network/internal/depot"
 	"vertesan/solis-server/network/rpc"

@@ -3,7 +3,7 @@ package game
 import (
 	"context"
 	"time"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/network/internal/depot"
 	"vertesan/solis-server/utils"
 	"vertesan/solis-server/utils/jwto"

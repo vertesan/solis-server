@@ -3,7 +3,7 @@ package costume
 import (
 	"context"
 	"time"
-	"vertesan/solis-server/db/crud/opmaster"
+	"vertesan/solis-server/db/store/opmaster"
 	"vertesan/solis-server/proto/pmaster"
 	"vertesan/solis-server/proto/ptransaction"
 )

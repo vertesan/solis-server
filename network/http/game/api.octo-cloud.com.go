@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strconv"
 	"vertesan/solis-server/crypto"
-	"vertesan/solis-server/db/crud/opsolis"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/network/internal/depot"
 	"vertesan/solis-server/proto/octo"
 	"vertesan/solis-server/utils/rich"

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
-	"vertesan/solis-server/db/crud/opsolis"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/utils"
 	"vertesan/solis-server/utils/config"
 	"vertesan/solis-server/utils/jwto"

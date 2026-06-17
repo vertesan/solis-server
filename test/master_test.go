@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	// "vertesan/solis-server/db"
-	// "vertesan/solis-server/db/crud/opsolis"
+	// "vertesan/solis-server/db/store/opsolis"
 	pb "vertesan/solis-server/proto/papi"
 )
 

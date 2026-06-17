@@ -3,8 +3,8 @@ package game
 import (
 	"context"
 	"errors"
-	"vertesan/solis-server/db/crud/opsolis"
 	"vertesan/solis-server/db/def/solis/sstruct"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/network/internal/depot"
 	"vertesan/solis-server/utils"
 	"vertesan/solis-server/utils/rich"

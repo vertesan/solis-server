@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"vertesan/solis-server/db/crud/opmaster"
+	"vertesan/solis-server/db/store/opmaster"
 	"vertesan/solis-server/proto/penum"
 	"vertesan/solis-server/proto/pmaster"
 )

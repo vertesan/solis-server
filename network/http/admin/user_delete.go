@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 	"errors"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/makino/user"
 	"vertesan/solis-server/utils/rich"
 

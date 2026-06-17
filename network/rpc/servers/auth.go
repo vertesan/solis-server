@@ -3,7 +3,7 @@ package servers
 import (
 	"context"
 	"time"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	pb "vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/proto/ptransaction"
 	"vertesan/solis-server/utils"

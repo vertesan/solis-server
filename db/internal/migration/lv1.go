@@ -2,8 +2,8 @@ package migration
 
 import (
 	"context"
-	"vertesan/solis-server/db/crud/opsolis"
 	"vertesan/solis-server/db/def/solis/sstruct"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/db/transaction"
 	"vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/proto/penum"

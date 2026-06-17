@@ -3,7 +3,7 @@ package home
 import (
 	"context"
 	"time"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/proto/papi"
 )
 

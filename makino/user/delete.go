@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/db/transaction"
 )
 

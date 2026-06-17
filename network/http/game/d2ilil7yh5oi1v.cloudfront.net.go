@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path"
-	"vertesan/solis-server/db/crud/opsolis"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/utils/config"
 	"vertesan/solis-server/utils/rich"
 

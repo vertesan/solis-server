@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"vertesan/solis-server/db/crud/opsolis"
+	"vertesan/solis-server/db/store/opsolis"
 	"vertesan/solis-server/utils/rich"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"

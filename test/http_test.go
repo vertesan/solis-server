@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"testing"
 	"time"
-	"vertesan/solis-server/db/crud/opuser"
 	"vertesan/solis-server/db/def/user/ustruct"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/network/http/game"
 	"vertesan/solis-server/utils/jwto"
 

@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"errors"
-	"vertesan/solis-server/db/crud/opuser"
+	"vertesan/solis-server/db/store/opuser"
 	"vertesan/solis-server/proto/papi"
 	"vertesan/solis-server/proto/ptransaction"
 
