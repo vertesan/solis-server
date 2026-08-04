@@ -1,5 +1,5 @@
 syntax = "proto3";
-option go_package = "vertesan/solis-server/proto/octo";
+option go_package = "github.com/vertesan/solis-server/internal/proto/octo";
 
 message Database {
     int32 revision = 1;

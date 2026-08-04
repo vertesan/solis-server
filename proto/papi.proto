@@ -1,6 +1,6 @@
 syntax = "proto3";
 package api;
-option go_package = "vertesan/solis-server/proto/papi";
+option go_package = "github.com/vertesan/solis-server/internal/proto/papi";
 import "penum.proto";
 import "pmaster.proto";
 import "ptransaction.proto";

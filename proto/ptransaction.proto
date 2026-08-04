@@ -1,6 +1,6 @@
 syntax = "proto3";
 package ptransaction;
-option go_package = "vertesan/solis-server/proto/ptransaction";
+option go_package = "github.com/vertesan/solis-server/internal/proto/ptransaction";
 import "penum.proto";
 
 message Payslip {

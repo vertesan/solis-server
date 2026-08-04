@@ -14937,7 +14937,7 @@ const file_penum_proto_rawDesc = "" +
 	"\x17TutorialType_FishHeaven\x101*a\n" +
 	"\x16WatchAdvertisementType\x12\"\n" +
 	"\x1eWatchAdvertisementType_Unknown\x10\x00\x12#\n" +
-	"\x1fWatchAdvertisementType_Roulette\x10\x01B#Z!github.com/vertesan/solis-server/internal/proto/penumb\x06proto3"
+	"\x1fWatchAdvertisementType_Roulette\x10\x01B7Z5github.com/vertesan/solis-server/internal/proto/penumb\x06proto3"
 
 var (
 	file_penum_proto_rawDescOnce sync.Once

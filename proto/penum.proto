@@ -1,6 +1,6 @@
 syntax = "proto3";
 package penum;
-option go_package = "vertesan/solis-server/proto/penum";
+option go_package = "github.com/vertesan/solis-server/internal/proto/penum";
 
 enum AccessoryCategoryType {
   AccessoryCategoryType_Unknown = 0;

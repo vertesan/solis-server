@@ -1,6 +1,6 @@
 syntax = "proto3";
 package pmaster;
-option go_package = "vertesan/solis-server/proto/pmaster";
+option go_package = "github.com/vertesan/solis-server/internal/proto/pmaster";
 import "penum.proto";
 
 message PhotoContestSection {

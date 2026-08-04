@@ -88810,7 +88810,7 @@ const file_papi_proto_rawDesc = "" +
 	".api.Empty\x1a\x14.api.UserGetResponse\x12f\n" +
 	"\x15ProvideExternalReward\x12%.api.UserProvideExternalRewardRequest\x1a&.api.UserProvideExternalRewardResponse2\\\n" +
 	"\aWarning\x12Q\n" +
-	"\fSetDisplayed\x12\x1f.api.WarningSetDisplayedRequest\x1a .api.WarningSetDisplayedResponseB\"Z github.com/vertesan/solis-server/internal/proto/papib\x06proto3"
+	"\fSetDisplayed\x12\x1f.api.WarningSetDisplayedRequest\x1a .api.WarningSetDisplayedResponseB6Z4github.com/vertesan/solis-server/internal/proto/papib\x06proto3"
 
 var (
 	file_papi_proto_rawDescOnce sync.Once

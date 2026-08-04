@@ -31269,7 +31269,7 @@ const file_pmaster_proto_rawDesc = "" +
 	"\x0enavigationType\x18\x03 \x01(\x0e2\x1d.penum.TutorialNavigationTypeR\x0enavigationType\x12]\n" +
 	"\x16navigationPositionType\x18\x04 \x01(\x0e2%.penum.TutorialNavigationPositionTypeR\x16navigationPositionType\x12\x14\n" +
 	"\x05texts\x18\x05 \x03(\tR\x05texts\x12\x1a\n" +
-	"\bassetIds\x18\x06 \x03(\tR\bassetIdsB%Z#github.com/vertesan/solis-server/internal/proto/pmasterb\x06proto3"
+	"\bassetIds\x18\x06 \x03(\tR\bassetIdsB9Z7github.com/vertesan/solis-server/internal/proto/pmasterb\x06proto3"
 
 var (
 	file_pmaster_proto_rawDescOnce sync.Once

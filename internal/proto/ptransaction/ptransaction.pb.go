@@ -5977,7 +5977,7 @@ const file_ptransaction_proto_rawDesc = "" +
 	"\x06cardId\x18\x02 \x01(\tR\x06cardId\"[\n" +
 	"\fUserTutorial\x127\n" +
 	"\ftutorialType\x18\x01 \x01(\x0e2\x13.penum.TutorialTypeR\ftutorialType\x12\x12\n" +
-	"\x04step\x18\x02 \x01(\x03R\x04stepB*Z(github.com/vertesan/solis-server/internal/proto/ptransactionb\x06proto3"
+	"\x04step\x18\x02 \x01(\x03R\x04stepB>Z<github.com/vertesan/solis-server/internal/proto/ptransactionb\x06proto3"
 
 var (
 	file_ptransaction_proto_rawDescOnce sync.Once
