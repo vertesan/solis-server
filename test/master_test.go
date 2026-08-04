@@ -5,9 +5,9 @@ import (
 	"strings"
 	"testing"
 
-	// "vertesan/solis-server/db"
-	// "vertesan/solis-server/db/store/opsolis"
-	pb "vertesan/solis-server/proto/papi"
+	// "github.com/vertesan/solis-server/internal/db"
+	// "github.com/vertesan/solis-server/internal/db/store/opsolis"
+	pb "github.com/vertesan/solis-server/internal/proto/papi"
 )
 
 func TestDownloadRawMasterDatabase(t *testing.T) {

@@ -3,11 +3,11 @@ package test
 import (
 	"context"
 	"fmt"
+	"github.com/vertesan/solis-server/internal/db/store/opsolis"
+	"github.com/vertesan/solis-server/internal/utils"
+	"github.com/vertesan/solis-server/internal/utils/config"
+	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"time"
-	"vertesan/solis-server/db/store/opsolis"
-	"vertesan/solis-server/utils"
-	"vertesan/solis-server/utils/config"
-	"vertesan/solis-server/utils/jwto"
 
 	"github.com/gofiber/fiber/v3/client"
 	"github.com/golang-jwt/jwt/v5"

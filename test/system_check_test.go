@@ -6,7 +6,7 @@ import (
 	"context"
 	"time"
 
-	pb "vertesan/solis-server/proto/papi"
+	pb "github.com/vertesan/solis-server/internal/proto/papi"
 )
 
 func TestSystemCheck(t *testing.T) {

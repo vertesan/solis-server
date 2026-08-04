@@ -2,9 +2,9 @@ package test
 
 import (
 	"fmt"
+	"github.com/vertesan/solis-server/internal/network/http/admin"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"testing"
-	"vertesan/solis-server/network/http/admin"
-	"vertesan/solis-server/proto/papi"
 
 	"github.com/gofiber/fiber/v3/client"
 )

@@ -33,7 +33,8 @@ docker/
 traffic/
 
 # binaries
-solis-server
+/solis-server
+/solis
 
 # local files
 settings.local.json

@@ -1,4 +1,4 @@
-module vertesan/solis-server
+module github.com/vertesan/solis-server
 
 go 1.26.5
 

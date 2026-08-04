@@ -6,40 +6,43 @@ This project is a private server, simulates the backend server implementation fo
 
 ```
 solis-server/
-├── main.go                 Entry point: loads .env, starts pprof (dev), calls network.StartServer()
-├── .env                    Environment variables automatically loaded when server starts
-├── agents/                 Documents created by agents
-├── crypto/                 Encryption algorithms for master DB, Unity aseetbundle manifest
-├── db/                     MongoDB layer (3 databases: "solis" for server global data, "master" for static game master data, "user" for user-specific data)
-│   ├── def/
-│   │   ├── solis/sname/    Constant strings for solis DB collection names
-│   │   ├── solis/sstruct/  BSON struct definitions for solis documents
-│   │   ├── master/mname/   Constant strings for master DB collection names
-│   │   ├── master/mstruct/ BSON struct definitions for master data documents, each wraps a DataHolder (raw protobuf bytes)
-│   │   ├── user/uname/     Constant strings for user DB collection names
-│   │   └── user/ustruct/   BSON struct definitions for user data documents
-│   ├── store/
-│   │   ├── opuser/         User-specific data CRUD
-│   │   ├── opmaster/       Master data queries
-│   │   └── opsolis/        Server global data CRUD
-│   ├── internal/
-│   │   └── depot/          Shared MongoDB client and database handles (Client, Solis, Master, User)
-│   └── transaction/        MongoDB transaction wrapper with snapshot reads / majority writes
-├── makino/                 Service layer, game-specific logic, usually invoked by gRPC services and admin API handlers. Not all handlers have a corresponding service (especially for simple APIs)
-├── network/                The handler layer
-│   ├── rpc/                gRPC servers (:50051) for game logic API
-│   └── http/               HTTP/Fiber server (:50052) for auth endpoints, asset downloads, admin API
-├── proto/                  Protobuf definitions: enums, master data, transactions, API services
-│   ├── papi/               Generated Go code for all gRPC API request/response messages and services
-│   ├── penum/              Generated Go code for game enums (CardType, CharacterType, ParameterType, etc.)
-│   ├── pmaster/            Generated Go code for master data structs (Card, Character, Skill, Ability, etc.)
-│   ├── ptransaction/       Generated Go code for frequently nested messages used in requests and responses, consider it an extension to `papi`
-│   └── *.proto             Source .proto files
-├── utils/                  Config (env vars), structured logging
-├── test/                   Integration test scenarios for gRPC and HTTP endpoints
-├── traffic/                Captured real world game client - server gRPC communication traffic, converted to JSON format
-├── script/                 TypeScript/JS utilities for data migration and manifest updates
-└── resources/              Encrypted master databases and game assets
+├── cmd/
+│   └── solis/
+│       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls network.StartServer()
+├── internal/                       Private Go packages
+│   ├── crypto/                 Encryption algorithms for master DB and Unity asset bundle manifests
+│   ├── db/                     MongoDB layer ("solis", "master", and "user" databases)
+│   │   ├── def/
+│   │   │   ├── solis/sname/    Constant strings for solis DB collection names
+│   │   │   ├── solis/sstruct/  BSON struct definitions for solis documents
+│   │   │   ├── master/mname/   Constant strings for master DB collection names
+│   │   │   ├── master/mstruct/ BSON struct definitions for master data documents
+│   │   │   ├── user/uname/     Constant strings for user DB collection names
+│   │   │   └── user/ustruct/   BSON struct definitions for user data documents
+│   │   ├── store/
+│   │   │   ├── opuser/         User-specific data CRUD
+│   │   │   ├── opmaster/       Master data queries
+│   │   │   └── opsolis/        Server-global data CRUD
+│   │   ├── internal/depot/ Shared MongoDB client and database handles
+│   │   └── transaction/    MongoDB transaction wrapper with snapshot reads / majority writes
+│   ├── makino/                 Game-specific service layer used by gRPC and admin handlers
+│   ├── network/                Handler layer
+│   │   ├── rpc/                gRPC servers (:50051) for game logic APIs
+│   │   └── http/               HTTP/Fiber server (:50052) for auth, assets, and admin APIs
+│   ├── proto/                  Generated Go protobuf packages
+│   │   ├── octo/               Octo manifest database messages
+│   │   ├── papi/               gRPC API messages and services
+│   │   ├── penum/              Game enums
+│   │   ├── pmaster/            Master data messages
+│   │   └── ptransaction/       Shared transaction messages
+│   └── utils/                  Configuration, JWT, logging, and common helpers
+├── proto/                          Protobuf source definitions (`*.proto`)
+├── test/                           Integration test scenarios for gRPC and HTTP endpoints
+├── .env                            Environment variables automatically loaded when the server starts
+├── agents/                         Documents created by agents
+├── resources/                      Encrypted master databases and game assets
+├── scripts/                        TypeScript/JS utilities for data migration and manifest updates
+└── traffic/                        Captured game client/server gRPC traffic converted to JSON
 ```
 
 ## Key Technologies
@@ -48,12 +51,12 @@ solis-server/
 - **gRPC** (`google.golang.org/grpc`) with custom codec compression and protobuf serialization
 - **Fiber v3** (`github.com/gofiber/fiber/v3`) for HTTP
 - **MongoDB** (`go.mongodb.org/mongo-driver/v2`) as the primary datastore
-- **zap** (`go.uber.org/zap`) for logging, with helper functions wrapped in `vertesan/solis-server/utils/rich`
+- **zap** (`go.uber.org/zap`) for logging, with helper functions wrapped in `github.com/vertesan/solis-server/internal/utils/rich`
 
 ## gRPC Services
 
 All gRPC services are supposed to be implemented under `network/rpc/servers/` directory. These services simulate game gRPC services, deceiving clients to successfully complete the communication.
-Services generated from source proto file are defined in `proto/papi`.
+Services generated from source proto files are defined in `internal/proto/papi`.
 
 ## HTTP Endpoints
 
@@ -67,8 +70,8 @@ HTTP APIs are defined under `network/http/` directory:
 Three databases: `solis`, `master`, `user`.
 
 - **solis**: Server-wide global data
-- **master**: Static game master data. Each collection (except `_version`) is supposed to have a corresponding struct defined in `db/internal/mstruct`. The `data` field in each document contains raw protobuf binary data, the corresponding unmarshalled protobuf data struct is defined in `proto/pmaster`
-- **user**: User-specific data. Each collection is supposed to have a corresponding struct defined in `db/internal/ustruct`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by original game, usually defined in `proto/ptransaction` and `proto/papi`
+- **master**: Static game master data. Each collection (except `_version`) is supposed to have a corresponding struct defined in `internal/db/def/master/mstruct`. The `data` field in each document contains raw protobuf binary data, and the corresponding unmarshalled protobuf data struct is defined in `internal/proto/pmaster`
+- **user**: User-specific data. Each collection is supposed to have a corresponding struct defined in `internal/db/def/user/ustruct`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by the original game, usually defined in `internal/proto/ptransaction` and `internal/proto/papi`
 
 You can use MongoDB MCP server to retrieve or manipulate data if you need.
 

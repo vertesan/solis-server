@@ -1,12 +1,12 @@
 package test
 
 import (
+	"github.com/vertesan/solis-server/internal/db"
+	"github.com/vertesan/solis-server/internal/network/rpc/codec"
+	"github.com/vertesan/solis-server/internal/utils/config"
 	"log"
 	"os"
 	"testing"
-	"vertesan/solis-server/db"
-	"vertesan/solis-server/network/rpc/codec"
-	"vertesan/solis-server/utils/config"
 
 	"github.com/gofiber/fiber/v3/client"
 	"github.com/joho/godotenv"
