@@ -1,6 +1,6 @@
 # Solis Server
 
-This project is a private server, simulates the backend server implementation for "IDOLY PRIDE", a Japanese idol management smartphone game. Written in Go with a dual-protocol architecture: gRPC for real-time game communication and HTTP for authentication, asset delivery, and admin operations.
+This project is a private server, simulates the backend server implementation for "IDOLY PRIDE", a Japanese idol management smartphone game. Written in Go with a dual-protocol architecture: gRPC for real-time game logic communication and HTTP for authentication, asset delivery, and admin operations.
 
 ## Architecture
 
@@ -27,7 +27,7 @@ solis-server/
 │   └── transaction/        MongoDB transaction wrapper with snapshot reads / majority writes
 ├── makino/                 Service layer, game-specific logic, usually invoked by gRPC services and admin API handlers. Not all handlers have a corresponding service (especially for simple APIs)
 ├── network/                The handler layer
-│   ├── rpc/                gRPC servers (:50051) for game communication
+│   ├── rpc/                gRPC servers (:50051) for game logic API
 │   └── http/               HTTP/Fiber server (:50052) for auth endpoints, asset downloads, admin API
 ├── proto/                  Protobuf definitions: enums, master data, transactions, API services
 │   ├── papi/               Generated Go code for all gRPC API request/response messages and services
@@ -44,7 +44,7 @@ solis-server/
 
 ## Key Technologies
 
-- **Go 1.26.2** with modules
+- **Go 1.26.5** with modules
 - **gRPC** (`google.golang.org/grpc`) with custom codec compression and protobuf serialization
 - **Fiber v3** (`github.com/gofiber/fiber/v3`) for HTTP
 - **MongoDB** (`go.mongodb.org/mongo-driver/v2`) as the primary datastore
@@ -66,7 +66,7 @@ HTTP APIs are defined under `network/http/` directory:
 
 Three databases: `solis`, `master`, `user`.
 
-- **solis**: Server global data
+- **solis**: Server-wide global data
 - **master**: Static game master data. Each collection (except `_version`) is supposed to have a corresponding struct defined in `db/internal/mstruct`. The `data` field in each document contains raw protobuf binary data, the corresponding unmarshalled protobuf data struct is defined in `proto/pmaster`
 - **user**: User-specific data. Each collection is supposed to have a corresponding struct defined in `db/internal/ustruct`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by original game, usually defined in `proto/ptransaction` and `proto/papi`
 

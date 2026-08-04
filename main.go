@@ -1,9 +1,9 @@
 package main
 
 import (
+	_ "github.com/joho/godotenv/autoload"
 	"net/http"
 	_ "net/http/pprof"
-	_ "github.com/joho/godotenv/autoload"
 
 	"vertesan/solis-server/network"
 	"vertesan/solis-server/utils/config"
