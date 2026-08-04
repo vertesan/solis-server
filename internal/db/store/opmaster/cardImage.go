@@ -2,8 +2,8 @@ package opmaster
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/master/mname"
-	"github.com/vertesan/solis-server/internal/db/def/master/mstruct"
+	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
+	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster/internal/mcommon"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 
@@ -11,7 +11,7 @@ import (
 )
 
 func FindCardImages(ctx context.Context, cardId string) ([]*pmaster.CardImage, error) {
-	cardImages, err := mcommon.FindMany[mstruct.CardImage, pmaster.CardImage](
+	cardImages, err := mcommon.FindMany[mmodel.CardImage, pmaster.CardImage](
 		ctx,
 		mname.CardImage,
 		bson.M{"CardId": cardId},

@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
@@ -23,7 +23,7 @@ func UpsertUserNotiStoneShopItem(ctx context.Context, suid string, item *papi.No
 		ctx,
 		uname.UserNotiStoneShopItem,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.NotiShopItem]{
+		&umodel.UserStruct[*papi.NotiShopItem]{
 			SUID: suid,
 			Data: item,
 		},
@@ -51,7 +51,7 @@ func UpsertUserNotiNormalShopItem(ctx context.Context, suid string, item *papi.N
 		ctx,
 		uname.UserNotiNormalShopItem,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.NotiShopItem]{
+		&umodel.UserStruct[*papi.NotiShopItem]{
 			SUID: suid,
 			Data: item,
 		},
@@ -79,7 +79,7 @@ func UpsertUserNotiShowcaseShopItem(ctx context.Context, suid string, item *papi
 		ctx,
 		uname.UserNotiShowcaseShopItem,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.NotiShopItem]{
+		&umodel.UserStruct[*papi.NotiShopItem]{
 			SUID: suid,
 			Data: item,
 		},

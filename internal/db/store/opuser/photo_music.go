@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
@@ -31,7 +31,7 @@ func UpsertUserPhotoMusic(ctx context.Context, suid string, music *papi.PhotoMus
 		ctx,
 		uname.UserPhotoMusic,
 		bson.M{"SUID": suid, "musicId": music.MusicId},
-		&ustruct.UserStruct[*papi.PhotoMusic]{
+		&umodel.UserStruct[*papi.PhotoMusic]{
 			SUID: suid,
 			Data: music,
 		},

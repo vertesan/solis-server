@@ -3,7 +3,7 @@ package rpc
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/network/internal/depot"
+	"github.com/vertesan/solis-server/internal/server/internal/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/rich"

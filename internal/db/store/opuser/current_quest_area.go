@@ -2,22 +2,22 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func FindUserCurrentQuestArea(ctx context.Context, suid string) (*ustruct.UserCurrentQuestArea, error) {
-	return ucommon.FindOne[ustruct.UserCurrentQuestArea](
+func FindUserCurrentQuestArea(ctx context.Context, suid string) (*umodel.UserCurrentQuestArea, error) {
+	return ucommon.FindOne[umodel.UserCurrentQuestArea](
 		ctx,
 		uname.UserCurrentQuestArea,
 		bson.M{"SUID": suid},
 	)
 }
 
-func UpsertUserCurrentQuestArea(ctx context.Context, data *ustruct.UserCurrentQuestArea) error {
+func UpsertUserCurrentQuestArea(ctx context.Context, data *umodel.UserCurrentQuestArea) error {
 	return ucommon.UpsertOne(
 		ctx,
 		uname.UserCurrentQuestArea,

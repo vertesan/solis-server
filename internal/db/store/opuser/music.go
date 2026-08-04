@@ -2,7 +2,7 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 

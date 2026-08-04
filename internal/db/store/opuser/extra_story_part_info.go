@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
@@ -23,7 +23,7 @@ func UpsertUserExtraStoryPartInfo(ctx context.Context, suid string, info *papi.E
 		ctx,
 		uname.UserExtraStoryPartInfo,
 		bson.M{"SUID": suid, "id": info.Id},
-		&ustruct.UserStruct[*papi.ExtraStoryPartInfo]{
+		&umodel.UserStruct[*papi.ExtraStoryPartInfo]{
 			SUID: suid,
 			Data: info,
 		},

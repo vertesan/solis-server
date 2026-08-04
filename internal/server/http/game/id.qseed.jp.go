@@ -3,9 +3,9 @@ package game
 import (
 	"context"
 	"errors"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sstruct"
+	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
-	"github.com/vertesan/solis-server/internal/network/internal/depot"
+	"github.com/vertesan/solis-server/internal/server/internal/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 
@@ -38,7 +38,7 @@ var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
 
 	if qseed == nil {
 		// if not exists, create a new one
-		qseed = &sstruct.Qseed{
+		qseed = &smodel.Qseed{
 			Device: deviceId,
 			Qseed:  utils.RandomHexString(16),
 		}

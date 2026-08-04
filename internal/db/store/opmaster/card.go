@@ -2,8 +2,8 @@ package opmaster
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/master/mname"
-	"github.com/vertesan/solis-server/internal/db/def/master/mstruct"
+	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
+	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster/internal/mcommon"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"iter"
@@ -13,20 +13,20 @@ import (
 )
 
 func FindCard(ctx context.Context, id string) (*pmaster.Card, error) {
-	return mcommon.FindOne[mstruct.Card, pmaster.Card](
+	return mcommon.FindOne[mmodel.Card, pmaster.Card](
 		ctx, mname.Card, bson.M{"Id": id},
 	)
 }
 
 func FindAllCards(ctx context.Context) ([]*pmaster.Card, error) {
-	return mcommon.FindMany[mstruct.Card, pmaster.Card](
+	return mcommon.FindMany[mmodel.Card, pmaster.Card](
 		ctx, mname.Card, bson.M{},
 	)
 }
 
 func YieldAllCards(ctx context.Context) iter.Seq[*pmaster.Card] {
 	return func(yield func(*pmaster.Card) bool) {
-		for c := range mcommon.YieldMany[mstruct.Card, pmaster.Card](ctx, mname.Card, bson.M{}) {
+		for c := range mcommon.YieldMany[mmodel.Card, pmaster.Card](ctx, mname.Card, bson.M{}) {
 			if !yield(c) {
 				return
 			}
@@ -35,19 +35,19 @@ func YieldAllCards(ctx context.Context) iter.Seq[*pmaster.Card] {
 }
 
 func FindCardParameter(ctx context.Context, id string, level int64) (*pmaster.CardParameter, error) {
-	return mcommon.FindOne[mstruct.CardParameter, pmaster.CardParameter](
+	return mcommon.FindOne[mmodel.CardParameter, pmaster.CardParameter](
 		ctx, mname.CardParameter, bson.M{"Id": id, "Level": level},
 	)
 }
 
 func FindCardRarity(ctx context.Context, rarity int64) (*pmaster.CardRarity, error) {
-	return mcommon.FindOne[mstruct.CardRarity, pmaster.CardRarity](
+	return mcommon.FindOne[mmodel.CardRarity, pmaster.CardRarity](
 		ctx, mname.CardRarity, bson.M{"Rarity": rarity},
 	)
 }
 
 func FindCardLevelReleases(ctx context.Context, id string, lteLevel int32) ([]*pmaster.CardLevelRelease, error) {
-	return mcommon.FindMany[mstruct.CardLevelRelease, pmaster.CardLevelRelease](
+	return mcommon.FindMany[mmodel.CardLevelRelease, pmaster.CardLevelRelease](
 		ctx, mname.CardLevelRelease, bson.D{
 			{Key: "Id", Value: id},
 			{Key: "Level", Value: bson.M{"$lte": lteLevel}},

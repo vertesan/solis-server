@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sname"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sstruct"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
+	"github.com/vertesan/solis-server/internal/db/model/solis/sname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis/internal/scommon"
 	"github.com/vertesan/solis-server/internal/proto/octo"
 
@@ -14,8 +14,8 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-func FindManifestMetaInfo(ctx context.Context) (*sstruct.OctoManifest, error) {
-	return scommon.FindOne[sstruct.OctoManifest](
+func FindManifestMetaInfo(ctx context.Context) (*smodel.OctoManifest, error) {
+	return scommon.FindOne[smodel.OctoManifest](
 		ctx,
 		sname.OctoManifest,
 		bson.M{},

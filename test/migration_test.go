@@ -3,11 +3,11 @@ package test
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
-	"github.com/vertesan/solis-server/internal/network/http/game"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
+	"github.com/vertesan/solis-server/internal/server/http/game"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"testing"
 	"time"
@@ -24,7 +24,7 @@ func TestMigrateScenario(t *testing.T) {
 	// prepare mock data
 	now := time.Now()
 	milliNow := now.UnixMilli()
-	if err := opuser.InsertUserAuth(context.Background(), &ustruct.UserAuth{
+	if err := opuser.InsertUserAuth(context.Background(), &umodel.UserAuth{
 		PublicUserId:  "00000000",
 		ServerUserId:  "00000000-0000-0000-0000-000000000000",
 		Password:      "password",

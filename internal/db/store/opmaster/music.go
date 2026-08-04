@@ -2,8 +2,8 @@ package opmaster
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/master/mname"
-	"github.com/vertesan/solis-server/internal/db/def/master/mstruct"
+	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
+	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster/internal/mcommon"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 
@@ -11,7 +11,7 @@ import (
 )
 
 func FindAllMusics(ctx context.Context) ([]*pmaster.Music, error) {
-	return mcommon.FindMany[mstruct.Music, pmaster.Music](
+	return mcommon.FindMany[mmodel.Music, pmaster.Music](
 		ctx, mname.Music, bson.M{},
 	)
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -42,7 +42,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 
 	err = transaction.WithTransaction(func(ctx context.Context) (interface{}, error) {
 		// userAuth
-		if err := opuser.InsertUserAuth(ctx, &ustruct.UserAuth{
+		if err := opuser.InsertUserAuth(ctx, &umodel.UserAuth{
 			PublicUserId:  publicUserId,
 			ServerUserId:  suid,
 			Password:      password,
@@ -444,7 +444,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		// UserShopIds
 		if err := opuser.UpsertUserShopId(
 			ctx,
-			&ustruct.UserShopId{SUID: suid, ShopIds: consts.UserInitialShopIds},
+			&umodel.UserShopId{SUID: suid, ShopIds: consts.UserInitialShopIds},
 		); err != nil {
 			return nil, err
 		}
@@ -452,7 +452,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		// UserExchangeBooth
 		if err := opuser.UpsertUserExchangeBooth(
 			ctx,
-			&ustruct.UserExchangeBooth{SUID: suid, BoothIds: consts.UserInitialExchangeBoothIds},
+			&umodel.UserExchangeBooth{SUID: suid, BoothIds: consts.UserInitialExchangeBoothIds},
 		); err != nil {
 			return nil, err
 		}
@@ -563,7 +563,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserShowcaseToyShopId
-		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &ustruct.UserShowcaseToyShopId{
+		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
 			SUID:    suid,
 			ShopIds: consts.UserInitialShowcaseToyShopIds,
 		}); err != nil {
@@ -571,7 +571,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserUnlockedShowcaseNumber
-		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &ustruct.UserUnlockedShowcaseNumber{
+		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &umodel.UserUnlockedShowcaseNumber{
 			SUID:    suid,
 			Numbers: consts.UserInitialUnlockedShowcaseNumbers,
 		}); err != nil {
@@ -595,7 +595,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserCurrentQuestArea
-		if err := opuser.UpsertUserCurrentQuestArea(ctx, &ustruct.UserCurrentQuestArea{
+		if err := opuser.UpsertUserCurrentQuestArea(ctx, &umodel.UserCurrentQuestArea{
 			SUID:                suid,
 			CurrentMainAreaId:   consts.UserInitialCurrentMainAreaId,
 			CurrentTowerQuestId: consts.UserInitialCurrentTowerQuestId,

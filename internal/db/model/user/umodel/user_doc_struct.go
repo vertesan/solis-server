@@ -1,4 +1,4 @@
-package ustruct
+package umodel
 
 import (
 	"time"

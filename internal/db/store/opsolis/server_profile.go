@@ -2,15 +2,15 @@ package opsolis
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sname"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sstruct"
+	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
+	"github.com/vertesan/solis-server/internal/db/model/solis/sname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis/internal/scommon"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func FindServerProfile(ctx context.Context) (*sstruct.ServerProfile, error) {
-	return scommon.FindOne[sstruct.ServerProfile](
+func FindServerProfile(ctx context.Context) (*smodel.ServerProfile, error) {
+	return scommon.FindOne[smodel.ServerProfile](
 		ctx,
 		sname.ServerProfile,
 		bson.M{},
@@ -36,7 +36,7 @@ func DeleteServerProfile(ctx context.Context) error {
 	)
 }
 
-func InsertServerProfile(ctx context.Context, serverProfile *sstruct.ServerProfile) error {
+func InsertServerProfile(ctx context.Context, serverProfile *smodel.ServerProfile) error {
 	return scommon.InsertOne(
 		ctx,
 		sname.ServerProfile,

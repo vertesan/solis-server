@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"github.com/vertesan/solis-server/internal/crypto"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
-	"github.com/vertesan/solis-server/internal/network/internal/depot"
 	"github.com/vertesan/solis-server/internal/proto/octo"
+	"github.com/vertesan/solis-server/internal/server/internal/depot"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 	"strconv"
 

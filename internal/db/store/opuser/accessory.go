@@ -3,9 +3,9 @@ package opuser
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -38,7 +38,7 @@ func UpsertUserAccessory(ctx context.Context, suid string, accessory *ptransacti
 			"SUID":        suid,
 			"accessoryId": accessory.AccessoryId,
 		},
-		&ustruct.UserStruct[*ptransaction.UserAccessory]{
+		&umodel.UserStruct[*ptransaction.UserAccessory]{
 			SUID: suid,
 			Data: accessory,
 		},

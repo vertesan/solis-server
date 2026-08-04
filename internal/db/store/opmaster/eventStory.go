@@ -2,8 +2,8 @@ package opmaster
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/master/mname"
-	"github.com/vertesan/solis-server/internal/db/def/master/mstruct"
+	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
+	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster/internal/mcommon"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 
@@ -11,7 +11,7 @@ import (
 )
 
 func FindAllEventStories(ctx context.Context) ([]*pmaster.EventStory, error) {
-	return mcommon.FindMany[mstruct.EventStory, pmaster.EventStory](
+	return mcommon.FindMany[mmodel.EventStory, pmaster.EventStory](
 		ctx, mname.EventStory, bson.M{},
 	)
 }

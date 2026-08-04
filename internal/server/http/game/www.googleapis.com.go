@@ -3,8 +3,8 @@ package game
 import (
 	"context"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
-	"github.com/vertesan/solis-server/internal/network/internal/depot"
-	"github.com/vertesan/solis-server/internal/network/internal/diver"
+	"github.com/vertesan/solis-server/internal/server/internal/depot"
+	"github.com/vertesan/solis-server/internal/server/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/rich"

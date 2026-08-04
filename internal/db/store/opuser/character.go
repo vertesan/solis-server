@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -26,7 +26,7 @@ func UpsertUserCharacter(ctx context.Context, suid string, character *ptransacti
 			"SUID":        suid,
 			"characterId": character.CharacterId,
 		},
-		&ustruct.UserStruct[*ptransaction.UserCharacter]{
+		&umodel.UserStruct[*ptransaction.UserCharacter]{
 			SUID: suid,
 			Data: character,
 		},

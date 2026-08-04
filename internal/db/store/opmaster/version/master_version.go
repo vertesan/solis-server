@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/master/mname"
-	"github.com/vertesan/solis-server/internal/db/def/master/mstruct"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
+	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -15,7 +15,7 @@ import (
 
 // get master._version
 func GetMasterVersion(ctx context.Context) (string, error) {
-	var ver mstruct.Version
+	var ver mmodel.Version
 	err := depot.Master.Collection(mname.Version).FindOne(ctx, bson.M{}).Decode(&ver)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -31,7 +31,7 @@ func UpsertMasterVersion(ctx context.Context, version string) error {
 	_, err := depot.Master.Collection(mname.Version).UpdateOne(
 		ctx,
 		bson.M{},
-		bson.M{"$set": &mstruct.Version{Version: version}},
+		bson.M{"$set": &mmodel.Version{Version: version}},
 		options.UpdateOne().SetUpsert(true),
 	)
 	if err != nil {

@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vertesan/solis-server/internal/crypto"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sstruct"
+	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/octo"
@@ -81,7 +81,7 @@ func DataUpdateCheck() error {
 	serverManifest, err := opsolis.FindManifestMetaInfo(context.Background())
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
-			serverManifest = &sstruct.OctoManifest{Revision: 0}
+			serverManifest = &smodel.OctoManifest{Revision: 0}
 		} else {
 			return fmt.Errorf("failed to read octoManifest from database: %w", err)
 		}

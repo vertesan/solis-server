@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -23,7 +23,7 @@ func UpsertUserPhotoPose(ctx context.Context, suid string, photoPose *ptransacti
 		ctx,
 		uname.UserPhotoPose,
 		bson.M{"SUID": suid, "photoPoseId": photoPose.PhotoPoseId},
-		&ustruct.UserStruct[*ptransaction.UserPhotoPose]{
+		&umodel.UserStruct[*ptransaction.UserPhotoPose]{
 			SUID: suid,
 			Data: photoPose,
 		},

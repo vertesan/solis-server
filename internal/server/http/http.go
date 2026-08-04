@@ -1,9 +1,9 @@
 package http
 
 import (
-	"github.com/vertesan/solis-server/internal/network/http/admin"
-	"github.com/vertesan/solis-server/internal/network/http/game"
-	"github.com/vertesan/solis-server/internal/network/internal/diver"
+	"github.com/vertesan/solis-server/internal/server/http/admin"
+	"github.com/vertesan/solis-server/internal/server/http/game"
+	"github.com/vertesan/solis-server/internal/server/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 	"strings"

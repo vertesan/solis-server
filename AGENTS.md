@@ -8,17 +8,17 @@ This project is a private server, simulates the backend server implementation fo
 solis-server/
 ├── cmd/
 │   └── solis/
-│       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls network.StartServer()
+│       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls server.StartServer()
 ├── internal/                       Private Go packages
 │   ├── crypto/                 Encryption algorithms for master DB and Unity asset bundle manifests
 │   ├── db/                     MongoDB layer ("solis", "master", and "user" databases)
-│   │   ├── def/
+│   │   ├── model/
 │   │   │   ├── solis/sname/    Constant strings for solis DB collection names
-│   │   │   ├── solis/sstruct/  BSON struct definitions for solis documents
+│   │   │   ├── solis/smodel/   BSON model definitions for solis documents
 │   │   │   ├── master/mname/   Constant strings for master DB collection names
-│   │   │   ├── master/mstruct/ BSON struct definitions for master data documents
+│   │   │   ├── master/mmodel/  BSON model definitions for master data documents
 │   │   │   ├── user/uname/     Constant strings for user DB collection names
-│   │   │   └── user/ustruct/   BSON struct definitions for user data documents
+│   │   │   └── user/umodel/    BSON model definitions for user data documents
 │   │   ├── store/
 │   │   │   ├── opuser/         User-specific data CRUD
 │   │   │   ├── opmaster/       Master data queries
@@ -26,7 +26,7 @@ solis-server/
 │   │   ├── internal/depot/ Shared MongoDB client and database handles
 │   │   └── transaction/    MongoDB transaction wrapper with snapshot reads / majority writes
 │   ├── makino/                 Game-specific service layer used by gRPC and admin handlers
-│   ├── network/                Handler layer
+│   ├── server/                 Handler layer
 │   │   ├── rpc/                gRPC servers (:50051) for game logic APIs
 │   │   └── http/               HTTP/Fiber server (:50052) for auth, assets, and admin APIs
 │   ├── proto/                  Generated Go protobuf packages
@@ -55,12 +55,12 @@ solis-server/
 
 ## gRPC Services
 
-All gRPC services are supposed to be implemented under `network/rpc/servers/` directory. These services simulate game gRPC services, deceiving clients to successfully complete the communication.
+All gRPC services are supposed to be implemented under `internal/server/rpc/servers/` directory. These services simulate game gRPC services, deceiving clients to successfully complete the communication.
 Services generated from source proto files are defined in `internal/proto/papi`.
 
 ## HTTP Endpoints
 
-HTTP APIs are defined under `network/http/` directory:
+HTTP APIs are defined under `internal/server/http/` directory:
 
 - **game**: Simulated game HTTP APIs, deceive clients to successfully complete the communication
 - **admin**: APIs which's paths start with `/admin/*`, provides management APIs for private server administrators
@@ -70,8 +70,8 @@ HTTP APIs are defined under `network/http/` directory:
 Three databases: `solis`, `master`, `user`.
 
 - **solis**: Server-wide global data
-- **master**: Static game master data. Each collection (except `_version`) is supposed to have a corresponding struct defined in `internal/db/def/master/mstruct`. The `data` field in each document contains raw protobuf binary data, and the corresponding unmarshalled protobuf data struct is defined in `internal/proto/pmaster`
-- **user**: User-specific data. Each collection is supposed to have a corresponding struct defined in `internal/db/def/user/ustruct`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by the original game, usually defined in `internal/proto/ptransaction` and `internal/proto/papi`
+- **master**: Static game master data. Each collection (except `_version`) is supposed to have a corresponding model defined in `internal/db/model/master/mmodel`. The `data` field in each document contains raw protobuf binary data, and the corresponding unmarshalled protobuf data struct is defined in `internal/proto/pmaster`
+- **user**: User-specific data. Each collection is supposed to have a corresponding model defined in `internal/db/model/user/umodel`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by the original game, usually defined in `internal/proto/ptransaction` and `internal/proto/papi`
 
 You can use MongoDB MCP server to retrieve or manipulate data if you need.
 

@@ -1,4 +1,4 @@
-package mstruct
+package mmodel
 
 // master data version struct for `_version` database
 type Version struct {

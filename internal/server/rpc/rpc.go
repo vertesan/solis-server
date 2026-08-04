@@ -2,9 +2,9 @@ package rpc
 
 import (
 	"fmt"
-	"github.com/vertesan/solis-server/internal/network/rpc/codec"
-	ss "github.com/vertesan/solis-server/internal/network/rpc/servers"
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/server/rpc/codec"
+	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 	"net"

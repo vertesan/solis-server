@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -23,7 +23,7 @@ func UpsertUserHomePosition(ctx context.Context, suid string, homePosition *ptra
 		ctx,
 		uname.UserHomePosition,
 		bson.M{"SUID": suid, "homePositionType": homePosition.HomePositionType},
-		&ustruct.UserStruct[*ptransaction.UserHomePosition]{
+		&umodel.UserStruct[*ptransaction.UserHomePosition]{
 			SUID: suid,
 			Data: homePosition,
 		},

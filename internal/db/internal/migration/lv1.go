@@ -2,7 +2,7 @@ package migration
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sstruct"
+	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -15,7 +15,7 @@ func level1Migration() error {
 		if err := opsolis.DeleteServerProfile(ctx); err != nil {
 			return nil, err
 		}
-		if err := opsolis.InsertServerProfile(ctx, &sstruct.ServerProfile{
+		if err := opsolis.InsertServerProfile(ctx, &smodel.ServerProfile{
 			AppVersion:         "4.10.4",
 			Platform:           "Android",
 			MasterVersion:      "",
@@ -65,7 +65,7 @@ func level1Migration() error {
 		// functionMaintenanceInfos
 
 		// update migration flag
-		if err := opsolis.UpsertMigration(ctx, &sstruct.Migration{Migration: 1}); err != nil {
+		if err := opsolis.UpsertMigration(ctx, &smodel.Migration{Migration: 1}); err != nil {
 			return nil, err
 		}
 		return nil, nil

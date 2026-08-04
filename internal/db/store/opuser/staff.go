@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -23,7 +23,7 @@ func UpsertUserStaff(ctx context.Context, suid string, staff *ptransaction.UserS
 		ctx,
 		uname.UserStaff,
 		bson.M{"SUID": suid, "parameterType": staff.ParameterType},
-		&ustruct.UserStruct[*ptransaction.UserStaff]{
+		&umodel.UserStruct[*ptransaction.UserStaff]{
 			SUID: suid,
 			Data: staff,
 		},

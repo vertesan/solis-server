@@ -2,7 +2,7 @@ package opsolis
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/solis/sname"
+	"github.com/vertesan/solis-server/internal/db/model/solis/sname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis/internal/scommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 

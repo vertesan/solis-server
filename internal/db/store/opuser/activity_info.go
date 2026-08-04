@@ -3,8 +3,8 @@ package opuser
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
@@ -26,7 +26,7 @@ func UpsertUserFanEventInfo(ctx context.Context, suid string, info *papi.FanEven
 		ctx,
 		uname.UserFanEventInfo,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.FanEventInfo]{
+		&umodel.UserStruct[*papi.FanEventInfo]{
 			SUID: suid,
 			Data: info,
 		},
@@ -117,7 +117,7 @@ func UpsertUserPromotionInfo(ctx context.Context, suid string, info *papi.Promot
 		ctx,
 		uname.UserPromotionInfo,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.PromotionInfo]{
+		&umodel.UserStruct[*papi.PromotionInfo]{
 			SUID: suid,
 			Data: info,
 		},
@@ -208,7 +208,7 @@ func UpsertUserRefreshInfo(ctx context.Context, suid string, info *papi.RefreshI
 		ctx,
 		uname.UserRefreshInfo,
 		bson.M{"SUID": suid},
-		&ustruct.UserStruct[*papi.RefreshInfo]{
+		&umodel.UserStruct[*papi.RefreshInfo]{
 			SUID: suid,
 			Data: info,
 		},

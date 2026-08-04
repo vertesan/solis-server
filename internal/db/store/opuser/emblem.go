@@ -2,8 +2,8 @@ package opuser
 
 import (
 	"context"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
@@ -23,7 +23,7 @@ func UpsertUserEmblem(ctx context.Context, suid string, emblem *ptransaction.Use
 		ctx,
 		uname.UserEmblem,
 		bson.M{"SUID": suid, "emblemId": emblem.EmblemId},
-		&ustruct.UserStruct[*ptransaction.UserEmblem]{
+		&umodel.UserStruct[*ptransaction.UserEmblem]{
 			SUID: suid,
 			Data: emblem,
 		},

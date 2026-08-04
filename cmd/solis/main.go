@@ -5,7 +5,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/vertesan/solis-server/internal/network"
+	"github.com/vertesan/solis-server/internal/server"
 	"github.com/vertesan/solis-server/internal/utils/config"
 )
 
@@ -16,5 +16,5 @@ func main() {
 	}
 
 	// start server
-	network.StartServer()
+	server.StartServer()
 }

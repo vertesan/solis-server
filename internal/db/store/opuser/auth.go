@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/def/user/uname"
-	"github.com/vertesan/solis-server/internal/db/def/user/ustruct"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
-func InsertUserAuth(ctx context.Context, userAuth *ustruct.UserAuth) error {
+func InsertUserAuth(ctx context.Context, userAuth *umodel.UserAuth) error {
 	_, err := depot.User.Collection(uname.UserAuth).InsertOne(
 		ctx,
 		userAuth,
@@ -91,8 +91,8 @@ func InsertUserAuthRefreshToken(ctx context.Context, firebaseId string, refreshT
 	return nil
 }
 
-func GetUserAuthByRefreshToken(ctx context.Context, refreshToken string) (*ustruct.UserAuth, error) {
-	var user ustruct.UserAuth
+func GetUserAuthByRefreshToken(ctx context.Context, refreshToken string) (*umodel.UserAuth, error) {
+	var user umodel.UserAuth
 	err := depot.User.Collection(uname.UserAuth).FindOne(
 		ctx,
 		bson.M{"refreshTokens": refreshToken},
@@ -117,24 +117,24 @@ func CountUserAuthByPublicOrServerUserId(ctx context.Context, publicId string, s
 	return count, nil
 }
 
-func GetUserAuthByPublicId(ctx context.Context, publicId string) (*ustruct.UserAuth, error) {
+func GetUserAuthByPublicId(ctx context.Context, publicId string) (*umodel.UserAuth, error) {
 	return getUserAuthByField(ctx, "publicUserId", publicId)
 }
 
-func GetUserAuthByServerId(ctx context.Context, serverId string) (*ustruct.UserAuth, error) {
+func GetUserAuthByServerId(ctx context.Context, serverId string) (*umodel.UserAuth, error) {
 	return getUserAuthByField(ctx, "serverUserId", serverId)
 }
 
-func GetUserAuthByFirebaseId(ctx context.Context, firebaseId string) (*ustruct.UserAuth, error) {
+func GetUserAuthByFirebaseId(ctx context.Context, firebaseId string) (*umodel.UserAuth, error) {
 	return getUserAuthByField(ctx, "firebaseId", firebaseId)
 }
 
-func GetUserAuthByOneTimeToken(ctx context.Context, oneTimeToken string) (*ustruct.UserAuth, error) {
+func GetUserAuthByOneTimeToken(ctx context.Context, oneTimeToken string) (*umodel.UserAuth, error) {
 	return getUserAuthByField(ctx, "oneTimeToken", oneTimeToken)
 }
 
-func getUserAuthByField(ctx context.Context, fieldName, value string) (*ustruct.UserAuth, error) {
-	var user ustruct.UserAuth
+func getUserAuthByField(ctx context.Context, fieldName, value string) (*umodel.UserAuth, error) {
+	var user umodel.UserAuth
 	err := depot.User.Collection(uname.UserAuth).FindOne(
 		ctx,
 		bson.M{fieldName: value},

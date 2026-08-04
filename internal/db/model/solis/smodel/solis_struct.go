@@ -1,4 +1,4 @@
-package sstruct
+package smodel
 
 type OctoManifest struct {
 	Revision  int32  `bson:"revision"`
