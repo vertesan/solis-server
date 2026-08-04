@@ -59,7 +59,8 @@ func Serialize(protoBytes []byte, codecType CodecType) []byte {
 
 	// header
 	var headerBytes []byte
-	if codecType == CLIENT {
+	switch codecType {
+	case CLIENT:
 		headerBytes = make([]byte, 8)
 		binary.LittleEndian.PutUint64(headerBytes, getTicks())
 		if err := buf.WriteByte(0x0a); err != nil {
@@ -74,7 +75,7 @@ func Serialize(protoBytes []byte, codecType CodecType) []byte {
 		if _, err := buf.Write(headerBytes); err != nil {
 			panic(err)
 		}
-	} else if codecType == SERVER {
+	case SERVER:
 		var headerLength int8
 		headerBytes, headerLength = utils.RandomLengthString()
 		if err := buf.WriteByte(byte(headerLength + 2)); err != nil {

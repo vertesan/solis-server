@@ -7,7 +7,6 @@ import (
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/rich"
-	"slices"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -26,10 +25,10 @@ var (
 	errMissingMasterVersion = status.Errorf(codes.InvalidArgument, "missing master version")
 	errInvalidMasterVersion = status.Errorf(codes.InvalidArgument, "invalid master version")
 
-	noNeedToken = []string{
-		"/api.Auth/Login",
-		"/api.Migration/MigratePassword",
-		"/api.Migration/Execute",
+	noNeedTokenSet = map[string]struct{}{
+		"/api.Auth/Login":                {},
+		"/api.Migration/MigratePassword": {},
+		"/api.Migration/Execute":         {},
 	}
 )
 
@@ -99,7 +98,7 @@ func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
 	// TODO: skip for now
 
 	// verify x-auth-token
-	if slices.Contains(noNeedToken, info.FullMethod) {
+	if _, ok := noNeedTokenSet[info.FullMethod]; ok {
 		return nil
 	}
 	if err := verifyToken(md.Get("x-auth-token")); err != nil {
