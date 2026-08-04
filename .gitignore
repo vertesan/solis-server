@@ -34,3 +34,6 @@ traffic/
 
 # binaries
 solis-server
+
+# local files
+settings.local.json
