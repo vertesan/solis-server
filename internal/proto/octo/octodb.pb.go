@@ -330,7 +330,7 @@ const file_octodb_proto_rawDesc = "" +
 	"\n" +
 	"\x06LATEST\x10\x03\x12\n" +
 	"\n" +
-	"\x06DELETE\x10\x04B\"Z github.com/vertesan/solis-server/internal/proto/octob\x06proto3"
+	"\x06DELETE\x10\x04B6Z4github.com/vertesan/solis-server/internal/proto/octob\x06proto3"
 
 var (
 	file_octodb_proto_rawDescOnce sync.Once

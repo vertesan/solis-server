@@ -1,6 +1,6 @@
 set -eu
 
-# protoc -I=./proto --go_out=. --go_opt=module=vertesan/solis-server proto/octodb.proto
+protoc -I=./proto --go_out=. --go_opt=module=github.com/vertesan/solis-server proto/octodb.proto
 protoc -I=./proto --go_out=. --go_opt=module=github.com/vertesan/solis-server \
   proto/penum.proto proto/pmaster.proto proto/ptransaction.proto proto/papi.proto
 protoc -I=./proto --go-grpc_out=. --go-grpc_opt=module=github.com/vertesan/solis-server proto/papi.proto
