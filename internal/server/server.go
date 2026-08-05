@@ -2,6 +2,11 @@ package server
 
 import (
 	"context"
+	"os"
+	"os/signal"
+	"sync"
+	"syscall"
+
 	"github.com/vertesan/solis-server/internal/db"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/server/http"
@@ -10,7 +15,7 @@ import (
 	"github.com/vertesan/solis-server/internal/utils/rich"
 )
 
-func StartServer() {
+func StartServers() {
 	// init database
 	err := db.Initialize()
 	if err != nil {
@@ -23,13 +28,31 @@ func StartServer() {
 		rich.Fatal("failed retrieving serverProfile from db: %v", err)
 	}
 
-	// start servers
-	go rpc.StartGRPC()
-	go http.StartHTTP()
-	// TODO: graceful shutdown and cleanup
-	select {}
+	// prepare for signal context
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	var servers sync.WaitGroup
+	servers.Add(2)
+	// start servers in goroutine
+	go func() {
+		defer servers.Done()
+		rpc.StartGRPC(ctx)
+		rich.Info("grpc server has been shutted down")
+	}()
+	go func() {
+		defer servers.Done()
+		http.StartHTTP(ctx)
+		rich.Info("http server has been shutted down")
+	}()
+
+	// waiting for shutdown signal
+	<-ctx.Done()
+	rich.Info("shutting down servers...")
+	servers.Wait()
 
 	db.Disconnect()
+	rich.Info("disconnected from database")
 }
 
 func GetAppVersion() string {

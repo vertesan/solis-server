@@ -15,6 +15,6 @@ func main() {
 		go http.ListenAndServe(":6060", nil)
 	}
 
-	// start server
-	server.StartServer()
+	// start servers
+	server.StartServers()
 }

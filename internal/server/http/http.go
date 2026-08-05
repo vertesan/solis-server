@@ -1,19 +1,21 @@
 package http
 
 import (
+	"context"
+	"strings"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/server/http/admin"
 	"github.com/vertesan/solis-server/internal/server/http/game"
 	"github.com/vertesan/solis-server/internal/server/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
-	"strings"
-	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
 )
 
-func StartHTTP() {
+func StartHTTP(ctx context.Context) {
 	app := fiber.New(fiber.Config{
 		AppName:      "solis-server-http",
 		ReadTimeout:  time.Second * 30,
@@ -50,6 +52,7 @@ func StartHTTP() {
 	rich.Info("http server listening at port: %v", port)
 	app.Listen(":"+port, fiber.ListenConfig{
 		DisableStartupMessage: true,
+		GracefulContext:       ctx,
 	})
 }
 

@@ -1,14 +1,16 @@
 package rpc
 
 import (
+	"context"
 	"fmt"
+	"net"
+	"time"
+
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/codec"
 	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
-	"net"
-	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -16,15 +18,31 @@ import (
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
-func StartGRPC() {
+func StartGRPC(ctx context.Context) {
 	grpcPort := config.GetGrpcPort()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
 		rich.Fatal("failed to listen: %v", err)
 	}
 	s := InitServer()
+
+	// spwan a thread listening to shutdown signal
+	go func() {
+		<-ctx.Done()
+		stopped := make(chan struct{})
+		go func() {
+			s.GracefulStop()
+			close(stopped)
+		}()
+		select {
+		case <-stopped:
+		case <-time.After(5 * time.Second):
+			s.Stop()
+		}
+	}()
+
 	rich.Info("grpc server listening at port: %v", grpcPort)
-	if err := s.Serve(lis); err != nil {
+	if err := s.Serve(lis); err != nil && ctx.Err() == nil {
 		rich.Fatal("failed to serve: %v", err)
 	}
 }
