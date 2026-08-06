@@ -1,9 +1,11 @@
-package rpc
+package interceptor
 
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/server/internal/depot"
+
+	"github.com/google/uuid"
+	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/rich"
@@ -14,7 +16,11 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+type AuthTokenCtx string
+
 var (
+	AuthCtxKey = AuthTokenCtx("auth")
+
 	errMissingMetadata      = status.Errorf(codes.InvalidArgument, "missing metadata")
 	errMissingAppVersion    = status.Errorf(codes.InvalidArgument, "missing app version")
 	errInvalidAppVersion    = status.Errorf(codes.InvalidArgument, "invalid app version")
@@ -24,15 +30,17 @@ var (
 	errInvalidToken         = status.Errorf(codes.Unauthenticated, "invalid token")
 	errMissingMasterVersion = status.Errorf(codes.InvalidArgument, "missing master version")
 	errInvalidMasterVersion = status.Errorf(codes.InvalidArgument, "invalid master version")
+	errInternal             = status.Errorf(codes.Internal, "internal error")
 
 	noNeedTokenSet = map[string]struct{}{
 		"/api.Auth/Login":                {},
+		"/api.System/Check":              {},
 		"/api.Migration/MigratePassword": {},
 		"/api.Migration/Execute":         {},
 	}
 )
 
-var unaryServerInterceptor grpc.UnaryServerInterceptor = func(
+var UnaryServerInterceptor grpc.UnaryServerInterceptor = func(
 	ctx context.Context,
 	req any,
 	info *grpc.UnaryServerInfo,
@@ -64,12 +72,30 @@ var unaryServerInterceptor grpc.UnaryServerInterceptor = func(
 		return nil, err
 	}
 
-	// invoke RPC
-	m, err := handler(ctx, req)
-	if err != nil {
-		rich.Error("RPC failed with error: %v", err)
+	// embed uuid into context
+	if _, ok := noNeedTokenSet[info.FullMethod]; !ok {
+		suid, err := getSuid(ctx)
+		if err != nil {
+			rich.Error("failed to get suid: %v", err)
+			return nil, err
+		}
+		ctx = context.WithValue(ctx, AuthCtxKey, suid.String())
 	}
-	return m, err
+
+	// invoke handler
+	m, err := handler(ctx, req)
+
+	if err != nil {
+		rich.Error("RPC %q failed with error: %v", info.FullMethod, err)
+	}
+	switch status.Code(err) {
+	case codes.OK:
+		return m, nil
+	case codes.Unknown:
+		return m, errInternal
+	default:
+		return m, err
+	}
 }
 
 func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
@@ -130,4 +156,38 @@ func verifyToken(token []string) error {
 		return err
 	}
 	return nil
+}
+
+func getSuid(ctx context.Context) (*uuid.UUID, error) {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return nil, errMissingMetadata
+	}
+	tokens := md.Get("x-auth-token")
+	if len(tokens) == 0 {
+		return nil, errMissingToken
+	}
+	token := tokens[0]
+	if token == "" {
+		return nil, errMissingToken
+	}
+
+	_, claim, err := jwto.ParseHS256Token(token)
+	if err != nil {
+		rich.Error("%v", err)
+		return nil, errInvalidToken
+	}
+
+	subStr, err := claim.GetSubject()
+	if err != nil {
+		rich.Error("%v", err)
+		return nil, errInvalidToken
+	}
+
+	sub, err := uuid.Parse(subStr)
+	if err != nil {
+		rich.Error("%v", err)
+		return nil, errInvalidToken
+	}
+	return &sub, nil
 }

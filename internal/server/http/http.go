@@ -7,7 +7,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/server/http/admin"
 	"github.com/vertesan/solis-server/internal/server/http/game"
-	"github.com/vertesan/solis-server/internal/server/internal/diver"
+	"github.com/vertesan/solis-server/internal/server/http/internal/snippet"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 
@@ -61,7 +61,7 @@ var middleware fiber.Handler = func(c fiber.Ctx) error {
 	rich.Info("[%s] %s", c.Method(), c.Path())
 	// if admin APIs are invoked, check authroization first
 	if strings.HasPrefix(c.Path(), "/admin/") {
-		if err := diver.CheckAuth(c.Get("Authorization")); err != nil {
+		if err := snippet.CheckAuth(c.Get("Authorization")); err != nil {
 			return err
 		}
 	}

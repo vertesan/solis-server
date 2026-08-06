@@ -5,7 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/crypto"
+	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"

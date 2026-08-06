@@ -5,7 +5,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-	"github.com/vertesan/solis-server/internal/server/internal/depot"
+	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 
 	"google.golang.org/grpc/codes"

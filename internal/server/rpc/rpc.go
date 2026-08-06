@@ -8,6 +8,7 @@ import (
 
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/codec"
+	"github.com/vertesan/solis-server/internal/server/rpc/internal/interceptor"
 	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/rich"
@@ -60,7 +61,7 @@ func InitServer() *grpc.Server {
 	}
 
 	// unary interceptor
-	interceptor := grpc.UnaryInterceptor(unaryServerInterceptor)
+	interceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor)
 
 	// force (or not) customized codec
 	if !config.IsNoCodec() {

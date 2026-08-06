@@ -8,8 +8,8 @@ This project is a private server, simulates the backend server implementation fo
 solis-server/
 ├── cmd/
 │   └── solis/
-│       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls server.StartServer()
-├── internal/                       Private Go packages
+│       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls server.StartServers()
+├── internal/                   Private Go packages, all Go source files are supposed to be inside
 │   ├── crypto/                 Encryption algorithms for master DB and Unity asset bundle manifests
 │   ├── db/                     MongoDB layer ("solis", "master", and "user" databases)
 │   │   ├── model/
@@ -23,31 +23,31 @@ solis-server/
 │   │   │   ├── opuser/         User-specific data CRUD
 │   │   │   ├── opmaster/       Master data queries
 │   │   │   └── opsolis/        Server-global data CRUD
-│   │   ├── internal/depot/ Shared MongoDB client and database handles
-│   │   └── transaction/    MongoDB transaction wrapper with snapshot reads / majority writes
-│   ├── makino/                 Game-specific service layer used by gRPC and admin handlers
+│   │   ├── internal/depot/     Shared MongoDB client and database handles
+│   │   └── transaction/        MongoDB transaction wrapper with snapshot reads / majority writes
+│   ├── makino/                 Game-specific logic used by gRPC and admin handlers
 │   ├── server/                 Handler layer
-│   │   ├── rpc/                gRPC servers (:50051) for game logic APIs
+│   │   ├── rpc/                gRPC servers (:50051) for game-specific logic APIs
 │   │   └── http/               HTTP/Fiber server (:50052) for auth, assets, and admin APIs
 │   ├── proto/                  Generated Go protobuf packages
 │   │   ├── octo/               Octo manifest database messages
 │   │   ├── papi/               gRPC API messages and services
-│   │   ├── penum/              Game enums
+│   │   ├── penum/              Enums used in other protobuf packages
 │   │   ├── pmaster/            Master data messages
-│   │   └── ptransaction/       Shared transaction messages
+│   │   └── ptransaction/       Shared common transaction messages, usually nested in papi messages
 │   └── utils/                  Configuration, JWT, logging, and common helpers
-├── proto/                          Protobuf source definitions (`*.proto`)
-├── test/                           Integration test scenarios for gRPC and HTTP endpoints
-├── .env                            Environment variables automatically loaded when the server starts
-├── agents/                         Documents created by agents
-├── resources/                      Encrypted master databases and game assets
-├── scripts/                        TypeScript/JS utilities for data migration and manifest updates
-└── traffic/                        Captured game client/server gRPC traffic converted to JSON
+├── proto/                      Protobuf source definitions (`*.proto`)
+├── test/                       Integration test scenarios for gRPC and HTTP endpoints
+├── .env                        Environment variables automatically loaded when the server starts
+├── agents/                     Documents created by agents
+├── resources/                  Encrypted master databases and Unity assetbundles
+├── scripts/                    TypeScript/JS utilities for data migration and manifest updates
+└── traffic/                    Captured realworld game client-server gRPC traffic converted to JSON
 ```
 
 ## Key Technologies
 
-- **Go 1.26.5** with modules
+- **Go 1.26.5**
 - **gRPC** (`google.golang.org/grpc`) with custom codec compression and protobuf serialization
 - **Fiber v3** (`github.com/gofiber/fiber/v3`) for HTTP
 - **MongoDB** (`go.mongodb.org/mongo-driver/v2`) as the primary datastore

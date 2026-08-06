@@ -5,7 +5,7 @@ import (
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/binary"
-	"github.com/vertesan/solis-server/internal/crypto"
+	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"github.com/vertesan/solis-server/internal/utils"
 	"io"
 	"time"

@@ -10,7 +10,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/server/http"
-	"github.com/vertesan/solis-server/internal/server/internal/depot"
+	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/server/rpc"
 	"github.com/vertesan/solis-server/internal/utils/rich"
 )
@@ -48,17 +48,8 @@ func StartServers() {
 
 	// waiting for shutdown signal
 	<-ctx.Done()
-	rich.Info("shutting down servers...")
 	servers.Wait()
 
 	db.Disconnect()
 	rich.Info("disconnected from database")
-}
-
-func GetAppVersion() string {
-	return depot.ServerProfile.AppVersion
-}
-
-func GetMasterVersion() string {
-	return depot.ServerProfile.MasterVersion
 }
