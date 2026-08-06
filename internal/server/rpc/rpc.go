@@ -11,7 +11,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/internal/interceptor"
 	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
@@ -19,13 +19,13 @@ import (
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
-func StartGRPC(ctx context.Context) {
+func StartGRPC(ctx context.Context, logger *zap.Logger) {
 	grpcPort := config.GetGrpcPort()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
-		rich.Fatal("failed to listen: %v", err)
+		logger.Fatal("failed to start listening", zap.Error(err))
 	}
-	s := InitServer()
+	s := initServer(logger)
 
 	// spwan a thread listening to shutdown signal
 	go func() {
@@ -42,13 +42,13 @@ func StartGRPC(ctx context.Context) {
 		}
 	}()
 
-	rich.Info("grpc server listening at port: %v", grpcPort)
+	logger.Sugar().Infof("grpc server listening at port: %v", grpcPort)
 	if err := s.Serve(lis); err != nil && ctx.Err() == nil {
-		rich.Fatal("failed to serve: %v", err)
+		logger.Fatal("failed to serve", zap.Error(err))
 	}
 }
 
-func InitServer() *grpc.Server {
+func initServer(base *zap.Logger) *grpc.Server {
 	// register codec
 	encoding.RegisterCodec(&codec.QuaServerCodec{})
 
@@ -61,7 +61,7 @@ func InitServer() *grpc.Server {
 	}
 
 	// unary interceptor
-	interceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor)
+	interceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor(base))
 
 	// force (or not) customized codec
 	if !config.IsNoCodec() {
@@ -72,7 +72,7 @@ func InitServer() *grpc.Server {
 	if !config.IsNoCert() {
 		creds, err := credentials.NewServerTLSFromFile(config.GetGrpcCertPath(), config.GetGrpcCertKeyPath())
 		if err != nil {
-			rich.Fatal("failed to generate credentials: %v", err)
+			base.Fatal("failed to generate credentials", zap.Error(err))
 		}
 		opts = append(opts, grpc.Creds(creds))
 	}

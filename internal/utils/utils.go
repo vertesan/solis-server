@@ -5,12 +5,12 @@ import (
 	crand "crypto/rand"
 	"encoding/hex"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"math/rand"
 	"os"
 	"time"
 
 	"github.com/goccy/go-json"
+	"go.uber.org/zap"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -23,7 +23,7 @@ func GetTimestamp() int64 {
 
 func RandomHexString(length int) string {
 	if length <= 0 {
-		rich.Fatal("length must be a positive integer")
+		zap.L().Fatal("length must be a positive integer")
 	}
 
 	// Each byte gives two hex characters, so we need (length+1)/2 bytes to cover odd lengths.
@@ -32,7 +32,7 @@ func RandomHexString(length int) string {
 
 	_, err := crand.Read(bytes)
 	if err != nil {
-		rich.Fatal("failed to read random bytes")
+		zap.L().Fatal("failed to read random bytes")
 	}
 
 	hexStr := hex.EncodeToString(bytes)
@@ -52,7 +52,7 @@ func RandomLengthString() ([]byte, int8) {
 
 func RandomString(length int) string {
 	if length <= 0 {
-		rich.Fatal("length must be a positive integer")
+		zap.L().Fatal("length must be a positive integer")
 	}
 
 	result := make([]byte, length)

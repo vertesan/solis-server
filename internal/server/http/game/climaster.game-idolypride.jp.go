@@ -1,14 +1,17 @@
 package game
 
 import (
-	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"path"
+
+	"github.com/vertesan/solis-server/internal/utils/config"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 var GetMaster fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	filename := c.Params("filename")
 
 	// set response contents
@@ -22,7 +25,7 @@ var GetMaster fiber.Handler = func(c fiber.Ctx) error {
 		},
 	)
 	if err != nil {
-		rich.Error("failed sending master db file: %v", err)
+		logger.Error("failed sending master db file", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 	return err

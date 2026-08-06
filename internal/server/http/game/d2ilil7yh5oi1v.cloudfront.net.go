@@ -3,22 +3,25 @@ package game
 import (
 	"context"
 	"fmt"
+	"path"
+
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
-	"path"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 var GetAsset fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	revision := c.Params("revision")
 	objectType := c.Params("type")
 	objectName := c.Params("object")
 
 	object, err := opsolis.FindManifestObject(context.Background(), objectName, objectType)
 	if err != nil {
-		rich.Error("failed retrieving octo asset data: %v", err)
+		logger.Error("failed retrieving octo asset data", zap.Error(err))
 		return fiber.NewError(404, "not found")
 	}
 
@@ -37,7 +40,7 @@ var GetAsset fiber.Handler = func(c fiber.Ctx) error {
 		},
 	)
 	if err != nil {
-		rich.Error("failed sending resource file %q - %q: %v", objectType, objectName, err)
+		logger.Sugar().Errorf("failed sending resource file %q - %q: %v", objectType, objectName, err)
 		return fiber.NewError(500, "internal error")
 	}
 	return err

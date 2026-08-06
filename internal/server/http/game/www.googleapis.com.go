@@ -2,13 +2,15 @@ package game
 
 import (
 	"context"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/rich"
-	"time"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"fmt"
 
@@ -31,6 +33,7 @@ type VerifyCustomTokenResponse struct {
 }
 
 var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
 		return diver.NewFiberError(400, "missing key query")
@@ -41,13 +44,13 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 
 	verifyRequest := &VerifyCustomTokenRequest{}
 	if err := json.Unmarshal(c.Body(), verifyRequest); err != nil {
-		rich.Error("failed to unmarshal verifyRequest body: %v", err)
+		logger.Error("failed to unmarshal verifyRequest body", zap.Error(err))
 		return fiber.NewError(400, "bad request body")
 	}
 
 	_, claim, err := jwto.ParseRS256Token(verifyRequest.Token)
 	if err != nil {
-		rich.Error("failed parsing token: %v", err)
+		logger.Error("failed parsing token", zap.Error(err))
 		return fiber.NewError(401, "invalid token")
 	}
 
@@ -63,7 +66,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	// retrieve userAuth from db
 	userAuth, err := opuser.GetUserAuthByFirebaseId(context.Background(), uid)
 	if err != nil {
-		rich.Error("failed to GetUserAuthByFirebaseId: %v", err)
+		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
 		return fiber.NewError(403, "invalid user")
 	}
 
@@ -84,7 +87,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	idToken.Header["kid"] = utils.RandomHexString(40)
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
-		rich.Error("failed creating id token: %v", err)
+		logger.Error("failed creating id token", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 
@@ -94,7 +97,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	if len(userAuth.RefreshTokens) == 0 || userAuth.LastRefreshAt.Add(time.Hour*24*7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
 		if err := opuser.InsertUserAuthRefreshToken(context.Background(), userAuth.FirebaseId, refreshToken); err != nil {
-			rich.Error("failed to InsertRefreshToken: %v", err)
+			logger.Error("failed to InsertRefreshToken", zap.Error(err))
 			return fiber.NewError(500, "internal error")
 		}
 	} else {
@@ -134,6 +137,7 @@ type User struct {
 }
 
 var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
 		return diver.NewFiberError(400, "missing key query")
@@ -144,13 +148,13 @@ var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
 
 	infoRequest := &GetAccountInfoRequest{}
 	if err := json.Unmarshal(c.Body(), infoRequest); err != nil {
-		rich.Error("failed to unmarshal infoRequest body: %v", err)
+		logger.Error("failed to unmarshal infoRequest body", zap.Error(err))
 		return fiber.NewError(400, "bad request body")
 	}
 
 	_, claim, err := jwto.ParseRS256Token(infoRequest.IdToken)
 	if err != nil {
-		rich.Error("failed parsing token: %v", err)
+		logger.Error("failed parsing token", zap.Error(err))
 		return fiber.NewError(401, "invalid token")
 	}
 
@@ -176,7 +180,7 @@ var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
 	// get user info from db
 	userAuth, err := opuser.GetUserAuthByFirebaseId(context.Background(), userId)
 	if err != nil {
-		rich.Error("failed to GetUserAuthByFirebaseId: %v", err)
+		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 

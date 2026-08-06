@@ -2,20 +2,19 @@ package http
 
 import (
 	"context"
-	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/server/http/admin"
 	"github.com/vertesan/solis-server/internal/server/http/game"
-	"github.com/vertesan/solis-server/internal/server/http/internal/snippet"
+	"github.com/vertesan/solis-server/internal/server/http/internal/middleware"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
 )
 
-func StartHTTP(ctx context.Context) {
+func StartHTTP(ctx context.Context, base *zap.Logger) {
 	app := fiber.New(fiber.Config{
 		AppName:      "solis-server-http",
 		ReadTimeout:  time.Second * 30,
@@ -26,7 +25,7 @@ func StartHTTP(ctx context.Context) {
 	})
 
 	// logging middleware
-	app.Use(middleware)
+	app.Use(middleware.LoggingMiddleware(base))
 
 	app.Get("/getId", game.QseedGetId).Name("id.qseed.jp/getId")
 	app.Post("/v1/token", game.FirebaseToken).Name("securetoken.googleapis.com/v1/token")
@@ -44,27 +43,14 @@ func StartHTTP(ctx context.Context) {
 
 	// catch all for debug purpose
 	app.All("*", func(c fiber.Ctx) error {
-		rich.Warn("unhandled request: [%s] %s", c.Method(), c.Path())
+		base.Sugar().Warnf("unhandled request: [%s] %s", c.Method(), c.Path())
 		return fiber.NewError(404, "not found")
 	})
 
 	port := config.GetHttpPort()
-	rich.Info("http server listening at port: %v", port)
+	base.Sugar().Infof("http server listening at port: %v", port)
 	app.Listen(":"+port, fiber.ListenConfig{
 		DisableStartupMessage: true,
 		GracefulContext:       ctx,
 	})
-}
-
-var middleware fiber.Handler = func(c fiber.Ctx) error {
-	// log API invocation history
-	rich.Info("[%s] %s", c.Method(), c.Path())
-	// if admin APIs are invoked, check authroization first
-	if strings.HasPrefix(c.Path(), "/admin/") {
-		if err := snippet.CheckAuth(c.Get("Authorization")); err != nil {
-			return err
-		}
-	}
-
-	return c.Next()
 }

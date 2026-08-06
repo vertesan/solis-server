@@ -2,13 +2,15 @@ package interceptor
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -16,11 +18,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type AuthTokenCtx string
+type AuthTokenKey struct{}
 
 var (
-	AuthCtxKey = AuthTokenCtx("auth")
-
 	errMissingMetadata      = status.Errorf(codes.InvalidArgument, "missing metadata")
 	errMissingAppVersion    = status.Errorf(codes.InvalidArgument, "missing app version")
 	errInvalidAppVersion    = status.Errorf(codes.InvalidArgument, "invalid app version")
@@ -40,61 +40,72 @@ var (
 	}
 )
 
-var UnaryServerInterceptor grpc.UnaryServerInterceptor = func(
-	ctx context.Context,
-	req any,
-	info *grpc.UnaryServerInfo,
-	handler grpc.UnaryHandler,
-) (resp any, err error) {
-	rich.Info("[gRPC] %s", info.FullMethod)
+func UnaryServerInterceptor(base *zap.Logger) grpc.UnaryServerInterceptor {
+	return func(
+		ctx context.Context,
+		req any,
+		info *grpc.UnaryServerInfo,
+		handler grpc.UnaryHandler,
+	) (resp any, err error) {
+		logger := base.With(zap.String("api", info.FullMethod))
+		logger.Sugar().Infof("[gRPC] %s", info.FullMethod)
 
-	// retrieve metadata
-	md, ok := metadata.FromIncomingContext(ctx)
-	if !ok {
-		return nil, errMissingMetadata
-	}
+		// retrieve metadata
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, errMissingMetadata
+		}
 
-	// verify metadata
-	if err := verifyMetadata(md, info); err != nil {
-		rich.Error("failed verifying metadata: %v", err)
-		return nil, err
-	}
-
-	// TODO: check x-app-request-id
-
-	// send metadata back
-	header := metadata.New(map[string]string{
-		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
-		"cache-control": "no-store",
-	})
-	if err := grpc.SendHeader(ctx, header); err != nil {
-		rich.Error("failed sending header: %v", err)
-		return nil, err
-	}
-
-	// embed uuid into context
-	if _, ok := noNeedTokenSet[info.FullMethod]; !ok {
-		suid, err := getSuid(ctx)
-		if err != nil {
-			rich.Error("failed to get suid: %v", err)
+		// verify metadata
+		if err := verifyMetadata(md, info); err != nil {
+			logger.Error("failed verifying metadata", zap.Error(err))
 			return nil, err
 		}
-		ctx = context.WithValue(ctx, AuthCtxKey, suid.String())
-	}
 
-	// invoke handler
-	m, err := handler(ctx, req)
+		// check x-app-request-id
+		requestId := md.Get("x-app-request-id")
+		if len(requestId) > 0 {
+			logger = logger.With(zap.String("request_id", requestId[0]))
+			// TODO: dedulplicate request by checking request id to ensure idempotency
+		}
 
-	if err != nil {
-		rich.Error("RPC %q failed with error: %v", info.FullMethod, err)
-	}
-	switch status.Code(err) {
-	case codes.OK:
-		return m, nil
-	case codes.Unknown:
-		return m, errInternal
-	default:
-		return m, err
+		// send metadata back
+		header := metadata.New(map[string]string{
+			"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
+			"cache-control": "no-store",
+		})
+		if err := grpc.SendHeader(ctx, header); err != nil {
+			logger.Error("failed sending header", zap.Error(err))
+			return nil, err
+		}
+
+		// embed uuid into context
+		if _, ok := noNeedTokenSet[info.FullMethod]; !ok {
+			suid, err := getSuid(ctx)
+			if err != nil {
+				logger.Error("failed to get suid", zap.Error(err))
+				return nil, err
+			}
+			logger = logger.With(zap.String("suid", suid.String()))
+			ctx = context.WithValue(ctx, AuthTokenKey{}, suid)
+		}
+		// thread logger to context
+		ctx = mcontext.WithLogger(ctx, logger)
+
+		// invoke handler
+		m, err := handler(ctx, req)
+
+		if err != nil {
+			logger.Error("RPC failed with error", zap.Error(err))
+		}
+		switch status.Code(err) {
+		case codes.OK:
+			return m, nil
+		case codes.Unknown:
+			return m, errInternal
+		default:
+			return m, err
+		}
 	}
 }
 
@@ -174,20 +185,17 @@ func getSuid(ctx context.Context) (*uuid.UUID, error) {
 
 	_, claim, err := jwto.ParseHS256Token(token)
 	if err != nil {
-		rich.Error("%v", err)
-		return nil, errInvalidToken
+		return nil, errors.Join(errInvalidToken, err)
 	}
 
 	subStr, err := claim.GetSubject()
 	if err != nil {
-		rich.Error("%v", err)
-		return nil, errInvalidToken
+		return nil, errors.Join(errInvalidToken, err)
 	}
 
 	sub, err := uuid.Parse(subStr)
 	if err != nil {
-		rich.Error("%v", err)
-		return nil, errInvalidToken
+		return nil, errors.Join(errInvalidToken, err)
 	}
 	return &sub, nil
 }

@@ -2,12 +2,14 @@ package game
 
 import (
 	"context"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/rich"
-	"time"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -30,6 +32,7 @@ type TokenResponse struct {
 }
 
 var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
 		return fiber.NewError(400, "missing key query")
@@ -92,7 +95,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	idToken.Header["kid"] = utils.RandomHexString(40)
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
-		rich.Error("failed creating id token: %v", err)
+		logger.Error("failed creating id token", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 

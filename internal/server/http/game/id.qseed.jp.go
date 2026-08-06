@@ -3,17 +3,20 @@ package game
 import (
 	"context"
 	"errors"
+
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v3"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	// check header
 	appId := c.Get("X-App")
 	if appId == "" {
@@ -31,7 +34,7 @@ var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
 	qseed, err := opsolis.FindQseed(context.Background(), deviceId)
 	if err != nil {
 		if !errors.Is(err, mongo.ErrNoDocuments) {
-			rich.Error("failed to get qseed: %v", err)
+			logger.Error("failed to get qseed", zap.Error(err))
 			return fiber.NewError(500, "internal error")
 		}
 	}
@@ -43,7 +46,7 @@ var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
 			Qseed:  utils.RandomHexString(16),
 		}
 		if err := opsolis.UpsertQseed(context.Background(), qseed); err != nil {
-			rich.Error("failed to create qseed: %v", err)
+			logger.Error("failed to create qseed", zap.Error(err))
 			return fiber.NewError(500, "internal error")
 		}
 	}

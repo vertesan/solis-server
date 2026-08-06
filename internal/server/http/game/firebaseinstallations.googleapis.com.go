@@ -2,12 +2,14 @@ package game
 
 import (
 	"fmt"
-	"github.com/vertesan/solis-server/internal/server/depot"
-	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/vertesan/solis-server/internal/server/depot"
+	"github.com/vertesan/solis-server/internal/utils/jwto"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -34,6 +36,7 @@ type InstallationsReponse struct {
 }
 
 var FirebaseInstallations fiber.Handler = func(c fiber.Ctx) error {
+	logger := mcontext.GetLogger(c)
 	// check header
 	pkgId := c.Get("X-Android-Package")
 	if pkgId == "" {
@@ -68,7 +71,7 @@ var FirebaseInstallations fiber.Handler = func(c fiber.Ctx) error {
 	})
 	authTokenString, err := jwto.CreateToken(authToken)
 	if err != nil {
-		rich.Error("failed creating auth token: %v", err)
+		logger.Error("failed creating auth token", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 
