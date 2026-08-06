@@ -10,7 +10,6 @@ solis-server/
 │   └── solis/
 │       └── main.go             CLI entry point: loads .env, starts pprof (dev), calls server.StartServers()
 ├── internal/                   Private Go packages, all Go source files are supposed to be inside
-│   ├── crypto/                 Encryption algorithms for master DB and Unity asset bundle manifests
 │   ├── db/                     MongoDB layer ("solis", "master", and "user" databases)
 │   │   ├── model/
 │   │   │   ├── solis/sname/    Constant strings for solis DB collection names
@@ -26,7 +25,7 @@ solis-server/
 │   │   ├── internal/depot/     Shared MongoDB client and database handles
 │   │   └── transaction/        MongoDB transaction wrapper with snapshot reads / majority writes
 │   ├── makino/                 Game-specific logic used by gRPC and admin handlers
-│   ├── server/                 Handler layer
+│   ├── server/                 Handlers
 │   │   ├── rpc/                gRPC servers (:50051) for game-specific logic APIs
 │   │   └── http/               HTTP/Fiber server (:50052) for auth, assets, and admin APIs
 │   ├── proto/                  Generated Go protobuf packages
@@ -35,7 +34,7 @@ solis-server/
 │   │   ├── penum/              Enums used in other protobuf packages
 │   │   ├── pmaster/            Master data messages
 │   │   └── ptransaction/       Shared common transaction messages, usually nested in papi messages
-│   └── utils/                  Configuration, JWT, logging, and common helpers
+│   └── utils/                  Configuration, context, JWT, encryption algorithms and common helpers
 ├── proto/                      Protobuf source definitions (`*.proto`)
 ├── test/                       Integration test scenarios for gRPC and HTTP endpoints
 ├── .env                        Environment variables automatically loaded when the server starts
@@ -51,7 +50,7 @@ solis-server/
 - **gRPC** (`google.golang.org/grpc`) with custom codec compression and protobuf serialization
 - **Fiber v3** (`github.com/gofiber/fiber/v3`) for HTTP
 - **MongoDB** (`go.mongodb.org/mongo-driver/v2`) as the primary datastore
-- **zap** (`go.uber.org/zap`) for logging, with helper functions wrapped in `github.com/vertesan/solis-server/internal/utils/rich`
+- **zap** (`go.uber.org/zap`) for logging
 
 ## gRPC Services
 
@@ -74,6 +73,12 @@ Three databases: `solis`, `master`, `user`.
 - **user**: User-specific data. Each collection is supposed to have a corresponding model defined in `internal/db/model/user/umodel`. The `Data` generic field in `UserStruct` is supposed to be a protobuf struct used by the original game, usually defined in `internal/proto/ptransaction` and `internal/proto/papi`
 
 You can use MongoDB MCP server to retrieve or manipulate data if you need.
+
+## Loggin Rules
+
+Avoid using global logger (`zap.L()`) when possible.
+In HTTP and gRPC handlers, a `*zap.Logger` is threaded in the `context` through the entire invocation, use `GetLogger(ctx context.Context) *zap.Logger` function in `internal/utils/mcontext` to retrieve logger instance in these cases.
+In scopes where don't have context, such as utility functions, using global logger is acceptable.
 
 ## Testing Rules
 
