@@ -1,7 +1,6 @@
 package game
 
 import (
-	"context"
 	"fmt"
 	"path"
 
@@ -19,7 +18,7 @@ var GetAsset fiber.Handler = func(c fiber.Ctx) error {
 	objectType := c.Params("type")
 	objectName := c.Params("object")
 
-	object, err := opsolis.FindManifestObject(context.Background(), objectName, objectType)
+	object, err := opsolis.FindManifestObject(c, objectName, objectType)
 	if err != nil {
 		logger.Error("failed retrieving octo asset data", zap.Error(err))
 		return fiber.NewError(404, "not found")

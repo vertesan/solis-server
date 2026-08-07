@@ -11,6 +11,7 @@ import (
 )
 
 func WithTransaction(
+	ctx context.Context,
 	fn func(ctx context.Context) (any, error),
 	rConcern *readconcern.ReadConcern,
 	wConcern *writeconcern.WriteConcern,
@@ -31,11 +32,11 @@ func WithTransaction(
 	if err != nil {
 		return fmt.Errorf("failed start session: %w", err)
 	}
-	defer session.EndSession(context.Background())
+	defer session.EndSession(ctx)
 
 	// execute transaction within session
 	_, err = session.WithTransaction(
-		context.Background(),
+		ctx,
 		fn,
 		txnOpts,
 	)

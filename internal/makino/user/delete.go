@@ -6,8 +6,8 @@ import (
 	"github.com/vertesan/solis-server/internal/db/transaction"
 )
 
-func DeleteUser(suid string) error {
-	err := transaction.WithTransaction(func(ctx context.Context) (interface{}, error) {
+func DeleteUser(ctx context.Context, suid string) error {
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
 		if err := opuser.DeleteUserAuth(ctx, suid); err != nil {
 			return nil, err
 		}

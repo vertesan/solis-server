@@ -19,13 +19,16 @@ import (
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
-func StartGRPC(ctx context.Context, logger *zap.Logger) {
+func StartGRPC(ctx context.Context, logger *zap.Logger) error {
 	grpcPort := config.GetGrpcPort()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
-		logger.Fatal("failed to start listening", zap.Error(err))
+		return fmt.Errorf("failed to start listening: %w", err)
 	}
-	s := initServer(logger)
+	s, err := initServer(logger)
+	if err != nil {
+		return err
+	}
 
 	// spwan a thread listening to shutdown signal
 	go func() {
@@ -44,11 +47,12 @@ func StartGRPC(ctx context.Context, logger *zap.Logger) {
 
 	logger.Sugar().Infof("grpc server listening at port: %v", grpcPort)
 	if err := s.Serve(lis); err != nil && ctx.Err() == nil {
-		logger.Fatal("failed to serve", zap.Error(err))
+		return fmt.Errorf("failed to serve: %w", err)
 	}
+	return nil
 }
 
-func initServer(base *zap.Logger) *grpc.Server {
+func initServer(base *zap.Logger) (*grpc.Server, error) {
 	// register codec
 	encoding.RegisterCodec(&codec.QuaServerCodec{})
 
@@ -70,9 +74,17 @@ func initServer(base *zap.Logger) *grpc.Server {
 
 	// TLS credentials (only in dev environment)
 	if !config.IsNoCert() {
-		creds, err := credentials.NewServerTLSFromFile(config.GetGrpcCertPath(), config.GetGrpcCertKeyPath())
+		certPath, err := config.GetGrpcCertPath()
 		if err != nil {
-			base.Fatal("failed to generate credentials", zap.Error(err))
+			return nil, err
+		}
+		keyPath, err := config.GetGrpcCertKeyPath()
+		if err != nil {
+			return nil, err
+		}
+		creds, err := credentials.NewServerTLSFromFile(certPath, keyPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to generate credentials: %w", err)
 		}
 		opts = append(opts, grpc.Creds(creds))
 	}
@@ -90,5 +102,5 @@ func initServer(base *zap.Logger) *grpc.Server {
 	pb.RegisterUserServer(server, &ss.UserServer{})
 	pb.RegisterHomeServer(server, &ss.HomeServer{})
 	pb.RegisterDokanServer(server, &ss.DokanServer{})
-	return server
+	return server, nil
 }

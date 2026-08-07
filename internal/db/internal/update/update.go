@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
@@ -13,7 +12,7 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"os"
 	"path"
 
@@ -22,15 +21,17 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
-	"golang.org/x/sync/semaphore"
+	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
 func DataUpdateCheck() error {
-	serverProfile, err := opsolis.FindServerProfile(context.Background())
+	ctx := context.Background()
+	serverProfile, err := opsolis.FindServerProfile(ctx)
 	if err != nil {
 		return err
 	}
-	rich.Info("server profile master version: %s", serverProfile.MasterVersion)
+	zap.L().Sugar().Infof("server profile master version: %s", serverProfile.MasterVersion)
 
 	masterTag, err := utils.ReadJsonFile[ptransaction.MasterTag](path.Join(config.GetManifestDir(), "mastertag.json"))
 	if err != nil {
@@ -39,14 +40,16 @@ func DataUpdateCheck() error {
 
 	// masterTagPack
 	if serverProfile.MasterVersion != masterTag.Version {
-		rich.Info("mastertag json version: %s", masterTag.Version)
+		zap.L().Sugar().Infof("mastertag json version: %s", masterTag.Version)
 		// download encrypted database files from official server
-		rich.Info("download master files from official server...")
-		downloadAllEncryptedDb(masterTag)
-		rich.Info("download completed")
+		zap.L().Info("download master files from official server...")
+		if err := downloadAllEncryptedDb(masterTag); err != nil {
+			return fmt.Errorf("failed to download master files: %w", err)
+		}
+		zap.L().Info("download completed")
 
 		// upsert all masterTagPacks
-		err := transaction.WithTransaction(func(ctx context.Context) (any, error) {
+		err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 			for _, masterTagPack := range masterTag.MasterTagPacks {
 				if err := opsolis.UpsertMasterTagPack(ctx, masterTagPack); err != nil {
 					return nil, err
@@ -60,11 +63,11 @@ func DataUpdateCheck() error {
 		if err != nil {
 			return fmt.Errorf("failed to upsert masterTagPack: %w", err)
 		}
-		rich.Info("masterTagPack collection update completed")
+		zap.L().Info("masterTagPack collection update completed")
 	}
 
 	// refresh serverProfile after updating
-	serverProfile, err = opsolis.FindServerProfile(context.Background())
+	serverProfile, err = opsolis.FindServerProfile(ctx)
 	if err != nil {
 		return err
 	}
@@ -78,7 +81,7 @@ func DataUpdateCheck() error {
 	if err != nil {
 		return fmt.Errorf("failed to unmarshal octo.Database: %w", err)
 	}
-	serverManifest, err := opsolis.FindManifestMetaInfo(context.Background())
+	serverManifest, err := opsolis.FindManifestMetaInfo(ctx)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			serverManifest = &smodel.OctoManifest{Revision: 0}
@@ -86,11 +89,11 @@ func DataUpdateCheck() error {
 			return fmt.Errorf("failed to read octoManifest from database: %w", err)
 		}
 	}
-	rich.Info("server octoManifest revision: %d", serverManifest.Revision)
+	zap.L().Sugar().Infof("server octoManifest revision: %d", serverManifest.Revision)
 	if octodb.Revision != serverManifest.Revision {
-		rich.Info("OctoManifest json revision: %d", octodb.Revision)
+		zap.L().Sugar().Infof("OctoManifest json revision: %d", octodb.Revision)
 		// replace all octoManifest
-		err := transaction.WithTransaction(func(ctx context.Context) (any, error) {
+		err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 			if err := opsolis.DeleteAllManifests(ctx); err != nil {
 				return nil, err
 			}
@@ -102,65 +105,68 @@ func DataUpdateCheck() error {
 		if err != nil {
 			return fmt.Errorf("failed to replace octoManifest: %w", err)
 		}
-		rich.Info("octoManifest collection update completed")
+		zap.L().Info("octoManifest collection update completed")
 	}
 
 	return nil
 }
 
 func downloadAllEncryptedDb(masterTag *ptransaction.MasterTag) error {
-	var weight int64 = 10
-	sem := semaphore.NewWeighted(weight)
-	ctx := context.Background()
+	group := new(errgroup.Group)
+	group.SetLimit(10)
 	for _, pack := range masterTag.MasterTagPacks {
-		if err := sem.Acquire(ctx, 1); err != nil {
-			return err
-		}
-		go downloadMasterTagPack(sem, pack)
+		group.Go(func() error {
+			return downloadMasterTagPack(pack)
+		})
 	}
-	if err := sem.Acquire(ctx, weight); err != nil {
-		return err
-	}
-	return nil
+	return group.Wait()
 }
 
-func downloadMasterTagPack(sem *semaphore.Weighted, pack *ptransaction.MasterTagPack) {
-	defer sem.Release(1)
+func downloadMasterTagPack(pack *ptransaction.MasterTagPack) error {
 	filePath := path.Join(config.GetDBDir(), pack.FileName)
 	_, err := os.Stat(filePath)
 	// file already exists
 	if err == nil {
-		return
+		return nil
 	}
 	if !os.IsNotExist(err) {
-		rich.Fatal("failed to check master database file '%s': %v", pack.Type, err)
+		return fmt.Errorf("failed to check master database file %q: %w", pack.Type, err)
 	}
 
+	var lastErr error
 	for i := 0; i < 3; i++ {
-		resp, err := client.Get(pack.DownloadUrl)
-		if err != nil {
-			rich.Error("failed to download '%s': %v", pack.DownloadUrl, err)
+		if err := downloadMasterTagPackAttempt(filePath, pack); err != nil {
+			lastErr = err
+			zap.L().Sugar().Warnf("failed to download '%s': %v", pack.DownloadUrl, err)
 			continue
 		}
-		defer resp.Close()
-		if resp.StatusCode() != fiber.StatusOK {
-			rich.Error("failed to download '%s': status %d", pack.DownloadUrl, resp.StatusCode())
-			continue
-		}
-		fs, err := os.Create(filePath)
-		if err != nil {
-			rich.Fatal("failed to open path '%s': %v", filePath, err)
-		}
-		defer fs.Close()
-		bufw := bufio.NewWriter(fs)
-		if _, err := bufw.ReadFrom(resp.BodyStream()); err != nil {
-			rich.Error("failed to read body from '%v'", pack.DownloadUrl)
-			continue
-		}
-		if err := bufw.Flush(); err != nil {
-			rich.Fatal("failed to flush body from '%v'", pack.DownloadUrl)
-		}
-		return
+		return nil
 	}
-	rich.Fatal("max retry exhausted when downloading '%s'", pack.DownloadUrl)
+	return fmt.Errorf("max retries exhausted when downloading %q: %w", pack.DownloadUrl, lastErr)
+}
+
+func downloadMasterTagPackAttempt(filePath string, pack *ptransaction.MasterTagPack) error {
+	resp, err := client.Get(pack.DownloadUrl)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+	if resp.StatusCode() != fiber.StatusOK {
+		return fmt.Errorf("unexpected response status %d", resp.StatusCode())
+	}
+
+	fs, err := os.Create(filePath)
+	if err != nil {
+		return fmt.Errorf("failed to open path %q: %w", filePath, err)
+	}
+	defer fs.Close()
+
+	bufw := bufio.NewWriter(fs)
+	if _, err := bufw.ReadFrom(resp.BodyStream()); err != nil {
+		return fmt.Errorf("failed to read response body: %w", err)
+	}
+	if err := bufw.Flush(); err != nil {
+		return fmt.Errorf("failed to flush response body: %w", err)
+	}
+	return nil
 }

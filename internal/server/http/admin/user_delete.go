@@ -1,7 +1,6 @@
 package admin
 
 import (
-	"context"
 	"errors"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -25,7 +24,7 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(400, "bad request body")
 	}
 
-	userAuth, err := opuser.GetUserAuthByServerId(context.Background(), request.ServerUserId)
+	userAuth, err := opuser.GetUserAuthByServerId(c, request.ServerUserId)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(400, "user not found")
@@ -34,8 +33,8 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(500, "internal error")
 	}
 
-	if err := user.DeleteUser(userAuth.ServerUserId); err != nil {
-		logger.Error("failed to delete user: %v", zap.Error(err))
+	if err := user.DeleteUser(c, userAuth.ServerUserId); err != nil {
+		logger.Error("failed to delete user", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 

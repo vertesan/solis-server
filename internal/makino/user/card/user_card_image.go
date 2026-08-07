@@ -10,8 +10,8 @@ import (
 	"slices"
 )
 
-func CalcCardDisplayType(cardId string, rarity int32, evolutionLevel int32) (penum.CardDisplayType, error) {
-	cardImages, err := opmaster.FindCardImages(context.Background(), cardId)
+func CalcCardDisplayType(ctx context.Context, cardId string, rarity int32, evolutionLevel int32) (penum.CardDisplayType, error) {
+	cardImages, err := opmaster.FindCardImages(ctx, cardId)
 	if err != nil {
 		return penum.CardDisplayType_CardDisplayType_Unknown, err
 	}

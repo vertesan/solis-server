@@ -30,7 +30,11 @@ func CheckAuth(authorization string) *fiber.Error {
 	if !ok {
 		return fiber.NewError(401, "unauthorized")
 	}
-	if auth != config.GetAdminAuth() {
+	adminAuth, err := config.GetAdminAuth()
+	if err != nil {
+		return fiber.NewError(500, err.Error())
+	}
+	if auth != adminAuth {
 		return fiber.NewError(401, "unauthorized")
 	}
 	return nil

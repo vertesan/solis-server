@@ -12,7 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
-func SpawnUserDeck(suid string, number int32, name string) (*ptransaction.UserDeck, error) {
+func SpawnUserDeck(ctx context.Context, suid string, number int32, name string) (*ptransaction.UserDeck, error) {
 	if number != 0 {
 		return &ptransaction.UserDeck{
 			Number: number,
@@ -20,7 +20,7 @@ func SpawnUserDeck(suid string, number int32, name string) (*ptransaction.UserDe
 		}, nil
 	}
 	var num int32 = 1
-	decks, err := opuser.FindAllUserDecks(context.Background(), suid)
+	decks, err := opuser.FindAllUserDecks(ctx, suid)
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return &ptransaction.UserDeck{

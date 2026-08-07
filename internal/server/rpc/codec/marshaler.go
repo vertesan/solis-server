@@ -5,8 +5,8 @@ import (
 	"compress/gzip"
 	"crypto/md5"
 	"encoding/binary"
-	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"github.com/vertesan/solis-server/internal/utils"
+	"github.com/vertesan/solis-server/internal/utils/crypto"
 	"io"
 	"time"
 )
@@ -32,29 +32,33 @@ func getTicks() uint64 {
 	return ticks
 }
 
-func encrypt(data []byte, iv []byte) []byte {
+func encrypt(data []byte, iv []byte) ([]byte, error) {
 	src := bytes.NewReader(data)
 	dst := &bytes.Buffer{}
-	crypto.Encrypt(keyHash[:], iv, src, dst)
-	return dst.Bytes()
+	if err := crypto.Encrypt(keyHash[:], iv, src, dst); err != nil {
+		return nil, err
+	}
+	return dst.Bytes(), nil
 }
 
-func decrypt(data []byte, iv []byte) []byte {
+func decrypt(data []byte, iv []byte) ([]byte, error) {
 	src := bytes.NewReader(data)
 	dst := &bytes.Buffer{}
-	crypto.Decrypt(keyHash[:], iv, src, dst)
-	return dst.Bytes()
+	if err := crypto.Decrypt(keyHash[:], iv, src, dst); err != nil {
+		return nil, err
+	}
+	return dst.Bytes(), nil
 }
 
-func Serialize(protoBytes []byte, codecType CodecType) []byte {
+func Serialize(protoBytes []byte, codecType CodecType) ([]byte, error) {
 	if len(protoBytes) == 0 {
-		return protoBytes
+		return protoBytes, nil
 	}
 
 	buf := &bytes.Buffer{}
 
 	// if len(protoBytes) > COMPRESS_THRESHOLD {
-	// 	rich.Warning("Message should be compressed.")
+	// 	zap.L().Warn("Message should be compressed.")
 	// }
 
 	// header
@@ -95,17 +99,20 @@ func Serialize(protoBytes []byte, codecType CodecType) []byte {
 	// body
 	iv := append([]byte(KEY), headerBytes...)
 	ivHash := md5.Sum(iv)
-	bodyBytes := encrypt(protoBytes, ivHash[:])
+	bodyBytes, err := encrypt(protoBytes, ivHash[:])
+	if err != nil {
+		return nil, err
+	}
 
 	if _, err := buf.Write(bodyBytes); err != nil {
 		panic(err)
 	}
-	return buf.Bytes()
+	return buf.Bytes(), nil
 }
 
-func Deserialize(raw []byte) []byte {
+func Deserialize(raw []byte) ([]byte, error) {
 	if len(raw) == 0 {
-		return raw
+		return raw, nil
 	}
 
 	buf := bytes.NewBuffer(raw)
@@ -148,7 +155,10 @@ func Deserialize(raw []byte) []byte {
 	// decrypt body
 	iv := append([]byte(KEY), headerBytes...)
 	ivHash := md5.Sum(iv)
-	bodyBytes := decrypt(encBytes, ivHash[:])
+	bodyBytes, err := decrypt(encBytes, ivHash[:])
+	if err != nil {
+		return nil, err
+	}
 
 	// in case of compressed body
 	if isCompressed == 0x01 {
@@ -164,5 +174,5 @@ func Deserialize(raw []byte) []byte {
 		}
 	}
 
-	return bodyBytes
+	return bodyBytes, nil
 }

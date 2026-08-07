@@ -6,11 +6,12 @@ import (
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -20,10 +21,11 @@ type MigrationServer struct {
 }
 
 func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.MigrationMigratePasswordRequest) (*pb.MigrationMigrateResponse, error) {
+	logger := mcontext.GetLogger(ctx)
 	// retireve userAuth from db
-	userAuth, err := opuser.GetUserAuthByPublicId(context.Background(), req.UserId)
+	userAuth, err := opuser.GetUserAuthByPublicId(ctx, req.UserId)
 	if err != nil {
-		rich.Error("failed to get userAuth: %v", err)
+		logger.Error("failed to get userAuth", zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 	if userAuth.Password != req.Password {
@@ -33,22 +35,22 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 	// retrieve SUID from metadata
 	// sub, err := internal.GetSuid(ctx)
 	// if err != nil {
-	// 	rich.Error("failed retrieving sub from auth token: %v", err)
+	// 	logger.Error("failed retrieving sub from auth token", zap.Error(err))
 	// 	return nil, status.Error(codes.InvalidArgument, "invalid argument")
 	// }
 
 	// retrieve user from db
-	user, err := opuser.FindUser(context.Background(), userAuth.ServerUserId)
+	user, err := opuser.FindUser(ctx, userAuth.ServerUserId)
 	if err != nil {
-		rich.Error("failed to FindUser: %v", err)
+		logger.Error("failed to FindUser", zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
 	// create one-time token
 	oneTimeToken := uuid.New().String()
-	err = opuser.UpdateUserAuthOneTimeToken(context.Background(), userAuth.ServerUserId, oneTimeToken)
+	err = opuser.UpdateUserAuthOneTimeToken(ctx, userAuth.ServerUserId, oneTimeToken)
 	if err != nil {
-		rich.Error("failed to UpdateOneTimeToken: %v", err)
+		logger.Error("failed to UpdateOneTimeToken", zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -63,9 +65,10 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 }
 
 func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteRequest) (*pb.MigrationExecuteResponse, error) {
-	userAuth, err := opuser.GetUserAuthByOneTimeToken(context.Background(), req.OnetimeToken)
+	logger := mcontext.GetLogger(ctx)
+	userAuth, err := opuser.GetUserAuthByOneTimeToken(ctx, req.OnetimeToken)
 	if err != nil {
-		rich.Error("failed to GetUserAuthByOneTimeToken: %v", err)
+		logger.Error("failed to GetUserAuthByOneTimeToken", zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 
@@ -80,7 +83,7 @@ func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteR
 	})
 	tokenStr, err := jwto.CreateToken(token)
 	if err != nil {
-		rich.Error("failed to create migration token: %v", err)
+		logger.Error("failed to create migration token", zap.Error(err))
 		return nil, status.Error(codes.Internal, "internal error")
 	}
 	return &pb.MigrationExecuteResponse{

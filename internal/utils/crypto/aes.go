@@ -5,7 +5,7 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"errors"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"fmt"
 	"io"
 )
 
@@ -21,19 +21,19 @@ var (
 	ErrInvalidPKCS7Padding = errors.New("invalid padding on input")
 )
 
-func Encrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) {
+func Encrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) error {
 	plainBytes, err := io.ReadAll(src)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	plainBytes, err = pkcs7Pad(plainBytes, 128)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	mode := cipher.NewCBCEncrypter(block, iv)
 	encBytes := make([]byte, len(plainBytes))
@@ -41,22 +41,23 @@ func Encrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) {
 
 	n, err := io.Copy(dst, bytes.NewBuffer(encBytes))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if n <= 0 {
-		rich.Fatal("%q bytes of data has been written.", n)
+		return fmt.Errorf("%d bytes of data has been written", n)
 	}
+	return nil
 }
 
-func Decrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) {
+func Decrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) error {
 	ciphertext, err := io.ReadAll(src)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	mode := cipher.NewCBCDecrypter(block, iv)
@@ -75,16 +76,17 @@ func Decrypt(key []byte, iv []byte, src io.Reader, dst io.Writer) {
 
 	plainBytes, err = pkcs7Unpad(plainBytes, 128)
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	n, err := io.Copy(dst, bytes.NewBuffer(plainBytes))
 	if err != nil {
-		panic(err)
+		return err
 	}
 	if n <= 0 {
-		rich.Fatal("%q bytes of data has been written.", n)
+		return fmt.Errorf("%d bytes of data has been written", n)
 	}
+	return nil
 }
 
 // pkcs7Pad right-pads the given byte slice with 1 to n bytes, where

@@ -8,9 +8,9 @@ import (
 )
 
 // returned value: photoCount, skillIds, abilityIds
-func CalcUnlocks(lteLevel int32, card *pmaster.Card) (int32, []string, []string, error) {
+func CalcUnlocks(ctx context.Context, lteLevel int32, card *pmaster.Card) (int32, []string, []string, error) {
 	cardLevelReleases, err := opmaster.FindCardLevelReleases(
-		context.Background(),
+		ctx,
 		card.CardLevelReleaseId,
 		lteLevel,
 	)

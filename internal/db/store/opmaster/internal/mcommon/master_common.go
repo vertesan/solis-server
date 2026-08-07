@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
-	"github.com/vertesan/solis-server/internal/utils/rich"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"iter"
 
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -95,22 +96,23 @@ func YieldMany[T interface{}, U interface{},
 	opts ...options.Lister[options.FindOptions],
 ) iter.Seq[V] {
 	return func(yield func(V) bool) {
+		logger := mcontext.GetLogger(ctx)
 		cursor, err := depot.Master.Collection(dbName).Find(
 			ctx, filter, opts...,
 		)
 		if err != nil {
-			rich.Error("failed to get protos from master db: %v", err)
+			logger.Error("failed to get protos from master db", zap.Error(err))
 			return
 		}
 		for cursor.Next(ctx) {
 			obj := new(W)
 			if err := cursor.Decode(obj); err != nil {
-				rich.Error("failed to decode mongo object: %v", err)
+				logger.Error("failed to decode mongo object", zap.Error(err))
 				return
 			}
 			p := V(new(U))
 			if err := proto.Unmarshal((*obj).GetData(), p); err != nil {
-				rich.Error("failed to unmarshal bytes to proto: %v", err)
+				logger.Error("failed to unmarshal bytes to proto", zap.Error(err))
 				return
 			}
 			if !yield(p) {

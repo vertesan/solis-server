@@ -3,7 +3,6 @@ package game
 import (
 	"bufio"
 	"bytes"
-	"context"
 	"encoding/hex"
 	"fmt"
 	"strconv"
@@ -38,7 +37,7 @@ var GetManifest fiber.Handler = func(c fiber.Ctx) error {
 	}
 
 	// retrieve manifest metainfo
-	manifestMetaInfo, err := opsolis.FindManifestMetaInfo(context.Background())
+	manifestMetaInfo, err := opsolis.FindManifestMetaInfo(c)
 	if err != nil {
 		return fiber.NewError(500, "internal error")
 	}
@@ -53,7 +52,7 @@ var GetManifest fiber.Handler = func(c fiber.Ctx) error {
 			UrlFormat:       manifestMetaInfo.UrlFormat,
 		}
 	} else {
-		octoDatabase, err = opsolis.FindFullManifest(context.Background())
+		octoDatabase, err = opsolis.FindFullManifest(c)
 		if err != nil {
 			return fiber.NewError(500, "internal error")
 		}

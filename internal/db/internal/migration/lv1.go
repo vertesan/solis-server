@@ -10,7 +10,7 @@ import (
 )
 
 func level1Migration() error {
-	return transaction.WithTransaction(func(ctx context.Context) (any, error) {
+	return transaction.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
 		// serverProfile
 		if err := opsolis.DeleteServerProfile(ctx); err != nil {
 			return nil, err

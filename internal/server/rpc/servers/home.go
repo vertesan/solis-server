@@ -14,10 +14,10 @@ type HomeServer struct {
 
 func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.HomeLoginResponse, error) {
 	suid := viber.GetSuid(ctx)
-	return home.Login(context.Background(), suid.String())
+	return home.Login(ctx, suid.String())
 }
 
 func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
 	suid := viber.GetSuid(ctx)
-	return home.Enter(context.Background(), suid.String())
+	return home.Enter(ctx, suid.String())
 }

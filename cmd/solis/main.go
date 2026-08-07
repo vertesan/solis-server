@@ -34,8 +34,10 @@ func main() {
 	}
 
 	// start servers
-	server.StartServers(baseLogger)
+	if err := server.StartServers(baseLogger); err != nil {
+		zap.L().Fatal("server stopped with an error", zap.Error(err))
+	}
 
 	// flush logger before existing
-	baseLogger.Sync()
+	zap.L().Sync()
 }

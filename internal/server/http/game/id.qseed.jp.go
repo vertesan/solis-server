@@ -1,7 +1,6 @@
 package game
 
 import (
-	"context"
 	"errors"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
@@ -31,7 +30,7 @@ var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(400, "missing x-device header")
 	}
 
-	qseed, err := opsolis.FindQseed(context.Background(), deviceId)
+	qseed, err := opsolis.FindQseed(c, deviceId)
 	if err != nil {
 		if !errors.Is(err, mongo.ErrNoDocuments) {
 			logger.Error("failed to get qseed", zap.Error(err))
@@ -41,16 +40,26 @@ var QseedGetId fiber.Handler = func(c fiber.Ctx) error {
 
 	if qseed == nil {
 		// if not exists, create a new one
+		value, err := utils.RandomHexString(16)
+		if err != nil {
+			logger.Error("failed to create qseed value", zap.Error(err))
+			return fiber.NewError(500, "internal error")
+		}
 		qseed = &smodel.Qseed{
 			Device: deviceId,
-			Qseed:  utils.RandomHexString(16),
+			Qseed:  value,
 		}
-		if err := opsolis.UpsertQseed(context.Background(), qseed); err != nil {
+		if err := opsolis.UpsertQseed(c, qseed); err != nil {
 			logger.Error("failed to create qseed", zap.Error(err))
 			return fiber.NewError(500, "internal error")
 		}
 	}
 
-	c.Append("X-Cloud-Trace-Context", utils.RandomHexString(32))
+	traceId, err := utils.RandomHexString(32)
+	if err != nil {
+		logger.Error("failed to create cloud trace id", zap.Error(err))
+		return fiber.NewError(500, "internal error")
+	}
+	c.Append("X-Cloud-Trace-Context", traceId)
 	return c.SendString(qseed.Qseed)
 }

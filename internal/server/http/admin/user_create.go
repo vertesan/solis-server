@@ -53,7 +53,7 @@ var CreateUser fiber.Handler = func(c fiber.Ctx) error {
 		}
 	}
 
-	err := user.CreateUser(publicUserId, serverUserId, password)
+	err := user.CreateUser(c, publicUserId, serverUserId, password)
 	if err != nil {
 		logger.Error("failed to create user", zap.Error(err))
 		return fiber.NewError(500, err.Error())

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/goccy/go-json"
-	"go.uber.org/zap"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
@@ -21,9 +20,9 @@ func GetTimestamp() int64 {
 	return time.Now().UnixMilli()
 }
 
-func RandomHexString(length int) string {
+func RandomHexString(length int) (string, error) {
 	if length <= 0 {
-		zap.L().Fatal("length must be a positive integer")
+		return "", fmt.Errorf("length must be a positive integer")
 	}
 
 	// Each byte gives two hex characters, so we need (length+1)/2 bytes to cover odd lengths.
@@ -32,13 +31,13 @@ func RandomHexString(length int) string {
 
 	_, err := crand.Read(bytes)
 	if err != nil {
-		zap.L().Fatal("failed to read random bytes")
+		return "", fmt.Errorf("failed to read random bytes: %w", err)
 	}
 
 	hexStr := hex.EncodeToString(bytes)
 
 	// Trim the hex string to the exact requested length
-	return hexStr[:length]
+	return hexStr[:length], nil
 }
 
 func RandomLengthString() ([]byte, int8) {
@@ -52,7 +51,7 @@ func RandomLengthString() ([]byte, int8) {
 
 func RandomString(length int) string {
 	if length <= 0 {
-		zap.L().Fatal("length must be a positive integer")
+		panic("length must be a positive integer")
 	}
 
 	result := make([]byte, length)

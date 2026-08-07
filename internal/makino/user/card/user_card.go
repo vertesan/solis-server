@@ -10,32 +10,36 @@ import (
 	"time"
 )
 
-func SpawnUserCardById(cardId string) (*ptransaction.UserCard, error) {
-	card, err := opmaster.FindCard(context.Background(), cardId)
+func SpawnUserCardById(ctx context.Context, cardId string) (*ptransaction.UserCard, error) {
+	card, err := opmaster.FindCard(ctx, cardId)
 	if err != nil {
 		return nil, err
 	}
-	return SpawnUserCard(card)
+	return SpawnUserCard(ctx, card)
 }
 
-func SpawnUserCard(card *pmaster.Card) (*ptransaction.UserCard, error) {
-	setting, err := opmaster.FindSetting(context.Background(), config.GetGameSettingId())
+func SpawnUserCard(ctx context.Context, card *pmaster.Card) (*ptransaction.UserCard, error) {
+	settingId, err := config.GetGameSettingId()
 	if err != nil {
 		return nil, err
 	}
-	cardRarity, err := opmaster.FindCardRarity(context.Background(), int64(card.InitialRarity))
+	setting, err := opmaster.FindSetting(ctx, settingId)
 	if err != nil {
 		return nil, err
 	}
-	params, err := CalcUserCardBaseAttr(card, 1, card.InitialRarity)
+	cardRarity, err := opmaster.FindCardRarity(ctx, int64(card.InitialRarity))
+	if err != nil {
+		return nil, err
+	}
+	params, err := CalcUserCardBaseAttr(ctx, card, 1, card.InitialRarity)
 	if err != nil {
 		return nil, fmt.Errorf("failed to CalcUserCardBaseAttr: %w", err)
 	}
-	displayType, err := CalcCardDisplayType(card.Id, card.InitialRarity, 0)
+	displayType, err := CalcCardDisplayType(ctx, card.Id, card.InitialRarity, 0)
 	if err != nil {
 		return nil, fmt.Errorf("failed to CalcCardDisplayType: %w", err)
 	}
-	photoCount, skillIds, abilityIds, err := CalcUnlocks(1, card)
+	photoCount, skillIds, abilityIds, err := CalcUnlocks(ctx, 1, card)
 	if err != nil {
 		return nil, err
 	}

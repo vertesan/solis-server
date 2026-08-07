@@ -30,7 +30,10 @@ func (g *QuaClientCodec) Marshal(v any) ([]byte, error) {
 		return nil, err
 	}
 	// customized codec
-	encBytes := Serialize(protoBytes, CLIENT)
+	encBytes, err := Serialize(protoBytes, CLIENT)
+	if err != nil {
+		return nil, err
+	}
 	return encBytes, nil
 }
 
@@ -40,7 +43,10 @@ func (g *QuaClientCodec) Unmarshal(data []byte, v any) error {
 		return fmt.Errorf("failed to unmarshal, message is %T, want proto.Message", v)
 	}
 	// customized codec
-	protoBytes := Deserialize(data)
+	protoBytes, err := Deserialize(data)
+	if err != nil {
+		return err
+	}
 	// default codec
 	return proto.Unmarshal(protoBytes, vv)
 }
@@ -62,7 +68,10 @@ func (g *QuaServerCodec) Marshal(v any) ([]byte, error) {
 		return nil, err
 	}
 	// customized codec
-	encBytes := Serialize(protoBytes, SERVER)
+	encBytes, err := Serialize(protoBytes, SERVER)
+	if err != nil {
+		return nil, err
+	}
 	return encBytes, nil
 }
 
@@ -72,7 +81,10 @@ func (g *QuaServerCodec) Unmarshal(data []byte, v any) error {
 		return fmt.Errorf("failed to unmarshal, message is %T, want proto.Message", v)
 	}
 	// customized codec
-	protoBytes := Deserialize(data)
+	protoBytes, err := Deserialize(data)
+	if err != nil {
+		return err
+	}
 	// default codec
 	return proto.Unmarshal(protoBytes, vv)
 }

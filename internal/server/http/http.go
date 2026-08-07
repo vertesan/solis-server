@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/server/http/admin"
@@ -14,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func StartHTTP(ctx context.Context, base *zap.Logger) {
+func StartHTTP(ctx context.Context, base *zap.Logger) error {
 	app := fiber.New(fiber.Config{
 		AppName:      "solis-server-http",
 		ReadTimeout:  time.Second * 30,
@@ -49,8 +50,11 @@ func StartHTTP(ctx context.Context, base *zap.Logger) {
 
 	port := config.GetHttpPort()
 	base.Sugar().Infof("http server listening at port: %v", port)
-	app.Listen(":"+port, fiber.ListenConfig{
+	if err := app.Listen(":"+port, fiber.ListenConfig{
 		DisableStartupMessage: true,
 		GracefulContext:       ctx,
-	})
+	}); err != nil && ctx.Err() == nil {
+		return fmt.Errorf("failed to serve HTTP: %w", err)
+	}
+	return nil
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"maps"
 	"path"
 
@@ -16,21 +15,23 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/readconcern"
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
+	"go.uber.org/zap"
 )
 
 func CheckAndUpdateAllMaster(profileVersion string) error {
-	ver, err := mversion.GetMasterVersion(context.Background())
+	ctx := context.Background()
+	ver, err := mversion.GetMasterVersion(ctx)
 	if err != nil {
 		return err
 	}
-	rich.Info("master database version: %s", ver)
+	zap.L().Sugar().Infof("master database version %s", ver)
 	// check current version vs version string in serverProfile
 	if ver == profileVersion {
 		return nil
 	}
-	rich.Info("updating master database from storage")
+	zap.L().Info("updating master database from storage")
 	// get all masterTagPacks
-	tags, err := opsolis.GetAllMasterTagPack(context.Background())
+	tags, err := opsolis.GetAllMasterTagPack(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to get master tag pack: %w", err)
 	}
@@ -38,7 +39,7 @@ func CheckAndUpdateAllMaster(profileVersion string) error {
 	indexMap := make(map[string]bson.D)
 
 	// start a transaction to migrate master databases from SQLite to MongoDB
-	err = transaction.WithTransaction(func(ctx context.Context) (interface{}, error) {
+	err = transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
 		for _, tag := range tags {
 			filePath := path.Join(config.GetDBDir(), tag.FileName)
 			data, err := decryptToSlice(tag.Type, filePath, tag.CryptoKey)
@@ -70,19 +71,19 @@ func CheckAndUpdateAllMaster(profileVersion string) error {
 	}
 
 	// creating indexes is not allowed in a transaction, we have to do this separately
-	rich.Info("creating indexes for master database, this may take a few minutes for the first startup...")
+	zap.L().Info("creating indexes for master database, this may take a few minutes for the first startup...")
 	for k, v := range indexMap {
-		if err := mversion.CreateIndexToMasterDb(context.Background(), k, v); err != nil {
+		if err := mversion.CreateIndexToMasterDb(ctx, k, v); err != nil {
 			return err
 		}
 	}
 
 	// finally, upsert master version in master._version
-	if err := mversion.UpsertMasterVersion(context.Background(), profileVersion); err != nil {
+	if err := mversion.UpsertMasterVersion(ctx, profileVersion); err != nil {
 		return err
 	}
 
-	rich.Info("master database update completed")
+	zap.L().Info("master database update completed")
 	return nil
 }
 

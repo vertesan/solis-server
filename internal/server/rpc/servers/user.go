@@ -14,5 +14,5 @@ type UserServer struct {
 
 func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse, error) {
 	suid := viber.GetSuid(ctx)
-	return user.GetUser(context.Background(), suid.String())
+	return user.GetUser(ctx, suid.String())
 }

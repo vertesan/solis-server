@@ -1,7 +1,6 @@
 package game
 
 import (
-	"context"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -36,10 +35,10 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
-		return diver.NewFiberError(400, "missing key query")
+		return diver.NewFiberError(c, 400, "missing key query")
 	}
 	if key != depot.ServerProfile.FirebaseProductKey {
-		return diver.NewFiberError(400, "invalid firebase product key")
+		return diver.NewFiberError(c, 400, "invalid firebase product key")
 	}
 
 	verifyRequest := &VerifyCustomTokenRequest{}
@@ -56,15 +55,15 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 
 	uidObj, ok := (*claim)["uid"]
 	if !ok {
-		return diver.NewFiberError(400, "missing uid payload")
+		return diver.NewFiberError(c, 400, "missing uid payload")
 	}
 	uid, ok := uidObj.(string)
 	if !ok {
-		return diver.NewFiberError(400, "invalid uid")
+		return diver.NewFiberError(c, 400, "invalid uid")
 	}
 
 	// retrieve userAuth from db
-	userAuth, err := opuser.GetUserAuthByFirebaseId(context.Background(), uid)
+	userAuth, err := opuser.GetUserAuthByFirebaseId(c, uid)
 	if err != nil {
 		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
 		return fiber.NewError(403, "invalid user")
@@ -84,7 +83,12 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 			"sign_in_provider": "custom",
 		},
 	})
-	idToken.Header["kid"] = utils.RandomHexString(40)
+	kid, err := utils.RandomHexString(40)
+	if err != nil {
+		logger.Error("failed creating key id", zap.Error(err))
+		return fiber.NewError(500, "internal error")
+	}
+	idToken.Header["kid"] = kid
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
 		logger.Error("failed creating id token", zap.Error(err))
@@ -96,7 +100,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	var refreshToken string
 	if len(userAuth.RefreshTokens) == 0 || userAuth.LastRefreshAt.Add(time.Hour*24*7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
-		if err := opuser.InsertUserAuthRefreshToken(context.Background(), userAuth.FirebaseId, refreshToken); err != nil {
+		if err := opuser.InsertUserAuthRefreshToken(c, userAuth.FirebaseId, refreshToken); err != nil {
 			logger.Error("failed to InsertRefreshToken", zap.Error(err))
 			return fiber.NewError(500, "internal error")
 		}
@@ -140,10 +144,10 @@ var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
 	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
-		return diver.NewFiberError(400, "missing key query")
+		return diver.NewFiberError(c, 400, "missing key query")
 	}
 	if key != depot.ServerProfile.FirebaseProductKey {
-		return diver.NewFiberError(400, "invalid firebase product key")
+		return diver.NewFiberError(c, 400, "invalid firebase product key")
 	}
 
 	infoRequest := &GetAccountInfoRequest{}
@@ -161,24 +165,24 @@ var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
 	// check payload
 	aud, ok := (*claim)["aud"]
 	if !ok {
-		return diver.NewFiberError(401, "missing aud payload")
+		return diver.NewFiberError(c, 401, "missing aud payload")
 	}
 	if aud != "solis-firebase" {
-		return diver.NewFiberError(403, "invalid payload")
+		return diver.NewFiberError(c, 403, "invalid payload")
 	}
 
 	// get firebase user id
 	userIdObj, ok := (*claim)["user_id"]
 	if !ok {
-		return diver.NewFiberError(401, "missing user_id payload")
+		return diver.NewFiberError(c, 401, "missing user_id payload")
 	}
 	userId, ok := userIdObj.(string)
 	if !ok {
-		return diver.NewFiberError(403, "invalid payload")
+		return diver.NewFiberError(c, 403, "invalid payload")
 	}
 
 	// get user info from db
-	userAuth, err := opuser.GetUserAuthByFirebaseId(context.Background(), userId)
+	userAuth, err := opuser.GetUserAuthByFirebaseId(c, userId)
 	if err != nil {
 		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
 		return fiber.NewError(500, "internal error")

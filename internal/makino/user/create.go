@@ -28,8 +28,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func CreateUser(publicUserId string, suid string, password string) error {
-	count, err := opuser.CountUserAuthByPublicOrServerUserId(context.Background(), publicUserId, suid)
+func CreateUser(ctx context.Context, publicUserId string, suid string, password string) error {
+	count, err := opuser.CountUserAuthByPublicOrServerUserId(ctx, publicUserId, suid)
 	if err != nil {
 		return err
 	}
@@ -40,7 +40,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 	now := time.Now()
 	milliNow := now.UnixMilli()
 
-	err = transaction.WithTransaction(func(ctx context.Context) (interface{}, error) {
+	err = transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
 		// userAuth
 		if err := opuser.InsertUserAuth(ctx, &umodel.UserAuth{
 			PublicUserId:  publicUserId,
@@ -138,7 +138,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 
 		// UserCard
 		for _, cardId := range consts.UserInitialCardIds {
-			userCard, err := card.SpawnUserCardById(cardId)
+			userCard, err := card.SpawnUserCardById(ctx, cardId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user card, cardId %q: %w", cardId, err)
 			}
@@ -149,7 +149,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 
 		// UserCharacter
 		for _, characterId := range consts.UserInitialCharacterIds {
-			userCharacter, err := character.SpawnUserCharacterById(characterId)
+			userCharacter, err := character.SpawnUserCharacterById(ctx, characterId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user character: %w", err)
 			}
@@ -160,7 +160,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 
 		// UserCostume
 		for _, costumeId := range consts.UserInitialCostumeIds {
-			costume, err := costume.SpawnUserCostumeById(costumeId)
+			costume, err := costume.SpawnUserCostumeById(ctx, costumeId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user costume: %w", err)
 			}
@@ -170,7 +170,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserDeck
-		deck, err := deck.SpawnUserDeck(suid, 0, "")
+		deck, err := deck.SpawnUserDeck(ctx, suid, 0, "")
 		if err != nil {
 			return nil, fmt.Errorf("failed to spawn user deck: %w", err)
 		}
@@ -346,7 +346,7 @@ func CreateUser(publicUserId string, suid string, password string) error {
 		}
 
 		// UserTutorial
-		userTutorials, err := tutorial.SpawnUserInitialTutorial()
+		userTutorials, err := tutorial.SpawnUserInitialTutorial(ctx)
 		if err != nil {
 			return nil, err
 		}

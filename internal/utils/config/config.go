@@ -1,11 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"os"
 	"path"
 	"strconv"
-
-	"go.uber.org/zap"
 )
 
 func getOrDefault(key string, def string) string {
@@ -32,12 +31,12 @@ func GetHttpPort() string {
 	return getOrDefault("SOLIS_HTTP_PORT", "50052")
 }
 
-func GetDBString() string {
+func GetDBString() (string, error) {
 	conn := os.Getenv("SOLIS_DB_URI")
 	if conn == "" {
-		zap.L().Sugar().Fatal("DB connection string env SOLIS_DB_URI not exists")
+		return "", fmt.Errorf("SOLIS_DB_URI does not exist")
 	}
-	return conn
+	return conn, nil
 }
 
 func GetResourceDir() string {
@@ -56,78 +55,78 @@ func GetManifestDir() string {
 	return path.Join(GetResourceDir(), "manifest")
 }
 
-func GetAdminAuth() string {
+func GetAdminAuth() (string, error) {
 	auth := os.Getenv("SOLIS_ADMIN_AUTH")
 	if auth == "" {
-		zap.L().Sugar().Fatal("SOLIS_ADMIN_AUTH does not exist")
+		return "", fmt.Errorf("SOLIS_ADMIN_AUTH does not exist")
 	}
-	return auth
+	return auth, nil
 }
 
-func GetGameSettingId() int64 {
+func GetGameSettingId() (int64, error) {
 	id, err := strconv.ParseInt(getOrDefault("SOLIS_SETTING_ID", "1"), 10, 64)
 	if err != nil {
-		zap.L().Sugar().Fatal("SOLIS_SETTING_ID must be a valid integer")
+		return 0, fmt.Errorf("SOLIS_SETTING_ID must be a valid integer: %w", err)
 	}
-	return id
+	return id, nil
 }
 
-func GetRSAPrivateKey() []byte {
+func GetRSAPrivateKey() ([]byte, error) {
 	filepath := os.Getenv("SOLIS_RSA_PRIV_KEY")
 	if filepath == "" {
-		zap.L().Sugar().Fatal("env SOLIS_RSA_PRIV_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_RSA_PRIV_KEY does not exist")
 	}
 	keyData, err := os.ReadFile(filepath)
 	if err != nil {
-		zap.L().Sugar().Fatal("failed reading RSA private key from %s: %v", filepath, err)
+		return nil, fmt.Errorf("failed reading RSA private key from %q: %w", filepath, err)
 	}
 
 	// block, _ := pem.Decode(keyData)
 	// if block == nil || (block.Type != "PRIVATE KEY" && block.Type != "RSA PRIVATE KEY") {
-	// 	rich.Fatal("failed decode RSA private key, block:\n%v", block)
+	// 	return nil, fmt.Errorf("failed decode RSA private key: %v", block)
 	// }
 
 	// privateKey, err := x509.ParsePKCS1PrivateKey(block.Bytes)
 	// if err != nil {
-	// 	rich.Fatal("unable to parse RSA private key: %v", err)
+	// 	return nil, fmt.Errorf("unable to parse RSA private key: %w", err)
 	// }
 	// return privateKey
-	return keyData
+	return keyData, nil
 }
 
-func GetRSAPublicKey() []byte {
+func GetRSAPublicKey() ([]byte, error) {
 	filepath := os.Getenv("SOLIS_RSA_PUB_KEY")
 	if filepath == "" {
-		zap.L().Sugar().Fatal("env SOLIS_RSA_PUB_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_RSA_PUB_KEY does not exist")
 	}
 	keyData, err := os.ReadFile(filepath)
 	if err != nil {
-		zap.L().Sugar().Fatal("failed reading RSA public key from %s: %v", filepath, err)
+		return nil, fmt.Errorf("failed reading RSA public key from %q: %w", filepath, err)
 	}
 
 	// block, _ := pem.Decode(keyData)
 	// if block == nil || block.Type != "PUBLIC KEY" {
-	// 	rich.Fatal("failed to decode RSA public key, block:\n%v", block)
+	// 	return nil, fmt.Errorf("failed to decode RSA public key: %v", block)
 	// }
 
 	// pubInterface, err := x509.ParsePKIXPublicKey(block.Bytes)
 	// if err != nil {
-	// 	rich.Fatal("unable to parse RSA public key: %v", err)
+	// 	return nil, fmt.Errorf("unable to parse RSA public key: %w", err)
 	// }
 	// pubKey, ok := pubInterface.(*rsa.PublicKey)
 	// if !ok {
-	// 	rich.Fatal("parsed key is not a valid RSA public key: %v", pubInterface)
+	// 	return nil, fmt.Errorf("parsed key is not a valid RSA public key: %v", pubInterface)
 	// }
 	// return pubKey
-	return keyData
+	return keyData, nil
 }
 
-func GetHMACKey() []byte {
+func GetHMACKey() ([]byte, error) {
 	key := os.Getenv("SOLIS_HMAC_KEY")
 	if key == "" {
-		zap.L().Sugar().Fatal("env SOLIS_HMAC_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_HMAC_KEY does not exist")
 	}
-	return []byte(key)
+	return []byte(key), nil
 }
 
 // Dev configs
@@ -140,18 +139,18 @@ func IsNoCert() bool {
 	return GetEnv() != "dev" || os.Getenv("SOLIS_DEV_NO_CERT") == "1"
 }
 
-func GetGrpcCertKeyPath() string {
+func GetGrpcCertKeyPath() (string, error) {
 	path := os.Getenv("SOLIS_DEV_GRPC_CERT_KEY_PATH")
 	if path == "" {
-		zap.L().Sugar().Fatal("certificate key env not found")
+		return "", fmt.Errorf("SOLIS_DEV_GRPC_CERT_KEY_PATH does not exist")
 	}
-	return path
+	return path, nil
 }
 
-func GetGrpcCertPath() string {
+func GetGrpcCertPath() (string, error) {
 	path := os.Getenv("SOLIS_DEV_GRPC_CERT_PATH")
 	if path == "" {
-		zap.L().Sugar().Fatal("certificate env not found")
+		return "", fmt.Errorf("SOLIS_DEV_GRPC_CERT_PATH does not exist")
 	}
-	return path
+	return path, nil
 }

@@ -13,16 +13,16 @@ func IsPlayableCharacter(character *pmaster.Character) bool {
 	return character.Type != penum.CharacterType_CharacterType_Npc
 }
 
-func SpawnUserCharacterById(characterId string) (*ptransaction.UserCharacter, error) {
-	character, err := opmaster.FindCharacter(context.Background(), characterId)
+func SpawnUserCharacterById(ctx context.Context, characterId string) (*ptransaction.UserCharacter, error) {
+	character, err := opmaster.FindCharacter(ctx, characterId)
 	if err != nil {
 		return nil, err
 	}
-	return SpawnUserCharacter(character)
+	return SpawnUserCharacter(ctx, character)
 }
 
-func SpawnUserCharacter(character *pmaster.Character) (*ptransaction.UserCharacter, error) {
-	activityLevel, err := opmaster.FindCharacterActivityLevel(context.Background(), 1)
+func SpawnUserCharacter(ctx context.Context, character *pmaster.Character) (*ptransaction.UserCharacter, error) {
+	activityLevel, err := opmaster.FindCharacterActivityLevel(ctx, 1)
 	if err != nil {
 		return nil, err
 	}

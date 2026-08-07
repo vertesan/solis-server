@@ -104,7 +104,11 @@ func getFullGrpcCtx() (context.Context, context.CancelFunc, error) {
 }
 
 func getAdminAuthHeader() map[string]string {
+	auth, err := config.GetAdminAuth()
+	if err != nil {
+		panic(err)
+	}
 	return map[string]string{
-		"Authorization": fmt.Sprintf("Bearer %s", config.GetAdminAuth()),
+		"Authorization": fmt.Sprintf("Bearer %s", auth),
 	}
 }

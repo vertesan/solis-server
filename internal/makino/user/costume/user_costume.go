@@ -8,8 +8,8 @@ import (
 	"time"
 )
 
-func SpawnUserCostumeById(costumeId string) (*ptransaction.UserCostume, error) {
-	costume, err := opmaster.FindCostume(context.Background(), costumeId)
+func SpawnUserCostumeById(ctx context.Context, costumeId string) (*ptransaction.UserCostume, error) {
+	costume, err := opmaster.FindCostume(ctx, costumeId)
 	if err != nil {
 		return nil, err
 	}

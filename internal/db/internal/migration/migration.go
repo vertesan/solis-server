@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.uber.org/zap"
 )
 
 // Check if this is the first startup, and potential future database migration
@@ -24,11 +24,11 @@ func MigrationCheck() error {
 
 	// first startup
 	if migrationFlag < 1 {
-		rich.Info("migration flag < 1, looks like this is the first startup, initializing server profile...")
+		zap.L().Info("migration flag < 1, looks like this is the first startup, initializing server profile...")
 		if err := level1Migration(); err != nil {
 			return fmt.Errorf("failed to initialize database: %w", err)
 		}
-		rich.Info("server profile initialized")
+		zap.L().Info("server profile initialized")
 	}
 
 	return nil

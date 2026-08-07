@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"os"
 	"os/signal"
-	"sync"
 	"syscall"
 
 	"github.com/vertesan/solis-server/internal/db"
@@ -13,19 +14,27 @@ import (
 	"github.com/vertesan/solis-server/internal/server/http"
 	"github.com/vertesan/solis-server/internal/server/rpc"
 	"go.uber.org/zap"
+	"golang.org/x/sync/errgroup"
 )
 
-func StartServers(base *zap.Logger) {
-	// init database
+func StartServers(base *zap.Logger) (retErr error) {
+	// init database connection
 	err := db.Initialize()
 	if err != nil {
-		zap.L().Sugar().Fatalf("failed initializing db: %v", err)
+		return fmt.Errorf("failed initializing db: %w", err)
 	}
+	defer func() {
+		disconnectErr := db.Disconnect()
+		if disconnectErr == nil {
+			zap.L().Info("disconnected from database")
+		}
+		retErr = errors.Join(retErr, disconnectErr)
+	}()
 
 	// get server profile
 	depot.ServerProfile, err = opsolis.FindServerProfile(context.Background())
 	if err != nil {
-		zap.L().Sugar().Fatalf("failed retrieving serverProfile from db: %v", err)
+		return fmt.Errorf("failed retrieving serverProfile from db: %w", err)
 	}
 
 	// spawn child loggers
@@ -33,27 +42,25 @@ func StartServers(base *zap.Logger) {
 	httpLogger := base.Named("HTTP").With(zap.String("layer", "http"))
 
 	// prepare for signal context
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	signalCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
+	group, ctx := errgroup.WithContext(signalCtx)
 
-	var servers sync.WaitGroup
-	servers.Add(2)
 	// start servers in goroutine
-	go func() {
-		defer servers.Done()
-		rpc.StartGRPC(ctx, grpcLogger)
+	group.Go(func() error {
+		if err := rpc.StartGRPC(ctx, grpcLogger); err != nil {
+			return fmt.Errorf("gRPC server failed: %w", err)
+		}
 		grpcLogger.Info("grpc server has been shutted down")
-	}()
-	go func() {
-		defer servers.Done()
-		http.StartHTTP(ctx, httpLogger)
+		return nil
+	})
+	group.Go(func() error {
+		if err := http.StartHTTP(ctx, httpLogger); err != nil {
+			return fmt.Errorf("HTTP server failed: %w", err)
+		}
 		httpLogger.Info("http server has been shutted down")
-	}()
+		return nil
+	})
 
-	// waiting for shutdown signal
-	<-ctx.Done()
-	servers.Wait()
-
-	db.Disconnect()
-	zap.L().Info("disconnected from database")
+	return group.Wait()
 }

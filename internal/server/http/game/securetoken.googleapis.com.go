@@ -1,7 +1,6 @@
 package game
 
 import (
-	"context"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -60,7 +59,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	}
 
 	// retrieve userAuth by refresh token
-	userAuth, err := opuser.GetUserAuthByRefreshToken(context.Background(), tokenReq.RefreshToken)
+	userAuth, err := opuser.GetUserAuthByRefreshToken(c, tokenReq.RefreshToken)
 	if err != nil {
 		return fiber.NewError(500, "invernal error")
 	}
@@ -70,7 +69,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	var refreshToken string
 	if userAuth.LastRefreshAt.Add(time.Hour * 24 * 7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
-		if err := opuser.InsertUserAuthRefreshToken(context.Background(), userAuth.FirebaseId, refreshToken); err != nil {
+		if err := opuser.InsertUserAuthRefreshToken(c, userAuth.FirebaseId, refreshToken); err != nil {
 			return fiber.NewError(500, "internal error")
 		}
 	} else {
@@ -92,7 +91,12 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 			"sign_in_provider": "custom",
 		},
 	})
-	idToken.Header["kid"] = utils.RandomHexString(40)
+	kid, err := utils.RandomHexString(40)
+	if err != nil {
+		logger.Error("failed creating key id", zap.Error(err))
+		return fiber.NewError(500, "internal error")
+	}
+	idToken.Header["kid"] = kid
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
 		logger.Error("failed creating id token", zap.Error(err))

@@ -14,19 +14,20 @@ type Attributes struct {
 }
 
 func CalcUserCardBaseAttr(
+	ctx context.Context,
 	card *pmaster.Card,
 	level int32,
 	rarity int32,
 ) (*Attributes, error) {
 	cardParameter, err := opmaster.FindCardParameter(
-		context.Background(),
+		ctx,
 		card.CardParameterId,
 		int64(level),
 	)
 	if err != nil {
 		return nil, err
 	}
-	cardRarity, err := opmaster.FindCardRarity(context.Background(), int64(rarity))
+	cardRarity, err := opmaster.FindCardRarity(ctx, int64(rarity))
 	if err != nil {
 		return nil, err
 	}
@@ -40,15 +41,16 @@ func CalcUserCardBaseAttr(
 }
 
 func CalcUserCardBaseAttrByCardId(
+	ctx context.Context,
 	cardId string,
 	level int32,
 	rarity int32,
 ) (*Attributes, error) {
-	card, err := opmaster.FindCard(context.Background(), cardId)
+	card, err := opmaster.FindCard(ctx, cardId)
 	if err != nil {
 		return nil, err
 	}
-	return CalcUserCardBaseAttr(card, level, rarity)
+	return CalcUserCardBaseAttr(ctx, card, level, rarity)
 }
 
 // calculate card base attribute.

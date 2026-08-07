@@ -38,7 +38,11 @@ func init() {
 	}
 
 	// TLS credentials
-	creds, err := credentials.NewClientTLSFromFile(config.GetGrpcCertPath(), "")
+	certPath, err := config.GetGrpcCertPath()
+	if err != nil {
+		log.Fatalf("cannot get certificate path: %v", err)
+	}
+	creds, err := credentials.NewClientTLSFromFile(certPath, "")
 	if err != nil {
 		log.Fatalf("cannot load certificate: %v", err)
 	}

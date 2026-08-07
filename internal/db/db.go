@@ -2,28 +2,29 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 	"github.com/vertesan/solis-server/internal/db/internal/migration"
 	"github.com/vertesan/solis-server/internal/db/internal/update"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"regexp"
 	"time"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"go.uber.org/zap"
 )
 
 func Initialize() error {
 	if err := Connect(); err != nil {
-		rich.Fatal("failed to connect to database: %v", err)
+		return fmt.Errorf("failed to connect to database: %w", err)
 	}
 
 	if err := migration.MigrationCheck(); err != nil {
-		rich.Fatal("failed to run MigrationCheck: %v", err)
+		return fmt.Errorf("failed to run MigrationCheck: %w", err)
 	}
 	if err := update.DataUpdateCheck(); err != nil {
-		rich.Fatal("failed to run DataUpdateCheck: %v", err)
+		return fmt.Errorf("failed to run DataUpdateCheck: %w", err)
 	}
 
 	return nil
@@ -31,9 +32,12 @@ func Initialize() error {
 
 func Connect() error {
 	var err error
-	dbUri := config.GetDBString()
+	dbUri, err := config.GetDBString()
+	if err != nil {
+		return err
+	}
 	dbCensoredUri := regexp.MustCompile(`:[^:]+?@`).ReplaceAllString(dbUri, ":****@")
-	rich.Info("connecting to database %s", dbCensoredUri)
+	zap.L().Sugar().Infof("connecting to database %s", dbCensoredUri)
 
 	depot.Client, err = mongo.Connect(
 		options.Client().ApplyURI(dbUri).
@@ -54,14 +58,15 @@ func Connect() error {
 	depot.Master = depot.Client.Database("master")
 	depot.User = depot.Client.Database("user")
 
-	rich.Info("database connection established")
+	zap.L().Info("database connection established")
 	return nil
 }
 
-func Disconnect() {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+func Disconnect() error {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 	if err := depot.Client.Disconnect(ctx); err != nil {
-		rich.Fatal("failed disconnecting to database: %v", err)
+		return fmt.Errorf("failed disconnecting from database: %w", err)
 	}
+	return nil
 }

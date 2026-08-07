@@ -6,8 +6,8 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 )
 
-func SpawnUserInitialTutorial() ([]*ptransaction.UserTutorial, error) {
-	tutorials, err := opmaster.FindAllTutorials(context.Background())
+func SpawnUserInitialTutorial(ctx context.Context) ([]*ptransaction.UserTutorial, error) {
+	tutorials, err := opmaster.FindAllTutorials(ctx)
 	if err != nil {
 		return nil, err
 	}

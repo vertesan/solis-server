@@ -3,12 +3,12 @@ package jwto
 import (
 	"errors"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/rich"
 	"math/rand"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/vertesan/solis-server/internal/utils/config"
+	"go.uber.org/zap"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_"
@@ -20,14 +20,18 @@ func ParseRS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 		if token.Method.Alg() != "RS256" {
 			return nil, fmt.Errorf("invalid sign method: %s", token.Method.Alg())
 		}
-		return jwt.ParseRSAPublicKeyFromPEM(config.GetRSAPublicKey())
+		keyData, err := config.GetRSAPublicKey()
+		if err != nil {
+			return nil, err
+		}
+		return jwt.ParseRSAPublicKeyFromPEM(keyData)
 	})
 
 	if err != nil {
 		return nil, nil, err
 	}
 	if !token.Valid {
-		rich.Error("invalid JWT signature")
+		zap.L().Error("invalid JWT signature")
 		return nil, nil, errors.New("invalid JWT signature")
 	}
 
@@ -36,7 +40,7 @@ func ParseRS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 		return nil, nil, err
 	}
 	if exp.Before(time.Now()) {
-		rich.Error("token expired")
+		zap.L().Error("token expired")
 		return nil, nil, errors.New("token expired")
 	}
 
@@ -45,14 +49,14 @@ func ParseRS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 
 func ParseHS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 	token, err := jwt.Parse(raw, func(token *jwt.Token) (interface{}, error) {
-		return config.GetHMACKey(), nil
+		return config.GetHMACKey()
 	}, jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}))
 	if err != nil {
 		return nil, nil, err
 	}
 
 	if !token.Valid {
-		rich.Error("invalid JWT signature")
+		zap.L().Error("invalid JWT signature")
 		return nil, nil, errors.New("invalid JWT signature")
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
@@ -65,7 +69,7 @@ func ParseHS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 		return nil, nil, err
 	}
 	if exp.Before(time.Now()) {
-		rich.Error("token expired")
+		zap.L().Error("token expired")
 		return nil, nil, errors.New("token expired")
 	}
 
@@ -73,7 +77,11 @@ func ParseHS256Token(raw string) (*jwt.Token, *jwt.MapClaims, error) {
 }
 
 func CreateToken(token *jwt.Token) (string, error) {
-	key, err := jwt.ParseRSAPrivateKeyFromPEM(config.GetRSAPrivateKey())
+	keyData, err := config.GetRSAPrivateKey()
+	if err != nil {
+		return "", err
+	}
+	key, err := jwt.ParseRSAPrivateKeyFromPEM(keyData)
 	if err != nil {
 		return "", err
 	}
@@ -86,9 +94,13 @@ func CreateToken(token *jwt.Token) (string, error) {
 }
 
 func CreateGameAuthToken(token *jwt.Token) (string, error) {
-	tokenString, err := token.SignedString(config.GetHMACKey())
+	key, err := config.GetHMACKey()
 	if err != nil {
-		rich.Error("failed creating game auth token: %v", err)
+		return "", err
+	}
+	tokenString, err := token.SignedString(key)
+	if err != nil {
+		zap.L().Error("failed creating game auth token", zap.Error(err))
 		return "", err
 	}
 	return tokenString, nil
