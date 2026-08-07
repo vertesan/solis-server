@@ -2,16 +2,15 @@ package servers
 
 import (
 	"context"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -21,23 +20,19 @@ type AuthServer struct {
 }
 
 func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.AuthLoginResponse, error) {
-	logger := mcontext.GetLogger(ctx)
 	_, claim, err := jwto.ParseRS256Token(req.GetFirebaseIDToken())
 	if err != nil {
-		logger.Error("failed parsing token", zap.Error(err))
-		return nil, status.Errorf(codes.InvalidArgument, "bad token")
+		return nil, status.Errorf(codes.InvalidArgument, "failed parsing token: %v", err)
 	}
 
 	// obtain claims
 	firebaseIdObj, ok := (*claim)["user_id"]
 	if !ok {
-		logger.Error("missing user_id in payload")
-		return nil, status.Error(codes.InvalidArgument, "bad token")
+		return nil, status.Error(codes.InvalidArgument, "missing user_id in payload")
 	}
 	firebaseId, ok := firebaseIdObj.(string)
 	if !ok {
-		logger.Error("non-string user_id in payload")
-		return nil, status.Error(codes.InvalidArgument, "bad token")
+		return nil, status.Error(codes.InvalidArgument, "non-string user_id in payload")
 	}
 	requireReAuth := false
 	_, ok = (*claim)["puid"]
@@ -48,8 +43,7 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.A
 	// retireve userAuth from db
 	userAuth, err := opuser.GetUserAuthByFirebaseId(ctx, firebaseId)
 	if err != nil {
-		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Errorf(codes.Internal, "failed to GetUserAuthByFirebaseId: %v", err)
 	}
 
 	// issue a game auth token
@@ -61,13 +55,11 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.A
 	})
 	gameAuthToken, err := jwto.CreateGameAuthToken(token)
 	if err != nil {
-		logger.Error("failed to create game auth token", zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Errorf(codes.Internal, "failed to create game auth token: %v", err)
 	}
 
 	if err := opuser.UpdateUserAuthLastLoginTime(ctx, userAuth.ServerUserId, time.Now().UnixMilli()); err != nil {
-		logger.Error("failed to update last login time during user login", zap.Error(err))
-		return nil, status.Error(codes.Internal, "internal error")
+		return nil, status.Errorf(codes.Internal, "failed to update last login time during user login: %v", err)
 	}
 
 	return &pb.AuthLoginResponse{
