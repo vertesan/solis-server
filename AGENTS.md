@@ -74,11 +74,12 @@ Three databases: `solis`, `master`, `user`.
 
 You can use MongoDB MCP server to retrieve or manipulate data if you need.
 
-## Loggin Rules
+## Logging Rules
 
 Avoid using global logger (`zap.L()`) when possible.
 In HTTP and gRPC handlers, a `*zap.Logger` is threaded in the `context` through the entire invocation, use `GetLogger(ctx context.Context) *zap.Logger` function in `internal/utils/mcontext` to retrieve logger instance in these cases.
 In scopes where don't have context, such as utility functions, using global logger is acceptable.
+Sugaring a logger is perfectly acceptable, our program is not that performance critical.
 
 ## Testing Rules
 
