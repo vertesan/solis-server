@@ -8,8 +8,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"go.uber.org/zap"
 
 	"google.golang.org/grpc"
@@ -94,19 +94,19 @@ func UnaryServerInterceptor(base *zap.Logger) grpc.UnaryServerInterceptor {
 
 		// invoke handler
 		m, err := handler(ctx, req)
-
 		if err != nil {
 			logger.Error("RPC failed with error", zap.Error(err))
 		}
-		switch status.Code(err) {
-		case codes.OK:
-			return m, nil
-		case codes.Unknown:
-			return m, errInternal
-		default:
-			return m, err
-		}
+		return m, abstractErrorMsg(err)
 	}
+}
+
+func abstractErrorMsg(err error) error {
+	code := status.Code(err)
+	if code == codes.OK {
+		return nil
+	}
+	return status.Error(code, code.String())
 }
 
 func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
