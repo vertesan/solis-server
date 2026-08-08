@@ -20,7 +20,7 @@ func level1Migration() error {
 			return nil, err
 		}
 		if err := opsolis.InsertServerProfile(ctx, &smodel.ServerProfile{
-			AppVersion:         "4.10.4",
+			AppVersion:         "6.0.2",
 			Platform:           "Android",
 			MasterVersion:      "",
 			FirebaseProductKey: "AIzaSyCabjC7_mOU21qkcNobnhN1khTi1-1F-kA",

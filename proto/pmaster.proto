@@ -292,6 +292,7 @@ message Character {
   string homeMainCharacterStayPropAssetId = 56;
   string gachaMovieName = 57;
   repeated pmaster.LoveCharacterInfo loveInfos = 58;
+  string excursionFirstText = 59;
 }
 message CharacterCompanyEnjoyStory {
   int32 number = 1;
@@ -597,6 +598,49 @@ message EventStoryEpisode {
   string viewConditionId = 4;
   string unlockConditionId = 5;
   bool isAppeal = 6;
+}
+message ExcursionGazeReaction {
+  string characterId = 1;
+  string excursionPlaceId = 2;
+  int32 number = 3;
+  string motionAssetId = 4;
+  string voiceAssetId = 5;
+  repeated string unlockCostumeIds = 6;
+  repeated string unlockNotCostumeIds = 10;
+  string cameraMotionAssetId = 7;
+  string propAssetId = 8;
+  bool isFade = 11;
+  bool isLookAt = 12;
+  string text = 13;
+  float focalLength = 14;
+  float fNumberRatio = 15;
+  float trackingAccuracy = 16;
+  float yOffset = 17;
+  repeated int32 unlockGazeNumbers = 18;
+}
+message ExcursionPlace {
+  string id = 1;
+  string name = 2;
+  string advAssetId = 3;
+  string idleCameraMotionAssetId = 5;
+  string backgroundAssetId = 6;
+  string bgmAssetId = 7;
+  string sceneLayoutAssetId = 8;
+  repeated string advNotWearableCostumeTypeIds = 9;
+  repeated string finishAdvNotWearableCostumeTypeIds = 10;
+  repeated string notWearableCostumeTypeIds = 11;
+}
+message ExcursionPlaceSetting {
+  string characterId = 1;
+  string excursionPlaceId = 2;
+  string advForceCostumeId = 4;
+  string propAssetId = 7;
+  string forceCostumeId = 6;
+  float minFocalLength = 8;
+  float defaultFocalLength = 9;
+  float maxFocalLength = 10;
+  int32 sceneLayoutPositionIndex = 11;
+  string finishAdvForceCostumeId = 12;
 }
 message Exercise {
   string id = 1;

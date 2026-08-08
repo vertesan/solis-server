@@ -447,6 +447,7 @@ enum FunctionLockType {
   FunctionLockType_Satellite = 50;
   FunctionLockType_TowerAutoPlay = 51;
   FunctionLockType_PersonalAccessoryFilter = 52;
+  FunctionLockType_Excursion = 53;
 }
 enum FunctionMaintenanceType {
   FunctionMaintenanceType_Unknown = 0;
@@ -1283,6 +1284,7 @@ enum MissionType {
   MissionType_ShowcaseSpecifiedHashtagIdSaveCount = 2205;
   MissionType_CompanyCharacterUseObtainEnjoyPointItemCount = 2301;
   MissionType_CompanyUseObtainEnjoyPointItemTotalCount = 2302;
+  MissionType_ExcursionClearCount = 2401;
 }
 enum MoodType {
   MoodType_Unknown = 0;
@@ -2282,6 +2284,7 @@ enum TutorialType {
   TutorialType_Satellite = 47;
   TutorialType_PhotoPanoramaShooting = 48;
   TutorialType_FishHeaven = 49;
+  TutorialType_Excursion = 50;
 }
 enum WatchAdvertisementType {
   WatchAdvertisementType_Unknown = 0;

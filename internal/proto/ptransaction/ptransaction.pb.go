@@ -4146,6 +4146,66 @@ func (x *UserDuty) GetCurrentExchangedRewardNumbers() []int64 {
 	return nil
 }
 
+type UserExcursionGazeReaction struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	CharacterId        string                 `protobuf:"bytes,1,opt,name=characterId,proto3" json:"characterId"`
+	ExcursionPlaceId   string                 `protobuf:"bytes,2,opt,name=excursionPlaceId,proto3" json:"excursionPlaceId"`
+	GazeReactionNumber int64                  `protobuf:"varint,3,opt,name=gazeReactionNumber,proto3" json:"gazeReactionNumber"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *UserExcursionGazeReaction) Reset() {
+	*x = UserExcursionGazeReaction{}
+	mi := &file_ptransaction_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UserExcursionGazeReaction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UserExcursionGazeReaction) ProtoMessage() {}
+
+func (x *UserExcursionGazeReaction) ProtoReflect() protoreflect.Message {
+	mi := &file_ptransaction_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UserExcursionGazeReaction.ProtoReflect.Descriptor instead.
+func (*UserExcursionGazeReaction) Descriptor() ([]byte, []int) {
+	return file_ptransaction_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *UserExcursionGazeReaction) GetCharacterId() string {
+	if x != nil {
+		return x.CharacterId
+	}
+	return ""
+}
+
+func (x *UserExcursionGazeReaction) GetExcursionPlaceId() string {
+	if x != nil {
+		return x.ExcursionPlaceId
+	}
+	return ""
+}
+
+func (x *UserExcursionGazeReaction) GetGazeReactionNumber() int64 {
+	if x != nil {
+		return x.GazeReactionNumber
+	}
+	return 0
+}
+
 type UserGachaButton struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	GachaButtonId string                 `protobuf:"bytes,1,opt,name=gachaButtonId,proto3" json:"gachaButtonId"`
@@ -4158,7 +4218,7 @@ type UserGachaButton struct {
 
 func (x *UserGachaButton) Reset() {
 	*x = UserGachaButton{}
-	mi := &file_ptransaction_proto_msgTypes[47]
+	mi := &file_ptransaction_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4170,7 +4230,7 @@ func (x *UserGachaButton) String() string {
 func (*UserGachaButton) ProtoMessage() {}
 
 func (x *UserGachaButton) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[47]
+	mi := &file_ptransaction_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4183,7 +4243,7 @@ func (x *UserGachaButton) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserGachaButton.ProtoReflect.Descriptor instead.
 func (*UserGachaButton) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{47}
+	return file_ptransaction_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *UserGachaButton) GetGachaButtonId() string {
@@ -4230,7 +4290,7 @@ type UserGift struct {
 
 func (x *UserGift) Reset() {
 	*x = UserGift{}
-	mi := &file_ptransaction_proto_msgTypes[48]
+	mi := &file_ptransaction_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4242,7 +4302,7 @@ func (x *UserGift) String() string {
 func (*UserGift) ProtoMessage() {}
 
 func (x *UserGift) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[48]
+	mi := &file_ptransaction_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4255,7 +4315,7 @@ func (x *UserGift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserGift.ProtoReflect.Descriptor instead.
 func (*UserGift) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{48}
+	return file_ptransaction_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *UserGift) GetGiftId() string {
@@ -4323,7 +4383,7 @@ type PhotoGift struct {
 
 func (x *PhotoGift) Reset() {
 	*x = PhotoGift{}
-	mi := &file_ptransaction_proto_msgTypes[49]
+	mi := &file_ptransaction_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4335,7 +4395,7 @@ func (x *PhotoGift) String() string {
 func (*PhotoGift) ProtoMessage() {}
 
 func (x *PhotoGift) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[49]
+	mi := &file_ptransaction_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4348,7 +4408,7 @@ func (x *PhotoGift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoGift.ProtoReflect.Descriptor instead.
 func (*PhotoGift) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{49}
+	return file_ptransaction_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *PhotoGift) GetName() string {
@@ -4374,7 +4434,7 @@ type UserGiftHistory struct {
 
 func (x *UserGiftHistory) Reset() {
 	*x = UserGiftHistory{}
-	mi := &file_ptransaction_proto_msgTypes[50]
+	mi := &file_ptransaction_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4386,7 +4446,7 @@ func (x *UserGiftHistory) String() string {
 func (*UserGiftHistory) ProtoMessage() {}
 
 func (x *UserGiftHistory) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[50]
+	mi := &file_ptransaction_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4399,7 +4459,7 @@ func (x *UserGiftHistory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserGiftHistory.ProtoReflect.Descriptor instead.
 func (*UserGiftHistory) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{50}
+	return file_ptransaction_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *UserGiftHistory) GetGiftId() string {
@@ -4467,7 +4527,7 @@ type PhotoGiftHistory struct {
 
 func (x *PhotoGiftHistory) Reset() {
 	*x = PhotoGiftHistory{}
-	mi := &file_ptransaction_proto_msgTypes[51]
+	mi := &file_ptransaction_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4479,7 +4539,7 @@ func (x *PhotoGiftHistory) String() string {
 func (*PhotoGiftHistory) ProtoMessage() {}
 
 func (x *PhotoGiftHistory) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[51]
+	mi := &file_ptransaction_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4492,7 +4552,7 @@ func (x *PhotoGiftHistory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoGiftHistory.ProtoReflect.Descriptor instead.
 func (*PhotoGiftHistory) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{51}
+	return file_ptransaction_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *PhotoGiftHistory) GetName() string {
@@ -4512,7 +4572,7 @@ type UserInvite struct {
 
 func (x *UserInvite) Reset() {
 	*x = UserInvite{}
-	mi := &file_ptransaction_proto_msgTypes[52]
+	mi := &file_ptransaction_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4524,7 +4584,7 @@ func (x *UserInvite) String() string {
 func (*UserInvite) ProtoMessage() {}
 
 func (x *UserInvite) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[52]
+	mi := &file_ptransaction_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4537,7 +4597,7 @@ func (x *UserInvite) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserInvite.ProtoReflect.Descriptor instead.
 func (*UserInvite) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{52}
+	return file_ptransaction_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *UserInvite) GetInviteCode() string {
@@ -4571,7 +4631,7 @@ type UserLeagueDeckPosition struct {
 
 func (x *UserLeagueDeckPosition) Reset() {
 	*x = UserLeagueDeckPosition{}
-	mi := &file_ptransaction_proto_msgTypes[53]
+	mi := &file_ptransaction_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4583,7 +4643,7 @@ func (x *UserLeagueDeckPosition) String() string {
 func (*UserLeagueDeckPosition) ProtoMessage() {}
 
 func (x *UserLeagueDeckPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[53]
+	mi := &file_ptransaction_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4596,7 +4656,7 @@ func (x *UserLeagueDeckPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserLeagueDeckPosition.ProtoReflect.Descriptor instead.
 func (*UserLeagueDeckPosition) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{53}
+	return file_ptransaction_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *UserLeagueDeckPosition) GetLeagueSeasonId() string {
@@ -4674,7 +4734,7 @@ type UserLove struct {
 
 func (x *UserLove) Reset() {
 	*x = UserLove{}
-	mi := &file_ptransaction_proto_msgTypes[54]
+	mi := &file_ptransaction_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4686,7 +4746,7 @@ func (x *UserLove) String() string {
 func (*UserLove) ProtoMessage() {}
 
 func (x *UserLove) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[54]
+	mi := &file_ptransaction_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4699,7 +4759,7 @@ func (x *UserLove) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserLove.ProtoReflect.Descriptor instead.
 func (*UserLove) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{54}
+	return file_ptransaction_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *UserLove) GetLoveId() string {
@@ -4741,7 +4801,7 @@ type UserNotification struct {
 
 func (x *UserNotification) Reset() {
 	*x = UserNotification{}
-	mi := &file_ptransaction_proto_msgTypes[55]
+	mi := &file_ptransaction_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4753,7 +4813,7 @@ func (x *UserNotification) String() string {
 func (*UserNotification) ProtoMessage() {}
 
 func (x *UserNotification) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[55]
+	mi := &file_ptransaction_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4766,7 +4826,7 @@ func (x *UserNotification) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserNotification.ProtoReflect.Descriptor instead.
 func (*UserNotification) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{55}
+	return file_ptransaction_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *UserNotification) GetNotificationType() penum.NotificationType {
@@ -4800,7 +4860,7 @@ type UserPhotoReport struct {
 
 func (x *UserPhotoReport) Reset() {
 	*x = UserPhotoReport{}
-	mi := &file_ptransaction_proto_msgTypes[56]
+	mi := &file_ptransaction_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4812,7 +4872,7 @@ func (x *UserPhotoReport) String() string {
 func (*UserPhotoReport) ProtoMessage() {}
 
 func (x *UserPhotoReport) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[56]
+	mi := &file_ptransaction_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4825,7 +4885,7 @@ func (x *UserPhotoReport) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserPhotoReport.ProtoReflect.Descriptor instead.
 func (*UserPhotoReport) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{56}
+	return file_ptransaction_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *UserPhotoReport) GetPhotos() []*UserPhoto {
@@ -4852,7 +4912,7 @@ type UserPoint struct {
 
 func (x *UserPoint) Reset() {
 	*x = UserPoint{}
-	mi := &file_ptransaction_proto_msgTypes[57]
+	mi := &file_ptransaction_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4864,7 +4924,7 @@ func (x *UserPoint) String() string {
 func (*UserPoint) ProtoMessage() {}
 
 func (x *UserPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[57]
+	mi := &file_ptransaction_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4877,7 +4937,7 @@ func (x *UserPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserPoint.ProtoReflect.Descriptor instead.
 func (*UserPoint) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{57}
+	return file_ptransaction_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *UserPoint) GetPointType() penum.PointType {
@@ -4904,7 +4964,7 @@ type TwitterInfo struct {
 
 func (x *TwitterInfo) Reset() {
 	*x = TwitterInfo{}
-	mi := &file_ptransaction_proto_msgTypes[58]
+	mi := &file_ptransaction_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4916,7 +4976,7 @@ func (x *TwitterInfo) String() string {
 func (*TwitterInfo) ProtoMessage() {}
 
 func (x *TwitterInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[58]
+	mi := &file_ptransaction_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4929,7 +4989,7 @@ func (x *TwitterInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TwitterInfo.ProtoReflect.Descriptor instead.
 func (*TwitterInfo) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{58}
+	return file_ptransaction_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *TwitterInfo) GetTwitterUserID() string {
@@ -4956,7 +5016,7 @@ type UserPublic struct {
 
 func (x *UserPublic) Reset() {
 	*x = UserPublic{}
-	mi := &file_ptransaction_proto_msgTypes[59]
+	mi := &file_ptransaction_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4968,7 +5028,7 @@ func (x *UserPublic) String() string {
 func (*UserPublic) ProtoMessage() {}
 
 func (x *UserPublic) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[59]
+	mi := &file_ptransaction_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4981,7 +5041,7 @@ func (x *UserPublic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserPublic.ProtoReflect.Descriptor instead.
 func (*UserPublic) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{59}
+	return file_ptransaction_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *UserPublic) GetServerUserId() string {
@@ -5008,7 +5068,7 @@ type UserShowcaseLike struct {
 
 func (x *UserShowcaseLike) Reset() {
 	*x = UserShowcaseLike{}
-	mi := &file_ptransaction_proto_msgTypes[60]
+	mi := &file_ptransaction_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5020,7 +5080,7 @@ func (x *UserShowcaseLike) String() string {
 func (*UserShowcaseLike) ProtoMessage() {}
 
 func (x *UserShowcaseLike) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[60]
+	mi := &file_ptransaction_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5033,7 +5093,7 @@ func (x *UserShowcaseLike) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserShowcaseLike.ProtoReflect.Descriptor instead.
 func (*UserShowcaseLike) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{60}
+	return file_ptransaction_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *UserShowcaseLike) GetDailyLikeCount() int64 {
@@ -5061,7 +5121,7 @@ type UserStaff struct {
 
 func (x *UserStaff) Reset() {
 	*x = UserStaff{}
-	mi := &file_ptransaction_proto_msgTypes[61]
+	mi := &file_ptransaction_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5073,7 +5133,7 @@ func (x *UserStaff) String() string {
 func (*UserStaff) ProtoMessage() {}
 
 func (x *UserStaff) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[61]
+	mi := &file_ptransaction_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5086,7 +5146,7 @@ func (x *UserStaff) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserStaff.ProtoReflect.Descriptor instead.
 func (*UserStaff) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{61}
+	return file_ptransaction_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *UserStaff) GetParameterType() penum.ParameterType {
@@ -5119,7 +5179,7 @@ type UserStaffTrainingReset struct {
 
 func (x *UserStaffTrainingReset) Reset() {
 	*x = UserStaffTrainingReset{}
-	mi := &file_ptransaction_proto_msgTypes[62]
+	mi := &file_ptransaction_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5131,7 +5191,7 @@ func (x *UserStaffTrainingReset) String() string {
 func (*UserStaffTrainingReset) ProtoMessage() {}
 
 func (x *UserStaffTrainingReset) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[62]
+	mi := &file_ptransaction_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5144,7 +5204,7 @@ func (x *UserStaffTrainingReset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserStaffTrainingReset.ProtoReflect.Descriptor instead.
 func (*UserStaffTrainingReset) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{62}
+	return file_ptransaction_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *UserStaffTrainingReset) GetStaffTrainingResetCount() int32 {
@@ -5175,7 +5235,7 @@ type UserTotalCount struct {
 
 func (x *UserTotalCount) Reset() {
 	*x = UserTotalCount{}
-	mi := &file_ptransaction_proto_msgTypes[63]
+	mi := &file_ptransaction_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5187,7 +5247,7 @@ func (x *UserTotalCount) String() string {
 func (*UserTotalCount) ProtoMessage() {}
 
 func (x *UserTotalCount) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[63]
+	mi := &file_ptransaction_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5200,7 +5260,7 @@ func (x *UserTotalCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserTotalCount.ProtoReflect.Descriptor instead.
 func (*UserTotalCount) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{63}
+	return file_ptransaction_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *UserTotalCount) GetLoginCount() int64 {
@@ -5305,7 +5365,7 @@ type UserTourArea struct {
 
 func (x *UserTourArea) Reset() {
 	*x = UserTourArea{}
-	mi := &file_ptransaction_proto_msgTypes[64]
+	mi := &file_ptransaction_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5317,7 +5377,7 @@ func (x *UserTourArea) String() string {
 func (*UserTourArea) ProtoMessage() {}
 
 func (x *UserTourArea) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[64]
+	mi := &file_ptransaction_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5330,7 +5390,7 @@ func (x *UserTourArea) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserTourArea.ProtoReflect.Descriptor instead.
 func (*UserTourArea) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{64}
+	return file_ptransaction_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *UserTourArea) GetTourId() string {
@@ -5364,7 +5424,7 @@ type UserTourDeck struct {
 
 func (x *UserTourDeck) Reset() {
 	*x = UserTourDeck{}
-	mi := &file_ptransaction_proto_msgTypes[65]
+	mi := &file_ptransaction_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5376,7 +5436,7 @@ func (x *UserTourDeck) String() string {
 func (*UserTourDeck) ProtoMessage() {}
 
 func (x *UserTourDeck) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[65]
+	mi := &file_ptransaction_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5389,7 +5449,7 @@ func (x *UserTourDeck) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserTourDeck.ProtoReflect.Descriptor instead.
 func (*UserTourDeck) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{65}
+	return file_ptransaction_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *UserTourDeck) GetPosition() int32 {
@@ -5416,7 +5476,7 @@ type UserTutorial struct {
 
 func (x *UserTutorial) Reset() {
 	*x = UserTutorial{}
-	mi := &file_ptransaction_proto_msgTypes[66]
+	mi := &file_ptransaction_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5428,7 +5488,7 @@ func (x *UserTutorial) String() string {
 func (*UserTutorial) ProtoMessage() {}
 
 func (x *UserTutorial) ProtoReflect() protoreflect.Message {
-	mi := &file_ptransaction_proto_msgTypes[66]
+	mi := &file_ptransaction_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5441,7 +5501,7 @@ func (x *UserTutorial) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserTutorial.ProtoReflect.Descriptor instead.
 func (*UserTutorial) Descriptor() ([]byte, []int) {
-	return file_ptransaction_proto_rawDescGZIP(), []int{66}
+	return file_ptransaction_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *UserTutorial) GetTutorialType() penum.TutorialType {
@@ -5864,7 +5924,11 @@ const file_ptransaction_proto_rawDesc = "" +
 	"\x06dutyId\x18\x01 \x01(\tR\x06dutyId\x12V\n" +
 	"&currentReceivedTotalObtainRewardNumber\x18\x02 \x01(\x03R&currentReceivedTotalObtainRewardNumber\x126\n" +
 	"\x16totalObtainPointAmount\x18\x03 \x01(\x03R\x16totalObtainPointAmount\x12D\n" +
-	"\x1dcurrentExchangedRewardNumbers\x18\x04 \x03(\x03R\x1dcurrentExchangedRewardNumbers\"\x93\x01\n" +
+	"\x1dcurrentExchangedRewardNumbers\x18\x04 \x03(\x03R\x1dcurrentExchangedRewardNumbers\"\x99\x01\n" +
+	"\x19UserExcursionGazeReaction\x12 \n" +
+	"\vcharacterId\x18\x01 \x01(\tR\vcharacterId\x12*\n" +
+	"\x10excursionPlaceId\x18\x02 \x01(\tR\x10excursionPlaceId\x12.\n" +
+	"\x12gazeReactionNumber\x18\x03 \x01(\x03R\x12gazeReactionNumber\"\x93\x01\n" +
 	"\x0fUserGachaButton\x12$\n" +
 	"\rgachaButtonId\x18\x01 \x01(\tR\rgachaButtonId\x12\x1a\n" +
 	"\bdrawTime\x18\x02 \x01(\x03R\bdrawTime\x12\x1e\n" +
@@ -5991,7 +6055,7 @@ func file_ptransaction_proto_rawDescGZIP() []byte {
 	return file_ptransaction_proto_rawDescData
 }
 
-var file_ptransaction_proto_msgTypes = make([]protoimpl.MessageInfo, 67)
+var file_ptransaction_proto_msgTypes = make([]protoimpl.MessageInfo, 68)
 var file_ptransaction_proto_goTypes = []any{
 	(*Payslip)(nil),                      // 0: ptransaction.Payslip
 	(*User)(nil),                         // 1: ptransaction.User
@@ -6040,81 +6104,82 @@ var file_ptransaction_proto_goTypes = []any{
 	(*UserDeck)(nil),                     // 44: ptransaction.UserDeck
 	(*UserDeckPosition)(nil),             // 45: ptransaction.UserDeckPosition
 	(*UserDuty)(nil),                     // 46: ptransaction.UserDuty
-	(*UserGachaButton)(nil),              // 47: ptransaction.UserGachaButton
-	(*UserGift)(nil),                     // 48: ptransaction.UserGift
-	(*PhotoGift)(nil),                    // 49: ptransaction.PhotoGift
-	(*UserGiftHistory)(nil),              // 50: ptransaction.UserGiftHistory
-	(*PhotoGiftHistory)(nil),             // 51: ptransaction.PhotoGiftHistory
-	(*UserInvite)(nil),                   // 52: ptransaction.UserInvite
-	(*UserLeagueDeckPosition)(nil),       // 53: ptransaction.UserLeagueDeckPosition
-	(*UserLove)(nil),                     // 54: ptransaction.UserLove
-	(*UserNotification)(nil),             // 55: ptransaction.UserNotification
-	(*UserPhotoReport)(nil),              // 56: ptransaction.UserPhotoReport
-	(*UserPoint)(nil),                    // 57: ptransaction.UserPoint
-	(*TwitterInfo)(nil),                  // 58: ptransaction.TwitterInfo
-	(*UserPublic)(nil),                   // 59: ptransaction.UserPublic
-	(*UserShowcaseLike)(nil),             // 60: ptransaction.UserShowcaseLike
-	(*UserStaff)(nil),                    // 61: ptransaction.UserStaff
-	(*UserStaffTrainingReset)(nil),       // 62: ptransaction.UserStaffTrainingReset
-	(*UserTotalCount)(nil),               // 63: ptransaction.UserTotalCount
-	(*UserTourArea)(nil),                 // 64: ptransaction.UserTourArea
-	(*UserTourDeck)(nil),                 // 65: ptransaction.UserTourDeck
-	(*UserTutorial)(nil),                 // 66: ptransaction.UserTutorial
-	(penum.CardDisplayType)(0),           // 67: penum.CardDisplayType
-	(penum.HomePositionType)(0),          // 68: penum.HomePositionType
-	(penum.MessageStatusType)(0),         // 69: penum.MessageStatusType
-	(penum.MissionStatusType)(0),         // 70: penum.MissionStatusType
-	(penum.PhotoImageType)(0),            // 71: penum.PhotoImageType
-	(penum.ProfileBackgroundType)(0),     // 72: penum.ProfileBackgroundType
-	(penum.ProfileLayoutType)(0),         // 73: penum.ProfileLayoutType
-	(penum.ProfileInformationType)(0),    // 74: penum.ProfileInformationType
-	(penum.ProfileColorType)(0),          // 75: penum.ProfileColorType
-	(penum.ResultRankType)(0),            // 76: penum.ResultRankType
-	(penum.StoryStatusType)(0),           // 77: penum.StoryStatusType
-	(penum.TelephoneStatusType)(0),       // 78: penum.TelephoneStatusType
-	(penum.ResourceType)(0),              // 79: penum.ResourceType
-	(penum.ParameterType)(0),             // 80: penum.ParameterType
-	(penum.LeagueDeckType)(0),            // 81: penum.LeagueDeckType
-	(penum.NotificationType)(0),          // 82: penum.NotificationType
-	(penum.PointType)(0),                 // 83: penum.PointType
-	(penum.TutorialType)(0),              // 84: penum.TutorialType
+	(*UserExcursionGazeReaction)(nil),    // 47: ptransaction.UserExcursionGazeReaction
+	(*UserGachaButton)(nil),              // 48: ptransaction.UserGachaButton
+	(*UserGift)(nil),                     // 49: ptransaction.UserGift
+	(*PhotoGift)(nil),                    // 50: ptransaction.PhotoGift
+	(*UserGiftHistory)(nil),              // 51: ptransaction.UserGiftHistory
+	(*PhotoGiftHistory)(nil),             // 52: ptransaction.PhotoGiftHistory
+	(*UserInvite)(nil),                   // 53: ptransaction.UserInvite
+	(*UserLeagueDeckPosition)(nil),       // 54: ptransaction.UserLeagueDeckPosition
+	(*UserLove)(nil),                     // 55: ptransaction.UserLove
+	(*UserNotification)(nil),             // 56: ptransaction.UserNotification
+	(*UserPhotoReport)(nil),              // 57: ptransaction.UserPhotoReport
+	(*UserPoint)(nil),                    // 58: ptransaction.UserPoint
+	(*TwitterInfo)(nil),                  // 59: ptransaction.TwitterInfo
+	(*UserPublic)(nil),                   // 60: ptransaction.UserPublic
+	(*UserShowcaseLike)(nil),             // 61: ptransaction.UserShowcaseLike
+	(*UserStaff)(nil),                    // 62: ptransaction.UserStaff
+	(*UserStaffTrainingReset)(nil),       // 63: ptransaction.UserStaffTrainingReset
+	(*UserTotalCount)(nil),               // 64: ptransaction.UserTotalCount
+	(*UserTourArea)(nil),                 // 65: ptransaction.UserTourArea
+	(*UserTourDeck)(nil),                 // 66: ptransaction.UserTourDeck
+	(*UserTutorial)(nil),                 // 67: ptransaction.UserTutorial
+	(penum.CardDisplayType)(0),           // 68: penum.CardDisplayType
+	(penum.HomePositionType)(0),          // 69: penum.HomePositionType
+	(penum.MessageStatusType)(0),         // 70: penum.MessageStatusType
+	(penum.MissionStatusType)(0),         // 71: penum.MissionStatusType
+	(penum.PhotoImageType)(0),            // 72: penum.PhotoImageType
+	(penum.ProfileBackgroundType)(0),     // 73: penum.ProfileBackgroundType
+	(penum.ProfileLayoutType)(0),         // 74: penum.ProfileLayoutType
+	(penum.ProfileInformationType)(0),    // 75: penum.ProfileInformationType
+	(penum.ProfileColorType)(0),          // 76: penum.ProfileColorType
+	(penum.ResultRankType)(0),            // 77: penum.ResultRankType
+	(penum.StoryStatusType)(0),           // 78: penum.StoryStatusType
+	(penum.TelephoneStatusType)(0),       // 79: penum.TelephoneStatusType
+	(penum.ResourceType)(0),              // 80: penum.ResourceType
+	(penum.ParameterType)(0),             // 81: penum.ParameterType
+	(penum.LeagueDeckType)(0),            // 82: penum.LeagueDeckType
+	(penum.NotificationType)(0),          // 83: penum.NotificationType
+	(penum.PointType)(0),                 // 84: penum.PointType
+	(penum.TutorialType)(0),              // 85: penum.TutorialType
 }
 var file_ptransaction_proto_depIdxs = []int32{
-	67, // 0: ptransaction.UserCard.displayType:type_name -> penum.CardDisplayType
+	68, // 0: ptransaction.UserCard.displayType:type_name -> penum.CardDisplayType
 	42, // 1: ptransaction.UserCharacter.companyBonusParameterInfos:type_name -> ptransaction.CompanyBonusParameterInfo
-	68, // 2: ptransaction.UserHomePosition.homePositionType:type_name -> penum.HomePositionType
-	69, // 3: ptransaction.UserMessage.messageStatusType:type_name -> penum.MessageStatusType
-	70, // 4: ptransaction.UserMission.statusType:type_name -> penum.MissionStatusType
-	71, // 5: ptransaction.UserPhoto.imageType:type_name -> penum.PhotoImageType
+	69, // 2: ptransaction.UserHomePosition.homePositionType:type_name -> penum.HomePositionType
+	70, // 3: ptransaction.UserMessage.messageStatusType:type_name -> penum.MessageStatusType
+	71, // 4: ptransaction.UserMission.statusType:type_name -> penum.MissionStatusType
+	72, // 5: ptransaction.UserPhoto.imageType:type_name -> penum.PhotoImageType
 	22, // 6: ptransaction.UserPhoto.abilities:type_name -> ptransaction.UserPhotoAbility
-	72, // 7: ptransaction.UserProfile.backgroundType:type_name -> penum.ProfileBackgroundType
-	73, // 8: ptransaction.UserProfile.layoutType:type_name -> penum.ProfileLayoutType
-	58, // 9: ptransaction.UserProfile.twitterInfo:type_name -> ptransaction.TwitterInfo
-	74, // 10: ptransaction.UserProfile.informationType:type_name -> penum.ProfileInformationType
-	75, // 11: ptransaction.UserProfile.colorType:type_name -> penum.ProfileColorType
-	67, // 12: ptransaction.UserProfile.favoriteCardDisplayType:type_name -> penum.CardDisplayType
-	76, // 13: ptransaction.UserQuest.highestScoreRank:type_name -> penum.ResultRankType
-	77, // 14: ptransaction.UserStory.statusType:type_name -> penum.StoryStatusType
-	78, // 15: ptransaction.UserTelephone.telephoneStatusType:type_name -> penum.TelephoneStatusType
-	79, // 16: ptransaction.ConsumptionResult.resourceType:type_name -> penum.ResourceType
+	73, // 7: ptransaction.UserProfile.backgroundType:type_name -> penum.ProfileBackgroundType
+	74, // 8: ptransaction.UserProfile.layoutType:type_name -> penum.ProfileLayoutType
+	59, // 9: ptransaction.UserProfile.twitterInfo:type_name -> ptransaction.TwitterInfo
+	75, // 10: ptransaction.UserProfile.informationType:type_name -> penum.ProfileInformationType
+	76, // 11: ptransaction.UserProfile.colorType:type_name -> penum.ProfileColorType
+	68, // 12: ptransaction.UserProfile.favoriteCardDisplayType:type_name -> penum.CardDisplayType
+	77, // 13: ptransaction.UserQuest.highestScoreRank:type_name -> penum.ResultRankType
+	78, // 14: ptransaction.UserStory.statusType:type_name -> penum.StoryStatusType
+	79, // 15: ptransaction.UserTelephone.telephoneStatusType:type_name -> penum.TelephoneStatusType
+	80, // 16: ptransaction.ConsumptionResult.resourceType:type_name -> penum.ResourceType
 	35, // 17: ptransaction.MasterTag.masterTagPacks:type_name -> ptransaction.MasterTagPack
-	79, // 18: ptransaction.Reward.resourceType:type_name -> penum.ResourceType
-	79, // 19: ptransaction.RewardResult.resourceType:type_name -> penum.ResourceType
+	80, // 18: ptransaction.Reward.resourceType:type_name -> penum.ResourceType
+	80, // 19: ptransaction.RewardResult.resourceType:type_name -> penum.ResourceType
 	37, // 20: ptransaction.RewardResult.duplicateRewardResults:type_name -> ptransaction.RewardResult
 	36, // 21: ptransaction.RewardResult.additionalGifts:type_name -> ptransaction.Reward
-	76, // 22: ptransaction.UserActivityFanEventProgress.bestScoreRankType:type_name -> penum.ResultRankType
-	80, // 23: ptransaction.CompanyBonusParameterInfo.bonusParameterType:type_name -> penum.ParameterType
-	79, // 24: ptransaction.UserGift.resourceType:type_name -> penum.ResourceType
-	49, // 25: ptransaction.UserGift.photoGift:type_name -> ptransaction.PhotoGift
-	79, // 26: ptransaction.UserGiftHistory.resourceType:type_name -> penum.ResourceType
-	51, // 27: ptransaction.UserGiftHistory.photoGift:type_name -> ptransaction.PhotoGiftHistory
-	81, // 28: ptransaction.UserLeagueDeckPosition.deckType:type_name -> penum.LeagueDeckType
-	82, // 29: ptransaction.UserNotification.notificationType:type_name -> penum.NotificationType
+	77, // 22: ptransaction.UserActivityFanEventProgress.bestScoreRankType:type_name -> penum.ResultRankType
+	81, // 23: ptransaction.CompanyBonusParameterInfo.bonusParameterType:type_name -> penum.ParameterType
+	80, // 24: ptransaction.UserGift.resourceType:type_name -> penum.ResourceType
+	50, // 25: ptransaction.UserGift.photoGift:type_name -> ptransaction.PhotoGift
+	80, // 26: ptransaction.UserGiftHistory.resourceType:type_name -> penum.ResourceType
+	52, // 27: ptransaction.UserGiftHistory.photoGift:type_name -> ptransaction.PhotoGiftHistory
+	82, // 28: ptransaction.UserLeagueDeckPosition.deckType:type_name -> penum.LeagueDeckType
+	83, // 29: ptransaction.UserNotification.notificationType:type_name -> penum.NotificationType
 	21, // 30: ptransaction.UserPhotoReport.photos:type_name -> ptransaction.UserPhoto
-	83, // 31: ptransaction.UserPoint.pointType:type_name -> penum.PointType
-	80, // 32: ptransaction.UserStaff.parameterType:type_name -> penum.ParameterType
-	65, // 33: ptransaction.UserTourArea.decks:type_name -> ptransaction.UserTourDeck
-	84, // 34: ptransaction.UserTutorial.tutorialType:type_name -> penum.TutorialType
+	84, // 31: ptransaction.UserPoint.pointType:type_name -> penum.PointType
+	81, // 32: ptransaction.UserStaff.parameterType:type_name -> penum.ParameterType
+	66, // 33: ptransaction.UserTourArea.decks:type_name -> ptransaction.UserTourDeck
+	85, // 34: ptransaction.UserTutorial.tutorialType:type_name -> penum.TutorialType
 	35, // [35:35] is the sub-list for method output_type
 	35, // [35:35] is the sub-list for method input_type
 	35, // [35:35] is the sub-list for extension type_name
@@ -6133,7 +6198,7 @@ func file_ptransaction_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ptransaction_proto_rawDesc), len(file_ptransaction_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   67,
+			NumMessages:   68,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

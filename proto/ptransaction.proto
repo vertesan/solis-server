@@ -401,6 +401,11 @@ message UserDuty {
   int64 totalObtainPointAmount = 3;
   repeated int64 currentExchangedRewardNumbers = 4;
 }
+message UserExcursionGazeReaction {
+  string characterId = 1;
+  string excursionPlaceId = 2;
+  int64 gazeReactionNumber = 3;
+}
 message UserGachaButton {
   string gachaButtonId = 1;
   int64 drawTime = 2;

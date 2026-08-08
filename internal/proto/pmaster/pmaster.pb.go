@@ -2416,6 +2416,7 @@ type Character struct {
 	HomeMainCharacterStayPropAssetId           string                               `protobuf:"bytes,56,opt,name=homeMainCharacterStayPropAssetId,proto3" json:"homeMainCharacterStayPropAssetId"`
 	GachaMovieName                             string                               `protobuf:"bytes,57,opt,name=gachaMovieName,proto3" json:"gachaMovieName"`
 	LoveInfos                                  []*LoveCharacterInfo                 `protobuf:"bytes,58,rep,name=loveInfos,proto3" json:"loveInfos"`
+	ExcursionFirstText                         string                               `protobuf:"bytes,59,opt,name=excursionFirstText,proto3" json:"excursionFirstText"`
 	unknownFields                              protoimpl.UnknownFields
 	sizeCache                                  protoimpl.SizeCache
 }
@@ -2840,6 +2841,13 @@ func (x *Character) GetLoveInfos() []*LoveCharacterInfo {
 		return x.LoveInfos
 	}
 	return nil
+}
+
+func (x *Character) GetExcursionFirstText() string {
+	if x != nil {
+		return x.ExcursionFirstText
+	}
+	return ""
 }
 
 type CharacterCompanyEnjoyStory struct {
@@ -6642,6 +6650,410 @@ func (x *EventStoryEpisode) GetIsAppeal() bool {
 	return false
 }
 
+type ExcursionGazeReaction struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	CharacterId         string                 `protobuf:"bytes,1,opt,name=characterId,proto3" json:"characterId"`
+	ExcursionPlaceId    string                 `protobuf:"bytes,2,opt,name=excursionPlaceId,proto3" json:"excursionPlaceId"`
+	Number              int32                  `protobuf:"varint,3,opt,name=number,proto3" json:"number"`
+	MotionAssetId       string                 `protobuf:"bytes,4,opt,name=motionAssetId,proto3" json:"motionAssetId"`
+	VoiceAssetId        string                 `protobuf:"bytes,5,opt,name=voiceAssetId,proto3" json:"voiceAssetId"`
+	UnlockCostumeIds    []string               `protobuf:"bytes,6,rep,name=unlockCostumeIds,proto3" json:"unlockCostumeIds"`
+	UnlockNotCostumeIds []string               `protobuf:"bytes,10,rep,name=unlockNotCostumeIds,proto3" json:"unlockNotCostumeIds"`
+	CameraMotionAssetId string                 `protobuf:"bytes,7,opt,name=cameraMotionAssetId,proto3" json:"cameraMotionAssetId"`
+	PropAssetId         string                 `protobuf:"bytes,8,opt,name=propAssetId,proto3" json:"propAssetId"`
+	IsFade              bool                   `protobuf:"varint,11,opt,name=isFade,proto3" json:"isFade"`
+	IsLookAt            bool                   `protobuf:"varint,12,opt,name=isLookAt,proto3" json:"isLookAt"`
+	Text                string                 `protobuf:"bytes,13,opt,name=text,proto3" json:"text"`
+	FocalLength         float32                `protobuf:"fixed32,14,opt,name=focalLength,proto3" json:"focalLength"`
+	FNumberRatio        float32                `protobuf:"fixed32,15,opt,name=fNumberRatio,proto3" json:"fNumberRatio"`
+	TrackingAccuracy    float32                `protobuf:"fixed32,16,opt,name=trackingAccuracy,proto3" json:"trackingAccuracy"`
+	YOffset             float32                `protobuf:"fixed32,17,opt,name=yOffset,proto3" json:"yOffset"`
+	UnlockGazeNumbers   []int32                `protobuf:"varint,18,rep,packed,name=unlockGazeNumbers,proto3" json:"unlockGazeNumbers"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ExcursionGazeReaction) Reset() {
+	*x = ExcursionGazeReaction{}
+	mi := &file_pmaster_proto_msgTypes[93]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExcursionGazeReaction) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExcursionGazeReaction) ProtoMessage() {}
+
+func (x *ExcursionGazeReaction) ProtoReflect() protoreflect.Message {
+	mi := &file_pmaster_proto_msgTypes[93]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExcursionGazeReaction.ProtoReflect.Descriptor instead.
+func (*ExcursionGazeReaction) Descriptor() ([]byte, []int) {
+	return file_pmaster_proto_rawDescGZIP(), []int{93}
+}
+
+func (x *ExcursionGazeReaction) GetCharacterId() string {
+	if x != nil {
+		return x.CharacterId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetExcursionPlaceId() string {
+	if x != nil {
+		return x.ExcursionPlaceId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetNumber() int32 {
+	if x != nil {
+		return x.Number
+	}
+	return 0
+}
+
+func (x *ExcursionGazeReaction) GetMotionAssetId() string {
+	if x != nil {
+		return x.MotionAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetVoiceAssetId() string {
+	if x != nil {
+		return x.VoiceAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetUnlockCostumeIds() []string {
+	if x != nil {
+		return x.UnlockCostumeIds
+	}
+	return nil
+}
+
+func (x *ExcursionGazeReaction) GetUnlockNotCostumeIds() []string {
+	if x != nil {
+		return x.UnlockNotCostumeIds
+	}
+	return nil
+}
+
+func (x *ExcursionGazeReaction) GetCameraMotionAssetId() string {
+	if x != nil {
+		return x.CameraMotionAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetPropAssetId() string {
+	if x != nil {
+		return x.PropAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetIsFade() bool {
+	if x != nil {
+		return x.IsFade
+	}
+	return false
+}
+
+func (x *ExcursionGazeReaction) GetIsLookAt() bool {
+	if x != nil {
+		return x.IsLookAt
+	}
+	return false
+}
+
+func (x *ExcursionGazeReaction) GetText() string {
+	if x != nil {
+		return x.Text
+	}
+	return ""
+}
+
+func (x *ExcursionGazeReaction) GetFocalLength() float32 {
+	if x != nil {
+		return x.FocalLength
+	}
+	return 0
+}
+
+func (x *ExcursionGazeReaction) GetFNumberRatio() float32 {
+	if x != nil {
+		return x.FNumberRatio
+	}
+	return 0
+}
+
+func (x *ExcursionGazeReaction) GetTrackingAccuracy() float32 {
+	if x != nil {
+		return x.TrackingAccuracy
+	}
+	return 0
+}
+
+func (x *ExcursionGazeReaction) GetYOffset() float32 {
+	if x != nil {
+		return x.YOffset
+	}
+	return 0
+}
+
+func (x *ExcursionGazeReaction) GetUnlockGazeNumbers() []int32 {
+	if x != nil {
+		return x.UnlockGazeNumbers
+	}
+	return nil
+}
+
+type ExcursionPlace struct {
+	state                              protoimpl.MessageState `protogen:"open.v1"`
+	Id                                 string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id"`
+	Name                               string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name"`
+	AdvAssetId                         string                 `protobuf:"bytes,3,opt,name=advAssetId,proto3" json:"advAssetId"`
+	IdleCameraMotionAssetId            string                 `protobuf:"bytes,5,opt,name=idleCameraMotionAssetId,proto3" json:"idleCameraMotionAssetId"`
+	BackgroundAssetId                  string                 `protobuf:"bytes,6,opt,name=backgroundAssetId,proto3" json:"backgroundAssetId"`
+	BgmAssetId                         string                 `protobuf:"bytes,7,opt,name=bgmAssetId,proto3" json:"bgmAssetId"`
+	SceneLayoutAssetId                 string                 `protobuf:"bytes,8,opt,name=sceneLayoutAssetId,proto3" json:"sceneLayoutAssetId"`
+	AdvNotWearableCostumeTypeIds       []string               `protobuf:"bytes,9,rep,name=advNotWearableCostumeTypeIds,proto3" json:"advNotWearableCostumeTypeIds"`
+	FinishAdvNotWearableCostumeTypeIds []string               `protobuf:"bytes,10,rep,name=finishAdvNotWearableCostumeTypeIds,proto3" json:"finishAdvNotWearableCostumeTypeIds"`
+	NotWearableCostumeTypeIds          []string               `protobuf:"bytes,11,rep,name=notWearableCostumeTypeIds,proto3" json:"notWearableCostumeTypeIds"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
+}
+
+func (x *ExcursionPlace) Reset() {
+	*x = ExcursionPlace{}
+	mi := &file_pmaster_proto_msgTypes[94]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExcursionPlace) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExcursionPlace) ProtoMessage() {}
+
+func (x *ExcursionPlace) ProtoReflect() protoreflect.Message {
+	mi := &file_pmaster_proto_msgTypes[94]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExcursionPlace.ProtoReflect.Descriptor instead.
+func (*ExcursionPlace) Descriptor() ([]byte, []int) {
+	return file_pmaster_proto_rawDescGZIP(), []int{94}
+}
+
+func (x *ExcursionPlace) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetAdvAssetId() string {
+	if x != nil {
+		return x.AdvAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetIdleCameraMotionAssetId() string {
+	if x != nil {
+		return x.IdleCameraMotionAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetBackgroundAssetId() string {
+	if x != nil {
+		return x.BackgroundAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetBgmAssetId() string {
+	if x != nil {
+		return x.BgmAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetSceneLayoutAssetId() string {
+	if x != nil {
+		return x.SceneLayoutAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlace) GetAdvNotWearableCostumeTypeIds() []string {
+	if x != nil {
+		return x.AdvNotWearableCostumeTypeIds
+	}
+	return nil
+}
+
+func (x *ExcursionPlace) GetFinishAdvNotWearableCostumeTypeIds() []string {
+	if x != nil {
+		return x.FinishAdvNotWearableCostumeTypeIds
+	}
+	return nil
+}
+
+func (x *ExcursionPlace) GetNotWearableCostumeTypeIds() []string {
+	if x != nil {
+		return x.NotWearableCostumeTypeIds
+	}
+	return nil
+}
+
+type ExcursionPlaceSetting struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	CharacterId              string                 `protobuf:"bytes,1,opt,name=characterId,proto3" json:"characterId"`
+	ExcursionPlaceId         string                 `protobuf:"bytes,2,opt,name=excursionPlaceId,proto3" json:"excursionPlaceId"`
+	AdvForceCostumeId        string                 `protobuf:"bytes,4,opt,name=advForceCostumeId,proto3" json:"advForceCostumeId"`
+	PropAssetId              string                 `protobuf:"bytes,7,opt,name=propAssetId,proto3" json:"propAssetId"`
+	ForceCostumeId           string                 `protobuf:"bytes,6,opt,name=forceCostumeId,proto3" json:"forceCostumeId"`
+	MinFocalLength           float32                `protobuf:"fixed32,8,opt,name=minFocalLength,proto3" json:"minFocalLength"`
+	DefaultFocalLength       float32                `protobuf:"fixed32,9,opt,name=defaultFocalLength,proto3" json:"defaultFocalLength"`
+	MaxFocalLength           float32                `protobuf:"fixed32,10,opt,name=maxFocalLength,proto3" json:"maxFocalLength"`
+	SceneLayoutPositionIndex int32                  `protobuf:"varint,11,opt,name=sceneLayoutPositionIndex,proto3" json:"sceneLayoutPositionIndex"`
+	FinishAdvForceCostumeId  string                 `protobuf:"bytes,12,opt,name=finishAdvForceCostumeId,proto3" json:"finishAdvForceCostumeId"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *ExcursionPlaceSetting) Reset() {
+	*x = ExcursionPlaceSetting{}
+	mi := &file_pmaster_proto_msgTypes[95]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ExcursionPlaceSetting) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ExcursionPlaceSetting) ProtoMessage() {}
+
+func (x *ExcursionPlaceSetting) ProtoReflect() protoreflect.Message {
+	mi := &file_pmaster_proto_msgTypes[95]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ExcursionPlaceSetting.ProtoReflect.Descriptor instead.
+func (*ExcursionPlaceSetting) Descriptor() ([]byte, []int) {
+	return file_pmaster_proto_rawDescGZIP(), []int{95}
+}
+
+func (x *ExcursionPlaceSetting) GetCharacterId() string {
+	if x != nil {
+		return x.CharacterId
+	}
+	return ""
+}
+
+func (x *ExcursionPlaceSetting) GetExcursionPlaceId() string {
+	if x != nil {
+		return x.ExcursionPlaceId
+	}
+	return ""
+}
+
+func (x *ExcursionPlaceSetting) GetAdvForceCostumeId() string {
+	if x != nil {
+		return x.AdvForceCostumeId
+	}
+	return ""
+}
+
+func (x *ExcursionPlaceSetting) GetPropAssetId() string {
+	if x != nil {
+		return x.PropAssetId
+	}
+	return ""
+}
+
+func (x *ExcursionPlaceSetting) GetForceCostumeId() string {
+	if x != nil {
+		return x.ForceCostumeId
+	}
+	return ""
+}
+
+func (x *ExcursionPlaceSetting) GetMinFocalLength() float32 {
+	if x != nil {
+		return x.MinFocalLength
+	}
+	return 0
+}
+
+func (x *ExcursionPlaceSetting) GetDefaultFocalLength() float32 {
+	if x != nil {
+		return x.DefaultFocalLength
+	}
+	return 0
+}
+
+func (x *ExcursionPlaceSetting) GetMaxFocalLength() float32 {
+	if x != nil {
+		return x.MaxFocalLength
+	}
+	return 0
+}
+
+func (x *ExcursionPlaceSetting) GetSceneLayoutPositionIndex() int32 {
+	if x != nil {
+		return x.SceneLayoutPositionIndex
+	}
+	return 0
+}
+
+func (x *ExcursionPlaceSetting) GetFinishAdvForceCostumeId() string {
+	if x != nil {
+		return x.FinishAdvForceCostumeId
+	}
+	return ""
+}
+
 type Exercise struct {
 	state                    protoimpl.MessageState `protogen:"open.v1"`
 	Id                       string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id"`
@@ -6662,7 +7074,7 @@ type Exercise struct {
 
 func (x *Exercise) Reset() {
 	*x = Exercise{}
-	mi := &file_pmaster_proto_msgTypes[93]
+	mi := &file_pmaster_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6674,7 +7086,7 @@ func (x *Exercise) String() string {
 func (*Exercise) ProtoMessage() {}
 
 func (x *Exercise) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[93]
+	mi := &file_pmaster_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6687,7 +7099,7 @@ func (x *Exercise) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Exercise.ProtoReflect.Descriptor instead.
 func (*Exercise) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{93}
+	return file_pmaster_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *Exercise) GetId() string {
@@ -6784,7 +7196,7 @@ type ExerciseAccessory struct {
 
 func (x *ExerciseAccessory) Reset() {
 	*x = ExerciseAccessory{}
-	mi := &file_pmaster_proto_msgTypes[94]
+	mi := &file_pmaster_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6796,7 +7208,7 @@ func (x *ExerciseAccessory) String() string {
 func (*ExerciseAccessory) ProtoMessage() {}
 
 func (x *ExerciseAccessory) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[94]
+	mi := &file_pmaster_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6809,7 +7221,7 @@ func (x *ExerciseAccessory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseAccessory.ProtoReflect.Descriptor instead.
 func (*ExerciseAccessory) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{94}
+	return file_pmaster_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *ExerciseAccessory) GetAccessoryId() string {
@@ -6836,7 +7248,7 @@ type ExerciseCardGroup struct {
 
 func (x *ExerciseCardGroup) Reset() {
 	*x = ExerciseCardGroup{}
-	mi := &file_pmaster_proto_msgTypes[95]
+	mi := &file_pmaster_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6848,7 +7260,7 @@ func (x *ExerciseCardGroup) String() string {
 func (*ExerciseCardGroup) ProtoMessage() {}
 
 func (x *ExerciseCardGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[95]
+	mi := &file_pmaster_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6861,7 +7273,7 @@ func (x *ExerciseCardGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseCardGroup.ProtoReflect.Descriptor instead.
 func (*ExerciseCardGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{95}
+	return file_pmaster_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *ExerciseCardGroup) GetGroupId() string {
@@ -6888,7 +7300,7 @@ type ExerciseCostume struct {
 
 func (x *ExerciseCostume) Reset() {
 	*x = ExerciseCostume{}
-	mi := &file_pmaster_proto_msgTypes[96]
+	mi := &file_pmaster_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6900,7 +7312,7 @@ func (x *ExerciseCostume) String() string {
 func (*ExerciseCostume) ProtoMessage() {}
 
 func (x *ExerciseCostume) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[96]
+	mi := &file_pmaster_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6913,7 +7325,7 @@ func (x *ExerciseCostume) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseCostume.ProtoReflect.Descriptor instead.
 func (*ExerciseCostume) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{96}
+	return file_pmaster_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *ExerciseCostume) GetCharacterId() string {
@@ -6946,7 +7358,7 @@ type ExerciseDeckPosition struct {
 
 func (x *ExerciseDeckPosition) Reset() {
 	*x = ExerciseDeckPosition{}
-	mi := &file_pmaster_proto_msgTypes[97]
+	mi := &file_pmaster_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6958,7 +7370,7 @@ func (x *ExerciseDeckPosition) String() string {
 func (*ExerciseDeckPosition) ProtoMessage() {}
 
 func (x *ExerciseDeckPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[97]
+	mi := &file_pmaster_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6971,7 +7383,7 @@ func (x *ExerciseDeckPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseDeckPosition.ProtoReflect.Descriptor instead.
 func (*ExerciseDeckPosition) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{97}
+	return file_pmaster_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *ExerciseDeckPosition) GetPosition() int32 {
@@ -7040,7 +7452,7 @@ type ExercisePhoto struct {
 
 func (x *ExercisePhoto) Reset() {
 	*x = ExercisePhoto{}
-	mi := &file_pmaster_proto_msgTypes[98]
+	mi := &file_pmaster_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7052,7 +7464,7 @@ func (x *ExercisePhoto) String() string {
 func (*ExercisePhoto) ProtoMessage() {}
 
 func (x *ExercisePhoto) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[98]
+	mi := &file_pmaster_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7065,7 +7477,7 @@ func (x *ExercisePhoto) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExercisePhoto.ProtoReflect.Descriptor instead.
 func (*ExercisePhoto) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{98}
+	return file_pmaster_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *ExercisePhoto) GetPhotoAllInOneId() string {
@@ -7103,7 +7515,7 @@ type ExtraStory struct {
 
 func (x *ExtraStory) Reset() {
 	*x = ExtraStory{}
-	mi := &file_pmaster_proto_msgTypes[99]
+	mi := &file_pmaster_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7115,7 +7527,7 @@ func (x *ExtraStory) String() string {
 func (*ExtraStory) ProtoMessage() {}
 
 func (x *ExtraStory) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[99]
+	mi := &file_pmaster_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7128,7 +7540,7 @@ func (x *ExtraStory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExtraStory.ProtoReflect.Descriptor instead.
 func (*ExtraStory) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{99}
+	return file_pmaster_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *ExtraStory) GetId() string {
@@ -7238,7 +7650,7 @@ type ExtraStoryEpisode struct {
 
 func (x *ExtraStoryEpisode) Reset() {
 	*x = ExtraStoryEpisode{}
-	mi := &file_pmaster_proto_msgTypes[100]
+	mi := &file_pmaster_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7250,7 +7662,7 @@ func (x *ExtraStoryEpisode) String() string {
 func (*ExtraStoryEpisode) ProtoMessage() {}
 
 func (x *ExtraStoryEpisode) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[100]
+	mi := &file_pmaster_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7263,7 +7675,7 @@ func (x *ExtraStoryEpisode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExtraStoryEpisode.ProtoReflect.Descriptor instead.
 func (*ExtraStoryEpisode) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{100}
+	return file_pmaster_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *ExtraStoryEpisode) GetEpisode() int32 {
@@ -7340,7 +7752,7 @@ type ExtraStoryPart struct {
 
 func (x *ExtraStoryPart) Reset() {
 	*x = ExtraStoryPart{}
-	mi := &file_pmaster_proto_msgTypes[101]
+	mi := &file_pmaster_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7352,7 +7764,7 @@ func (x *ExtraStoryPart) String() string {
 func (*ExtraStoryPart) ProtoMessage() {}
 
 func (x *ExtraStoryPart) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[101]
+	mi := &file_pmaster_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7365,7 +7777,7 @@ func (x *ExtraStoryPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExtraStoryPart.ProtoReflect.Descriptor instead.
 func (*ExtraStoryPart) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{101}
+	return file_pmaster_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *ExtraStoryPart) GetId() string {
@@ -7449,7 +7861,7 @@ type FunctionLock struct {
 
 func (x *FunctionLock) Reset() {
 	*x = FunctionLock{}
-	mi := &file_pmaster_proto_msgTypes[102]
+	mi := &file_pmaster_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7461,7 +7873,7 @@ func (x *FunctionLock) String() string {
 func (*FunctionLock) ProtoMessage() {}
 
 func (x *FunctionLock) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[102]
+	mi := &file_pmaster_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7474,7 +7886,7 @@ func (x *FunctionLock) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunctionLock.ProtoReflect.Descriptor instead.
 func (*FunctionLock) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{102}
+	return file_pmaster_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *FunctionLock) GetType() penum.FunctionLockType {
@@ -7532,7 +7944,7 @@ type Gacha struct {
 
 func (x *Gacha) Reset() {
 	*x = Gacha{}
-	mi := &file_pmaster_proto_msgTypes[103]
+	mi := &file_pmaster_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7544,7 +7956,7 @@ func (x *Gacha) String() string {
 func (*Gacha) ProtoMessage() {}
 
 func (x *Gacha) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[103]
+	mi := &file_pmaster_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7557,7 +7969,7 @@ func (x *Gacha) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Gacha.ProtoReflect.Descriptor instead.
 func (*Gacha) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{103}
+	return file_pmaster_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *Gacha) GetId() string {
@@ -7766,7 +8178,7 @@ type GachaButton struct {
 
 func (x *GachaButton) Reset() {
 	*x = GachaButton{}
-	mi := &file_pmaster_proto_msgTypes[104]
+	mi := &file_pmaster_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7778,7 +8190,7 @@ func (x *GachaButton) String() string {
 func (*GachaButton) ProtoMessage() {}
 
 func (x *GachaButton) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[104]
+	mi := &file_pmaster_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7791,7 +8203,7 @@ func (x *GachaButton) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaButton.ProtoReflect.Descriptor instead.
 func (*GachaButton) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{104}
+	return file_pmaster_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *GachaButton) GetId() string {
@@ -7916,7 +8328,7 @@ type GachaCardReward struct {
 
 func (x *GachaCardReward) Reset() {
 	*x = GachaCardReward{}
-	mi := &file_pmaster_proto_msgTypes[105]
+	mi := &file_pmaster_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7928,7 +8340,7 @@ func (x *GachaCardReward) String() string {
 func (*GachaCardReward) ProtoMessage() {}
 
 func (x *GachaCardReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[105]
+	mi := &file_pmaster_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7941,7 +8353,7 @@ func (x *GachaCardReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaCardReward.ProtoReflect.Descriptor instead.
 func (*GachaCardReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{105}
+	return file_pmaster_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *GachaCardReward) GetCardId() string {
@@ -7972,7 +8384,7 @@ type GachaExchange struct {
 
 func (x *GachaExchange) Reset() {
 	*x = GachaExchange{}
-	mi := &file_pmaster_proto_msgTypes[106]
+	mi := &file_pmaster_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7984,7 +8396,7 @@ func (x *GachaExchange) String() string {
 func (*GachaExchange) ProtoMessage() {}
 
 func (x *GachaExchange) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[106]
+	mi := &file_pmaster_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7997,7 +8409,7 @@ func (x *GachaExchange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaExchange.ProtoReflect.Descriptor instead.
 func (*GachaExchange) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{106}
+	return file_pmaster_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *GachaExchange) GetId() string {
@@ -8058,7 +8470,7 @@ type GachaStamp struct {
 
 func (x *GachaStamp) Reset() {
 	*x = GachaStamp{}
-	mi := &file_pmaster_proto_msgTypes[107]
+	mi := &file_pmaster_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8070,7 +8482,7 @@ func (x *GachaStamp) String() string {
 func (*GachaStamp) ProtoMessage() {}
 
 func (x *GachaStamp) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[107]
+	mi := &file_pmaster_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8083,7 +8495,7 @@ func (x *GachaStamp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaStamp.ProtoReflect.Descriptor instead.
 func (*GachaStamp) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{107}
+	return file_pmaster_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *GachaStamp) GetGroupId() string {
@@ -8153,7 +8565,7 @@ type GachaStampSheet struct {
 
 func (x *GachaStampSheet) Reset() {
 	*x = GachaStampSheet{}
-	mi := &file_pmaster_proto_msgTypes[108]
+	mi := &file_pmaster_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8165,7 +8577,7 @@ func (x *GachaStampSheet) String() string {
 func (*GachaStampSheet) ProtoMessage() {}
 
 func (x *GachaStampSheet) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[108]
+	mi := &file_pmaster_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8178,7 +8590,7 @@ func (x *GachaStampSheet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaStampSheet.ProtoReflect.Descriptor instead.
 func (*GachaStampSheet) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{108}
+	return file_pmaster_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *GachaStampSheet) GetGroupId() string {
@@ -8214,7 +8626,7 @@ type GuildTopMovie struct {
 
 func (x *GuildTopMovie) Reset() {
 	*x = GuildTopMovie{}
-	mi := &file_pmaster_proto_msgTypes[109]
+	mi := &file_pmaster_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8226,7 +8638,7 @@ func (x *GuildTopMovie) String() string {
 func (*GuildTopMovie) ProtoMessage() {}
 
 func (x *GuildTopMovie) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[109]
+	mi := &file_pmaster_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8239,7 +8651,7 @@ func (x *GuildTopMovie) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GuildTopMovie.ProtoReflect.Descriptor instead.
 func (*GuildTopMovie) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{109}
+	return file_pmaster_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *GuildTopMovie) GetAssetId() string {
@@ -8291,7 +8703,7 @@ type Hair struct {
 
 func (x *Hair) Reset() {
 	*x = Hair{}
-	mi := &file_pmaster_proto_msgTypes[110]
+	mi := &file_pmaster_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8303,7 +8715,7 @@ func (x *Hair) String() string {
 func (*Hair) ProtoMessage() {}
 
 func (x *Hair) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[110]
+	mi := &file_pmaster_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8316,7 +8728,7 @@ func (x *Hair) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Hair.ProtoReflect.Descriptor instead.
 func (*Hair) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{110}
+	return file_pmaster_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *Hair) GetId() string {
@@ -8424,7 +8836,7 @@ type HierarchyDetailGrade struct {
 
 func (x *HierarchyDetailGrade) Reset() {
 	*x = HierarchyDetailGrade{}
-	mi := &file_pmaster_proto_msgTypes[111]
+	mi := &file_pmaster_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8436,7 +8848,7 @@ func (x *HierarchyDetailGrade) String() string {
 func (*HierarchyDetailGrade) ProtoMessage() {}
 
 func (x *HierarchyDetailGrade) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[111]
+	mi := &file_pmaster_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8449,7 +8861,7 @@ func (x *HierarchyDetailGrade) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchyDetailGrade.ProtoReflect.Descriptor instead.
 func (*HierarchyDetailGrade) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{111}
+	return file_pmaster_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *HierarchyDetailGrade) GetId() string {
@@ -8507,7 +8919,7 @@ type HierarchyDivisionReward struct {
 
 func (x *HierarchyDivisionReward) Reset() {
 	*x = HierarchyDivisionReward{}
-	mi := &file_pmaster_proto_msgTypes[112]
+	mi := &file_pmaster_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8519,7 +8931,7 @@ func (x *HierarchyDivisionReward) String() string {
 func (*HierarchyDivisionReward) ProtoMessage() {}
 
 func (x *HierarchyDivisionReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[112]
+	mi := &file_pmaster_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8532,7 +8944,7 @@ func (x *HierarchyDivisionReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchyDivisionReward.ProtoReflect.Descriptor instead.
 func (*HierarchyDivisionReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{112}
+	return file_pmaster_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *HierarchyDivisionReward) GetId() string {
@@ -8584,7 +8996,7 @@ type HierarchyReward struct {
 
 func (x *HierarchyReward) Reset() {
 	*x = HierarchyReward{}
-	mi := &file_pmaster_proto_msgTypes[113]
+	mi := &file_pmaster_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8596,7 +9008,7 @@ func (x *HierarchyReward) String() string {
 func (*HierarchyReward) ProtoMessage() {}
 
 func (x *HierarchyReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[113]
+	mi := &file_pmaster_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8609,7 +9021,7 @@ func (x *HierarchyReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchyReward.ProtoReflect.Descriptor instead.
 func (*HierarchyReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{113}
+	return file_pmaster_proto_rawDescGZIP(), []int{116}
 }
 
 func (x *HierarchyReward) GetId() string {
@@ -8672,7 +9084,7 @@ type HomeAction struct {
 
 func (x *HomeAction) Reset() {
 	*x = HomeAction{}
-	mi := &file_pmaster_proto_msgTypes[114]
+	mi := &file_pmaster_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8684,7 +9096,7 @@ func (x *HomeAction) String() string {
 func (*HomeAction) ProtoMessage() {}
 
 func (x *HomeAction) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[114]
+	mi := &file_pmaster_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8697,7 +9109,7 @@ func (x *HomeAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeAction.ProtoReflect.Descriptor instead.
 func (*HomeAction) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{114}
+	return file_pmaster_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *HomeAction) GetHomeActionId() string {
@@ -8791,7 +9203,7 @@ type HomeBackground struct {
 
 func (x *HomeBackground) Reset() {
 	*x = HomeBackground{}
-	mi := &file_pmaster_proto_msgTypes[115]
+	mi := &file_pmaster_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8803,7 +9215,7 @@ func (x *HomeBackground) String() string {
 func (*HomeBackground) ProtoMessage() {}
 
 func (x *HomeBackground) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[115]
+	mi := &file_pmaster_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8816,7 +9228,7 @@ func (x *HomeBackground) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeBackground.ProtoReflect.Descriptor instead.
 func (*HomeBackground) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{115}
+	return file_pmaster_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *HomeBackground) GetHomeBackgroundId() string {
@@ -8927,7 +9339,7 @@ type HomeDrama struct {
 
 func (x *HomeDrama) Reset() {
 	*x = HomeDrama{}
-	mi := &file_pmaster_proto_msgTypes[116]
+	mi := &file_pmaster_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8939,7 +9351,7 @@ func (x *HomeDrama) String() string {
 func (*HomeDrama) ProtoMessage() {}
 
 func (x *HomeDrama) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[116]
+	mi := &file_pmaster_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8952,7 +9364,7 @@ func (x *HomeDrama) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeDrama.ProtoReflect.Descriptor instead.
 func (*HomeDrama) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{116}
+	return file_pmaster_proto_rawDescGZIP(), []int{119}
 }
 
 func (x *HomeDrama) GetHomeDramaId() string {
@@ -9034,7 +9446,7 @@ type HomeDramaDetail struct {
 
 func (x *HomeDramaDetail) Reset() {
 	*x = HomeDramaDetail{}
-	mi := &file_pmaster_proto_msgTypes[117]
+	mi := &file_pmaster_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9046,7 +9458,7 @@ func (x *HomeDramaDetail) String() string {
 func (*HomeDramaDetail) ProtoMessage() {}
 
 func (x *HomeDramaDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[117]
+	mi := &file_pmaster_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9059,7 +9471,7 @@ func (x *HomeDramaDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeDramaDetail.ProtoReflect.Descriptor instead.
 func (*HomeDramaDetail) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{117}
+	return file_pmaster_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *HomeDramaDetail) GetOrder() int32 {
@@ -9135,7 +9547,7 @@ type HomeDramaFree struct {
 
 func (x *HomeDramaFree) Reset() {
 	*x = HomeDramaFree{}
-	mi := &file_pmaster_proto_msgTypes[118]
+	mi := &file_pmaster_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9147,7 +9559,7 @@ func (x *HomeDramaFree) String() string {
 func (*HomeDramaFree) ProtoMessage() {}
 
 func (x *HomeDramaFree) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[118]
+	mi := &file_pmaster_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9160,7 +9572,7 @@ func (x *HomeDramaFree) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeDramaFree.ProtoReflect.Descriptor instead.
 func (*HomeDramaFree) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{118}
+	return file_pmaster_proto_rawDescGZIP(), []int{121}
 }
 
 func (x *HomeDramaFree) GetHomeDramaPositionGroupId() string {
@@ -9246,7 +9658,7 @@ type HomeMainCharacterStay struct {
 
 func (x *HomeMainCharacterStay) Reset() {
 	*x = HomeMainCharacterStay{}
-	mi := &file_pmaster_proto_msgTypes[119]
+	mi := &file_pmaster_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9258,7 +9670,7 @@ func (x *HomeMainCharacterStay) String() string {
 func (*HomeMainCharacterStay) ProtoMessage() {}
 
 func (x *HomeMainCharacterStay) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[119]
+	mi := &file_pmaster_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9271,7 +9683,7 @@ func (x *HomeMainCharacterStay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeMainCharacterStay.ProtoReflect.Descriptor instead.
 func (*HomeMainCharacterStay) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{119}
+	return file_pmaster_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *HomeMainCharacterStay) GetId() string {
@@ -9374,7 +9786,7 @@ type HomeNavigation struct {
 
 func (x *HomeNavigation) Reset() {
 	*x = HomeNavigation{}
-	mi := &file_pmaster_proto_msgTypes[120]
+	mi := &file_pmaster_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9386,7 +9798,7 @@ func (x *HomeNavigation) String() string {
 func (*HomeNavigation) ProtoMessage() {}
 
 func (x *HomeNavigation) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[120]
+	mi := &file_pmaster_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9399,7 +9811,7 @@ func (x *HomeNavigation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeNavigation.ProtoReflect.Descriptor instead.
 func (*HomeNavigation) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{120}
+	return file_pmaster_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *HomeNavigation) GetHomeNavigationId() string {
@@ -9471,7 +9883,7 @@ type HomeSubCharacterStayGroup struct {
 
 func (x *HomeSubCharacterStayGroup) Reset() {
 	*x = HomeSubCharacterStayGroup{}
-	mi := &file_pmaster_proto_msgTypes[121]
+	mi := &file_pmaster_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9483,7 +9895,7 @@ func (x *HomeSubCharacterStayGroup) String() string {
 func (*HomeSubCharacterStayGroup) ProtoMessage() {}
 
 func (x *HomeSubCharacterStayGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[121]
+	mi := &file_pmaster_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9496,7 +9908,7 @@ func (x *HomeSubCharacterStayGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeSubCharacterStayGroup.ProtoReflect.Descriptor instead.
 func (*HomeSubCharacterStayGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{121}
+	return file_pmaster_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *HomeSubCharacterStayGroup) GetGroupId() string {
@@ -9558,7 +9970,7 @@ type HomeTalk struct {
 
 func (x *HomeTalk) Reset() {
 	*x = HomeTalk{}
-	mi := &file_pmaster_proto_msgTypes[122]
+	mi := &file_pmaster_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9570,7 +9982,7 @@ func (x *HomeTalk) String() string {
 func (*HomeTalk) ProtoMessage() {}
 
 func (x *HomeTalk) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[122]
+	mi := &file_pmaster_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9583,7 +9995,7 @@ func (x *HomeTalk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeTalk.ProtoReflect.Descriptor instead.
 func (*HomeTalk) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{122}
+	return file_pmaster_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *HomeTalk) GetHomeTalkId() string {
@@ -9711,7 +10123,7 @@ type HomeTalkCallPattern struct {
 
 func (x *HomeTalkCallPattern) Reset() {
 	*x = HomeTalkCallPattern{}
-	mi := &file_pmaster_proto_msgTypes[123]
+	mi := &file_pmaster_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9723,7 +10135,7 @@ func (x *HomeTalkCallPattern) String() string {
 func (*HomeTalkCallPattern) ProtoMessage() {}
 
 func (x *HomeTalkCallPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[123]
+	mi := &file_pmaster_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9736,7 +10148,7 @@ func (x *HomeTalkCallPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeTalkCallPattern.ProtoReflect.Descriptor instead.
 func (*HomeTalkCallPattern) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{123}
+	return file_pmaster_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *HomeTalkCallPattern) GetCharacterId() string {
@@ -9789,7 +10201,7 @@ type InviteSetting struct {
 
 func (x *InviteSetting) Reset() {
 	*x = InviteSetting{}
-	mi := &file_pmaster_proto_msgTypes[124]
+	mi := &file_pmaster_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9801,7 +10213,7 @@ func (x *InviteSetting) String() string {
 func (*InviteSetting) ProtoMessage() {}
 
 func (x *InviteSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[124]
+	mi := &file_pmaster_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9814,7 +10226,7 @@ func (x *InviteSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviteSetting.ProtoReflect.Descriptor instead.
 func (*InviteSetting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{124}
+	return file_pmaster_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *InviteSetting) GetId() string {
@@ -9884,7 +10296,7 @@ type LiveAbilityLevel struct {
 
 func (x *LiveAbilityLevel) Reset() {
 	*x = LiveAbilityLevel{}
-	mi := &file_pmaster_proto_msgTypes[125]
+	mi := &file_pmaster_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9896,7 +10308,7 @@ func (x *LiveAbilityLevel) String() string {
 func (*LiveAbilityLevel) ProtoMessage() {}
 
 func (x *LiveAbilityLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[125]
+	mi := &file_pmaster_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9909,7 +10321,7 @@ func (x *LiveAbilityLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveAbilityLevel.ProtoReflect.Descriptor instead.
 func (*LiveAbilityLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{125}
+	return file_pmaster_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *LiveAbilityLevel) GetLevel() int32 {
@@ -9994,7 +10406,7 @@ type LiveBonus struct {
 
 func (x *LiveBonus) Reset() {
 	*x = LiveBonus{}
-	mi := &file_pmaster_proto_msgTypes[126]
+	mi := &file_pmaster_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10006,7 +10418,7 @@ func (x *LiveBonus) String() string {
 func (*LiveBonus) ProtoMessage() {}
 
 func (x *LiveBonus) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[126]
+	mi := &file_pmaster_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10019,7 +10431,7 @@ func (x *LiveBonus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveBonus.ProtoReflect.Descriptor instead.
 func (*LiveBonus) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{126}
+	return file_pmaster_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *LiveBonus) GetId() string {
@@ -10060,7 +10472,7 @@ type LiveBonusGroup struct {
 
 func (x *LiveBonusGroup) Reset() {
 	*x = LiveBonusGroup{}
-	mi := &file_pmaster_proto_msgTypes[127]
+	mi := &file_pmaster_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10072,7 +10484,7 @@ func (x *LiveBonusGroup) String() string {
 func (*LiveBonusGroup) ProtoMessage() {}
 
 func (x *LiveBonusGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[127]
+	mi := &file_pmaster_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10085,7 +10497,7 @@ func (x *LiveBonusGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveBonusGroup.ProtoReflect.Descriptor instead.
 func (*LiveBonusGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{127}
+	return file_pmaster_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *LiveBonusGroup) GetGroupId() string {
@@ -10119,7 +10531,7 @@ type LiveResultAnimation struct {
 
 func (x *LiveResultAnimation) Reset() {
 	*x = LiveResultAnimation{}
-	mi := &file_pmaster_proto_msgTypes[128]
+	mi := &file_pmaster_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10131,7 +10543,7 @@ func (x *LiveResultAnimation) String() string {
 func (*LiveResultAnimation) ProtoMessage() {}
 
 func (x *LiveResultAnimation) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[128]
+	mi := &file_pmaster_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10144,7 +10556,7 @@ func (x *LiveResultAnimation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveResultAnimation.ProtoReflect.Descriptor instead.
 func (*LiveResultAnimation) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{128}
+	return file_pmaster_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *LiveResultAnimation) GetId() string {
@@ -10227,7 +10639,7 @@ type LiveStartAnimation struct {
 
 func (x *LiveStartAnimation) Reset() {
 	*x = LiveStartAnimation{}
-	mi := &file_pmaster_proto_msgTypes[129]
+	mi := &file_pmaster_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10239,7 +10651,7 @@ func (x *LiveStartAnimation) String() string {
 func (*LiveStartAnimation) ProtoMessage() {}
 
 func (x *LiveStartAnimation) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[129]
+	mi := &file_pmaster_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10252,7 +10664,7 @@ func (x *LiveStartAnimation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveStartAnimation.ProtoReflect.Descriptor instead.
 func (*LiveStartAnimation) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{129}
+	return file_pmaster_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *LiveStartAnimation) GetId() string {
@@ -10331,7 +10743,7 @@ type LiveStartVoiceAssetGroup struct {
 
 func (x *LiveStartVoiceAssetGroup) Reset() {
 	*x = LiveStartVoiceAssetGroup{}
-	mi := &file_pmaster_proto_msgTypes[130]
+	mi := &file_pmaster_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10343,7 +10755,7 @@ func (x *LiveStartVoiceAssetGroup) String() string {
 func (*LiveStartVoiceAssetGroup) ProtoMessage() {}
 
 func (x *LiveStartVoiceAssetGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[130]
+	mi := &file_pmaster_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10356,7 +10768,7 @@ func (x *LiveStartVoiceAssetGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveStartVoiceAssetGroup.ProtoReflect.Descriptor instead.
 func (*LiveStartVoiceAssetGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{130}
+	return file_pmaster_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *LiveStartVoiceAssetGroup) GetId() string {
@@ -10410,7 +10822,7 @@ type Loading struct {
 
 func (x *Loading) Reset() {
 	*x = Loading{}
-	mi := &file_pmaster_proto_msgTypes[131]
+	mi := &file_pmaster_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10422,7 +10834,7 @@ func (x *Loading) String() string {
 func (*Loading) ProtoMessage() {}
 
 func (x *Loading) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[131]
+	mi := &file_pmaster_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10435,7 +10847,7 @@ func (x *Loading) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Loading.ProtoReflect.Descriptor instead.
 func (*Loading) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{131}
+	return file_pmaster_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *Loading) GetId() string {
@@ -10513,7 +10925,7 @@ type LoginBonus struct {
 
 func (x *LoginBonus) Reset() {
 	*x = LoginBonus{}
-	mi := &file_pmaster_proto_msgTypes[132]
+	mi := &file_pmaster_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10525,7 +10937,7 @@ func (x *LoginBonus) String() string {
 func (*LoginBonus) ProtoMessage() {}
 
 func (x *LoginBonus) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[132]
+	mi := &file_pmaster_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10538,7 +10950,7 @@ func (x *LoginBonus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginBonus.ProtoReflect.Descriptor instead.
 func (*LoginBonus) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{132}
+	return file_pmaster_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *LoginBonus) GetId() string {
@@ -10629,7 +11041,7 @@ type LoginBonusText struct {
 
 func (x *LoginBonusText) Reset() {
 	*x = LoginBonusText{}
-	mi := &file_pmaster_proto_msgTypes[133]
+	mi := &file_pmaster_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10641,7 +11053,7 @@ func (x *LoginBonusText) String() string {
 func (*LoginBonusText) ProtoMessage() {}
 
 func (x *LoginBonusText) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[133]
+	mi := &file_pmaster_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10654,7 +11066,7 @@ func (x *LoginBonusText) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoginBonusText.ProtoReflect.Descriptor instead.
 func (*LoginBonusText) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{133}
+	return file_pmaster_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *LoginBonusText) GetId() string {
@@ -10701,7 +11113,7 @@ type LoveHomeAction struct {
 
 func (x *LoveHomeAction) Reset() {
 	*x = LoveHomeAction{}
-	mi := &file_pmaster_proto_msgTypes[134]
+	mi := &file_pmaster_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10713,7 +11125,7 @@ func (x *LoveHomeAction) String() string {
 func (*LoveHomeAction) ProtoMessage() {}
 
 func (x *LoveHomeAction) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[134]
+	mi := &file_pmaster_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10726,7 +11138,7 @@ func (x *LoveHomeAction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoveHomeAction.ProtoReflect.Descriptor instead.
 func (*LoveHomeAction) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{134}
+	return file_pmaster_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *LoveHomeAction) GetId() string {
@@ -10848,7 +11260,7 @@ type LoveStoryEpisode struct {
 
 func (x *LoveStoryEpisode) Reset() {
 	*x = LoveStoryEpisode{}
-	mi := &file_pmaster_proto_msgTypes[135]
+	mi := &file_pmaster_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10860,7 +11272,7 @@ func (x *LoveStoryEpisode) String() string {
 func (*LoveStoryEpisode) ProtoMessage() {}
 
 func (x *LoveStoryEpisode) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[135]
+	mi := &file_pmaster_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10873,7 +11285,7 @@ func (x *LoveStoryEpisode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoveStoryEpisode.ProtoReflect.Descriptor instead.
 func (*LoveStoryEpisode) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{135}
+	return file_pmaster_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *LoveStoryEpisode) GetId() string {
@@ -10932,7 +11344,7 @@ type MarathonBoxGachaSetting struct {
 
 func (x *MarathonBoxGachaSetting) Reset() {
 	*x = MarathonBoxGachaSetting{}
-	mi := &file_pmaster_proto_msgTypes[136]
+	mi := &file_pmaster_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10944,7 +11356,7 @@ func (x *MarathonBoxGachaSetting) String() string {
 func (*MarathonBoxGachaSetting) ProtoMessage() {}
 
 func (x *MarathonBoxGachaSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[136]
+	mi := &file_pmaster_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10957,7 +11369,7 @@ func (x *MarathonBoxGachaSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarathonBoxGachaSetting.ProtoReflect.Descriptor instead.
 func (*MarathonBoxGachaSetting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{136}
+	return file_pmaster_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *MarathonBoxGachaSetting) GetMarathonId() string {
@@ -11015,7 +11427,7 @@ type MarathonLiveBonus struct {
 
 func (x *MarathonLiveBonus) Reset() {
 	*x = MarathonLiveBonus{}
-	mi := &file_pmaster_proto_msgTypes[137]
+	mi := &file_pmaster_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11027,7 +11439,7 @@ func (x *MarathonLiveBonus) String() string {
 func (*MarathonLiveBonus) ProtoMessage() {}
 
 func (x *MarathonLiveBonus) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[137]
+	mi := &file_pmaster_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11040,7 +11452,7 @@ func (x *MarathonLiveBonus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarathonLiveBonus.ProtoReflect.Descriptor instead.
 func (*MarathonLiveBonus) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{137}
+	return file_pmaster_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *MarathonLiveBonus) GetId() string {
@@ -11088,7 +11500,7 @@ type MarathonLiveBonusGroup struct {
 
 func (x *MarathonLiveBonusGroup) Reset() {
 	*x = MarathonLiveBonusGroup{}
-	mi := &file_pmaster_proto_msgTypes[138]
+	mi := &file_pmaster_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11100,7 +11512,7 @@ func (x *MarathonLiveBonusGroup) String() string {
 func (*MarathonLiveBonusGroup) ProtoMessage() {}
 
 func (x *MarathonLiveBonusGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[138]
+	mi := &file_pmaster_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11113,7 +11525,7 @@ func (x *MarathonLiveBonusGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarathonLiveBonusGroup.ProtoReflect.Descriptor instead.
 func (*MarathonLiveBonusGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{138}
+	return file_pmaster_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *MarathonLiveBonusGroup) GetGroupId() string {
@@ -11171,7 +11583,7 @@ type MarathonQuest struct {
 
 func (x *MarathonQuest) Reset() {
 	*x = MarathonQuest{}
-	mi := &file_pmaster_proto_msgTypes[139]
+	mi := &file_pmaster_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11183,7 +11595,7 @@ func (x *MarathonQuest) String() string {
 func (*MarathonQuest) ProtoMessage() {}
 
 func (x *MarathonQuest) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[139]
+	mi := &file_pmaster_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11196,7 +11608,7 @@ func (x *MarathonQuest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarathonQuest.ProtoReflect.Descriptor instead.
 func (*MarathonQuest) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{139}
+	return file_pmaster_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *MarathonQuest) GetId() string {
@@ -11455,7 +11867,7 @@ type MarathonQuestDifficulty struct {
 
 func (x *MarathonQuestDifficulty) Reset() {
 	*x = MarathonQuestDifficulty{}
-	mi := &file_pmaster_proto_msgTypes[140]
+	mi := &file_pmaster_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11467,7 +11879,7 @@ func (x *MarathonQuestDifficulty) String() string {
 func (*MarathonQuestDifficulty) ProtoMessage() {}
 
 func (x *MarathonQuestDifficulty) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[140]
+	mi := &file_pmaster_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11480,7 +11892,7 @@ func (x *MarathonQuestDifficulty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MarathonQuestDifficulty.ProtoReflect.Descriptor instead.
 func (*MarathonQuestDifficulty) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{140}
+	return file_pmaster_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *MarathonQuestDifficulty) GetMarathonQuestId() string {
@@ -11619,7 +12031,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_pmaster_proto_msgTypes[141]
+	mi := &file_pmaster_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11631,7 +12043,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[141]
+	mi := &file_pmaster_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11644,7 +12056,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{141}
+	return file_pmaster_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *Message) GetId() string {
@@ -11729,7 +12141,7 @@ type MessageDetail struct {
 
 func (x *MessageDetail) Reset() {
 	*x = MessageDetail{}
-	mi := &file_pmaster_proto_msgTypes[142]
+	mi := &file_pmaster_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11741,7 +12153,7 @@ func (x *MessageDetail) String() string {
 func (*MessageDetail) ProtoMessage() {}
 
 func (x *MessageDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[142]
+	mi := &file_pmaster_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11754,7 +12166,7 @@ func (x *MessageDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageDetail.ProtoReflect.Descriptor instead.
 func (*MessageDetail) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{142}
+	return file_pmaster_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *MessageDetail) GetMessageDetailId() string {
@@ -11846,7 +12258,7 @@ type MessageGroup struct {
 
 func (x *MessageGroup) Reset() {
 	*x = MessageGroup{}
-	mi := &file_pmaster_proto_msgTypes[143]
+	mi := &file_pmaster_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11858,7 +12270,7 @@ func (x *MessageGroup) String() string {
 func (*MessageGroup) ProtoMessage() {}
 
 func (x *MessageGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[143]
+	mi := &file_pmaster_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11871,7 +12283,7 @@ func (x *MessageGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MessageGroup.ProtoReflect.Descriptor instead.
 func (*MessageGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{143}
+	return file_pmaster_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *MessageGroup) GetId() string {
@@ -11926,7 +12338,7 @@ type Mission struct {
 
 func (x *Mission) Reset() {
 	*x = Mission{}
-	mi := &file_pmaster_proto_msgTypes[144]
+	mi := &file_pmaster_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11938,7 +12350,7 @@ func (x *Mission) String() string {
 func (*Mission) ProtoMessage() {}
 
 func (x *Mission) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[144]
+	mi := &file_pmaster_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11951,7 +12363,7 @@ func (x *Mission) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Mission.ProtoReflect.Descriptor instead.
 func (*Mission) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{144}
+	return file_pmaster_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *Mission) GetId() string {
@@ -12076,7 +12488,7 @@ type MissionProgress struct {
 
 func (x *MissionProgress) Reset() {
 	*x = MissionProgress{}
-	mi := &file_pmaster_proto_msgTypes[145]
+	mi := &file_pmaster_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12088,7 +12500,7 @@ func (x *MissionProgress) String() string {
 func (*MissionProgress) ProtoMessage() {}
 
 func (x *MissionProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[145]
+	mi := &file_pmaster_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12101,7 +12513,7 @@ func (x *MissionProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MissionProgress.ProtoReflect.Descriptor instead.
 func (*MissionProgress) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{145}
+	return file_pmaster_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *MissionProgress) GetThreshold() int64 {
@@ -12152,7 +12564,7 @@ type Music struct {
 
 func (x *Music) Reset() {
 	*x = Music{}
-	mi := &file_pmaster_proto_msgTypes[146]
+	mi := &file_pmaster_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12164,7 +12576,7 @@ func (x *Music) String() string {
 func (*Music) ProtoMessage() {}
 
 func (x *Music) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[146]
+	mi := &file_pmaster_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12177,7 +12589,7 @@ func (x *Music) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Music.ProtoReflect.Descriptor instead.
 func (*Music) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{146}
+	return file_pmaster_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *Music) GetId() string {
@@ -12373,7 +12785,7 @@ type MusicMasteryReward struct {
 
 func (x *MusicMasteryReward) Reset() {
 	*x = MusicMasteryReward{}
-	mi := &file_pmaster_proto_msgTypes[147]
+	mi := &file_pmaster_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12385,7 +12797,7 @@ func (x *MusicMasteryReward) String() string {
 func (*MusicMasteryReward) ProtoMessage() {}
 
 func (x *MusicMasteryReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[147]
+	mi := &file_pmaster_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12398,7 +12810,7 @@ func (x *MusicMasteryReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MusicMasteryReward.ProtoReflect.Descriptor instead.
 func (*MusicMasteryReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{147}
+	return file_pmaster_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *MusicMasteryReward) GetMusicId() string {
@@ -12434,7 +12846,7 @@ type MusicMasteryRewardSet struct {
 
 func (x *MusicMasteryRewardSet) Reset() {
 	*x = MusicMasteryRewardSet{}
-	mi := &file_pmaster_proto_msgTypes[148]
+	mi := &file_pmaster_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12446,7 +12858,7 @@ func (x *MusicMasteryRewardSet) String() string {
 func (*MusicMasteryRewardSet) ProtoMessage() {}
 
 func (x *MusicMasteryRewardSet) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[148]
+	mi := &file_pmaster_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12459,7 +12871,7 @@ func (x *MusicMasteryRewardSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MusicMasteryRewardSet.ProtoReflect.Descriptor instead.
 func (*MusicMasteryRewardSet) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{148}
+	return file_pmaster_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *MusicMasteryRewardSet) GetId() string {
@@ -12500,7 +12912,7 @@ type OrnamentHair struct {
 
 func (x *OrnamentHair) Reset() {
 	*x = OrnamentHair{}
-	mi := &file_pmaster_proto_msgTypes[149]
+	mi := &file_pmaster_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12512,7 +12924,7 @@ func (x *OrnamentHair) String() string {
 func (*OrnamentHair) ProtoMessage() {}
 
 func (x *OrnamentHair) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[149]
+	mi := &file_pmaster_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12525,7 +12937,7 @@ func (x *OrnamentHair) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OrnamentHair.ProtoReflect.Descriptor instead.
 func (*OrnamentHair) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{149}
+	return file_pmaster_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *OrnamentHair) GetBaseHairId() string {
@@ -12562,7 +12974,7 @@ type PhotoAbility struct {
 
 func (x *PhotoAbility) Reset() {
 	*x = PhotoAbility{}
-	mi := &file_pmaster_proto_msgTypes[150]
+	mi := &file_pmaster_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12574,7 +12986,7 @@ func (x *PhotoAbility) String() string {
 func (*PhotoAbility) ProtoMessage() {}
 
 func (x *PhotoAbility) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[150]
+	mi := &file_pmaster_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12587,7 +12999,7 @@ func (x *PhotoAbility) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbility.ProtoReflect.Descriptor instead.
 func (*PhotoAbility) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{150}
+	return file_pmaster_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *PhotoAbility) GetId() string {
@@ -12686,7 +13098,7 @@ type PhotoAbilityInfo struct {
 
 func (x *PhotoAbilityInfo) Reset() {
 	*x = PhotoAbilityInfo{}
-	mi := &file_pmaster_proto_msgTypes[151]
+	mi := &file_pmaster_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12698,7 +13110,7 @@ func (x *PhotoAbilityInfo) String() string {
 func (*PhotoAbilityInfo) ProtoMessage() {}
 
 func (x *PhotoAbilityInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[151]
+	mi := &file_pmaster_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12711,7 +13123,7 @@ func (x *PhotoAbilityInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbilityInfo.ProtoReflect.Descriptor instead.
 func (*PhotoAbilityInfo) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{151}
+	return file_pmaster_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *PhotoAbilityInfo) GetPhotoAbilityId() string {
@@ -12754,7 +13166,7 @@ type PhotoAbilitySet struct {
 
 func (x *PhotoAbilitySet) Reset() {
 	*x = PhotoAbilitySet{}
-	mi := &file_pmaster_proto_msgTypes[152]
+	mi := &file_pmaster_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12766,7 +13178,7 @@ func (x *PhotoAbilitySet) String() string {
 func (*PhotoAbilitySet) ProtoMessage() {}
 
 func (x *PhotoAbilitySet) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[152]
+	mi := &file_pmaster_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12779,7 +13191,7 @@ func (x *PhotoAbilitySet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbilitySet.ProtoReflect.Descriptor instead.
 func (*PhotoAbilitySet) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{152}
+	return file_pmaster_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *PhotoAbilitySet) GetId() string {
@@ -12831,7 +13243,7 @@ type PhotoActivity struct {
 
 func (x *PhotoActivity) Reset() {
 	*x = PhotoActivity{}
-	mi := &file_pmaster_proto_msgTypes[153]
+	mi := &file_pmaster_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12843,7 +13255,7 @@ func (x *PhotoActivity) String() string {
 func (*PhotoActivity) ProtoMessage() {}
 
 func (x *PhotoActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[153]
+	mi := &file_pmaster_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12856,7 +13268,7 @@ func (x *PhotoActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoActivity.ProtoReflect.Descriptor instead.
 func (*PhotoActivity) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{153}
+	return file_pmaster_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *PhotoActivity) GetId() string {
@@ -12969,7 +13381,7 @@ type PhotoAllInOne struct {
 
 func (x *PhotoAllInOne) Reset() {
 	*x = PhotoAllInOne{}
-	mi := &file_pmaster_proto_msgTypes[154]
+	mi := &file_pmaster_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -12981,7 +13393,7 @@ func (x *PhotoAllInOne) String() string {
 func (*PhotoAllInOne) ProtoMessage() {}
 
 func (x *PhotoAllInOne) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[154]
+	mi := &file_pmaster_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12994,7 +13406,7 @@ func (x *PhotoAllInOne) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAllInOne.ProtoReflect.Descriptor instead.
 func (*PhotoAllInOne) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{154}
+	return file_pmaster_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *PhotoAllInOne) GetId() string {
@@ -13095,7 +13507,7 @@ type PhotoContestActivity struct {
 
 func (x *PhotoContestActivity) Reset() {
 	*x = PhotoContestActivity{}
-	mi := &file_pmaster_proto_msgTypes[155]
+	mi := &file_pmaster_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13107,7 +13519,7 @@ func (x *PhotoContestActivity) String() string {
 func (*PhotoContestActivity) ProtoMessage() {}
 
 func (x *PhotoContestActivity) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[155]
+	mi := &file_pmaster_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13120,7 +13532,7 @@ func (x *PhotoContestActivity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoContestActivity.ProtoReflect.Descriptor instead.
 func (*PhotoContestActivity) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{155}
+	return file_pmaster_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *PhotoContestActivity) GetId() string {
@@ -13234,7 +13646,7 @@ type PhotoContestQuestMusic struct {
 
 func (x *PhotoContestQuestMusic) Reset() {
 	*x = PhotoContestQuestMusic{}
-	mi := &file_pmaster_proto_msgTypes[156]
+	mi := &file_pmaster_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13246,7 +13658,7 @@ func (x *PhotoContestQuestMusic) String() string {
 func (*PhotoContestQuestMusic) ProtoMessage() {}
 
 func (x *PhotoContestQuestMusic) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[156]
+	mi := &file_pmaster_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13259,7 +13671,7 @@ func (x *PhotoContestQuestMusic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoContestQuestMusic.ProtoReflect.Descriptor instead.
 func (*PhotoContestQuestMusic) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{156}
+	return file_pmaster_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *PhotoContestQuestMusic) GetId() string {
@@ -13363,7 +13775,7 @@ type PhotoContestQuestStage struct {
 
 func (x *PhotoContestQuestStage) Reset() {
 	*x = PhotoContestQuestStage{}
-	mi := &file_pmaster_proto_msgTypes[157]
+	mi := &file_pmaster_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13375,7 +13787,7 @@ func (x *PhotoContestQuestStage) String() string {
 func (*PhotoContestQuestStage) ProtoMessage() {}
 
 func (x *PhotoContestQuestStage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[157]
+	mi := &file_pmaster_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13388,7 +13800,7 @@ func (x *PhotoContestQuestStage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoContestQuestStage.ProtoReflect.Descriptor instead.
 func (*PhotoContestQuestStage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{157}
+	return file_pmaster_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *PhotoContestQuestStage) GetId() string {
@@ -13465,7 +13877,7 @@ type PhotoContestSectionReward struct {
 
 func (x *PhotoContestSectionReward) Reset() {
 	*x = PhotoContestSectionReward{}
-	mi := &file_pmaster_proto_msgTypes[158]
+	mi := &file_pmaster_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13477,7 +13889,7 @@ func (x *PhotoContestSectionReward) String() string {
 func (*PhotoContestSectionReward) ProtoMessage() {}
 
 func (x *PhotoContestSectionReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[158]
+	mi := &file_pmaster_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13490,7 +13902,7 @@ func (x *PhotoContestSectionReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoContestSectionReward.ProtoReflect.Descriptor instead.
 func (*PhotoContestSectionReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{158}
+	return file_pmaster_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *PhotoContestSectionReward) GetId() string {
@@ -13535,7 +13947,7 @@ type PhotoExpression struct {
 
 func (x *PhotoExpression) Reset() {
 	*x = PhotoExpression{}
-	mi := &file_pmaster_proto_msgTypes[159]
+	mi := &file_pmaster_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13547,7 +13959,7 @@ func (x *PhotoExpression) String() string {
 func (*PhotoExpression) ProtoMessage() {}
 
 func (x *PhotoExpression) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[159]
+	mi := &file_pmaster_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13560,7 +13972,7 @@ func (x *PhotoExpression) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoExpression.ProtoReflect.Descriptor instead.
 func (*PhotoExpression) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{159}
+	return file_pmaster_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *PhotoExpression) GetId() string {
@@ -13678,7 +14090,7 @@ type PhotoExpressionStagePosition struct {
 
 func (x *PhotoExpressionStagePosition) Reset() {
 	*x = PhotoExpressionStagePosition{}
-	mi := &file_pmaster_proto_msgTypes[160]
+	mi := &file_pmaster_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13690,7 +14102,7 @@ func (x *PhotoExpressionStagePosition) String() string {
 func (*PhotoExpressionStagePosition) ProtoMessage() {}
 
 func (x *PhotoExpressionStagePosition) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[160]
+	mi := &file_pmaster_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13703,7 +14115,7 @@ func (x *PhotoExpressionStagePosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoExpressionStagePosition.ProtoReflect.Descriptor instead.
 func (*PhotoExpressionStagePosition) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{160}
+	return file_pmaster_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *PhotoExpressionStagePosition) GetStageId() string {
@@ -13830,7 +14242,7 @@ type PhotoFacial struct {
 
 func (x *PhotoFacial) Reset() {
 	*x = PhotoFacial{}
-	mi := &file_pmaster_proto_msgTypes[161]
+	mi := &file_pmaster_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13842,7 +14254,7 @@ func (x *PhotoFacial) String() string {
 func (*PhotoFacial) ProtoMessage() {}
 
 func (x *PhotoFacial) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[161]
+	mi := &file_pmaster_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13855,7 +14267,7 @@ func (x *PhotoFacial) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoFacial.ProtoReflect.Descriptor instead.
 func (*PhotoFacial) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{161}
+	return file_pmaster_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *PhotoFacial) GetId() string {
@@ -13898,7 +14310,7 @@ type PhotoFacialMotion struct {
 
 func (x *PhotoFacialMotion) Reset() {
 	*x = PhotoFacialMotion{}
-	mi := &file_pmaster_proto_msgTypes[162]
+	mi := &file_pmaster_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13910,7 +14322,7 @@ func (x *PhotoFacialMotion) String() string {
 func (*PhotoFacialMotion) ProtoMessage() {}
 
 func (x *PhotoFacialMotion) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[162]
+	mi := &file_pmaster_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13923,7 +14335,7 @@ func (x *PhotoFacialMotion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoFacialMotion.ProtoReflect.Descriptor instead.
 func (*PhotoFacialMotion) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{162}
+	return file_pmaster_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *PhotoFacialMotion) GetPhotoFacialId() string {
@@ -13966,7 +14378,7 @@ type PhotoPoseMotion struct {
 
 func (x *PhotoPoseMotion) Reset() {
 	*x = PhotoPoseMotion{}
-	mi := &file_pmaster_proto_msgTypes[163]
+	mi := &file_pmaster_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -13978,7 +14390,7 @@ func (x *PhotoPoseMotion) String() string {
 func (*PhotoPoseMotion) ProtoMessage() {}
 
 func (x *PhotoPoseMotion) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[163]
+	mi := &file_pmaster_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13991,7 +14403,7 @@ func (x *PhotoPoseMotion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoPoseMotion.ProtoReflect.Descriptor instead.
 func (*PhotoPoseMotion) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{163}
+	return file_pmaster_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *PhotoPoseMotion) GetPhotoPoseId() string {
@@ -14041,7 +14453,7 @@ type PhotoQuestMusic struct {
 
 func (x *PhotoQuestMusic) Reset() {
 	*x = PhotoQuestMusic{}
-	mi := &file_pmaster_proto_msgTypes[164]
+	mi := &file_pmaster_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14053,7 +14465,7 @@ func (x *PhotoQuestMusic) String() string {
 func (*PhotoQuestMusic) ProtoMessage() {}
 
 func (x *PhotoQuestMusic) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[164]
+	mi := &file_pmaster_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14066,7 +14478,7 @@ func (x *PhotoQuestMusic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoQuestMusic.ProtoReflect.Descriptor instead.
 func (*PhotoQuestMusic) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{164}
+	return file_pmaster_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *PhotoQuestMusic) GetId() string {
@@ -14162,7 +14574,7 @@ type PhotoQuestStage struct {
 
 func (x *PhotoQuestStage) Reset() {
 	*x = PhotoQuestStage{}
-	mi := &file_pmaster_proto_msgTypes[165]
+	mi := &file_pmaster_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14174,7 +14586,7 @@ func (x *PhotoQuestStage) String() string {
 func (*PhotoQuestStage) ProtoMessage() {}
 
 func (x *PhotoQuestStage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[165]
+	mi := &file_pmaster_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14187,7 +14599,7 @@ func (x *PhotoQuestStage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoQuestStage.ProtoReflect.Descriptor instead.
 func (*PhotoQuestStage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{165}
+	return file_pmaster_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *PhotoQuestStage) GetId() string {
@@ -14267,7 +14679,7 @@ type PhotoRecipe struct {
 
 func (x *PhotoRecipe) Reset() {
 	*x = PhotoRecipe{}
-	mi := &file_pmaster_proto_msgTypes[166]
+	mi := &file_pmaster_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14279,7 +14691,7 @@ func (x *PhotoRecipe) String() string {
 func (*PhotoRecipe) ProtoMessage() {}
 
 func (x *PhotoRecipe) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[166]
+	mi := &file_pmaster_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14292,7 +14704,7 @@ func (x *PhotoRecipe) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoRecipe.ProtoReflect.Descriptor instead.
 func (*PhotoRecipe) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{166}
+	return file_pmaster_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *PhotoRecipe) GetId() string {
@@ -14397,7 +14809,7 @@ type PhotoRetouchEnhance struct {
 
 func (x *PhotoRetouchEnhance) Reset() {
 	*x = PhotoRetouchEnhance{}
-	mi := &file_pmaster_proto_msgTypes[167]
+	mi := &file_pmaster_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14409,7 +14821,7 @@ func (x *PhotoRetouchEnhance) String() string {
 func (*PhotoRetouchEnhance) ProtoMessage() {}
 
 func (x *PhotoRetouchEnhance) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[167]
+	mi := &file_pmaster_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14422,7 +14834,7 @@ func (x *PhotoRetouchEnhance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoRetouchEnhance.ProtoReflect.Descriptor instead.
 func (*PhotoRetouchEnhance) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{167}
+	return file_pmaster_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *PhotoRetouchEnhance) GetGroupId() string {
@@ -14465,7 +14877,7 @@ type PhotoShootingCharacterMotion struct {
 
 func (x *PhotoShootingCharacterMotion) Reset() {
 	*x = PhotoShootingCharacterMotion{}
-	mi := &file_pmaster_proto_msgTypes[168]
+	mi := &file_pmaster_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14477,7 +14889,7 @@ func (x *PhotoShootingCharacterMotion) String() string {
 func (*PhotoShootingCharacterMotion) ProtoMessage() {}
 
 func (x *PhotoShootingCharacterMotion) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[168]
+	mi := &file_pmaster_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14490,7 +14902,7 @@ func (x *PhotoShootingCharacterMotion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoShootingCharacterMotion.ProtoReflect.Descriptor instead.
 func (*PhotoShootingCharacterMotion) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{168}
+	return file_pmaster_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *PhotoShootingCharacterMotion) GetId() string {
@@ -14580,7 +14992,7 @@ type PhotoShootingReplaceCharacter struct {
 
 func (x *PhotoShootingReplaceCharacter) Reset() {
 	*x = PhotoShootingReplaceCharacter{}
-	mi := &file_pmaster_proto_msgTypes[169]
+	mi := &file_pmaster_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14592,7 +15004,7 @@ func (x *PhotoShootingReplaceCharacter) String() string {
 func (*PhotoShootingReplaceCharacter) ProtoMessage() {}
 
 func (x *PhotoShootingReplaceCharacter) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[169]
+	mi := &file_pmaster_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14605,7 +15017,7 @@ func (x *PhotoShootingReplaceCharacter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoShootingReplaceCharacter.ProtoReflect.Descriptor instead.
 func (*PhotoShootingReplaceCharacter) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{169}
+	return file_pmaster_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *PhotoShootingReplaceCharacter) GetTargetCharacterId() string {
@@ -14642,7 +15054,7 @@ type PhotoShootingSimplePersonalityMotion struct {
 
 func (x *PhotoShootingSimplePersonalityMotion) Reset() {
 	*x = PhotoShootingSimplePersonalityMotion{}
-	mi := &file_pmaster_proto_msgTypes[170]
+	mi := &file_pmaster_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14654,7 +15066,7 @@ func (x *PhotoShootingSimplePersonalityMotion) String() string {
 func (*PhotoShootingSimplePersonalityMotion) ProtoMessage() {}
 
 func (x *PhotoShootingSimplePersonalityMotion) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[170]
+	mi := &file_pmaster_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14667,7 +15079,7 @@ func (x *PhotoShootingSimplePersonalityMotion) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PhotoShootingSimplePersonalityMotion.ProtoReflect.Descriptor instead.
 func (*PhotoShootingSimplePersonalityMotion) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{170}
+	return file_pmaster_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *PhotoShootingSimplePersonalityMotion) GetId() string {
@@ -14770,7 +15182,7 @@ type PhotoSituation struct {
 
 func (x *PhotoSituation) Reset() {
 	*x = PhotoSituation{}
-	mi := &file_pmaster_proto_msgTypes[171]
+	mi := &file_pmaster_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14782,7 +15194,7 @@ func (x *PhotoSituation) String() string {
 func (*PhotoSituation) ProtoMessage() {}
 
 func (x *PhotoSituation) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[171]
+	mi := &file_pmaster_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14795,7 +15207,7 @@ func (x *PhotoSituation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoSituation.ProtoReflect.Descriptor instead.
 func (*PhotoSituation) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{171}
+	return file_pmaster_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *PhotoSituation) GetId() string {
@@ -14906,7 +15318,7 @@ type Quest struct {
 
 func (x *Quest) Reset() {
 	*x = Quest{}
-	mi := &file_pmaster_proto_msgTypes[172]
+	mi := &file_pmaster_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -14918,7 +15330,7 @@ func (x *Quest) String() string {
 func (*Quest) ProtoMessage() {}
 
 func (x *Quest) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[172]
+	mi := &file_pmaster_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14931,7 +15343,7 @@ func (x *Quest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Quest.ProtoReflect.Descriptor instead.
 func (*Quest) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{172}
+	return file_pmaster_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *Quest) GetId() string {
@@ -15253,7 +15665,7 @@ type QuestAchievedRankReward struct {
 
 func (x *QuestAchievedRankReward) Reset() {
 	*x = QuestAchievedRankReward{}
-	mi := &file_pmaster_proto_msgTypes[173]
+	mi := &file_pmaster_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15265,7 +15677,7 @@ func (x *QuestAchievedRankReward) String() string {
 func (*QuestAchievedRankReward) ProtoMessage() {}
 
 func (x *QuestAchievedRankReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[173]
+	mi := &file_pmaster_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15278,7 +15690,7 @@ func (x *QuestAchievedRankReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestAchievedRankReward.ProtoReflect.Descriptor instead.
 func (*QuestAchievedRankReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{173}
+	return file_pmaster_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *QuestAchievedRankReward) GetHighRank() int32 {
@@ -15314,7 +15726,7 @@ type QuestCharacterAdvantage struct {
 
 func (x *QuestCharacterAdvantage) Reset() {
 	*x = QuestCharacterAdvantage{}
-	mi := &file_pmaster_proto_msgTypes[174]
+	mi := &file_pmaster_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15326,7 +15738,7 @@ func (x *QuestCharacterAdvantage) String() string {
 func (*QuestCharacterAdvantage) ProtoMessage() {}
 
 func (x *QuestCharacterAdvantage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[174]
+	mi := &file_pmaster_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15339,7 +15751,7 @@ func (x *QuestCharacterAdvantage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestCharacterAdvantage.ProtoReflect.Descriptor instead.
 func (*QuestCharacterAdvantage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{174}
+	return file_pmaster_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *QuestCharacterAdvantage) GetId() string {
@@ -15385,7 +15797,7 @@ type RaceLiveBonus struct {
 
 func (x *RaceLiveBonus) Reset() {
 	*x = RaceLiveBonus{}
-	mi := &file_pmaster_proto_msgTypes[175]
+	mi := &file_pmaster_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15397,7 +15809,7 @@ func (x *RaceLiveBonus) String() string {
 func (*RaceLiveBonus) ProtoMessage() {}
 
 func (x *RaceLiveBonus) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[175]
+	mi := &file_pmaster_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15410,7 +15822,7 @@ func (x *RaceLiveBonus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RaceLiveBonus.ProtoReflect.Descriptor instead.
 func (*RaceLiveBonus) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{175}
+	return file_pmaster_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *RaceLiveBonus) GetId() string {
@@ -15473,7 +15885,7 @@ type RaceLiveBonusGroup struct {
 
 func (x *RaceLiveBonusGroup) Reset() {
 	*x = RaceLiveBonusGroup{}
-	mi := &file_pmaster_proto_msgTypes[176]
+	mi := &file_pmaster_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15485,7 +15897,7 @@ func (x *RaceLiveBonusGroup) String() string {
 func (*RaceLiveBonusGroup) ProtoMessage() {}
 
 func (x *RaceLiveBonusGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[176]
+	mi := &file_pmaster_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15498,7 +15910,7 @@ func (x *RaceLiveBonusGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RaceLiveBonusGroup.ProtoReflect.Descriptor instead.
 func (*RaceLiveBonusGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{176}
+	return file_pmaster_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *RaceLiveBonusGroup) GetGroupId() string {
@@ -15537,7 +15949,7 @@ type RacePanel struct {
 
 func (x *RacePanel) Reset() {
 	*x = RacePanel{}
-	mi := &file_pmaster_proto_msgTypes[177]
+	mi := &file_pmaster_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15549,7 +15961,7 @@ func (x *RacePanel) String() string {
 func (*RacePanel) ProtoMessage() {}
 
 func (x *RacePanel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[177]
+	mi := &file_pmaster_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15562,7 +15974,7 @@ func (x *RacePanel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RacePanel.ProtoReflect.Descriptor instead.
 func (*RacePanel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{177}
+	return file_pmaster_proto_rawDescGZIP(), []int{180}
 }
 
 func (x *RacePanel) GetRaceAreaId() string {
@@ -15625,7 +16037,7 @@ type RacePanelReward struct {
 
 func (x *RacePanelReward) Reset() {
 	*x = RacePanelReward{}
-	mi := &file_pmaster_proto_msgTypes[178]
+	mi := &file_pmaster_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15637,7 +16049,7 @@ func (x *RacePanelReward) String() string {
 func (*RacePanelReward) ProtoMessage() {}
 
 func (x *RacePanelReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[178]
+	mi := &file_pmaster_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15650,7 +16062,7 @@ func (x *RacePanelReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RacePanelReward.ProtoReflect.Descriptor instead.
 func (*RacePanelReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{178}
+	return file_pmaster_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *RacePanelReward) GetId() string {
@@ -15708,7 +16120,7 @@ type RaceQuest struct {
 
 func (x *RaceQuest) Reset() {
 	*x = RaceQuest{}
-	mi := &file_pmaster_proto_msgTypes[179]
+	mi := &file_pmaster_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15720,7 +16132,7 @@ func (x *RaceQuest) String() string {
 func (*RaceQuest) ProtoMessage() {}
 
 func (x *RaceQuest) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[179]
+	mi := &file_pmaster_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15733,7 +16145,7 @@ func (x *RaceQuest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RaceQuest.ProtoReflect.Descriptor instead.
 func (*RaceQuest) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{179}
+	return file_pmaster_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *RaceQuest) GetId() string {
@@ -15936,7 +16348,7 @@ type RaceQuestDifficulty struct {
 
 func (x *RaceQuestDifficulty) Reset() {
 	*x = RaceQuestDifficulty{}
-	mi := &file_pmaster_proto_msgTypes[180]
+	mi := &file_pmaster_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -15948,7 +16360,7 @@ func (x *RaceQuestDifficulty) String() string {
 func (*RaceQuestDifficulty) ProtoMessage() {}
 
 func (x *RaceQuestDifficulty) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[180]
+	mi := &file_pmaster_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15961,7 +16373,7 @@ func (x *RaceQuestDifficulty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RaceQuestDifficulty.ProtoReflect.Descriptor instead.
 func (*RaceQuestDifficulty) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{180}
+	return file_pmaster_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *RaceQuestDifficulty) GetRaceQuestId() string {
@@ -16046,7 +16458,7 @@ type RaceRankingReward struct {
 
 func (x *RaceRankingReward) Reset() {
 	*x = RaceRankingReward{}
-	mi := &file_pmaster_proto_msgTypes[181]
+	mi := &file_pmaster_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16058,7 +16470,7 @@ func (x *RaceRankingReward) String() string {
 func (*RaceRankingReward) ProtoMessage() {}
 
 func (x *RaceRankingReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[181]
+	mi := &file_pmaster_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16071,7 +16483,7 @@ func (x *RaceRankingReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RaceRankingReward.ProtoReflect.Descriptor instead.
 func (*RaceRankingReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{181}
+	return file_pmaster_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *RaceRankingReward) GetRankGradeId() string {
@@ -16257,7 +16669,7 @@ type Setting struct {
 
 func (x *Setting) Reset() {
 	*x = Setting{}
-	mi := &file_pmaster_proto_msgTypes[182]
+	mi := &file_pmaster_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -16269,7 +16681,7 @@ func (x *Setting) String() string {
 func (*Setting) ProtoMessage() {}
 
 func (x *Setting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[182]
+	mi := &file_pmaster_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16282,7 +16694,7 @@ func (x *Setting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Setting.ProtoReflect.Descriptor instead.
 func (*Setting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{182}
+	return file_pmaster_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *Setting) GetId() string {
@@ -17329,7 +17741,7 @@ type ShowcaseFrame struct {
 
 func (x *ShowcaseFrame) Reset() {
 	*x = ShowcaseFrame{}
-	mi := &file_pmaster_proto_msgTypes[183]
+	mi := &file_pmaster_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17341,7 +17753,7 @@ func (x *ShowcaseFrame) String() string {
 func (*ShowcaseFrame) ProtoMessage() {}
 
 func (x *ShowcaseFrame) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[183]
+	mi := &file_pmaster_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17354,7 +17766,7 @@ func (x *ShowcaseFrame) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseFrame.ProtoReflect.Descriptor instead.
 func (*ShowcaseFrame) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{183}
+	return file_pmaster_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *ShowcaseFrame) GetId() string {
@@ -17417,7 +17829,7 @@ type ShowcaseMusic struct {
 
 func (x *ShowcaseMusic) Reset() {
 	*x = ShowcaseMusic{}
-	mi := &file_pmaster_proto_msgTypes[184]
+	mi := &file_pmaster_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17429,7 +17841,7 @@ func (x *ShowcaseMusic) String() string {
 func (*ShowcaseMusic) ProtoMessage() {}
 
 func (x *ShowcaseMusic) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[184]
+	mi := &file_pmaster_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17442,7 +17854,7 @@ func (x *ShowcaseMusic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseMusic.ProtoReflect.Descriptor instead.
 func (*ShowcaseMusic) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{184}
+	return file_pmaster_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *ShowcaseMusic) GetMusicId() string {
@@ -17487,7 +17899,7 @@ type ShowcaseSetting struct {
 
 func (x *ShowcaseSetting) Reset() {
 	*x = ShowcaseSetting{}
-	mi := &file_pmaster_proto_msgTypes[185]
+	mi := &file_pmaster_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17499,7 +17911,7 @@ func (x *ShowcaseSetting) String() string {
 func (*ShowcaseSetting) ProtoMessage() {}
 
 func (x *ShowcaseSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[185]
+	mi := &file_pmaster_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17512,7 +17924,7 @@ func (x *ShowcaseSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseSetting.ProtoReflect.Descriptor instead.
 func (*ShowcaseSetting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{185}
+	return file_pmaster_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *ShowcaseSetting) GetId() string {
@@ -17625,7 +18037,7 @@ type ShowcaseToy struct {
 
 func (x *ShowcaseToy) Reset() {
 	*x = ShowcaseToy{}
-	mi := &file_pmaster_proto_msgTypes[186]
+	mi := &file_pmaster_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17637,7 +18049,7 @@ func (x *ShowcaseToy) String() string {
 func (*ShowcaseToy) ProtoMessage() {}
 
 func (x *ShowcaseToy) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[186]
+	mi := &file_pmaster_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17650,7 +18062,7 @@ func (x *ShowcaseToy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseToy.ProtoReflect.Descriptor instead.
 func (*ShowcaseToy) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{186}
+	return file_pmaster_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *ShowcaseToy) GetId() string {
@@ -17740,7 +18152,7 @@ type SkillDetail struct {
 
 func (x *SkillDetail) Reset() {
 	*x = SkillDetail{}
-	mi := &file_pmaster_proto_msgTypes[187]
+	mi := &file_pmaster_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17752,7 +18164,7 @@ func (x *SkillDetail) String() string {
 func (*SkillDetail) ProtoMessage() {}
 
 func (x *SkillDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[187]
+	mi := &file_pmaster_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17765,7 +18177,7 @@ func (x *SkillDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillDetail.ProtoReflect.Descriptor instead.
 func (*SkillDetail) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{187}
+	return file_pmaster_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *SkillDetail) GetEfficacyId() string {
@@ -17799,7 +18211,7 @@ type SkillEfficacy struct {
 
 func (x *SkillEfficacy) Reset() {
 	*x = SkillEfficacy{}
-	mi := &file_pmaster_proto_msgTypes[188]
+	mi := &file_pmaster_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17811,7 +18223,7 @@ func (x *SkillEfficacy) String() string {
 func (*SkillEfficacy) ProtoMessage() {}
 
 func (x *SkillEfficacy) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[188]
+	mi := &file_pmaster_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17824,7 +18236,7 @@ func (x *SkillEfficacy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillEfficacy.ProtoReflect.Descriptor instead.
 func (*SkillEfficacy) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{188}
+	return file_pmaster_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *SkillEfficacy) GetId() string {
@@ -17910,7 +18322,7 @@ type SkillLevel struct {
 
 func (x *SkillLevel) Reset() {
 	*x = SkillLevel{}
-	mi := &file_pmaster_proto_msgTypes[189]
+	mi := &file_pmaster_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -17922,7 +18334,7 @@ func (x *SkillLevel) String() string {
 func (*SkillLevel) ProtoMessage() {}
 
 func (x *SkillLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[189]
+	mi := &file_pmaster_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17935,7 +18347,7 @@ func (x *SkillLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillLevel.ProtoReflect.Descriptor instead.
 func (*SkillLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{189}
+	return file_pmaster_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *SkillLevel) GetLevel() int32 {
@@ -18033,7 +18445,7 @@ type SkillTrigger struct {
 
 func (x *SkillTrigger) Reset() {
 	*x = SkillTrigger{}
-	mi := &file_pmaster_proto_msgTypes[190]
+	mi := &file_pmaster_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18045,7 +18457,7 @@ func (x *SkillTrigger) String() string {
 func (*SkillTrigger) ProtoMessage() {}
 
 func (x *SkillTrigger) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[190]
+	mi := &file_pmaster_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18058,7 +18470,7 @@ func (x *SkillTrigger) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillTrigger.ProtoReflect.Descriptor instead.
 func (*SkillTrigger) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{190}
+	return file_pmaster_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *SkillTrigger) GetId() string {
@@ -18095,7 +18507,7 @@ type StaffLevel struct {
 
 func (x *StaffLevel) Reset() {
 	*x = StaffLevel{}
-	mi := &file_pmaster_proto_msgTypes[191]
+	mi := &file_pmaster_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18107,7 +18519,7 @@ func (x *StaffLevel) String() string {
 func (*StaffLevel) ProtoMessage() {}
 
 func (x *StaffLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[191]
+	mi := &file_pmaster_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18120,7 +18532,7 @@ func (x *StaffLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffLevel.ProtoReflect.Descriptor instead.
 func (*StaffLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{191}
+	return file_pmaster_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *StaffLevel) GetParameterType() penum.ParameterType {
@@ -18178,7 +18590,7 @@ type Story struct {
 
 func (x *Story) Reset() {
 	*x = Story{}
-	mi := &file_pmaster_proto_msgTypes[192]
+	mi := &file_pmaster_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18190,7 +18602,7 @@ func (x *Story) String() string {
 func (*Story) ProtoMessage() {}
 
 func (x *Story) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[192]
+	mi := &file_pmaster_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18203,7 +18615,7 @@ func (x *Story) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Story.ProtoReflect.Descriptor instead.
 func (*Story) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{192}
+	return file_pmaster_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *Story) GetId() string {
@@ -18304,7 +18716,7 @@ type StoryEpisode struct {
 
 func (x *StoryEpisode) Reset() {
 	*x = StoryEpisode{}
-	mi := &file_pmaster_proto_msgTypes[193]
+	mi := &file_pmaster_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18316,7 +18728,7 @@ func (x *StoryEpisode) String() string {
 func (*StoryEpisode) ProtoMessage() {}
 
 func (x *StoryEpisode) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[193]
+	mi := &file_pmaster_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18329,7 +18741,7 @@ func (x *StoryEpisode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoryEpisode.ProtoReflect.Descriptor instead.
 func (*StoryEpisode) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{193}
+	return file_pmaster_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *StoryEpisode) GetEpisode() int32 {
@@ -18394,7 +18806,7 @@ type StoryPart struct {
 
 func (x *StoryPart) Reset() {
 	*x = StoryPart{}
-	mi := &file_pmaster_proto_msgTypes[194]
+	mi := &file_pmaster_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18406,7 +18818,7 @@ func (x *StoryPart) String() string {
 func (*StoryPart) ProtoMessage() {}
 
 func (x *StoryPart) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[194]
+	mi := &file_pmaster_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18419,7 +18831,7 @@ func (x *StoryPart) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoryPart.ProtoReflect.Descriptor instead.
 func (*StoryPart) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{194}
+	return file_pmaster_proto_rawDescGZIP(), []int{197}
 }
 
 func (x *StoryPart) GetId() string {
@@ -18520,7 +18932,7 @@ type Telephone struct {
 
 func (x *Telephone) Reset() {
 	*x = Telephone{}
-	mi := &file_pmaster_proto_msgTypes[195]
+	mi := &file_pmaster_proto_msgTypes[198]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18532,7 +18944,7 @@ func (x *Telephone) String() string {
 func (*Telephone) ProtoMessage() {}
 
 func (x *Telephone) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[195]
+	mi := &file_pmaster_proto_msgTypes[198]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18545,7 +18957,7 @@ func (x *Telephone) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Telephone.ProtoReflect.Descriptor instead.
 func (*Telephone) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{195}
+	return file_pmaster_proto_rawDescGZIP(), []int{198}
 }
 
 func (x *Telephone) GetId() string {
@@ -18615,7 +19027,7 @@ type TourQuestSetting struct {
 
 func (x *TourQuestSetting) Reset() {
 	*x = TourQuestSetting{}
-	mi := &file_pmaster_proto_msgTypes[196]
+	mi := &file_pmaster_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18627,7 +19039,7 @@ func (x *TourQuestSetting) String() string {
 func (*TourQuestSetting) ProtoMessage() {}
 
 func (x *TourQuestSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[196]
+	mi := &file_pmaster_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18640,7 +19052,7 @@ func (x *TourQuestSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TourQuestSetting.ProtoReflect.Descriptor instead.
 func (*TourQuestSetting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{196}
+	return file_pmaster_proto_rawDescGZIP(), []int{199}
 }
 
 func (x *TourQuestSetting) GetId() string {
@@ -18773,7 +19185,7 @@ type Tutorial struct {
 
 func (x *Tutorial) Reset() {
 	*x = Tutorial{}
-	mi := &file_pmaster_proto_msgTypes[197]
+	mi := &file_pmaster_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18785,7 +19197,7 @@ func (x *Tutorial) String() string {
 func (*Tutorial) ProtoMessage() {}
 
 func (x *Tutorial) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[197]
+	mi := &file_pmaster_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18798,7 +19210,7 @@ func (x *Tutorial) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Tutorial.ProtoReflect.Descriptor instead.
 func (*Tutorial) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{197}
+	return file_pmaster_proto_rawDescGZIP(), []int{200}
 }
 
 func (x *Tutorial) GetType() penum.TutorialType {
@@ -18832,7 +19244,7 @@ type AccessoryEnhancement struct {
 
 func (x *AccessoryEnhancement) Reset() {
 	*x = AccessoryEnhancement{}
-	mi := &file_pmaster_proto_msgTypes[198]
+	mi := &file_pmaster_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18844,7 +19256,7 @@ func (x *AccessoryEnhancement) String() string {
 func (*AccessoryEnhancement) ProtoMessage() {}
 
 func (x *AccessoryEnhancement) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[198]
+	mi := &file_pmaster_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18857,7 +19269,7 @@ func (x *AccessoryEnhancement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AccessoryEnhancement.ProtoReflect.Descriptor instead.
 func (*AccessoryEnhancement) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{198}
+	return file_pmaster_proto_rawDescGZIP(), []int{201}
 }
 
 func (x *AccessoryEnhancement) GetRarity() int32 {
@@ -18886,7 +19298,7 @@ type ActivityAbility struct {
 
 func (x *ActivityAbility) Reset() {
 	*x = ActivityAbility{}
-	mi := &file_pmaster_proto_msgTypes[199]
+	mi := &file_pmaster_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18898,7 +19310,7 @@ func (x *ActivityAbility) String() string {
 func (*ActivityAbility) ProtoMessage() {}
 
 func (x *ActivityAbility) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[199]
+	mi := &file_pmaster_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18911,7 +19323,7 @@ func (x *ActivityAbility) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityAbility.ProtoReflect.Descriptor instead.
 func (*ActivityAbility) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{199}
+	return file_pmaster_proto_rawDescGZIP(), []int{202}
 }
 
 func (x *ActivityAbility) GetId() string {
@@ -18952,7 +19364,7 @@ type AppCapacityLimit struct {
 
 func (x *AppCapacityLimit) Reset() {
 	*x = AppCapacityLimit{}
-	mi := &file_pmaster_proto_msgTypes[200]
+	mi := &file_pmaster_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -18964,7 +19376,7 @@ func (x *AppCapacityLimit) String() string {
 func (*AppCapacityLimit) ProtoMessage() {}
 
 func (x *AppCapacityLimit) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[200]
+	mi := &file_pmaster_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18977,7 +19389,7 @@ func (x *AppCapacityLimit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppCapacityLimit.ProtoReflect.Descriptor instead.
 func (*AppCapacityLimit) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{200}
+	return file_pmaster_proto_rawDescGZIP(), []int{203}
 }
 
 func (x *AppCapacityLimit) GetAppCapacityLimitKey() int32 {
@@ -19004,7 +19416,7 @@ type AssetDownload struct {
 
 func (x *AssetDownload) Reset() {
 	*x = AssetDownload{}
-	mi := &file_pmaster_proto_msgTypes[201]
+	mi := &file_pmaster_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19016,7 +19428,7 @@ func (x *AssetDownload) String() string {
 func (*AssetDownload) ProtoMessage() {}
 
 func (x *AssetDownload) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[201]
+	mi := &file_pmaster_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19029,7 +19441,7 @@ func (x *AssetDownload) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetDownload.ProtoReflect.Descriptor instead.
 func (*AssetDownload) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{201}
+	return file_pmaster_proto_rawDescGZIP(), []int{204}
 }
 
 func (x *AssetDownload) GetAssetId() string {
@@ -19063,7 +19475,7 @@ type BacksideAnimation struct {
 
 func (x *BacksideAnimation) Reset() {
 	*x = BacksideAnimation{}
-	mi := &file_pmaster_proto_msgTypes[202]
+	mi := &file_pmaster_proto_msgTypes[205]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19075,7 +19487,7 @@ func (x *BacksideAnimation) String() string {
 func (*BacksideAnimation) ProtoMessage() {}
 
 func (x *BacksideAnimation) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[202]
+	mi := &file_pmaster_proto_msgTypes[205]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19088,7 +19500,7 @@ func (x *BacksideAnimation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BacksideAnimation.ProtoReflect.Descriptor instead.
 func (*BacksideAnimation) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{202}
+	return file_pmaster_proto_rawDescGZIP(), []int{205}
 }
 
 func (x *BacksideAnimation) GetPanelType() penum.BacksidePanelType {
@@ -19165,7 +19577,7 @@ type BoxGachaGroup struct {
 
 func (x *BoxGachaGroup) Reset() {
 	*x = BoxGachaGroup{}
-	mi := &file_pmaster_proto_msgTypes[203]
+	mi := &file_pmaster_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19177,7 +19589,7 @@ func (x *BoxGachaGroup) String() string {
 func (*BoxGachaGroup) ProtoMessage() {}
 
 func (x *BoxGachaGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[203]
+	mi := &file_pmaster_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19190,7 +19602,7 @@ func (x *BoxGachaGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BoxGachaGroup.ProtoReflect.Descriptor instead.
 func (*BoxGachaGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{203}
+	return file_pmaster_proto_rawDescGZIP(), []int{206}
 }
 
 func (x *BoxGachaGroup) GetId() string {
@@ -19224,7 +19636,7 @@ type CardDuplicateExp struct {
 
 func (x *CardDuplicateExp) Reset() {
 	*x = CardDuplicateExp{}
-	mi := &file_pmaster_proto_msgTypes[204]
+	mi := &file_pmaster_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19236,7 +19648,7 @@ func (x *CardDuplicateExp) String() string {
 func (*CardDuplicateExp) ProtoMessage() {}
 
 func (x *CardDuplicateExp) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[204]
+	mi := &file_pmaster_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19249,7 +19661,7 @@ func (x *CardDuplicateExp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardDuplicateExp.ProtoReflect.Descriptor instead.
 func (*CardDuplicateExp) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{204}
+	return file_pmaster_proto_rawDescGZIP(), []int{207}
 }
 
 func (x *CardDuplicateExp) GetInitialRarity() int32 {
@@ -19278,7 +19690,7 @@ type CardEvolutionLevel struct {
 
 func (x *CardEvolutionLevel) Reset() {
 	*x = CardEvolutionLevel{}
-	mi := &file_pmaster_proto_msgTypes[205]
+	mi := &file_pmaster_proto_msgTypes[208]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19290,7 +19702,7 @@ func (x *CardEvolutionLevel) String() string {
 func (*CardEvolutionLevel) ProtoMessage() {}
 
 func (x *CardEvolutionLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[205]
+	mi := &file_pmaster_proto_msgTypes[208]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19303,7 +19715,7 @@ func (x *CardEvolutionLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardEvolutionLevel.ProtoReflect.Descriptor instead.
 func (*CardEvolutionLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{205}
+	return file_pmaster_proto_rawDescGZIP(), []int{208}
 }
 
 func (x *CardEvolutionLevel) GetGroupId() string {
@@ -19345,7 +19757,7 @@ type CardEvolutionLevelRelease struct {
 
 func (x *CardEvolutionLevelRelease) Reset() {
 	*x = CardEvolutionLevelRelease{}
-	mi := &file_pmaster_proto_msgTypes[206]
+	mi := &file_pmaster_proto_msgTypes[209]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19357,7 +19769,7 @@ func (x *CardEvolutionLevelRelease) String() string {
 func (*CardEvolutionLevelRelease) ProtoMessage() {}
 
 func (x *CardEvolutionLevelRelease) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[206]
+	mi := &file_pmaster_proto_msgTypes[209]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19370,7 +19782,7 @@ func (x *CardEvolutionLevelRelease) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardEvolutionLevelRelease.ProtoReflect.Descriptor instead.
 func (*CardEvolutionLevelRelease) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{206}
+	return file_pmaster_proto_rawDescGZIP(), []int{209}
 }
 
 func (x *CardEvolutionLevelRelease) GetGroupId() string {
@@ -19404,7 +19816,7 @@ type CardLevel struct {
 
 func (x *CardLevel) Reset() {
 	*x = CardLevel{}
-	mi := &file_pmaster_proto_msgTypes[207]
+	mi := &file_pmaster_proto_msgTypes[210]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19416,7 +19828,7 @@ func (x *CardLevel) String() string {
 func (*CardLevel) ProtoMessage() {}
 
 func (x *CardLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[207]
+	mi := &file_pmaster_proto_msgTypes[210]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19429,7 +19841,7 @@ func (x *CardLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardLevel.ProtoReflect.Descriptor instead.
 func (*CardLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{207}
+	return file_pmaster_proto_rawDescGZIP(), []int{210}
 }
 
 func (x *CardLevel) GetLevel() int32 {
@@ -19457,7 +19869,7 @@ type CardLevelRelease struct {
 
 func (x *CardLevelRelease) Reset() {
 	*x = CardLevelRelease{}
-	mi := &file_pmaster_proto_msgTypes[208]
+	mi := &file_pmaster_proto_msgTypes[211]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19469,7 +19881,7 @@ func (x *CardLevelRelease) String() string {
 func (*CardLevelRelease) ProtoMessage() {}
 
 func (x *CardLevelRelease) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[208]
+	mi := &file_pmaster_proto_msgTypes[211]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19482,7 +19894,7 @@ func (x *CardLevelRelease) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardLevelRelease.ProtoReflect.Descriptor instead.
 func (*CardLevelRelease) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{208}
+	return file_pmaster_proto_rawDescGZIP(), []int{211}
 }
 
 func (x *CardLevelRelease) GetId() string {
@@ -19518,7 +19930,7 @@ type CardParameter struct {
 
 func (x *CardParameter) Reset() {
 	*x = CardParameter{}
-	mi := &file_pmaster_proto_msgTypes[209]
+	mi := &file_pmaster_proto_msgTypes[212]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19530,7 +19942,7 @@ func (x *CardParameter) String() string {
 func (*CardParameter) ProtoMessage() {}
 
 func (x *CardParameter) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[209]
+	mi := &file_pmaster_proto_msgTypes[212]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19543,7 +19955,7 @@ func (x *CardParameter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardParameter.ProtoReflect.Descriptor instead.
 func (*CardParameter) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{209}
+	return file_pmaster_proto_rawDescGZIP(), []int{212}
 }
 
 func (x *CardParameter) GetId() string {
@@ -19586,7 +19998,7 @@ type CardRank struct {
 
 func (x *CardRank) Reset() {
 	*x = CardRank{}
-	mi := &file_pmaster_proto_msgTypes[210]
+	mi := &file_pmaster_proto_msgTypes[213]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19598,7 +20010,7 @@ func (x *CardRank) String() string {
 func (*CardRank) ProtoMessage() {}
 
 func (x *CardRank) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[210]
+	mi := &file_pmaster_proto_msgTypes[213]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19611,7 +20023,7 @@ func (x *CardRank) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardRank.ProtoReflect.Descriptor instead.
 func (*CardRank) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{210}
+	return file_pmaster_proto_rawDescGZIP(), []int{213}
 }
 
 func (x *CardRank) GetRank() int32 {
@@ -19654,7 +20066,7 @@ type CardRarity struct {
 
 func (x *CardRarity) Reset() {
 	*x = CardRarity{}
-	mi := &file_pmaster_proto_msgTypes[211]
+	mi := &file_pmaster_proto_msgTypes[214]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19666,7 +20078,7 @@ func (x *CardRarity) String() string {
 func (*CardRarity) ProtoMessage() {}
 
 func (x *CardRarity) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[211]
+	mi := &file_pmaster_proto_msgTypes[214]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19679,7 +20091,7 @@ func (x *CardRarity) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardRarity.ProtoReflect.Descriptor instead.
 func (*CardRarity) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{211}
+	return file_pmaster_proto_rawDescGZIP(), []int{214}
 }
 
 func (x *CardRarity) GetRarity() int32 {
@@ -19722,7 +20134,7 @@ type CharacterActivityLevel struct {
 
 func (x *CharacterActivityLevel) Reset() {
 	*x = CharacterActivityLevel{}
-	mi := &file_pmaster_proto_msgTypes[212]
+	mi := &file_pmaster_proto_msgTypes[215]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19734,7 +20146,7 @@ func (x *CharacterActivityLevel) String() string {
 func (*CharacterActivityLevel) ProtoMessage() {}
 
 func (x *CharacterActivityLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[212]
+	mi := &file_pmaster_proto_msgTypes[215]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19747,7 +20159,7 @@ func (x *CharacterActivityLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CharacterActivityLevel.ProtoReflect.Descriptor instead.
 func (*CharacterActivityLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{212}
+	return file_pmaster_proto_rawDescGZIP(), []int{215}
 }
 
 func (x *CharacterActivityLevel) GetLevel() int32 {
@@ -19789,7 +20201,7 @@ type ComboAdvantage struct {
 
 func (x *ComboAdvantage) Reset() {
 	*x = ComboAdvantage{}
-	mi := &file_pmaster_proto_msgTypes[213]
+	mi := &file_pmaster_proto_msgTypes[216]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19801,7 +20213,7 @@ func (x *ComboAdvantage) String() string {
 func (*ComboAdvantage) ProtoMessage() {}
 
 func (x *ComboAdvantage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[213]
+	mi := &file_pmaster_proto_msgTypes[216]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19814,7 +20226,7 @@ func (x *ComboAdvantage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ComboAdvantage.ProtoReflect.Descriptor instead.
 func (*ComboAdvantage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{213}
+	return file_pmaster_proto_rawDescGZIP(), []int{216}
 }
 
 func (x *ComboAdvantage) GetId() string {
@@ -19850,7 +20262,7 @@ type CompanyEnjoyCharacterLevel struct {
 
 func (x *CompanyEnjoyCharacterLevel) Reset() {
 	*x = CompanyEnjoyCharacterLevel{}
-	mi := &file_pmaster_proto_msgTypes[214]
+	mi := &file_pmaster_proto_msgTypes[217]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19862,7 +20274,7 @@ func (x *CompanyEnjoyCharacterLevel) String() string {
 func (*CompanyEnjoyCharacterLevel) ProtoMessage() {}
 
 func (x *CompanyEnjoyCharacterLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[214]
+	mi := &file_pmaster_proto_msgTypes[217]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19875,7 +20287,7 @@ func (x *CompanyEnjoyCharacterLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompanyEnjoyCharacterLevel.ProtoReflect.Descriptor instead.
 func (*CompanyEnjoyCharacterLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{214}
+	return file_pmaster_proto_rawDescGZIP(), []int{217}
 }
 
 func (x *CompanyEnjoyCharacterLevel) GetLevelKey() int32 {
@@ -19916,7 +20328,7 @@ type CompanyEnjoyLevel struct {
 
 func (x *CompanyEnjoyLevel) Reset() {
 	*x = CompanyEnjoyLevel{}
-	mi := &file_pmaster_proto_msgTypes[215]
+	mi := &file_pmaster_proto_msgTypes[218]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19928,7 +20340,7 @@ func (x *CompanyEnjoyLevel) String() string {
 func (*CompanyEnjoyLevel) ProtoMessage() {}
 
 func (x *CompanyEnjoyLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[215]
+	mi := &file_pmaster_proto_msgTypes[218]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19941,7 +20353,7 @@ func (x *CompanyEnjoyLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompanyEnjoyLevel.ProtoReflect.Descriptor instead.
 func (*CompanyEnjoyLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{215}
+	return file_pmaster_proto_rawDescGZIP(), []int{218}
 }
 
 func (x *CompanyEnjoyLevel) GetLevelKey() int32 {
@@ -19970,7 +20382,7 @@ type CompanyPoint struct {
 
 func (x *CompanyPoint) Reset() {
 	*x = CompanyPoint{}
-	mi := &file_pmaster_proto_msgTypes[216]
+	mi := &file_pmaster_proto_msgTypes[219]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -19982,7 +20394,7 @@ func (x *CompanyPoint) String() string {
 func (*CompanyPoint) ProtoMessage() {}
 
 func (x *CompanyPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[216]
+	mi := &file_pmaster_proto_msgTypes[219]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19995,7 +20407,7 @@ func (x *CompanyPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CompanyPoint.ProtoReflect.Descriptor instead.
 func (*CompanyPoint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{216}
+	return file_pmaster_proto_rawDescGZIP(), []int{219}
 }
 
 func (x *CompanyPoint) GetId() string {
@@ -20036,7 +20448,7 @@ type Condition struct {
 
 func (x *Condition) Reset() {
 	*x = Condition{}
-	mi := &file_pmaster_proto_msgTypes[217]
+	mi := &file_pmaster_proto_msgTypes[220]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20048,7 +20460,7 @@ func (x *Condition) String() string {
 func (*Condition) ProtoMessage() {}
 
 func (x *Condition) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[217]
+	mi := &file_pmaster_proto_msgTypes[220]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20061,7 +20473,7 @@ func (x *Condition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Condition.ProtoReflect.Descriptor instead.
 func (*Condition) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{217}
+	return file_pmaster_proto_rawDescGZIP(), []int{220}
 }
 
 func (x *Condition) GetId() string {
@@ -20088,7 +20500,7 @@ type ConditionDescription struct {
 
 func (x *ConditionDescription) Reset() {
 	*x = ConditionDescription{}
-	mi := &file_pmaster_proto_msgTypes[218]
+	mi := &file_pmaster_proto_msgTypes[221]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20100,7 +20512,7 @@ func (x *ConditionDescription) String() string {
 func (*ConditionDescription) ProtoMessage() {}
 
 func (x *ConditionDescription) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[218]
+	mi := &file_pmaster_proto_msgTypes[221]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20113,7 +20525,7 @@ func (x *ConditionDescription) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDescription.ProtoReflect.Descriptor instead.
 func (*ConditionDescription) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{218}
+	return file_pmaster_proto_rawDescGZIP(), []int{221}
 }
 
 func (x *ConditionDescription) GetId() string {
@@ -20140,7 +20552,7 @@ type Consumption struct {
 
 func (x *Consumption) Reset() {
 	*x = Consumption{}
-	mi := &file_pmaster_proto_msgTypes[219]
+	mi := &file_pmaster_proto_msgTypes[222]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20152,7 +20564,7 @@ func (x *Consumption) String() string {
 func (*Consumption) ProtoMessage() {}
 
 func (x *Consumption) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[219]
+	mi := &file_pmaster_proto_msgTypes[222]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20165,7 +20577,7 @@ func (x *Consumption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Consumption.ProtoReflect.Descriptor instead.
 func (*Consumption) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{219}
+	return file_pmaster_proto_rawDescGZIP(), []int{222}
 }
 
 func (x *Consumption) GetId() string {
@@ -20192,7 +20604,7 @@ type CostumeType struct {
 
 func (x *CostumeType) Reset() {
 	*x = CostumeType{}
-	mi := &file_pmaster_proto_msgTypes[220]
+	mi := &file_pmaster_proto_msgTypes[223]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20204,7 +20616,7 @@ func (x *CostumeType) String() string {
 func (*CostumeType) ProtoMessage() {}
 
 func (x *CostumeType) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[220]
+	mi := &file_pmaster_proto_msgTypes[223]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20217,7 +20629,7 @@ func (x *CostumeType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CostumeType.ProtoReflect.Descriptor instead.
 func (*CostumeType) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{220}
+	return file_pmaster_proto_rawDescGZIP(), []int{223}
 }
 
 func (x *CostumeType) GetId() string {
@@ -20246,7 +20658,7 @@ type DeckEntrustCoefficient struct {
 
 func (x *DeckEntrustCoefficient) Reset() {
 	*x = DeckEntrustCoefficient{}
-	mi := &file_pmaster_proto_msgTypes[221]
+	mi := &file_pmaster_proto_msgTypes[224]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20258,7 +20670,7 @@ func (x *DeckEntrustCoefficient) String() string {
 func (*DeckEntrustCoefficient) ProtoMessage() {}
 
 func (x *DeckEntrustCoefficient) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[221]
+	mi := &file_pmaster_proto_msgTypes[224]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20271,7 +20683,7 @@ func (x *DeckEntrustCoefficient) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeckEntrustCoefficient.ProtoReflect.Descriptor instead.
 func (*DeckEntrustCoefficient) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{221}
+	return file_pmaster_proto_rawDescGZIP(), []int{224}
 }
 
 func (x *DeckEntrustCoefficient) GetPosition() int32 {
@@ -20313,7 +20725,7 @@ type Division struct {
 
 func (x *Division) Reset() {
 	*x = Division{}
-	mi := &file_pmaster_proto_msgTypes[222]
+	mi := &file_pmaster_proto_msgTypes[225]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20325,7 +20737,7 @@ func (x *Division) String() string {
 func (*Division) ProtoMessage() {}
 
 func (x *Division) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[222]
+	mi := &file_pmaster_proto_msgTypes[225]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20338,7 +20750,7 @@ func (x *Division) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Division.ProtoReflect.Descriptor instead.
 func (*Division) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{222}
+	return file_pmaster_proto_rawDescGZIP(), []int{225}
 }
 
 func (x *Division) GetId() string {
@@ -20377,7 +20789,7 @@ type DutyPoint struct {
 
 func (x *DutyPoint) Reset() {
 	*x = DutyPoint{}
-	mi := &file_pmaster_proto_msgTypes[223]
+	mi := &file_pmaster_proto_msgTypes[226]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20389,7 +20801,7 @@ func (x *DutyPoint) String() string {
 func (*DutyPoint) ProtoMessage() {}
 
 func (x *DutyPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[223]
+	mi := &file_pmaster_proto_msgTypes[226]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20402,7 +20814,7 @@ func (x *DutyPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DutyPoint.ProtoReflect.Descriptor instead.
 func (*DutyPoint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{223}
+	return file_pmaster_proto_rawDescGZIP(), []int{226}
 }
 
 func (x *DutyPoint) GetId() string {
@@ -20464,7 +20876,7 @@ type ExerciseAccessoryGroup struct {
 
 func (x *ExerciseAccessoryGroup) Reset() {
 	*x = ExerciseAccessoryGroup{}
-	mi := &file_pmaster_proto_msgTypes[224]
+	mi := &file_pmaster_proto_msgTypes[227]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20476,7 +20888,7 @@ func (x *ExerciseAccessoryGroup) String() string {
 func (*ExerciseAccessoryGroup) ProtoMessage() {}
 
 func (x *ExerciseAccessoryGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[224]
+	mi := &file_pmaster_proto_msgTypes[227]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20489,7 +20901,7 @@ func (x *ExerciseAccessoryGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseAccessoryGroup.ProtoReflect.Descriptor instead.
 func (*ExerciseAccessoryGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{224}
+	return file_pmaster_proto_rawDescGZIP(), []int{227}
 }
 
 func (x *ExerciseAccessoryGroup) GetGroupId() string {
@@ -20516,7 +20928,7 @@ type ExerciseDeck struct {
 
 func (x *ExerciseDeck) Reset() {
 	*x = ExerciseDeck{}
-	mi := &file_pmaster_proto_msgTypes[225]
+	mi := &file_pmaster_proto_msgTypes[228]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20528,7 +20940,7 @@ func (x *ExerciseDeck) String() string {
 func (*ExerciseDeck) ProtoMessage() {}
 
 func (x *ExerciseDeck) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[225]
+	mi := &file_pmaster_proto_msgTypes[228]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20541,7 +20953,7 @@ func (x *ExerciseDeck) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseDeck.ProtoReflect.Descriptor instead.
 func (*ExerciseDeck) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{225}
+	return file_pmaster_proto_rawDescGZIP(), []int{228}
 }
 
 func (x *ExerciseDeck) GetId() string {
@@ -20568,7 +20980,7 @@ type ExerciseHint struct {
 
 func (x *ExerciseHint) Reset() {
 	*x = ExerciseHint{}
-	mi := &file_pmaster_proto_msgTypes[226]
+	mi := &file_pmaster_proto_msgTypes[229]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20580,7 +20992,7 @@ func (x *ExerciseHint) String() string {
 func (*ExerciseHint) ProtoMessage() {}
 
 func (x *ExerciseHint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[226]
+	mi := &file_pmaster_proto_msgTypes[229]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20593,7 +21005,7 @@ func (x *ExerciseHint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseHint.ProtoReflect.Descriptor instead.
 func (*ExerciseHint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{226}
+	return file_pmaster_proto_rawDescGZIP(), []int{229}
 }
 
 func (x *ExerciseHint) GetExerciseId() string {
@@ -20620,7 +21032,7 @@ type ExercisePhotoGroup struct {
 
 func (x *ExercisePhotoGroup) Reset() {
 	*x = ExercisePhotoGroup{}
-	mi := &file_pmaster_proto_msgTypes[227]
+	mi := &file_pmaster_proto_msgTypes[230]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20632,7 +21044,7 @@ func (x *ExercisePhotoGroup) String() string {
 func (*ExercisePhotoGroup) ProtoMessage() {}
 
 func (x *ExercisePhotoGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[227]
+	mi := &file_pmaster_proto_msgTypes[230]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20645,7 +21057,7 @@ func (x *ExercisePhotoGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExercisePhotoGroup.ProtoReflect.Descriptor instead.
 func (*ExercisePhotoGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{227}
+	return file_pmaster_proto_rawDescGZIP(), []int{230}
 }
 
 func (x *ExercisePhotoGroup) GetGroupId() string {
@@ -20686,7 +21098,7 @@ type ExerciseUser struct {
 
 func (x *ExerciseUser) Reset() {
 	*x = ExerciseUser{}
-	mi := &file_pmaster_proto_msgTypes[228]
+	mi := &file_pmaster_proto_msgTypes[231]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20698,7 +21110,7 @@ func (x *ExerciseUser) String() string {
 func (*ExerciseUser) ProtoMessage() {}
 
 func (x *ExerciseUser) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[228]
+	mi := &file_pmaster_proto_msgTypes[231]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20711,7 +21123,7 @@ func (x *ExerciseUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseUser.ProtoReflect.Descriptor instead.
 func (*ExerciseUser) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{228}
+	return file_pmaster_proto_rawDescGZIP(), []int{231}
 }
 
 func (x *ExerciseUser) GetId() string {
@@ -20836,7 +21248,7 @@ type GachaStampSheetGroup struct {
 
 func (x *GachaStampSheetGroup) Reset() {
 	*x = GachaStampSheetGroup{}
-	mi := &file_pmaster_proto_msgTypes[229]
+	mi := &file_pmaster_proto_msgTypes[232]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20848,7 +21260,7 @@ func (x *GachaStampSheetGroup) String() string {
 func (*GachaStampSheetGroup) ProtoMessage() {}
 
 func (x *GachaStampSheetGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[229]
+	mi := &file_pmaster_proto_msgTypes[232]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20861,7 +21273,7 @@ func (x *GachaStampSheetGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GachaStampSheetGroup.ProtoReflect.Descriptor instead.
 func (*GachaStampSheetGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{229}
+	return file_pmaster_proto_rawDescGZIP(), []int{232}
 }
 
 func (x *GachaStampSheetGroup) GetGroupId() string {
@@ -20890,7 +21302,7 @@ type Guild struct {
 
 func (x *Guild) Reset() {
 	*x = Guild{}
-	mi := &file_pmaster_proto_msgTypes[230]
+	mi := &file_pmaster_proto_msgTypes[233]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20902,7 +21314,7 @@ func (x *Guild) String() string {
 func (*Guild) ProtoMessage() {}
 
 func (x *Guild) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[230]
+	mi := &file_pmaster_proto_msgTypes[233]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20915,7 +21327,7 @@ func (x *Guild) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Guild.ProtoReflect.Descriptor instead.
 func (*Guild) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{230}
+	return file_pmaster_proto_rawDescGZIP(), []int{233}
 }
 
 func (x *Guild) GetId() string {
@@ -20960,7 +21372,7 @@ type HelpCategory struct {
 
 func (x *HelpCategory) Reset() {
 	*x = HelpCategory{}
-	mi := &file_pmaster_proto_msgTypes[231]
+	mi := &file_pmaster_proto_msgTypes[234]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -20972,7 +21384,7 @@ func (x *HelpCategory) String() string {
 func (*HelpCategory) ProtoMessage() {}
 
 func (x *HelpCategory) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[231]
+	mi := &file_pmaster_proto_msgTypes[234]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20985,7 +21397,7 @@ func (x *HelpCategory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelpCategory.ProtoReflect.Descriptor instead.
 func (*HelpCategory) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{231}
+	return file_pmaster_proto_rawDescGZIP(), []int{234}
 }
 
 func (x *HelpCategory) GetId() string {
@@ -21041,7 +21453,7 @@ type HierarchyGrade struct {
 
 func (x *HierarchyGrade) Reset() {
 	*x = HierarchyGrade{}
-	mi := &file_pmaster_proto_msgTypes[232]
+	mi := &file_pmaster_proto_msgTypes[235]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21053,7 +21465,7 @@ func (x *HierarchyGrade) String() string {
 func (*HierarchyGrade) ProtoMessage() {}
 
 func (x *HierarchyGrade) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[232]
+	mi := &file_pmaster_proto_msgTypes[235]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21066,7 +21478,7 @@ func (x *HierarchyGrade) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HierarchyGrade.ProtoReflect.Descriptor instead.
 func (*HierarchyGrade) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{232}
+	return file_pmaster_proto_rawDescGZIP(), []int{235}
 }
 
 func (x *HierarchyGrade) GetId() string {
@@ -21100,7 +21512,7 @@ type HomeBackgroundCategory struct {
 
 func (x *HomeBackgroundCategory) Reset() {
 	*x = HomeBackgroundCategory{}
-	mi := &file_pmaster_proto_msgTypes[233]
+	mi := &file_pmaster_proto_msgTypes[236]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21112,7 +21524,7 @@ func (x *HomeBackgroundCategory) String() string {
 func (*HomeBackgroundCategory) ProtoMessage() {}
 
 func (x *HomeBackgroundCategory) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[233]
+	mi := &file_pmaster_proto_msgTypes[236]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21125,7 +21537,7 @@ func (x *HomeBackgroundCategory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeBackgroundCategory.ProtoReflect.Descriptor instead.
 func (*HomeBackgroundCategory) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{233}
+	return file_pmaster_proto_rawDescGZIP(), []int{236}
 }
 
 func (x *HomeBackgroundCategory) GetId() string {
@@ -21156,7 +21568,7 @@ type HomeDramaPosition struct {
 
 func (x *HomeDramaPosition) Reset() {
 	*x = HomeDramaPosition{}
-	mi := &file_pmaster_proto_msgTypes[234]
+	mi := &file_pmaster_proto_msgTypes[237]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21168,7 +21580,7 @@ func (x *HomeDramaPosition) String() string {
 func (*HomeDramaPosition) ProtoMessage() {}
 
 func (x *HomeDramaPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[234]
+	mi := &file_pmaster_proto_msgTypes[237]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21181,7 +21593,7 @@ func (x *HomeDramaPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeDramaPosition.ProtoReflect.Descriptor instead.
 func (*HomeDramaPosition) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{234}
+	return file_pmaster_proto_rawDescGZIP(), []int{237}
 }
 
 func (x *HomeDramaPosition) GetHomeDramaPositionId() string {
@@ -21236,7 +21648,7 @@ type HomeDramaPositionGroup struct {
 
 func (x *HomeDramaPositionGroup) Reset() {
 	*x = HomeDramaPositionGroup{}
-	mi := &file_pmaster_proto_msgTypes[235]
+	mi := &file_pmaster_proto_msgTypes[238]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21248,7 +21660,7 @@ func (x *HomeDramaPositionGroup) String() string {
 func (*HomeDramaPositionGroup) ProtoMessage() {}
 
 func (x *HomeDramaPositionGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[235]
+	mi := &file_pmaster_proto_msgTypes[238]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21261,7 +21673,7 @@ func (x *HomeDramaPositionGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeDramaPositionGroup.ProtoReflect.Descriptor instead.
 func (*HomeDramaPositionGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{235}
+	return file_pmaster_proto_rawDescGZIP(), []int{238}
 }
 
 func (x *HomeDramaPositionGroup) GetHomeDramaPositionGroupId() string {
@@ -21289,7 +21701,7 @@ type InviteHostReward struct {
 
 func (x *InviteHostReward) Reset() {
 	*x = InviteHostReward{}
-	mi := &file_pmaster_proto_msgTypes[236]
+	mi := &file_pmaster_proto_msgTypes[239]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21301,7 +21713,7 @@ func (x *InviteHostReward) String() string {
 func (*InviteHostReward) ProtoMessage() {}
 
 func (x *InviteHostReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[236]
+	mi := &file_pmaster_proto_msgTypes[239]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21314,7 +21726,7 @@ func (x *InviteHostReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InviteHostReward.ProtoReflect.Descriptor instead.
 func (*InviteHostReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{236}
+	return file_pmaster_proto_rawDescGZIP(), []int{239}
 }
 
 func (x *InviteHostReward) GetId() string {
@@ -21356,7 +21768,7 @@ type Item struct {
 
 func (x *Item) Reset() {
 	*x = Item{}
-	mi := &file_pmaster_proto_msgTypes[237]
+	mi := &file_pmaster_proto_msgTypes[240]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21368,7 +21780,7 @@ func (x *Item) String() string {
 func (*Item) ProtoMessage() {}
 
 func (x *Item) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[237]
+	mi := &file_pmaster_proto_msgTypes[240]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21381,7 +21793,7 @@ func (x *Item) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Item.ProtoReflect.Descriptor instead.
 func (*Item) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{237}
+	return file_pmaster_proto_rawDescGZIP(), []int{240}
 }
 
 func (x *Item) GetId() string {
@@ -21466,7 +21878,7 @@ type LiveAbility struct {
 
 func (x *LiveAbility) Reset() {
 	*x = LiveAbility{}
-	mi := &file_pmaster_proto_msgTypes[238]
+	mi := &file_pmaster_proto_msgTypes[241]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21478,7 +21890,7 @@ func (x *LiveAbility) String() string {
 func (*LiveAbility) ProtoMessage() {}
 
 func (x *LiveAbility) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[238]
+	mi := &file_pmaster_proto_msgTypes[241]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21491,7 +21903,7 @@ func (x *LiveAbility) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveAbility.ProtoReflect.Descriptor instead.
 func (*LiveAbility) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{238}
+	return file_pmaster_proto_rawDescGZIP(), []int{241}
 }
 
 func (x *LiveAbility) GetId() string {
@@ -21534,7 +21946,7 @@ type LiveTip struct {
 
 func (x *LiveTip) Reset() {
 	*x = LiveTip{}
-	mi := &file_pmaster_proto_msgTypes[239]
+	mi := &file_pmaster_proto_msgTypes[242]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21546,7 +21958,7 @@ func (x *LiveTip) String() string {
 func (*LiveTip) ProtoMessage() {}
 
 func (x *LiveTip) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[239]
+	mi := &file_pmaster_proto_msgTypes[242]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21559,7 +21971,7 @@ func (x *LiveTip) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LiveTip.ProtoReflect.Descriptor instead.
 func (*LiveTip) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{239}
+	return file_pmaster_proto_rawDescGZIP(), []int{242}
 }
 
 func (x *LiveTip) GetId() string {
@@ -21621,7 +22033,7 @@ type LoveColor struct {
 
 func (x *LoveColor) Reset() {
 	*x = LoveColor{}
-	mi := &file_pmaster_proto_msgTypes[240]
+	mi := &file_pmaster_proto_msgTypes[243]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21633,7 +22045,7 @@ func (x *LoveColor) String() string {
 func (*LoveColor) ProtoMessage() {}
 
 func (x *LoveColor) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[240]
+	mi := &file_pmaster_proto_msgTypes[243]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21646,7 +22058,7 @@ func (x *LoveColor) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoveColor.ProtoReflect.Descriptor instead.
 func (*LoveColor) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{240}
+	return file_pmaster_proto_rawDescGZIP(), []int{243}
 }
 
 func (x *LoveColor) GetLoveId() string {
@@ -21823,7 +22235,7 @@ type LoveLevel struct {
 
 func (x *LoveLevel) Reset() {
 	*x = LoveLevel{}
-	mi := &file_pmaster_proto_msgTypes[241]
+	mi := &file_pmaster_proto_msgTypes[244]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21835,7 +22247,7 @@ func (x *LoveLevel) String() string {
 func (*LoveLevel) ProtoMessage() {}
 
 func (x *LoveLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[241]
+	mi := &file_pmaster_proto_msgTypes[244]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21848,7 +22260,7 @@ func (x *LoveLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoveLevel.ProtoReflect.Descriptor instead.
 func (*LoveLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{241}
+	return file_pmaster_proto_rawDescGZIP(), []int{244}
 }
 
 func (x *LoveLevel) GetLoveId() string {
@@ -21899,7 +22311,7 @@ type ManagerLevel struct {
 
 func (x *ManagerLevel) Reset() {
 	*x = ManagerLevel{}
-	mi := &file_pmaster_proto_msgTypes[242]
+	mi := &file_pmaster_proto_msgTypes[245]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21911,7 +22323,7 @@ func (x *ManagerLevel) String() string {
 func (*ManagerLevel) ProtoMessage() {}
 
 func (x *ManagerLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[242]
+	mi := &file_pmaster_proto_msgTypes[245]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21924,7 +22336,7 @@ func (x *ManagerLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManagerLevel.ProtoReflect.Descriptor instead.
 func (*ManagerLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{242}
+	return file_pmaster_proto_rawDescGZIP(), []int{245}
 }
 
 func (x *ManagerLevel) GetLevel() int32 {
@@ -21974,7 +22386,7 @@ type MusicChartPattern struct {
 
 func (x *MusicChartPattern) Reset() {
 	*x = MusicChartPattern{}
-	mi := &file_pmaster_proto_msgTypes[243]
+	mi := &file_pmaster_proto_msgTypes[246]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -21986,7 +22398,7 @@ func (x *MusicChartPattern) String() string {
 func (*MusicChartPattern) ProtoMessage() {}
 
 func (x *MusicChartPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[243]
+	mi := &file_pmaster_proto_msgTypes[246]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21999,7 +22411,7 @@ func (x *MusicChartPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MusicChartPattern.ProtoReflect.Descriptor instead.
 func (*MusicChartPattern) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{243}
+	return file_pmaster_proto_rawDescGZIP(), []int{246}
 }
 
 func (x *MusicChartPattern) GetId() string {
@@ -22040,7 +22452,7 @@ type MusicMasteryLevel struct {
 
 func (x *MusicMasteryLevel) Reset() {
 	*x = MusicMasteryLevel{}
-	mi := &file_pmaster_proto_msgTypes[244]
+	mi := &file_pmaster_proto_msgTypes[247]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22052,7 +22464,7 @@ func (x *MusicMasteryLevel) String() string {
 func (*MusicMasteryLevel) ProtoMessage() {}
 
 func (x *MusicMasteryLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[244]
+	mi := &file_pmaster_proto_msgTypes[247]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22065,7 +22477,7 @@ func (x *MusicMasteryLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MusicMasteryLevel.ProtoReflect.Descriptor instead.
 func (*MusicMasteryLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{244}
+	return file_pmaster_proto_rawDescGZIP(), []int{247}
 }
 
 func (x *MusicMasteryLevel) GetLevel() int32 {
@@ -22093,7 +22505,7 @@ type PhotoAbilityTarget struct {
 
 func (x *PhotoAbilityTarget) Reset() {
 	*x = PhotoAbilityTarget{}
-	mi := &file_pmaster_proto_msgTypes[245]
+	mi := &file_pmaster_proto_msgTypes[248]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22105,7 +22517,7 @@ func (x *PhotoAbilityTarget) String() string {
 func (*PhotoAbilityTarget) ProtoMessage() {}
 
 func (x *PhotoAbilityTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[245]
+	mi := &file_pmaster_proto_msgTypes[248]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22118,7 +22530,7 @@ func (x *PhotoAbilityTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbilityTarget.ProtoReflect.Descriptor instead.
 func (*PhotoAbilityTarget) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{245}
+	return file_pmaster_proto_rawDescGZIP(), []int{248}
 }
 
 func (x *PhotoAbilityTarget) GetId() string {
@@ -22159,7 +22571,7 @@ type PhotoPose struct {
 
 func (x *PhotoPose) Reset() {
 	*x = PhotoPose{}
-	mi := &file_pmaster_proto_msgTypes[246]
+	mi := &file_pmaster_proto_msgTypes[249]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22171,7 +22583,7 @@ func (x *PhotoPose) String() string {
 func (*PhotoPose) ProtoMessage() {}
 
 func (x *PhotoPose) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[246]
+	mi := &file_pmaster_proto_msgTypes[249]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22184,7 +22596,7 @@ func (x *PhotoPose) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoPose.ProtoReflect.Descriptor instead.
 func (*PhotoPose) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{246}
+	return file_pmaster_proto_rawDescGZIP(), []int{249}
 }
 
 func (x *PhotoPose) GetId() string {
@@ -22263,7 +22675,7 @@ type PhotoRarityLevel struct {
 
 func (x *PhotoRarityLevel) Reset() {
 	*x = PhotoRarityLevel{}
-	mi := &file_pmaster_proto_msgTypes[247]
+	mi := &file_pmaster_proto_msgTypes[250]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22275,7 +22687,7 @@ func (x *PhotoRarityLevel) String() string {
 func (*PhotoRarityLevel) ProtoMessage() {}
 
 func (x *PhotoRarityLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[247]
+	mi := &file_pmaster_proto_msgTypes[250]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22288,7 +22700,7 @@ func (x *PhotoRarityLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoRarityLevel.ProtoReflect.Descriptor instead.
 func (*PhotoRarityLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{247}
+	return file_pmaster_proto_rawDescGZIP(), []int{250}
 }
 
 func (x *PhotoRarityLevel) GetRarity() int32 {
@@ -22341,7 +22753,7 @@ type PhotoShootingMotionSet struct {
 
 func (x *PhotoShootingMotionSet) Reset() {
 	*x = PhotoShootingMotionSet{}
-	mi := &file_pmaster_proto_msgTypes[248]
+	mi := &file_pmaster_proto_msgTypes[251]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22353,7 +22765,7 @@ func (x *PhotoShootingMotionSet) String() string {
 func (*PhotoShootingMotionSet) ProtoMessage() {}
 
 func (x *PhotoShootingMotionSet) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[248]
+	mi := &file_pmaster_proto_msgTypes[251]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22366,7 +22778,7 @@ func (x *PhotoShootingMotionSet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoShootingMotionSet.ProtoReflect.Descriptor instead.
 func (*PhotoShootingMotionSet) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{248}
+	return file_pmaster_proto_rawDescGZIP(), []int{251}
 }
 
 func (x *PhotoShootingMotionSet) GetId() string {
@@ -22429,7 +22841,7 @@ type QuestAudienceAdvantage struct {
 
 func (x *QuestAudienceAdvantage) Reset() {
 	*x = QuestAudienceAdvantage{}
-	mi := &file_pmaster_proto_msgTypes[249]
+	mi := &file_pmaster_proto_msgTypes[252]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22441,7 +22853,7 @@ func (x *QuestAudienceAdvantage) String() string {
 func (*QuestAudienceAdvantage) ProtoMessage() {}
 
 func (x *QuestAudienceAdvantage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[249]
+	mi := &file_pmaster_proto_msgTypes[252]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22454,7 +22866,7 @@ func (x *QuestAudienceAdvantage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestAudienceAdvantage.ProtoReflect.Descriptor instead.
 func (*QuestAudienceAdvantage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{249}
+	return file_pmaster_proto_rawDescGZIP(), []int{252}
 }
 
 func (x *QuestAudienceAdvantage) GetId() string {
@@ -22488,7 +22900,7 @@ type QuestContestRankingSeason struct {
 
 func (x *QuestContestRankingSeason) Reset() {
 	*x = QuestContestRankingSeason{}
-	mi := &file_pmaster_proto_msgTypes[250]
+	mi := &file_pmaster_proto_msgTypes[253]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22500,7 +22912,7 @@ func (x *QuestContestRankingSeason) String() string {
 func (*QuestContestRankingSeason) ProtoMessage() {}
 
 func (x *QuestContestRankingSeason) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[250]
+	mi := &file_pmaster_proto_msgTypes[253]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22513,7 +22925,7 @@ func (x *QuestContestRankingSeason) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestContestRankingSeason.ProtoReflect.Descriptor instead.
 func (*QuestContestRankingSeason) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{250}
+	return file_pmaster_proto_rawDescGZIP(), []int{253}
 }
 
 func (x *QuestContestRankingSeason) GetId() string {
@@ -22541,7 +22953,7 @@ type QuestPressure struct {
 
 func (x *QuestPressure) Reset() {
 	*x = QuestPressure{}
-	mi := &file_pmaster_proto_msgTypes[251]
+	mi := &file_pmaster_proto_msgTypes[254]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22553,7 +22965,7 @@ func (x *QuestPressure) String() string {
 func (*QuestPressure) ProtoMessage() {}
 
 func (x *QuestPressure) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[251]
+	mi := &file_pmaster_proto_msgTypes[254]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22566,7 +22978,7 @@ func (x *QuestPressure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestPressure.ProtoReflect.Descriptor instead.
 func (*QuestPressure) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{251}
+	return file_pmaster_proto_rawDescGZIP(), []int{254}
 }
 
 func (x *QuestPressure) GetId() string {
@@ -22600,7 +23012,7 @@ type QuestStaminaConsumption struct {
 
 func (x *QuestStaminaConsumption) Reset() {
 	*x = QuestStaminaConsumption{}
-	mi := &file_pmaster_proto_msgTypes[252]
+	mi := &file_pmaster_proto_msgTypes[255]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22612,7 +23024,7 @@ func (x *QuestStaminaConsumption) String() string {
 func (*QuestStaminaConsumption) ProtoMessage() {}
 
 func (x *QuestStaminaConsumption) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[252]
+	mi := &file_pmaster_proto_msgTypes[255]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22625,7 +23037,7 @@ func (x *QuestStaminaConsumption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuestStaminaConsumption.ProtoReflect.Descriptor instead.
 func (*QuestStaminaConsumption) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{252}
+	return file_pmaster_proto_rawDescGZIP(), []int{255}
 }
 
 func (x *QuestStaminaConsumption) GetRemainStaminaRatioPercent() int32 {
@@ -22652,7 +23064,7 @@ type Reward struct {
 
 func (x *Reward) Reset() {
 	*x = Reward{}
-	mi := &file_pmaster_proto_msgTypes[253]
+	mi := &file_pmaster_proto_msgTypes[256]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22664,7 +23076,7 @@ func (x *Reward) String() string {
 func (*Reward) ProtoMessage() {}
 
 func (x *Reward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[253]
+	mi := &file_pmaster_proto_msgTypes[256]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22677,7 +23089,7 @@ func (x *Reward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Reward.ProtoReflect.Descriptor instead.
 func (*Reward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{253}
+	return file_pmaster_proto_rawDescGZIP(), []int{256}
 }
 
 func (x *Reward) GetId() string {
@@ -22705,7 +23117,7 @@ type RewardSort struct {
 
 func (x *RewardSort) Reset() {
 	*x = RewardSort{}
-	mi := &file_pmaster_proto_msgTypes[254]
+	mi := &file_pmaster_proto_msgTypes[257]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22717,7 +23129,7 @@ func (x *RewardSort) String() string {
 func (*RewardSort) ProtoMessage() {}
 
 func (x *RewardSort) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[254]
+	mi := &file_pmaster_proto_msgTypes[257]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22730,7 +23142,7 @@ func (x *RewardSort) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RewardSort.ProtoReflect.Descriptor instead.
 func (*RewardSort) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{254}
+	return file_pmaster_proto_rawDescGZIP(), []int{257}
 }
 
 func (x *RewardSort) GetRewardSortTargetType() penum.RewardSortTargetType {
@@ -22765,7 +23177,7 @@ type Salary struct {
 
 func (x *Salary) Reset() {
 	*x = Salary{}
-	mi := &file_pmaster_proto_msgTypes[255]
+	mi := &file_pmaster_proto_msgTypes[258]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22777,7 +23189,7 @@ func (x *Salary) String() string {
 func (*Salary) ProtoMessage() {}
 
 func (x *Salary) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[255]
+	mi := &file_pmaster_proto_msgTypes[258]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22790,7 +23202,7 @@ func (x *Salary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Salary.ProtoReflect.Descriptor instead.
 func (*Salary) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{255}
+	return file_pmaster_proto_rawDescGZIP(), []int{258}
 }
 
 func (x *Salary) GetType() penum.SalaryDetailType {
@@ -22827,7 +23239,7 @@ type ShowcaseHashtag struct {
 
 func (x *ShowcaseHashtag) Reset() {
 	*x = ShowcaseHashtag{}
-	mi := &file_pmaster_proto_msgTypes[256]
+	mi := &file_pmaster_proto_msgTypes[259]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22839,7 +23251,7 @@ func (x *ShowcaseHashtag) String() string {
 func (*ShowcaseHashtag) ProtoMessage() {}
 
 func (x *ShowcaseHashtag) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[256]
+	mi := &file_pmaster_proto_msgTypes[259]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22852,7 +23264,7 @@ func (x *ShowcaseHashtag) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseHashtag.ProtoReflect.Descriptor instead.
 func (*ShowcaseHashtag) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{256}
+	return file_pmaster_proto_rawDescGZIP(), []int{259}
 }
 
 func (x *ShowcaseHashtag) GetId() string {
@@ -22901,7 +23313,7 @@ type ShowcaseMusicFilter struct {
 
 func (x *ShowcaseMusicFilter) Reset() {
 	*x = ShowcaseMusicFilter{}
-	mi := &file_pmaster_proto_msgTypes[257]
+	mi := &file_pmaster_proto_msgTypes[260]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22913,7 +23325,7 @@ func (x *ShowcaseMusicFilter) String() string {
 func (*ShowcaseMusicFilter) ProtoMessage() {}
 
 func (x *ShowcaseMusicFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[257]
+	mi := &file_pmaster_proto_msgTypes[260]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22926,7 +23338,7 @@ func (x *ShowcaseMusicFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseMusicFilter.ProtoReflect.Descriptor instead.
 func (*ShowcaseMusicFilter) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{257}
+	return file_pmaster_proto_rawDescGZIP(), []int{260}
 }
 
 func (x *ShowcaseMusicFilter) GetId() string {
@@ -22961,7 +23373,7 @@ type ShowcaseToyCategory struct {
 
 func (x *ShowcaseToyCategory) Reset() {
 	*x = ShowcaseToyCategory{}
-	mi := &file_pmaster_proto_msgTypes[258]
+	mi := &file_pmaster_proto_msgTypes[261]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -22973,7 +23385,7 @@ func (x *ShowcaseToyCategory) String() string {
 func (*ShowcaseToyCategory) ProtoMessage() {}
 
 func (x *ShowcaseToyCategory) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[258]
+	mi := &file_pmaster_proto_msgTypes[261]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22986,7 +23398,7 @@ func (x *ShowcaseToyCategory) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseToyCategory.ProtoReflect.Descriptor instead.
 func (*ShowcaseToyCategory) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{258}
+	return file_pmaster_proto_rawDescGZIP(), []int{261}
 }
 
 func (x *ShowcaseToyCategory) GetId() string {
@@ -23022,7 +23434,7 @@ type ShowcaseToyShopFilter struct {
 
 func (x *ShowcaseToyShopFilter) Reset() {
 	*x = ShowcaseToyShopFilter{}
-	mi := &file_pmaster_proto_msgTypes[259]
+	mi := &file_pmaster_proto_msgTypes[262]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23034,7 +23446,7 @@ func (x *ShowcaseToyShopFilter) String() string {
 func (*ShowcaseToyShopFilter) ProtoMessage() {}
 
 func (x *ShowcaseToyShopFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[259]
+	mi := &file_pmaster_proto_msgTypes[262]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23047,7 +23459,7 @@ func (x *ShowcaseToyShopFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowcaseToyShopFilter.ProtoReflect.Descriptor instead.
 func (*ShowcaseToyShopFilter) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{259}
+	return file_pmaster_proto_rawDescGZIP(), []int{262}
 }
 
 func (x *ShowcaseToyShopFilter) GetId() string {
@@ -23091,7 +23503,7 @@ type Skill struct {
 
 func (x *Skill) Reset() {
 	*x = Skill{}
-	mi := &file_pmaster_proto_msgTypes[260]
+	mi := &file_pmaster_proto_msgTypes[263]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23103,7 +23515,7 @@ func (x *Skill) String() string {
 func (*Skill) ProtoMessage() {}
 
 func (x *Skill) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[260]
+	mi := &file_pmaster_proto_msgTypes[263]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23116,7 +23528,7 @@ func (x *Skill) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Skill.ProtoReflect.Descriptor instead.
 func (*Skill) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{260}
+	return file_pmaster_proto_rawDescGZIP(), []int{263}
 }
 
 func (x *Skill) GetId() string {
@@ -23165,7 +23577,7 @@ type SkillTarget struct {
 
 func (x *SkillTarget) Reset() {
 	*x = SkillTarget{}
-	mi := &file_pmaster_proto_msgTypes[261]
+	mi := &file_pmaster_proto_msgTypes[264]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23177,7 +23589,7 @@ func (x *SkillTarget) String() string {
 func (*SkillTarget) ProtoMessage() {}
 
 func (x *SkillTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[261]
+	mi := &file_pmaster_proto_msgTypes[264]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23190,7 +23602,7 @@ func (x *SkillTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SkillTarget.ProtoReflect.Descriptor instead.
 func (*SkillTarget) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{261}
+	return file_pmaster_proto_rawDescGZIP(), []int{264}
 }
 
 func (x *SkillTarget) GetId() string {
@@ -23227,7 +23639,7 @@ type StaffLevelLimitBreakRank struct {
 
 func (x *StaffLevelLimitBreakRank) Reset() {
 	*x = StaffLevelLimitBreakRank{}
-	mi := &file_pmaster_proto_msgTypes[262]
+	mi := &file_pmaster_proto_msgTypes[265]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23239,7 +23651,7 @@ func (x *StaffLevelLimitBreakRank) String() string {
 func (*StaffLevelLimitBreakRank) ProtoMessage() {}
 
 func (x *StaffLevelLimitBreakRank) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[262]
+	mi := &file_pmaster_proto_msgTypes[265]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23252,7 +23664,7 @@ func (x *StaffLevelLimitBreakRank) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffLevelLimitBreakRank.ProtoReflect.Descriptor instead.
 func (*StaffLevelLimitBreakRank) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{262}
+	return file_pmaster_proto_rawDescGZIP(), []int{265}
 }
 
 func (x *StaffLevelLimitBreakRank) GetParameterType() penum.ParameterType {
@@ -23300,7 +23712,7 @@ type StaffTraining struct {
 
 func (x *StaffTraining) Reset() {
 	*x = StaffTraining{}
-	mi := &file_pmaster_proto_msgTypes[263]
+	mi := &file_pmaster_proto_msgTypes[266]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23312,7 +23724,7 @@ func (x *StaffTraining) String() string {
 func (*StaffTraining) ProtoMessage() {}
 
 func (x *StaffTraining) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[263]
+	mi := &file_pmaster_proto_msgTypes[266]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23325,7 +23737,7 @@ func (x *StaffTraining) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffTraining.ProtoReflect.Descriptor instead.
 func (*StaffTraining) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{263}
+	return file_pmaster_proto_rawDescGZIP(), []int{266}
 }
 
 func (x *StaffTraining) GetParameterType() penum.ParameterType {
@@ -23353,7 +23765,7 @@ type StaffTrainingReset struct {
 
 func (x *StaffTrainingReset) Reset() {
 	*x = StaffTrainingReset{}
-	mi := &file_pmaster_proto_msgTypes[264]
+	mi := &file_pmaster_proto_msgTypes[267]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23365,7 +23777,7 @@ func (x *StaffTrainingReset) String() string {
 func (*StaffTrainingReset) ProtoMessage() {}
 
 func (x *StaffTrainingReset) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[264]
+	mi := &file_pmaster_proto_msgTypes[267]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23378,7 +23790,7 @@ func (x *StaffTrainingReset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffTrainingReset.ProtoReflect.Descriptor instead.
 func (*StaffTrainingReset) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{264}
+	return file_pmaster_proto_rawDescGZIP(), []int{267}
 }
 
 func (x *StaffTrainingReset) GetStaffTrainingResetGroupId() string {
@@ -23413,7 +23825,7 @@ type StaffTrainingResetGroup struct {
 
 func (x *StaffTrainingResetGroup) Reset() {
 	*x = StaffTrainingResetGroup{}
-	mi := &file_pmaster_proto_msgTypes[265]
+	mi := &file_pmaster_proto_msgTypes[268]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23425,7 +23837,7 @@ func (x *StaffTrainingResetGroup) String() string {
 func (*StaffTrainingResetGroup) ProtoMessage() {}
 
 func (x *StaffTrainingResetGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[265]
+	mi := &file_pmaster_proto_msgTypes[268]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23438,7 +23850,7 @@ func (x *StaffTrainingResetGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StaffTrainingResetGroup.ProtoReflect.Descriptor instead.
 func (*StaffTrainingResetGroup) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{265}
+	return file_pmaster_proto_rawDescGZIP(), []int{268}
 }
 
 func (x *StaffTrainingResetGroup) GetId() string {
@@ -23483,7 +23895,7 @@ type Stage struct {
 
 func (x *Stage) Reset() {
 	*x = Stage{}
-	mi := &file_pmaster_proto_msgTypes[266]
+	mi := &file_pmaster_proto_msgTypes[269]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23495,7 +23907,7 @@ func (x *Stage) String() string {
 func (*Stage) ProtoMessage() {}
 
 func (x *Stage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[266]
+	mi := &file_pmaster_proto_msgTypes[269]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23508,7 +23920,7 @@ func (x *Stage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stage.ProtoReflect.Descriptor instead.
 func (*Stage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{266}
+	return file_pmaster_proto_rawDescGZIP(), []int{269}
 }
 
 func (x *Stage) GetId() string {
@@ -23612,7 +24024,7 @@ type StatusEffectName struct {
 
 func (x *StatusEffectName) Reset() {
 	*x = StatusEffectName{}
-	mi := &file_pmaster_proto_msgTypes[267]
+	mi := &file_pmaster_proto_msgTypes[270]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23624,7 +24036,7 @@ func (x *StatusEffectName) String() string {
 func (*StatusEffectName) ProtoMessage() {}
 
 func (x *StatusEffectName) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[267]
+	mi := &file_pmaster_proto_msgTypes[270]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23637,7 +24049,7 @@ func (x *StatusEffectName) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StatusEffectName.ProtoReflect.Descriptor instead.
 func (*StatusEffectName) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{267}
+	return file_pmaster_proto_rawDescGZIP(), []int{270}
 }
 
 func (x *StatusEffectName) GetStatusEffectType() penum.StatusEffectType {
@@ -23664,7 +24076,7 @@ type StoreGppProduct struct {
 
 func (x *StoreGppProduct) Reset() {
 	*x = StoreGppProduct{}
-	mi := &file_pmaster_proto_msgTypes[268]
+	mi := &file_pmaster_proto_msgTypes[271]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23676,7 +24088,7 @@ func (x *StoreGppProduct) String() string {
 func (*StoreGppProduct) ProtoMessage() {}
 
 func (x *StoreGppProduct) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[268]
+	mi := &file_pmaster_proto_msgTypes[271]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23689,7 +24101,7 @@ func (x *StoreGppProduct) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoreGppProduct.ProtoReflect.Descriptor instead.
 func (*StoreGppProduct) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{268}
+	return file_pmaster_proto_rawDescGZIP(), []int{271}
 }
 
 func (x *StoreGppProduct) GetProductId() string {
@@ -23718,7 +24130,7 @@ type StoreProduct struct {
 
 func (x *StoreProduct) Reset() {
 	*x = StoreProduct{}
-	mi := &file_pmaster_proto_msgTypes[269]
+	mi := &file_pmaster_proto_msgTypes[272]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23730,7 +24142,7 @@ func (x *StoreProduct) String() string {
 func (*StoreProduct) ProtoMessage() {}
 
 func (x *StoreProduct) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[269]
+	mi := &file_pmaster_proto_msgTypes[272]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23743,7 +24155,7 @@ func (x *StoreProduct) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoreProduct.ProtoReflect.Descriptor instead.
 func (*StoreProduct) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{269}
+	return file_pmaster_proto_rawDescGZIP(), []int{272}
 }
 
 func (x *StoreProduct) GetProductId() string {
@@ -23785,7 +24197,7 @@ type StoryEpisodeConsumption struct {
 
 func (x *StoryEpisodeConsumption) Reset() {
 	*x = StoryEpisodeConsumption{}
-	mi := &file_pmaster_proto_msgTypes[270]
+	mi := &file_pmaster_proto_msgTypes[273]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23797,7 +24209,7 @@ func (x *StoryEpisodeConsumption) String() string {
 func (*StoryEpisodeConsumption) ProtoMessage() {}
 
 func (x *StoryEpisodeConsumption) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[270]
+	mi := &file_pmaster_proto_msgTypes[273]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23810,7 +24222,7 @@ func (x *StoryEpisodeConsumption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoryEpisodeConsumption.ProtoReflect.Descriptor instead.
 func (*StoryEpisodeConsumption) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{270}
+	return file_pmaster_proto_rawDescGZIP(), []int{273}
 }
 
 func (x *StoryEpisodeConsumption) GetId() string {
@@ -23850,7 +24262,7 @@ type TitleBackground struct {
 
 func (x *TitleBackground) Reset() {
 	*x = TitleBackground{}
-	mi := &file_pmaster_proto_msgTypes[271]
+	mi := &file_pmaster_proto_msgTypes[274]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23862,7 +24274,7 @@ func (x *TitleBackground) String() string {
 func (*TitleBackground) ProtoMessage() {}
 
 func (x *TitleBackground) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[271]
+	mi := &file_pmaster_proto_msgTypes[274]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23875,7 +24287,7 @@ func (x *TitleBackground) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TitleBackground.ProtoReflect.Descriptor instead.
 func (*TitleBackground) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{271}
+	return file_pmaster_proto_rawDescGZIP(), []int{274}
 }
 
 func (x *TitleBackground) GetId() string {
@@ -23945,7 +24357,7 @@ type TotalStaffEnhanceAdvantage struct {
 
 func (x *TotalStaffEnhanceAdvantage) Reset() {
 	*x = TotalStaffEnhanceAdvantage{}
-	mi := &file_pmaster_proto_msgTypes[272]
+	mi := &file_pmaster_proto_msgTypes[275]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -23957,7 +24369,7 @@ func (x *TotalStaffEnhanceAdvantage) String() string {
 func (*TotalStaffEnhanceAdvantage) ProtoMessage() {}
 
 func (x *TotalStaffEnhanceAdvantage) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[272]
+	mi := &file_pmaster_proto_msgTypes[275]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23970,7 +24382,7 @@ func (x *TotalStaffEnhanceAdvantage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TotalStaffEnhanceAdvantage.ProtoReflect.Descriptor instead.
 func (*TotalStaffEnhanceAdvantage) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{272}
+	return file_pmaster_proto_rawDescGZIP(), []int{275}
 }
 
 func (x *TotalStaffEnhanceAdvantage) GetEnhanceCount() int32 {
@@ -24004,7 +24416,7 @@ type Wording struct {
 
 func (x *Wording) Reset() {
 	*x = Wording{}
-	mi := &file_pmaster_proto_msgTypes[273]
+	mi := &file_pmaster_proto_msgTypes[276]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24016,7 +24428,7 @@ func (x *Wording) String() string {
 func (*Wording) ProtoMessage() {}
 
 func (x *Wording) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[273]
+	mi := &file_pmaster_proto_msgTypes[276]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24029,7 +24441,7 @@ func (x *Wording) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Wording.ProtoReflect.Descriptor instead.
 func (*Wording) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{273}
+	return file_pmaster_proto_rawDescGZIP(), []int{276}
 }
 
 func (x *Wording) GetKey() string {
@@ -24062,7 +24474,7 @@ type ActivityAbilityLevel struct {
 
 func (x *ActivityAbilityLevel) Reset() {
 	*x = ActivityAbilityLevel{}
-	mi := &file_pmaster_proto_msgTypes[274]
+	mi := &file_pmaster_proto_msgTypes[277]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24074,7 +24486,7 @@ func (x *ActivityAbilityLevel) String() string {
 func (*ActivityAbilityLevel) ProtoMessage() {}
 
 func (x *ActivityAbilityLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[274]
+	mi := &file_pmaster_proto_msgTypes[277]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24087,7 +24499,7 @@ func (x *ActivityAbilityLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityAbilityLevel.ProtoReflect.Descriptor instead.
 func (*ActivityAbilityLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{274}
+	return file_pmaster_proto_rawDescGZIP(), []int{277}
 }
 
 func (x *ActivityAbilityLevel) GetLevel() int32 {
@@ -24156,7 +24568,7 @@ type CardEvolutionLevelReleaseTarget struct {
 
 func (x *CardEvolutionLevelReleaseTarget) Reset() {
 	*x = CardEvolutionLevelReleaseTarget{}
-	mi := &file_pmaster_proto_msgTypes[275]
+	mi := &file_pmaster_proto_msgTypes[278]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24168,7 +24580,7 @@ func (x *CardEvolutionLevelReleaseTarget) String() string {
 func (*CardEvolutionLevelReleaseTarget) ProtoMessage() {}
 
 func (x *CardEvolutionLevelReleaseTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[275]
+	mi := &file_pmaster_proto_msgTypes[278]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24181,7 +24593,7 @@ func (x *CardEvolutionLevelReleaseTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardEvolutionLevelReleaseTarget.ProtoReflect.Descriptor instead.
 func (*CardEvolutionLevelReleaseTarget) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{275}
+	return file_pmaster_proto_rawDescGZIP(), []int{278}
 }
 
 func (x *CardEvolutionLevelReleaseTarget) GetType() penum.CardLevelReleaseType {
@@ -24208,7 +24620,7 @@ type CardLevelReleaseTarget struct {
 
 func (x *CardLevelReleaseTarget) Reset() {
 	*x = CardLevelReleaseTarget{}
-	mi := &file_pmaster_proto_msgTypes[276]
+	mi := &file_pmaster_proto_msgTypes[279]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24220,7 +24632,7 @@ func (x *CardLevelReleaseTarget) String() string {
 func (*CardLevelReleaseTarget) ProtoMessage() {}
 
 func (x *CardLevelReleaseTarget) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[276]
+	mi := &file_pmaster_proto_msgTypes[279]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24233,7 +24645,7 @@ func (x *CardLevelReleaseTarget) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CardLevelReleaseTarget.ProtoReflect.Descriptor instead.
 func (*CardLevelReleaseTarget) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{276}
+	return file_pmaster_proto_rawDescGZIP(), []int{279}
 }
 
 func (x *CardLevelReleaseTarget) GetType() penum.CardLevelReleaseType {
@@ -24260,7 +24672,7 @@ type ActivityFanEventWord struct {
 
 func (x *ActivityFanEventWord) Reset() {
 	*x = ActivityFanEventWord{}
-	mi := &file_pmaster_proto_msgTypes[277]
+	mi := &file_pmaster_proto_msgTypes[280]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24272,7 +24684,7 @@ func (x *ActivityFanEventWord) String() string {
 func (*ActivityFanEventWord) ProtoMessage() {}
 
 func (x *ActivityFanEventWord) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[277]
+	mi := &file_pmaster_proto_msgTypes[280]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24285,7 +24697,7 @@ func (x *ActivityFanEventWord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ActivityFanEventWord.ProtoReflect.Descriptor instead.
 func (*ActivityFanEventWord) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{277}
+	return file_pmaster_proto_rawDescGZIP(), []int{280}
 }
 
 func (x *ActivityFanEventWord) GetWord() string {
@@ -24317,7 +24729,7 @@ type LoveCharacterInfo struct {
 
 func (x *LoveCharacterInfo) Reset() {
 	*x = LoveCharacterInfo{}
-	mi := &file_pmaster_proto_msgTypes[278]
+	mi := &file_pmaster_proto_msgTypes[281]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24329,7 +24741,7 @@ func (x *LoveCharacterInfo) String() string {
 func (*LoveCharacterInfo) ProtoMessage() {}
 
 func (x *LoveCharacterInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[278]
+	mi := &file_pmaster_proto_msgTypes[281]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24342,7 +24754,7 @@ func (x *LoveCharacterInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LoveCharacterInfo.ProtoReflect.Descriptor instead.
 func (*LoveCharacterInfo) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{278}
+	return file_pmaster_proto_rawDescGZIP(), []int{281}
 }
 
 func (x *LoveCharacterInfo) GetName() string {
@@ -24505,7 +24917,7 @@ type ConditionSetting struct {
 
 func (x *ConditionSetting) Reset() {
 	*x = ConditionSetting{}
-	mi := &file_pmaster_proto_msgTypes[279]
+	mi := &file_pmaster_proto_msgTypes[282]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -24517,7 +24929,7 @@ func (x *ConditionSetting) String() string {
 func (*ConditionSetting) ProtoMessage() {}
 
 func (x *ConditionSetting) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[279]
+	mi := &file_pmaster_proto_msgTypes[282]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24530,7 +24942,7 @@ func (x *ConditionSetting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionSetting.ProtoReflect.Descriptor instead.
 func (*ConditionSetting) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{279}
+	return file_pmaster_proto_rawDescGZIP(), []int{282}
 }
 
 func (x *ConditionSetting) GetSatisfyCondition() *ConditionSatisfyCondition {
@@ -25263,7 +25675,7 @@ type ConditionStartHours struct {
 
 func (x *ConditionStartHours) Reset() {
 	*x = ConditionStartHours{}
-	mi := &file_pmaster_proto_msgTypes[280]
+	mi := &file_pmaster_proto_msgTypes[283]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25275,7 +25687,7 @@ func (x *ConditionStartHours) String() string {
 func (*ConditionStartHours) ProtoMessage() {}
 
 func (x *ConditionStartHours) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[280]
+	mi := &file_pmaster_proto_msgTypes[283]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25288,7 +25700,7 @@ func (x *ConditionStartHours) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionStartHours.ProtoReflect.Descriptor instead.
 func (*ConditionStartHours) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{280}
+	return file_pmaster_proto_rawDescGZIP(), []int{283}
 }
 
 func (x *ConditionStartHours) GetHoursLte() int32 {
@@ -25307,7 +25719,7 @@ type ConditionNotLoginDays struct {
 
 func (x *ConditionNotLoginDays) Reset() {
 	*x = ConditionNotLoginDays{}
-	mi := &file_pmaster_proto_msgTypes[281]
+	mi := &file_pmaster_proto_msgTypes[284]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25319,7 +25731,7 @@ func (x *ConditionNotLoginDays) String() string {
 func (*ConditionNotLoginDays) ProtoMessage() {}
 
 func (x *ConditionNotLoginDays) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[281]
+	mi := &file_pmaster_proto_msgTypes[284]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25332,7 +25744,7 @@ func (x *ConditionNotLoginDays) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionNotLoginDays.ProtoReflect.Descriptor instead.
 func (*ConditionNotLoginDays) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{281}
+	return file_pmaster_proto_rawDescGZIP(), []int{284}
 }
 
 func (x *ConditionNotLoginDays) GetDaysGte() int32 {
@@ -25351,7 +25763,7 @@ type ConditionAccumulationLoginDays struct {
 
 func (x *ConditionAccumulationLoginDays) Reset() {
 	*x = ConditionAccumulationLoginDays{}
-	mi := &file_pmaster_proto_msgTypes[282]
+	mi := &file_pmaster_proto_msgTypes[285]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25363,7 +25775,7 @@ func (x *ConditionAccumulationLoginDays) String() string {
 func (*ConditionAccumulationLoginDays) ProtoMessage() {}
 
 func (x *ConditionAccumulationLoginDays) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[282]
+	mi := &file_pmaster_proto_msgTypes[285]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25376,7 +25788,7 @@ func (x *ConditionAccumulationLoginDays) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionAccumulationLoginDays.ProtoReflect.Descriptor instead.
 func (*ConditionAccumulationLoginDays) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{282}
+	return file_pmaster_proto_rawDescGZIP(), []int{285}
 }
 
 func (x *ConditionAccumulationLoginDays) GetDaysGte() int32 {
@@ -25396,7 +25808,7 @@ type ConditionManagerLevel struct {
 
 func (x *ConditionManagerLevel) Reset() {
 	*x = ConditionManagerLevel{}
-	mi := &file_pmaster_proto_msgTypes[283]
+	mi := &file_pmaster_proto_msgTypes[286]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25408,7 +25820,7 @@ func (x *ConditionManagerLevel) String() string {
 func (*ConditionManagerLevel) ProtoMessage() {}
 
 func (x *ConditionManagerLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[283]
+	mi := &file_pmaster_proto_msgTypes[286]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25421,7 +25833,7 @@ func (x *ConditionManagerLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionManagerLevel.ProtoReflect.Descriptor instead.
 func (*ConditionManagerLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{283}
+	return file_pmaster_proto_rawDescGZIP(), []int{286}
 }
 
 func (x *ConditionManagerLevel) GetLevelLte() int32 {
@@ -25448,7 +25860,7 @@ type ConditionDeckMaxOverallValue struct {
 
 func (x *ConditionDeckMaxOverallValue) Reset() {
 	*x = ConditionDeckMaxOverallValue{}
-	mi := &file_pmaster_proto_msgTypes[284]
+	mi := &file_pmaster_proto_msgTypes[287]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25460,7 +25872,7 @@ func (x *ConditionDeckMaxOverallValue) String() string {
 func (*ConditionDeckMaxOverallValue) ProtoMessage() {}
 
 func (x *ConditionDeckMaxOverallValue) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[284]
+	mi := &file_pmaster_proto_msgTypes[287]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25473,7 +25885,7 @@ func (x *ConditionDeckMaxOverallValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDeckMaxOverallValue.ProtoReflect.Descriptor instead.
 func (*ConditionDeckMaxOverallValue) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{284}
+	return file_pmaster_proto_rawDescGZIP(), []int{287}
 }
 
 func (x *ConditionDeckMaxOverallValue) GetValueLte() int32 {
@@ -25499,7 +25911,7 @@ type ConditionAnimeStoryPoint struct {
 
 func (x *ConditionAnimeStoryPoint) Reset() {
 	*x = ConditionAnimeStoryPoint{}
-	mi := &file_pmaster_proto_msgTypes[285]
+	mi := &file_pmaster_proto_msgTypes[288]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25511,7 +25923,7 @@ func (x *ConditionAnimeStoryPoint) String() string {
 func (*ConditionAnimeStoryPoint) ProtoMessage() {}
 
 func (x *ConditionAnimeStoryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[285]
+	mi := &file_pmaster_proto_msgTypes[288]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25524,7 +25936,7 @@ func (x *ConditionAnimeStoryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionAnimeStoryPoint.ProtoReflect.Descriptor instead.
 func (*ConditionAnimeStoryPoint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{285}
+	return file_pmaster_proto_rawDescGZIP(), []int{288}
 }
 
 func (x *ConditionAnimeStoryPoint) GetPointGte() int64 {
@@ -25543,7 +25955,7 @@ type ConditionGameStoryPoint struct {
 
 func (x *ConditionGameStoryPoint) Reset() {
 	*x = ConditionGameStoryPoint{}
-	mi := &file_pmaster_proto_msgTypes[286]
+	mi := &file_pmaster_proto_msgTypes[289]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25555,7 +25967,7 @@ func (x *ConditionGameStoryPoint) String() string {
 func (*ConditionGameStoryPoint) ProtoMessage() {}
 
 func (x *ConditionGameStoryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[286]
+	mi := &file_pmaster_proto_msgTypes[289]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25568,7 +25980,7 @@ func (x *ConditionGameStoryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionGameStoryPoint.ProtoReflect.Descriptor instead.
 func (*ConditionGameStoryPoint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{286}
+	return file_pmaster_proto_rawDescGZIP(), []int{289}
 }
 
 func (x *ConditionGameStoryPoint) GetPointGte() int64 {
@@ -25587,7 +25999,7 @@ type ConditionGroupStoryPoint struct {
 
 func (x *ConditionGroupStoryPoint) Reset() {
 	*x = ConditionGroupStoryPoint{}
-	mi := &file_pmaster_proto_msgTypes[287]
+	mi := &file_pmaster_proto_msgTypes[290]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25599,7 +26011,7 @@ func (x *ConditionGroupStoryPoint) String() string {
 func (*ConditionGroupStoryPoint) ProtoMessage() {}
 
 func (x *ConditionGroupStoryPoint) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[287]
+	mi := &file_pmaster_proto_msgTypes[290]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25612,7 +26024,7 @@ func (x *ConditionGroupStoryPoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionGroupStoryPoint.ProtoReflect.Descriptor instead.
 func (*ConditionGroupStoryPoint) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{287}
+	return file_pmaster_proto_rawDescGZIP(), []int{290}
 }
 
 func (x *ConditionGroupStoryPoint) GetPointGte() int64 {
@@ -25631,7 +26043,7 @@ type ConditionPhotoReportPityTimer struct {
 
 func (x *ConditionPhotoReportPityTimer) Reset() {
 	*x = ConditionPhotoReportPityTimer{}
-	mi := &file_pmaster_proto_msgTypes[288]
+	mi := &file_pmaster_proto_msgTypes[291]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25643,7 +26055,7 @@ func (x *ConditionPhotoReportPityTimer) String() string {
 func (*ConditionPhotoReportPityTimer) ProtoMessage() {}
 
 func (x *ConditionPhotoReportPityTimer) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[288]
+	mi := &file_pmaster_proto_msgTypes[291]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25656,7 +26068,7 @@ func (x *ConditionPhotoReportPityTimer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionPhotoReportPityTimer.ProtoReflect.Descriptor instead.
 func (*ConditionPhotoReportPityTimer) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{288}
+	return file_pmaster_proto_rawDescGZIP(), []int{291}
 }
 
 func (x *ConditionPhotoReportPityTimer) GetThresholdGte() int32 {
@@ -25677,7 +26089,7 @@ type ConditionExchangeCount struct {
 
 func (x *ConditionExchangeCount) Reset() {
 	*x = ConditionExchangeCount{}
-	mi := &file_pmaster_proto_msgTypes[289]
+	mi := &file_pmaster_proto_msgTypes[292]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25689,7 +26101,7 @@ func (x *ConditionExchangeCount) String() string {
 func (*ConditionExchangeCount) ProtoMessage() {}
 
 func (x *ConditionExchangeCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[289]
+	mi := &file_pmaster_proto_msgTypes[292]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25702,7 +26114,7 @@ func (x *ConditionExchangeCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionExchangeCount.ProtoReflect.Descriptor instead.
 func (*ConditionExchangeCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{289}
+	return file_pmaster_proto_rawDescGZIP(), []int{292}
 }
 
 func (x *ConditionExchangeCount) GetExchangeId() string {
@@ -25736,7 +26148,7 @@ type ConditionTerm struct {
 
 func (x *ConditionTerm) Reset() {
 	*x = ConditionTerm{}
-	mi := &file_pmaster_proto_msgTypes[290]
+	mi := &file_pmaster_proto_msgTypes[293]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25748,7 +26160,7 @@ func (x *ConditionTerm) String() string {
 func (*ConditionTerm) ProtoMessage() {}
 
 func (x *ConditionTerm) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[290]
+	mi := &file_pmaster_proto_msgTypes[293]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25761,7 +26173,7 @@ func (x *ConditionTerm) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionTerm.ProtoReflect.Descriptor instead.
 func (*ConditionTerm) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{290}
+	return file_pmaster_proto_rawDescGZIP(), []int{293}
 }
 
 func (x *ConditionTerm) GetNowAfter() int64 {
@@ -25788,7 +26200,7 @@ type ConditionGameStartTerm struct {
 
 func (x *ConditionGameStartTerm) Reset() {
 	*x = ConditionGameStartTerm{}
-	mi := &file_pmaster_proto_msgTypes[291]
+	mi := &file_pmaster_proto_msgTypes[294]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25800,7 +26212,7 @@ func (x *ConditionGameStartTerm) String() string {
 func (*ConditionGameStartTerm) ProtoMessage() {}
 
 func (x *ConditionGameStartTerm) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[291]
+	mi := &file_pmaster_proto_msgTypes[294]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25813,7 +26225,7 @@ func (x *ConditionGameStartTerm) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionGameStartTerm.ProtoReflect.Descriptor instead.
 func (*ConditionGameStartTerm) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{291}
+	return file_pmaster_proto_rawDescGZIP(), []int{294}
 }
 
 func (x *ConditionGameStartTerm) GetGameStartDatetimeAfter() int64 {
@@ -25839,7 +26251,7 @@ type ConditionDayOfWeek struct {
 
 func (x *ConditionDayOfWeek) Reset() {
 	*x = ConditionDayOfWeek{}
-	mi := &file_pmaster_proto_msgTypes[292]
+	mi := &file_pmaster_proto_msgTypes[295]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25851,7 +26263,7 @@ func (x *ConditionDayOfWeek) String() string {
 func (*ConditionDayOfWeek) ProtoMessage() {}
 
 func (x *ConditionDayOfWeek) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[292]
+	mi := &file_pmaster_proto_msgTypes[295]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25864,7 +26276,7 @@ func (x *ConditionDayOfWeek) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDayOfWeek.ProtoReflect.Descriptor instead.
 func (*ConditionDayOfWeek) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{292}
+	return file_pmaster_proto_rawDescGZIP(), []int{295}
 }
 
 func (x *ConditionDayOfWeek) GetDayOfWeekType() penum.DayOfWeekType {
@@ -25884,7 +26296,7 @@ type ConditionTime struct {
 
 func (x *ConditionTime) Reset() {
 	*x = ConditionTime{}
-	mi := &file_pmaster_proto_msgTypes[293]
+	mi := &file_pmaster_proto_msgTypes[296]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25896,7 +26308,7 @@ func (x *ConditionTime) String() string {
 func (*ConditionTime) ProtoMessage() {}
 
 func (x *ConditionTime) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[293]
+	mi := &file_pmaster_proto_msgTypes[296]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25909,7 +26321,7 @@ func (x *ConditionTime) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionTime.ProtoReflect.Descriptor instead.
 func (*ConditionTime) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{293}
+	return file_pmaster_proto_rawDescGZIP(), []int{296}
 }
 
 func (x *ConditionTime) GetNowAfter() int64 {
@@ -25935,7 +26347,7 @@ type ConditionGold struct {
 
 func (x *ConditionGold) Reset() {
 	*x = ConditionGold{}
-	mi := &file_pmaster_proto_msgTypes[294]
+	mi := &file_pmaster_proto_msgTypes[297]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25947,7 +26359,7 @@ func (x *ConditionGold) String() string {
 func (*ConditionGold) ProtoMessage() {}
 
 func (x *ConditionGold) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[294]
+	mi := &file_pmaster_proto_msgTypes[297]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25960,7 +26372,7 @@ func (x *ConditionGold) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionGold.ProtoReflect.Descriptor instead.
 func (*ConditionGold) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{294}
+	return file_pmaster_proto_rawDescGZIP(), []int{297}
 }
 
 func (x *ConditionGold) GetGoldGte() int64 {
@@ -25979,7 +26391,7 @@ type ConditionStone struct {
 
 func (x *ConditionStone) Reset() {
 	*x = ConditionStone{}
-	mi := &file_pmaster_proto_msgTypes[295]
+	mi := &file_pmaster_proto_msgTypes[298]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -25991,7 +26403,7 @@ func (x *ConditionStone) String() string {
 func (*ConditionStone) ProtoMessage() {}
 
 func (x *ConditionStone) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[295]
+	mi := &file_pmaster_proto_msgTypes[298]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26004,7 +26416,7 @@ func (x *ConditionStone) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionStone.ProtoReflect.Descriptor instead.
 func (*ConditionStone) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{295}
+	return file_pmaster_proto_rawDescGZIP(), []int{298}
 }
 
 func (x *ConditionStone) GetStoneGte() int64 {
@@ -26023,7 +26435,7 @@ type ConditionDrawGacha struct {
 
 func (x *ConditionDrawGacha) Reset() {
 	*x = ConditionDrawGacha{}
-	mi := &file_pmaster_proto_msgTypes[296]
+	mi := &file_pmaster_proto_msgTypes[299]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26035,7 +26447,7 @@ func (x *ConditionDrawGacha) String() string {
 func (*ConditionDrawGacha) ProtoMessage() {}
 
 func (x *ConditionDrawGacha) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[296]
+	mi := &file_pmaster_proto_msgTypes[299]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26048,7 +26460,7 @@ func (x *ConditionDrawGacha) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDrawGacha.ProtoReflect.Descriptor instead.
 func (*ConditionDrawGacha) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{296}
+	return file_pmaster_proto_rawDescGZIP(), []int{299}
 }
 
 func (x *ConditionDrawGacha) GetGachaButtonIds() []string {
@@ -26067,7 +26479,7 @@ type ConditionPurchaseShop struct {
 
 func (x *ConditionPurchaseShop) Reset() {
 	*x = ConditionPurchaseShop{}
-	mi := &file_pmaster_proto_msgTypes[297]
+	mi := &file_pmaster_proto_msgTypes[300]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26079,7 +26491,7 @@ func (x *ConditionPurchaseShop) String() string {
 func (*ConditionPurchaseShop) ProtoMessage() {}
 
 func (x *ConditionPurchaseShop) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[297]
+	mi := &file_pmaster_proto_msgTypes[300]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26092,7 +26504,7 @@ func (x *ConditionPurchaseShop) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionPurchaseShop.ProtoReflect.Descriptor instead.
 func (*ConditionPurchaseShop) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{297}
+	return file_pmaster_proto_rawDescGZIP(), []int{300}
 }
 
 func (x *ConditionPurchaseShop) GetShopItemId() string {
@@ -26111,7 +26523,7 @@ type ConditionPlatformType struct {
 
 func (x *ConditionPlatformType) Reset() {
 	*x = ConditionPlatformType{}
-	mi := &file_pmaster_proto_msgTypes[298]
+	mi := &file_pmaster_proto_msgTypes[301]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26123,7 +26535,7 @@ func (x *ConditionPlatformType) String() string {
 func (*ConditionPlatformType) ProtoMessage() {}
 
 func (x *ConditionPlatformType) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[298]
+	mi := &file_pmaster_proto_msgTypes[301]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26136,7 +26548,7 @@ func (x *ConditionPlatformType) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionPlatformType.ProtoReflect.Descriptor instead.
 func (*ConditionPlatformType) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{298}
+	return file_pmaster_proto_rawDescGZIP(), []int{301}
 }
 
 func (x *ConditionPlatformType) GetPlatformType() penum.PlatformType {
@@ -26156,7 +26568,7 @@ type ConditionDivision struct {
 
 func (x *ConditionDivision) Reset() {
 	*x = ConditionDivision{}
-	mi := &file_pmaster_proto_msgTypes[299]
+	mi := &file_pmaster_proto_msgTypes[302]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26168,7 +26580,7 @@ func (x *ConditionDivision) String() string {
 func (*ConditionDivision) ProtoMessage() {}
 
 func (x *ConditionDivision) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[299]
+	mi := &file_pmaster_proto_msgTypes[302]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26181,7 +26593,7 @@ func (x *ConditionDivision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDivision.ProtoReflect.Descriptor instead.
 func (*ConditionDivision) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{299}
+	return file_pmaster_proto_rawDescGZIP(), []int{302}
 }
 
 func (x *ConditionDivision) GetDivisionOrderGte() int32 {
@@ -26207,7 +26619,7 @@ type ConditionJoinedGuild struct {
 
 func (x *ConditionJoinedGuild) Reset() {
 	*x = ConditionJoinedGuild{}
-	mi := &file_pmaster_proto_msgTypes[300]
+	mi := &file_pmaster_proto_msgTypes[303]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26219,7 +26631,7 @@ func (x *ConditionJoinedGuild) String() string {
 func (*ConditionJoinedGuild) ProtoMessage() {}
 
 func (x *ConditionJoinedGuild) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[300]
+	mi := &file_pmaster_proto_msgTypes[303]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26232,7 +26644,7 @@ func (x *ConditionJoinedGuild) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionJoinedGuild.ProtoReflect.Descriptor instead.
 func (*ConditionJoinedGuild) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{300}
+	return file_pmaster_proto_rawDescGZIP(), []int{303}
 }
 
 func (x *ConditionJoinedGuild) GetJoinedGuildType() penum.JoinedGuildType {
@@ -26252,7 +26664,7 @@ type ConditionActivityFanEventLevel struct {
 
 func (x *ConditionActivityFanEventLevel) Reset() {
 	*x = ConditionActivityFanEventLevel{}
-	mi := &file_pmaster_proto_msgTypes[301]
+	mi := &file_pmaster_proto_msgTypes[304]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26264,7 +26676,7 @@ func (x *ConditionActivityFanEventLevel) String() string {
 func (*ConditionActivityFanEventLevel) ProtoMessage() {}
 
 func (x *ConditionActivityFanEventLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[301]
+	mi := &file_pmaster_proto_msgTypes[304]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26277,7 +26689,7 @@ func (x *ConditionActivityFanEventLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionActivityFanEventLevel.ProtoReflect.Descriptor instead.
 func (*ConditionActivityFanEventLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{301}
+	return file_pmaster_proto_rawDescGZIP(), []int{304}
 }
 
 func (x *ConditionActivityFanEventLevel) GetFanEventId() string {
@@ -26304,7 +26716,7 @@ type ConditionActivityPromotionLevel struct {
 
 func (x *ConditionActivityPromotionLevel) Reset() {
 	*x = ConditionActivityPromotionLevel{}
-	mi := &file_pmaster_proto_msgTypes[302]
+	mi := &file_pmaster_proto_msgTypes[305]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26316,7 +26728,7 @@ func (x *ConditionActivityPromotionLevel) String() string {
 func (*ConditionActivityPromotionLevel) ProtoMessage() {}
 
 func (x *ConditionActivityPromotionLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[302]
+	mi := &file_pmaster_proto_msgTypes[305]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26329,7 +26741,7 @@ func (x *ConditionActivityPromotionLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionActivityPromotionLevel.ProtoReflect.Descriptor instead.
 func (*ConditionActivityPromotionLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{302}
+	return file_pmaster_proto_rawDescGZIP(), []int{305}
 }
 
 func (x *ConditionActivityPromotionLevel) GetPromotionId() string {
@@ -26356,7 +26768,7 @@ type ConditionActivityRefreshLevel struct {
 
 func (x *ConditionActivityRefreshLevel) Reset() {
 	*x = ConditionActivityRefreshLevel{}
-	mi := &file_pmaster_proto_msgTypes[303]
+	mi := &file_pmaster_proto_msgTypes[306]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26368,7 +26780,7 @@ func (x *ConditionActivityRefreshLevel) String() string {
 func (*ConditionActivityRefreshLevel) ProtoMessage() {}
 
 func (x *ConditionActivityRefreshLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[303]
+	mi := &file_pmaster_proto_msgTypes[306]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26381,7 +26793,7 @@ func (x *ConditionActivityRefreshLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionActivityRefreshLevel.ProtoReflect.Descriptor instead.
 func (*ConditionActivityRefreshLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{303}
+	return file_pmaster_proto_rawDescGZIP(), []int{306}
 }
 
 func (x *ConditionActivityRefreshLevel) GetRefreshId() string {
@@ -26407,7 +26819,7 @@ type ConditionContestQuestTotalScore struct {
 
 func (x *ConditionContestQuestTotalScore) Reset() {
 	*x = ConditionContestQuestTotalScore{}
-	mi := &file_pmaster_proto_msgTypes[304]
+	mi := &file_pmaster_proto_msgTypes[307]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26419,7 +26831,7 @@ func (x *ConditionContestQuestTotalScore) String() string {
 func (*ConditionContestQuestTotalScore) ProtoMessage() {}
 
 func (x *ConditionContestQuestTotalScore) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[304]
+	mi := &file_pmaster_proto_msgTypes[307]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26432,7 +26844,7 @@ func (x *ConditionContestQuestTotalScore) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionContestQuestTotalScore.ProtoReflect.Descriptor instead.
 func (*ConditionContestQuestTotalScore) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{304}
+	return file_pmaster_proto_rawDescGZIP(), []int{307}
 }
 
 func (x *ConditionContestQuestTotalScore) GetScoreGte() int64 {
@@ -26451,7 +26863,7 @@ type ConditionHierarchyPointGte struct {
 
 func (x *ConditionHierarchyPointGte) Reset() {
 	*x = ConditionHierarchyPointGte{}
-	mi := &file_pmaster_proto_msgTypes[305]
+	mi := &file_pmaster_proto_msgTypes[308]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26463,7 +26875,7 @@ func (x *ConditionHierarchyPointGte) String() string {
 func (*ConditionHierarchyPointGte) ProtoMessage() {}
 
 func (x *ConditionHierarchyPointGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[305]
+	mi := &file_pmaster_proto_msgTypes[308]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26476,7 +26888,7 @@ func (x *ConditionHierarchyPointGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionHierarchyPointGte.ProtoReflect.Descriptor instead.
 func (*ConditionHierarchyPointGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{305}
+	return file_pmaster_proto_rawDescGZIP(), []int{308}
 }
 
 func (x *ConditionHierarchyPointGte) GetHierarchyPointGte() int64 {
@@ -26496,7 +26908,7 @@ type ConditionDiary struct {
 
 func (x *ConditionDiary) Reset() {
 	*x = ConditionDiary{}
-	mi := &file_pmaster_proto_msgTypes[306]
+	mi := &file_pmaster_proto_msgTypes[309]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26508,7 +26920,7 @@ func (x *ConditionDiary) String() string {
 func (*ConditionDiary) ProtoMessage() {}
 
 func (x *ConditionDiary) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[306]
+	mi := &file_pmaster_proto_msgTypes[309]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26521,7 +26933,7 @@ func (x *ConditionDiary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDiary.ProtoReflect.Descriptor instead.
 func (*ConditionDiary) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{306}
+	return file_pmaster_proto_rawDescGZIP(), []int{309}
 }
 
 func (x *ConditionDiary) GetIsReadAllDiary() bool {
@@ -26547,7 +26959,7 @@ type ConditionStaffTrainTotalCount struct {
 
 func (x *ConditionStaffTrainTotalCount) Reset() {
 	*x = ConditionStaffTrainTotalCount{}
-	mi := &file_pmaster_proto_msgTypes[307]
+	mi := &file_pmaster_proto_msgTypes[310]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26559,7 +26971,7 @@ func (x *ConditionStaffTrainTotalCount) String() string {
 func (*ConditionStaffTrainTotalCount) ProtoMessage() {}
 
 func (x *ConditionStaffTrainTotalCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[307]
+	mi := &file_pmaster_proto_msgTypes[310]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26572,7 +26984,7 @@ func (x *ConditionStaffTrainTotalCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionStaffTrainTotalCount.ProtoReflect.Descriptor instead.
 func (*ConditionStaffTrainTotalCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{307}
+	return file_pmaster_proto_rawDescGZIP(), []int{310}
 }
 
 func (x *ConditionStaffTrainTotalCount) GetCountGte() int32 {
@@ -26591,7 +27003,7 @@ type ConditionPhotoShootTotalCount struct {
 
 func (x *ConditionPhotoShootTotalCount) Reset() {
 	*x = ConditionPhotoShootTotalCount{}
-	mi := &file_pmaster_proto_msgTypes[308]
+	mi := &file_pmaster_proto_msgTypes[311]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26603,7 +27015,7 @@ func (x *ConditionPhotoShootTotalCount) String() string {
 func (*ConditionPhotoShootTotalCount) ProtoMessage() {}
 
 func (x *ConditionPhotoShootTotalCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[308]
+	mi := &file_pmaster_proto_msgTypes[311]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26616,7 +27028,7 @@ func (x *ConditionPhotoShootTotalCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionPhotoShootTotalCount.ProtoReflect.Descriptor instead.
 func (*ConditionPhotoShootTotalCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{308}
+	return file_pmaster_proto_rawDescGZIP(), []int{311}
 }
 
 func (x *ConditionPhotoShootTotalCount) GetCountGte() int32 {
@@ -26636,7 +27048,7 @@ type ConditionTourAreaProgress struct {
 
 func (x *ConditionTourAreaProgress) Reset() {
 	*x = ConditionTourAreaProgress{}
-	mi := &file_pmaster_proto_msgTypes[309]
+	mi := &file_pmaster_proto_msgTypes[312]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26648,7 +27060,7 @@ func (x *ConditionTourAreaProgress) String() string {
 func (*ConditionTourAreaProgress) ProtoMessage() {}
 
 func (x *ConditionTourAreaProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[309]
+	mi := &file_pmaster_proto_msgTypes[312]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26661,7 +27073,7 @@ func (x *ConditionTourAreaProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionTourAreaProgress.ProtoReflect.Descriptor instead.
 func (*ConditionTourAreaProgress) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{309}
+	return file_pmaster_proto_rawDescGZIP(), []int{312}
 }
 
 func (x *ConditionTourAreaProgress) GetTourId() string {
@@ -26688,7 +27100,7 @@ type ConditionActivityFanEventBestScoreRank struct {
 
 func (x *ConditionActivityFanEventBestScoreRank) Reset() {
 	*x = ConditionActivityFanEventBestScoreRank{}
-	mi := &file_pmaster_proto_msgTypes[310]
+	mi := &file_pmaster_proto_msgTypes[313]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26700,7 +27112,7 @@ func (x *ConditionActivityFanEventBestScoreRank) String() string {
 func (*ConditionActivityFanEventBestScoreRank) ProtoMessage() {}
 
 func (x *ConditionActivityFanEventBestScoreRank) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[310]
+	mi := &file_pmaster_proto_msgTypes[313]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26713,7 +27125,7 @@ func (x *ConditionActivityFanEventBestScoreRank) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use ConditionActivityFanEventBestScoreRank.ProtoReflect.Descriptor instead.
 func (*ConditionActivityFanEventBestScoreRank) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{310}
+	return file_pmaster_proto_rawDescGZIP(), []int{313}
 }
 
 func (x *ConditionActivityFanEventBestScoreRank) GetRankType() penum.ResultRankType {
@@ -26739,7 +27151,7 @@ type ConditionActivityFanEventTotalCount struct {
 
 func (x *ConditionActivityFanEventTotalCount) Reset() {
 	*x = ConditionActivityFanEventTotalCount{}
-	mi := &file_pmaster_proto_msgTypes[311]
+	mi := &file_pmaster_proto_msgTypes[314]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26751,7 +27163,7 @@ func (x *ConditionActivityFanEventTotalCount) String() string {
 func (*ConditionActivityFanEventTotalCount) ProtoMessage() {}
 
 func (x *ConditionActivityFanEventTotalCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[311]
+	mi := &file_pmaster_proto_msgTypes[314]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26764,7 +27176,7 @@ func (x *ConditionActivityFanEventTotalCount) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ConditionActivityFanEventTotalCount.ProtoReflect.Descriptor instead.
 func (*ConditionActivityFanEventTotalCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{311}
+	return file_pmaster_proto_rawDescGZIP(), []int{314}
 }
 
 func (x *ConditionActivityFanEventTotalCount) GetCountGte() int32 {
@@ -26783,7 +27195,7 @@ type ConditionActivityPromotionTotalHours struct {
 
 func (x *ConditionActivityPromotionTotalHours) Reset() {
 	*x = ConditionActivityPromotionTotalHours{}
-	mi := &file_pmaster_proto_msgTypes[312]
+	mi := &file_pmaster_proto_msgTypes[315]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26795,7 +27207,7 @@ func (x *ConditionActivityPromotionTotalHours) String() string {
 func (*ConditionActivityPromotionTotalHours) ProtoMessage() {}
 
 func (x *ConditionActivityPromotionTotalHours) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[312]
+	mi := &file_pmaster_proto_msgTypes[315]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26808,7 +27220,7 @@ func (x *ConditionActivityPromotionTotalHours) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use ConditionActivityPromotionTotalHours.ProtoReflect.Descriptor instead.
 func (*ConditionActivityPromotionTotalHours) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{312}
+	return file_pmaster_proto_rawDescGZIP(), []int{315}
 }
 
 func (x *ConditionActivityPromotionTotalHours) GetHoursGte() int32 {
@@ -26827,7 +27239,7 @@ type ConditionActivityRefreshTotalCount struct {
 
 func (x *ConditionActivityRefreshTotalCount) Reset() {
 	*x = ConditionActivityRefreshTotalCount{}
-	mi := &file_pmaster_proto_msgTypes[313]
+	mi := &file_pmaster_proto_msgTypes[316]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26839,7 +27251,7 @@ func (x *ConditionActivityRefreshTotalCount) String() string {
 func (*ConditionActivityRefreshTotalCount) ProtoMessage() {}
 
 func (x *ConditionActivityRefreshTotalCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[313]
+	mi := &file_pmaster_proto_msgTypes[316]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26852,7 +27264,7 @@ func (x *ConditionActivityRefreshTotalCount) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ConditionActivityRefreshTotalCount.ProtoReflect.Descriptor instead.
 func (*ConditionActivityRefreshTotalCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{313}
+	return file_pmaster_proto_rawDescGZIP(), []int{316}
 }
 
 func (x *ConditionActivityRefreshTotalCount) GetCountGte() int32 {
@@ -26871,7 +27283,7 @@ type ConditionHighestSalary struct {
 
 func (x *ConditionHighestSalary) Reset() {
 	*x = ConditionHighestSalary{}
-	mi := &file_pmaster_proto_msgTypes[314]
+	mi := &file_pmaster_proto_msgTypes[317]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26883,7 +27295,7 @@ func (x *ConditionHighestSalary) String() string {
 func (*ConditionHighestSalary) ProtoMessage() {}
 
 func (x *ConditionHighestSalary) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[314]
+	mi := &file_pmaster_proto_msgTypes[317]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26896,7 +27308,7 @@ func (x *ConditionHighestSalary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionHighestSalary.ProtoReflect.Descriptor instead.
 func (*ConditionHighestSalary) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{314}
+	return file_pmaster_proto_rawDescGZIP(), []int{317}
 }
 
 func (x *ConditionHighestSalary) GetHighestSalaryGte() int64 {
@@ -26917,7 +27329,7 @@ type ConditionTutorialStep struct {
 
 func (x *ConditionTutorialStep) Reset() {
 	*x = ConditionTutorialStep{}
-	mi := &file_pmaster_proto_msgTypes[315]
+	mi := &file_pmaster_proto_msgTypes[318]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26929,7 +27341,7 @@ func (x *ConditionTutorialStep) String() string {
 func (*ConditionTutorialStep) ProtoMessage() {}
 
 func (x *ConditionTutorialStep) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[315]
+	mi := &file_pmaster_proto_msgTypes[318]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26942,7 +27354,7 @@ func (x *ConditionTutorialStep) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionTutorialStep.ProtoReflect.Descriptor instead.
 func (*ConditionTutorialStep) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{315}
+	return file_pmaster_proto_rawDescGZIP(), []int{318}
 }
 
 func (x *ConditionTutorialStep) GetTutorialType() penum.TutorialType {
@@ -26975,7 +27387,7 @@ type ConditionForumCreateReplyCount struct {
 
 func (x *ConditionForumCreateReplyCount) Reset() {
 	*x = ConditionForumCreateReplyCount{}
-	mi := &file_pmaster_proto_msgTypes[316]
+	mi := &file_pmaster_proto_msgTypes[319]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -26987,7 +27399,7 @@ func (x *ConditionForumCreateReplyCount) String() string {
 func (*ConditionForumCreateReplyCount) ProtoMessage() {}
 
 func (x *ConditionForumCreateReplyCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[316]
+	mi := &file_pmaster_proto_msgTypes[319]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27000,7 +27412,7 @@ func (x *ConditionForumCreateReplyCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionForumCreateReplyCount.ProtoReflect.Descriptor instead.
 func (*ConditionForumCreateReplyCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{316}
+	return file_pmaster_proto_rawDescGZIP(), []int{319}
 }
 
 func (x *ConditionForumCreateReplyCount) GetCreateReplyCount() int64 {
@@ -27019,7 +27431,7 @@ type ConditionBirthDay struct {
 
 func (x *ConditionBirthDay) Reset() {
 	*x = ConditionBirthDay{}
-	mi := &file_pmaster_proto_msgTypes[317]
+	mi := &file_pmaster_proto_msgTypes[320]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27031,7 +27443,7 @@ func (x *ConditionBirthDay) String() string {
 func (*ConditionBirthDay) ProtoMessage() {}
 
 func (x *ConditionBirthDay) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[317]
+	mi := &file_pmaster_proto_msgTypes[320]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27044,7 +27456,7 @@ func (x *ConditionBirthDay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionBirthDay.ProtoReflect.Descriptor instead.
 func (*ConditionBirthDay) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{317}
+	return file_pmaster_proto_rawDescGZIP(), []int{320}
 }
 
 func (x *ConditionBirthDay) GetIsBirthDay() bool {
@@ -27063,7 +27475,7 @@ type ConditionPvpOpen struct {
 
 func (x *ConditionPvpOpen) Reset() {
 	*x = ConditionPvpOpen{}
-	mi := &file_pmaster_proto_msgTypes[318]
+	mi := &file_pmaster_proto_msgTypes[321]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27075,7 +27487,7 @@ func (x *ConditionPvpOpen) String() string {
 func (*ConditionPvpOpen) ProtoMessage() {}
 
 func (x *ConditionPvpOpen) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[318]
+	mi := &file_pmaster_proto_msgTypes[321]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27088,7 +27500,7 @@ func (x *ConditionPvpOpen) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionPvpOpen.ProtoReflect.Descriptor instead.
 func (*ConditionPvpOpen) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{318}
+	return file_pmaster_proto_rawDescGZIP(), []int{321}
 }
 
 func (x *ConditionPvpOpen) GetIsPvpOpen() bool {
@@ -27107,7 +27519,7 @@ type ConditionComebackUser struct {
 
 func (x *ConditionComebackUser) Reset() {
 	*x = ConditionComebackUser{}
-	mi := &file_pmaster_proto_msgTypes[319]
+	mi := &file_pmaster_proto_msgTypes[322]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27119,7 +27531,7 @@ func (x *ConditionComebackUser) String() string {
 func (*ConditionComebackUser) ProtoMessage() {}
 
 func (x *ConditionComebackUser) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[319]
+	mi := &file_pmaster_proto_msgTypes[322]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27132,7 +27544,7 @@ func (x *ConditionComebackUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionComebackUser.ProtoReflect.Descriptor instead.
 func (*ConditionComebackUser) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{319}
+	return file_pmaster_proto_rawDescGZIP(), []int{322}
 }
 
 func (x *ConditionComebackUser) GetIsComebackUser() bool {
@@ -27151,7 +27563,7 @@ type ConditionSatisfyConditions struct {
 
 func (x *ConditionSatisfyConditions) Reset() {
 	*x = ConditionSatisfyConditions{}
-	mi := &file_pmaster_proto_msgTypes[320]
+	mi := &file_pmaster_proto_msgTypes[323]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27163,7 +27575,7 @@ func (x *ConditionSatisfyConditions) String() string {
 func (*ConditionSatisfyConditions) ProtoMessage() {}
 
 func (x *ConditionSatisfyConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[320]
+	mi := &file_pmaster_proto_msgTypes[323]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27176,7 +27588,7 @@ func (x *ConditionSatisfyConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionSatisfyConditions.ProtoReflect.Descriptor instead.
 func (*ConditionSatisfyConditions) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{320}
+	return file_pmaster_proto_rawDescGZIP(), []int{323}
 }
 
 func (x *ConditionSatisfyConditions) GetConditions() []*ConditionSatisfyCondition {
@@ -27195,7 +27607,7 @@ type ConditionNotSatisfyConditions struct {
 
 func (x *ConditionNotSatisfyConditions) Reset() {
 	*x = ConditionNotSatisfyConditions{}
-	mi := &file_pmaster_proto_msgTypes[321]
+	mi := &file_pmaster_proto_msgTypes[324]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27207,7 +27619,7 @@ func (x *ConditionNotSatisfyConditions) String() string {
 func (*ConditionNotSatisfyConditions) ProtoMessage() {}
 
 func (x *ConditionNotSatisfyConditions) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[321]
+	mi := &file_pmaster_proto_msgTypes[324]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27220,7 +27632,7 @@ func (x *ConditionNotSatisfyConditions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionNotSatisfyConditions.ProtoReflect.Descriptor instead.
 func (*ConditionNotSatisfyConditions) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{321}
+	return file_pmaster_proto_rawDescGZIP(), []int{324}
 }
 
 func (x *ConditionNotSatisfyConditions) GetConditions() []*ConditionNotSatisfyCondition {
@@ -27240,7 +27652,7 @@ type ConditionDutyExchangeReward struct {
 
 func (x *ConditionDutyExchangeReward) Reset() {
 	*x = ConditionDutyExchangeReward{}
-	mi := &file_pmaster_proto_msgTypes[322]
+	mi := &file_pmaster_proto_msgTypes[325]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27252,7 +27664,7 @@ func (x *ConditionDutyExchangeReward) String() string {
 func (*ConditionDutyExchangeReward) ProtoMessage() {}
 
 func (x *ConditionDutyExchangeReward) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[322]
+	mi := &file_pmaster_proto_msgTypes[325]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27265,7 +27677,7 @@ func (x *ConditionDutyExchangeReward) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDutyExchangeReward.ProtoReflect.Descriptor instead.
 func (*ConditionDutyExchangeReward) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{322}
+	return file_pmaster_proto_rawDescGZIP(), []int{325}
 }
 
 func (x *ConditionDutyExchangeReward) GetDutyId() string {
@@ -27292,7 +27704,7 @@ type ConditionDutyExchangeRewardCount struct {
 
 func (x *ConditionDutyExchangeRewardCount) Reset() {
 	*x = ConditionDutyExchangeRewardCount{}
-	mi := &file_pmaster_proto_msgTypes[323]
+	mi := &file_pmaster_proto_msgTypes[326]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27304,7 +27716,7 @@ func (x *ConditionDutyExchangeRewardCount) String() string {
 func (*ConditionDutyExchangeRewardCount) ProtoMessage() {}
 
 func (x *ConditionDutyExchangeRewardCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[323]
+	mi := &file_pmaster_proto_msgTypes[326]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27317,7 +27729,7 @@ func (x *ConditionDutyExchangeRewardCount) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionDutyExchangeRewardCount.ProtoReflect.Descriptor instead.
 func (*ConditionDutyExchangeRewardCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{323}
+	return file_pmaster_proto_rawDescGZIP(), []int{326}
 }
 
 func (x *ConditionDutyExchangeRewardCount) GetDutyId() string {
@@ -27344,7 +27756,7 @@ type ConditionDutyTotalObtainPointCount struct {
 
 func (x *ConditionDutyTotalObtainPointCount) Reset() {
 	*x = ConditionDutyTotalObtainPointCount{}
-	mi := &file_pmaster_proto_msgTypes[324]
+	mi := &file_pmaster_proto_msgTypes[327]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27356,7 +27768,7 @@ func (x *ConditionDutyTotalObtainPointCount) String() string {
 func (*ConditionDutyTotalObtainPointCount) ProtoMessage() {}
 
 func (x *ConditionDutyTotalObtainPointCount) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[324]
+	mi := &file_pmaster_proto_msgTypes[327]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27369,7 +27781,7 @@ func (x *ConditionDutyTotalObtainPointCount) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ConditionDutyTotalObtainPointCount.ProtoReflect.Descriptor instead.
 func (*ConditionDutyTotalObtainPointCount) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{324}
+	return file_pmaster_proto_rawDescGZIP(), []int{327}
 }
 
 func (x *ConditionDutyTotalObtainPointCount) GetDutyId() string {
@@ -27395,7 +27807,7 @@ type ConditionCompanyPointGte struct {
 
 func (x *ConditionCompanyPointGte) Reset() {
 	*x = ConditionCompanyPointGte{}
-	mi := &file_pmaster_proto_msgTypes[325]
+	mi := &file_pmaster_proto_msgTypes[328]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27407,7 +27819,7 @@ func (x *ConditionCompanyPointGte) String() string {
 func (*ConditionCompanyPointGte) ProtoMessage() {}
 
 func (x *ConditionCompanyPointGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[325]
+	mi := &file_pmaster_proto_msgTypes[328]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27420,7 +27832,7 @@ func (x *ConditionCompanyPointGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanyPointGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanyPointGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{325}
+	return file_pmaster_proto_rawDescGZIP(), []int{328}
 }
 
 func (x *ConditionCompanyPointGte) GetPointGte() int64 {
@@ -27439,7 +27851,7 @@ type ConditionCompanyEnjoyLevelGte struct {
 
 func (x *ConditionCompanyEnjoyLevelGte) Reset() {
 	*x = ConditionCompanyEnjoyLevelGte{}
-	mi := &file_pmaster_proto_msgTypes[326]
+	mi := &file_pmaster_proto_msgTypes[329]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27451,7 +27863,7 @@ func (x *ConditionCompanyEnjoyLevelGte) String() string {
 func (*ConditionCompanyEnjoyLevelGte) ProtoMessage() {}
 
 func (x *ConditionCompanyEnjoyLevelGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[326]
+	mi := &file_pmaster_proto_msgTypes[329]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27464,7 +27876,7 @@ func (x *ConditionCompanyEnjoyLevelGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanyEnjoyLevelGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanyEnjoyLevelGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{326}
+	return file_pmaster_proto_rawDescGZIP(), []int{329}
 }
 
 func (x *ConditionCompanyEnjoyLevelGte) GetLevelGte() int32 {
@@ -27483,7 +27895,7 @@ type ConditionCompanyEnjoyPointGte struct {
 
 func (x *ConditionCompanyEnjoyPointGte) Reset() {
 	*x = ConditionCompanyEnjoyPointGte{}
-	mi := &file_pmaster_proto_msgTypes[327]
+	mi := &file_pmaster_proto_msgTypes[330]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27495,7 +27907,7 @@ func (x *ConditionCompanyEnjoyPointGte) String() string {
 func (*ConditionCompanyEnjoyPointGte) ProtoMessage() {}
 
 func (x *ConditionCompanyEnjoyPointGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[327]
+	mi := &file_pmaster_proto_msgTypes[330]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27508,7 +27920,7 @@ func (x *ConditionCompanyEnjoyPointGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanyEnjoyPointGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanyEnjoyPointGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{327}
+	return file_pmaster_proto_rawDescGZIP(), []int{330}
 }
 
 func (x *ConditionCompanyEnjoyPointGte) GetPointGte() int64 {
@@ -27527,7 +27939,7 @@ type ConditionCompanyTrustLevelGte struct {
 
 func (x *ConditionCompanyTrustLevelGte) Reset() {
 	*x = ConditionCompanyTrustLevelGte{}
-	mi := &file_pmaster_proto_msgTypes[328]
+	mi := &file_pmaster_proto_msgTypes[331]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27539,7 +27951,7 @@ func (x *ConditionCompanyTrustLevelGte) String() string {
 func (*ConditionCompanyTrustLevelGte) ProtoMessage() {}
 
 func (x *ConditionCompanyTrustLevelGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[328]
+	mi := &file_pmaster_proto_msgTypes[331]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27552,7 +27964,7 @@ func (x *ConditionCompanyTrustLevelGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanyTrustLevelGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanyTrustLevelGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{328}
+	return file_pmaster_proto_rawDescGZIP(), []int{331}
 }
 
 func (x *ConditionCompanyTrustLevelGte) GetLevelGte() int32 {
@@ -27571,7 +27983,7 @@ type ConditionCompanyTrustPointGte struct {
 
 func (x *ConditionCompanyTrustPointGte) Reset() {
 	*x = ConditionCompanyTrustPointGte{}
-	mi := &file_pmaster_proto_msgTypes[329]
+	mi := &file_pmaster_proto_msgTypes[332]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27583,7 +27995,7 @@ func (x *ConditionCompanyTrustPointGte) String() string {
 func (*ConditionCompanyTrustPointGte) ProtoMessage() {}
 
 func (x *ConditionCompanyTrustPointGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[329]
+	mi := &file_pmaster_proto_msgTypes[332]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27596,7 +28008,7 @@ func (x *ConditionCompanyTrustPointGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanyTrustPointGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanyTrustPointGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{329}
+	return file_pmaster_proto_rawDescGZIP(), []int{332}
 }
 
 func (x *ConditionCompanyTrustPointGte) GetPointGte() int64 {
@@ -27615,7 +28027,7 @@ type ConditionCompanySalaryPointGte struct {
 
 func (x *ConditionCompanySalaryPointGte) Reset() {
 	*x = ConditionCompanySalaryPointGte{}
-	mi := &file_pmaster_proto_msgTypes[330]
+	mi := &file_pmaster_proto_msgTypes[333]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27627,7 +28039,7 @@ func (x *ConditionCompanySalaryPointGte) String() string {
 func (*ConditionCompanySalaryPointGte) ProtoMessage() {}
 
 func (x *ConditionCompanySalaryPointGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[330]
+	mi := &file_pmaster_proto_msgTypes[333]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27640,7 +28052,7 @@ func (x *ConditionCompanySalaryPointGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionCompanySalaryPointGte.ProtoReflect.Descriptor instead.
 func (*ConditionCompanySalaryPointGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{330}
+	return file_pmaster_proto_rawDescGZIP(), []int{333}
 }
 
 func (x *ConditionCompanySalaryPointGte) GetPointGte() int64 {
@@ -27660,7 +28072,7 @@ type ConditionStaffLevelGte struct {
 
 func (x *ConditionStaffLevelGte) Reset() {
 	*x = ConditionStaffLevelGte{}
-	mi := &file_pmaster_proto_msgTypes[331]
+	mi := &file_pmaster_proto_msgTypes[334]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27672,7 +28084,7 @@ func (x *ConditionStaffLevelGte) String() string {
 func (*ConditionStaffLevelGte) ProtoMessage() {}
 
 func (x *ConditionStaffLevelGte) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[331]
+	mi := &file_pmaster_proto_msgTypes[334]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27685,7 +28097,7 @@ func (x *ConditionStaffLevelGte) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConditionStaffLevelGte.ProtoReflect.Descriptor instead.
 func (*ConditionStaffLevelGte) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{331}
+	return file_pmaster_proto_rawDescGZIP(), []int{334}
 }
 
 func (x *ConditionStaffLevelGte) GetParameterType() penum.ParameterType {
@@ -27714,7 +28126,7 @@ type ConsumptionResource struct {
 
 func (x *ConsumptionResource) Reset() {
 	*x = ConsumptionResource{}
-	mi := &file_pmaster_proto_msgTypes[332]
+	mi := &file_pmaster_proto_msgTypes[335]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27726,7 +28138,7 @@ func (x *ConsumptionResource) String() string {
 func (*ConsumptionResource) ProtoMessage() {}
 
 func (x *ConsumptionResource) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[332]
+	mi := &file_pmaster_proto_msgTypes[335]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27739,7 +28151,7 @@ func (x *ConsumptionResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConsumptionResource.ProtoReflect.Descriptor instead.
 func (*ConsumptionResource) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{332}
+	return file_pmaster_proto_rawDescGZIP(), []int{335}
 }
 
 func (x *ConsumptionResource) GetResourceType() penum.ResourceType {
@@ -27783,7 +28195,7 @@ type ExerciseHintContent struct {
 
 func (x *ExerciseHintContent) Reset() {
 	*x = ExerciseHintContent{}
-	mi := &file_pmaster_proto_msgTypes[333]
+	mi := &file_pmaster_proto_msgTypes[336]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27795,7 +28207,7 @@ func (x *ExerciseHintContent) String() string {
 func (*ExerciseHintContent) ProtoMessage() {}
 
 func (x *ExerciseHintContent) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[333]
+	mi := &file_pmaster_proto_msgTypes[336]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27808,7 +28220,7 @@ func (x *ExerciseHintContent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExerciseHintContent.ProtoReflect.Descriptor instead.
 func (*ExerciseHintContent) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{333}
+	return file_pmaster_proto_rawDescGZIP(), []int{336}
 }
 
 func (x *ExerciseHintContent) GetNumber() int32 {
@@ -27860,7 +28272,7 @@ type HelpContent struct {
 
 func (x *HelpContent) Reset() {
 	*x = HelpContent{}
-	mi := &file_pmaster_proto_msgTypes[334]
+	mi := &file_pmaster_proto_msgTypes[337]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27872,7 +28284,7 @@ func (x *HelpContent) String() string {
 func (*HelpContent) ProtoMessage() {}
 
 func (x *HelpContent) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[334]
+	mi := &file_pmaster_proto_msgTypes[337]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27885,7 +28297,7 @@ func (x *HelpContent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelpContent.ProtoReflect.Descriptor instead.
 func (*HelpContent) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{334}
+	return file_pmaster_proto_rawDescGZIP(), []int{337}
 }
 
 func (x *HelpContent) GetHelpContentId() string {
@@ -27952,7 +28364,7 @@ type HomeSubCharacterStay struct {
 
 func (x *HomeSubCharacterStay) Reset() {
 	*x = HomeSubCharacterStay{}
-	mi := &file_pmaster_proto_msgTypes[335]
+	mi := &file_pmaster_proto_msgTypes[338]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -27964,7 +28376,7 @@ func (x *HomeSubCharacterStay) String() string {
 func (*HomeSubCharacterStay) ProtoMessage() {}
 
 func (x *HomeSubCharacterStay) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[335]
+	mi := &file_pmaster_proto_msgTypes[338]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27977,7 +28389,7 @@ func (x *HomeSubCharacterStay) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HomeSubCharacterStay.ProtoReflect.Descriptor instead.
 func (*HomeSubCharacterStay) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{335}
+	return file_pmaster_proto_rawDescGZIP(), []int{338}
 }
 
 func (x *HomeSubCharacterStay) GetPosition() int32 {
@@ -28090,7 +28502,7 @@ type CharacterTalk struct {
 
 func (x *CharacterTalk) Reset() {
 	*x = CharacterTalk{}
-	mi := &file_pmaster_proto_msgTypes[336]
+	mi := &file_pmaster_proto_msgTypes[339]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28102,7 +28514,7 @@ func (x *CharacterTalk) String() string {
 func (*CharacterTalk) ProtoMessage() {}
 
 func (x *CharacterTalk) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[336]
+	mi := &file_pmaster_proto_msgTypes[339]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28115,7 +28527,7 @@ func (x *CharacterTalk) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CharacterTalk.ProtoReflect.Descriptor instead.
 func (*CharacterTalk) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{336}
+	return file_pmaster_proto_rawDescGZIP(), []int{339}
 }
 
 func (x *CharacterTalk) GetText() string {
@@ -28157,7 +28569,7 @@ type MusicDigest struct {
 
 func (x *MusicDigest) Reset() {
 	*x = MusicDigest{}
-	mi := &file_pmaster_proto_msgTypes[337]
+	mi := &file_pmaster_proto_msgTypes[340]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28169,7 +28581,7 @@ func (x *MusicDigest) String() string {
 func (*MusicDigest) ProtoMessage() {}
 
 func (x *MusicDigest) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[337]
+	mi := &file_pmaster_proto_msgTypes[340]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28182,7 +28594,7 @@ func (x *MusicDigest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MusicDigest.ProtoReflect.Descriptor instead.
 func (*MusicDigest) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{337}
+	return file_pmaster_proto_rawDescGZIP(), []int{340}
 }
 
 func (x *MusicDigest) GetStartMillisecond() int32 {
@@ -28216,7 +28628,7 @@ type PhotoAbilityLevel struct {
 
 func (x *PhotoAbilityLevel) Reset() {
 	*x = PhotoAbilityLevel{}
-	mi := &file_pmaster_proto_msgTypes[338]
+	mi := &file_pmaster_proto_msgTypes[341]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28228,7 +28640,7 @@ func (x *PhotoAbilityLevel) String() string {
 func (*PhotoAbilityLevel) ProtoMessage() {}
 
 func (x *PhotoAbilityLevel) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[338]
+	mi := &file_pmaster_proto_msgTypes[341]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28241,7 +28653,7 @@ func (x *PhotoAbilityLevel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbilityLevel.ProtoReflect.Descriptor instead.
 func (*PhotoAbilityLevel) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{338}
+	return file_pmaster_proto_rawDescGZIP(), []int{341}
 }
 
 func (x *PhotoAbilityLevel) GetLevel() int32 {
@@ -28270,7 +28682,7 @@ type PhotoAbilityGrade struct {
 
 func (x *PhotoAbilityGrade) Reset() {
 	*x = PhotoAbilityGrade{}
-	mi := &file_pmaster_proto_msgTypes[339]
+	mi := &file_pmaster_proto_msgTypes[342]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28282,7 +28694,7 @@ func (x *PhotoAbilityGrade) String() string {
 func (*PhotoAbilityGrade) ProtoMessage() {}
 
 func (x *PhotoAbilityGrade) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[339]
+	mi := &file_pmaster_proto_msgTypes[342]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28295,7 +28707,7 @@ func (x *PhotoAbilityGrade) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoAbilityGrade.ProtoReflect.Descriptor instead.
 func (*PhotoAbilityGrade) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{339}
+	return file_pmaster_proto_rawDescGZIP(), []int{342}
 }
 
 func (x *PhotoAbilityGrade) GetGrade() int32 {
@@ -28337,7 +28749,7 @@ type RewardResource struct {
 
 func (x *RewardResource) Reset() {
 	*x = RewardResource{}
-	mi := &file_pmaster_proto_msgTypes[340]
+	mi := &file_pmaster_proto_msgTypes[343]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28349,7 +28761,7 @@ func (x *RewardResource) String() string {
 func (*RewardResource) ProtoMessage() {}
 
 func (x *RewardResource) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[340]
+	mi := &file_pmaster_proto_msgTypes[343]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28362,7 +28774,7 @@ func (x *RewardResource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RewardResource.ProtoReflect.Descriptor instead.
 func (*RewardResource) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{340}
+	return file_pmaster_proto_rawDescGZIP(), []int{343}
 }
 
 func (x *RewardResource) GetResourceType() penum.ResourceType {
@@ -28396,7 +28808,7 @@ type PhotoPanoramaCameraPosition struct {
 
 func (x *PhotoPanoramaCameraPosition) Reset() {
 	*x = PhotoPanoramaCameraPosition{}
-	mi := &file_pmaster_proto_msgTypes[341]
+	mi := &file_pmaster_proto_msgTypes[344]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28408,7 +28820,7 @@ func (x *PhotoPanoramaCameraPosition) String() string {
 func (*PhotoPanoramaCameraPosition) ProtoMessage() {}
 
 func (x *PhotoPanoramaCameraPosition) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[341]
+	mi := &file_pmaster_proto_msgTypes[344]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28421,7 +28833,7 @@ func (x *PhotoPanoramaCameraPosition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhotoPanoramaCameraPosition.ProtoReflect.Descriptor instead.
 func (*PhotoPanoramaCameraPosition) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{341}
+	return file_pmaster_proto_rawDescGZIP(), []int{344}
 }
 
 func (x *PhotoPanoramaCameraPosition) GetName() string {
@@ -28449,7 +28861,7 @@ type StoryBranchChoice struct {
 
 func (x *StoryBranchChoice) Reset() {
 	*x = StoryBranchChoice{}
-	mi := &file_pmaster_proto_msgTypes[342]
+	mi := &file_pmaster_proto_msgTypes[345]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28461,7 +28873,7 @@ func (x *StoryBranchChoice) String() string {
 func (*StoryBranchChoice) ProtoMessage() {}
 
 func (x *StoryBranchChoice) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[342]
+	mi := &file_pmaster_proto_msgTypes[345]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28474,7 +28886,7 @@ func (x *StoryBranchChoice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoryBranchChoice.ProtoReflect.Descriptor instead.
 func (*StoryBranchChoice) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{342}
+	return file_pmaster_proto_rawDescGZIP(), []int{345}
 }
 
 func (x *StoryBranchChoice) GetIndex() int32 {
@@ -28510,7 +28922,7 @@ type StoryChapter struct {
 
 func (x *StoryChapter) Reset() {
 	*x = StoryChapter{}
-	mi := &file_pmaster_proto_msgTypes[343]
+	mi := &file_pmaster_proto_msgTypes[346]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28522,7 +28934,7 @@ func (x *StoryChapter) String() string {
 func (*StoryChapter) ProtoMessage() {}
 
 func (x *StoryChapter) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[343]
+	mi := &file_pmaster_proto_msgTypes[346]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28535,7 +28947,7 @@ func (x *StoryChapter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StoryChapter.ProtoReflect.Descriptor instead.
 func (*StoryChapter) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{343}
+	return file_pmaster_proto_rawDescGZIP(), []int{346}
 }
 
 func (x *StoryChapter) GetChapter() int32 {
@@ -28580,7 +28992,7 @@ type TutorialStep struct {
 
 func (x *TutorialStep) Reset() {
 	*x = TutorialStep{}
-	mi := &file_pmaster_proto_msgTypes[344]
+	mi := &file_pmaster_proto_msgTypes[347]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -28592,7 +29004,7 @@ func (x *TutorialStep) String() string {
 func (*TutorialStep) ProtoMessage() {}
 
 func (x *TutorialStep) ProtoReflect() protoreflect.Message {
-	mi := &file_pmaster_proto_msgTypes[344]
+	mi := &file_pmaster_proto_msgTypes[347]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28605,7 +29017,7 @@ func (x *TutorialStep) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TutorialStep.ProtoReflect.Descriptor instead.
 func (*TutorialStep) Descriptor() ([]byte, []int) {
-	return file_pmaster_proto_rawDescGZIP(), []int{344}
+	return file_pmaster_proto_rawDescGZIP(), []int{347}
 }
 
 func (x *TutorialStep) GetStep() int32 {
@@ -28877,7 +29289,7 @@ const file_pmaster_proto_rawDesc = "" +
 	"\n" +
 	"itemAmount\x18\x03 \x01(\x05R\n" +
 	"itemAmount\x12 \n" +
-	"\vstoneAmount\x18\x04 \x01(\x05R\vstoneAmount\"\x9b\x14\n" +
+	"\vstoneAmount\x18\x04 \x01(\x05R\vstoneAmount\"\xcb\x14\n" +
 	"\tCharacter\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x18\n" +
 	"\aassetId\x18\x02 \x01(\tR\aassetId\x12*\n" +
@@ -28941,7 +29353,8 @@ const file_pmaster_proto_rawDesc = "" +
 	"'homeMainCharacterStayStartMotionAssetId\x187 \x01(\tR'homeMainCharacterStayStartMotionAssetId\x12J\n" +
 	" homeMainCharacterStayPropAssetId\x188 \x01(\tR homeMainCharacterStayPropAssetId\x12&\n" +
 	"\x0egachaMovieName\x189 \x01(\tR\x0egachaMovieName\x128\n" +
-	"\tloveInfos\x18: \x03(\v2\x1a.pmaster.LoveCharacterInfoR\tloveInfos\"\xc0\x01\n" +
+	"\tloveInfos\x18: \x03(\v2\x1a.pmaster.LoveCharacterInfoR\tloveInfos\x12.\n" +
+	"\x12excursionFirstText\x18; \x01(\tR\x12excursionFirstText\"\xc0\x01\n" +
 	"\x1aCharacterCompanyEnjoyStory\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\x05R\x06number\x12\x18\n" +
 	"\astoryId\x18\x02 \x01(\tR\astoryId\x12(\n" +
@@ -29194,7 +29607,54 @@ const file_pmaster_proto_rawDesc = "" +
 	"\astoryId\x18\x03 \x01(\tR\astoryId\x12(\n" +
 	"\x0fviewConditionId\x18\x04 \x01(\tR\x0fviewConditionId\x12,\n" +
 	"\x11unlockConditionId\x18\x05 \x01(\tR\x11unlockConditionId\x12\x1a\n" +
-	"\bisAppeal\x18\x06 \x01(\bR\bisAppeal\"\xbc\x03\n" +
+	"\bisAppeal\x18\x06 \x01(\bR\bisAppeal\"\xfb\x04\n" +
+	"\x15ExcursionGazeReaction\x12 \n" +
+	"\vcharacterId\x18\x01 \x01(\tR\vcharacterId\x12*\n" +
+	"\x10excursionPlaceId\x18\x02 \x01(\tR\x10excursionPlaceId\x12\x16\n" +
+	"\x06number\x18\x03 \x01(\x05R\x06number\x12$\n" +
+	"\rmotionAssetId\x18\x04 \x01(\tR\rmotionAssetId\x12\"\n" +
+	"\fvoiceAssetId\x18\x05 \x01(\tR\fvoiceAssetId\x12*\n" +
+	"\x10unlockCostumeIds\x18\x06 \x03(\tR\x10unlockCostumeIds\x120\n" +
+	"\x13unlockNotCostumeIds\x18\n" +
+	" \x03(\tR\x13unlockNotCostumeIds\x120\n" +
+	"\x13cameraMotionAssetId\x18\a \x01(\tR\x13cameraMotionAssetId\x12 \n" +
+	"\vpropAssetId\x18\b \x01(\tR\vpropAssetId\x12\x16\n" +
+	"\x06isFade\x18\v \x01(\bR\x06isFade\x12\x1a\n" +
+	"\bisLookAt\x18\f \x01(\bR\bisLookAt\x12\x12\n" +
+	"\x04text\x18\r \x01(\tR\x04text\x12 \n" +
+	"\vfocalLength\x18\x0e \x01(\x02R\vfocalLength\x12\"\n" +
+	"\ffNumberRatio\x18\x0f \x01(\x02R\ffNumberRatio\x12*\n" +
+	"\x10trackingAccuracy\x18\x10 \x01(\x02R\x10trackingAccuracy\x12\x18\n" +
+	"\ayOffset\x18\x11 \x01(\x02R\ayOffset\x12,\n" +
+	"\x11unlockGazeNumbers\x18\x12 \x03(\x05R\x11unlockGazeNumbers\"\xde\x03\n" +
+	"\x0eExcursionPlace\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1e\n" +
+	"\n" +
+	"advAssetId\x18\x03 \x01(\tR\n" +
+	"advAssetId\x128\n" +
+	"\x17idleCameraMotionAssetId\x18\x05 \x01(\tR\x17idleCameraMotionAssetId\x12,\n" +
+	"\x11backgroundAssetId\x18\x06 \x01(\tR\x11backgroundAssetId\x12\x1e\n" +
+	"\n" +
+	"bgmAssetId\x18\a \x01(\tR\n" +
+	"bgmAssetId\x12.\n" +
+	"\x12sceneLayoutAssetId\x18\b \x01(\tR\x12sceneLayoutAssetId\x12B\n" +
+	"\x1cadvNotWearableCostumeTypeIds\x18\t \x03(\tR\x1cadvNotWearableCostumeTypeIds\x12N\n" +
+	"\"finishAdvNotWearableCostumeTypeIds\x18\n" +
+	" \x03(\tR\"finishAdvNotWearableCostumeTypeIds\x12<\n" +
+	"\x19notWearableCostumeTypeIds\x18\v \x03(\tR\x19notWearableCostumeTypeIds\"\xd3\x03\n" +
+	"\x15ExcursionPlaceSetting\x12 \n" +
+	"\vcharacterId\x18\x01 \x01(\tR\vcharacterId\x12*\n" +
+	"\x10excursionPlaceId\x18\x02 \x01(\tR\x10excursionPlaceId\x12,\n" +
+	"\x11advForceCostumeId\x18\x04 \x01(\tR\x11advForceCostumeId\x12 \n" +
+	"\vpropAssetId\x18\a \x01(\tR\vpropAssetId\x12&\n" +
+	"\x0eforceCostumeId\x18\x06 \x01(\tR\x0eforceCostumeId\x12&\n" +
+	"\x0eminFocalLength\x18\b \x01(\x02R\x0eminFocalLength\x12.\n" +
+	"\x12defaultFocalLength\x18\t \x01(\x02R\x12defaultFocalLength\x12&\n" +
+	"\x0emaxFocalLength\x18\n" +
+	" \x01(\x02R\x0emaxFocalLength\x12:\n" +
+	"\x18sceneLayoutPositionIndex\x18\v \x01(\x05R\x18sceneLayoutPositionIndex\x128\n" +
+	"\x17finishAdvForceCostumeId\x18\f \x01(\tR\x17finishAdvForceCostumeId\"\xbc\x03\n" +
 	"\bExercise\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
 	"\x04name\x18\x02 \x01(\tR\x04name\x12 \n" +
@@ -31283,7 +31743,7 @@ func file_pmaster_proto_rawDescGZIP() []byte {
 	return file_pmaster_proto_rawDescData
 }
 
-var file_pmaster_proto_msgTypes = make([]protoimpl.MessageInfo, 345)
+var file_pmaster_proto_msgTypes = make([]protoimpl.MessageInfo, 348)
 var file_pmaster_proto_goTypes = []any{
 	(*PhotoContestSection)(nil),                         // 0: pmaster.PhotoContestSection
 	(*Accessory)(nil),                                   // 1: pmaster.Accessory
@@ -31378,555 +31838,558 @@ var file_pmaster_proto_goTypes = []any{
 	(*EventMission)(nil),                                // 90: pmaster.EventMission
 	(*EventStory)(nil),                                  // 91: pmaster.EventStory
 	(*EventStoryEpisode)(nil),                           // 92: pmaster.EventStoryEpisode
-	(*Exercise)(nil),                                    // 93: pmaster.Exercise
-	(*ExerciseAccessory)(nil),                           // 94: pmaster.ExerciseAccessory
-	(*ExerciseCardGroup)(nil),                           // 95: pmaster.ExerciseCardGroup
-	(*ExerciseCostume)(nil),                             // 96: pmaster.ExerciseCostume
-	(*ExerciseDeckPosition)(nil),                        // 97: pmaster.ExerciseDeckPosition
-	(*ExercisePhoto)(nil),                               // 98: pmaster.ExercisePhoto
-	(*ExtraStory)(nil),                                  // 99: pmaster.ExtraStory
-	(*ExtraStoryEpisode)(nil),                           // 100: pmaster.ExtraStoryEpisode
-	(*ExtraStoryPart)(nil),                              // 101: pmaster.ExtraStoryPart
-	(*FunctionLock)(nil),                                // 102: pmaster.FunctionLock
-	(*Gacha)(nil),                                       // 103: pmaster.Gacha
-	(*GachaButton)(nil),                                 // 104: pmaster.GachaButton
-	(*GachaCardReward)(nil),                             // 105: pmaster.GachaCardReward
-	(*GachaExchange)(nil),                               // 106: pmaster.GachaExchange
-	(*GachaStamp)(nil),                                  // 107: pmaster.GachaStamp
-	(*GachaStampSheet)(nil),                             // 108: pmaster.GachaStampSheet
-	(*GuildTopMovie)(nil),                               // 109: pmaster.GuildTopMovie
-	(*Hair)(nil),                                        // 110: pmaster.Hair
-	(*HierarchyDetailGrade)(nil),                        // 111: pmaster.HierarchyDetailGrade
-	(*HierarchyDivisionReward)(nil),                     // 112: pmaster.HierarchyDivisionReward
-	(*HierarchyReward)(nil),                             // 113: pmaster.HierarchyReward
-	(*HomeAction)(nil),                                  // 114: pmaster.HomeAction
-	(*HomeBackground)(nil),                              // 115: pmaster.HomeBackground
-	(*HomeDrama)(nil),                                   // 116: pmaster.HomeDrama
-	(*HomeDramaDetail)(nil),                             // 117: pmaster.HomeDramaDetail
-	(*HomeDramaFree)(nil),                               // 118: pmaster.HomeDramaFree
-	(*HomeMainCharacterStay)(nil),                       // 119: pmaster.HomeMainCharacterStay
-	(*HomeNavigation)(nil),                              // 120: pmaster.HomeNavigation
-	(*HomeSubCharacterStayGroup)(nil),                   // 121: pmaster.HomeSubCharacterStayGroup
-	(*HomeTalk)(nil),                                    // 122: pmaster.HomeTalk
-	(*HomeTalkCallPattern)(nil),                         // 123: pmaster.HomeTalkCallPattern
-	(*InviteSetting)(nil),                               // 124: pmaster.InviteSetting
-	(*LiveAbilityLevel)(nil),                            // 125: pmaster.LiveAbilityLevel
-	(*LiveBonus)(nil),                                   // 126: pmaster.LiveBonus
-	(*LiveBonusGroup)(nil),                              // 127: pmaster.LiveBonusGroup
-	(*LiveResultAnimation)(nil),                         // 128: pmaster.LiveResultAnimation
-	(*LiveStartAnimation)(nil),                          // 129: pmaster.LiveStartAnimation
-	(*LiveStartVoiceAssetGroup)(nil),                    // 130: pmaster.LiveStartVoiceAssetGroup
-	(*Loading)(nil),                                     // 131: pmaster.Loading
-	(*LoginBonus)(nil),                                  // 132: pmaster.LoginBonus
-	(*LoginBonusText)(nil),                              // 133: pmaster.LoginBonusText
-	(*LoveHomeAction)(nil),                              // 134: pmaster.LoveHomeAction
-	(*LoveStoryEpisode)(nil),                            // 135: pmaster.LoveStoryEpisode
-	(*MarathonBoxGachaSetting)(nil),                     // 136: pmaster.MarathonBoxGachaSetting
-	(*MarathonLiveBonus)(nil),                           // 137: pmaster.MarathonLiveBonus
-	(*MarathonLiveBonusGroup)(nil),                      // 138: pmaster.MarathonLiveBonusGroup
-	(*MarathonQuest)(nil),                               // 139: pmaster.MarathonQuest
-	(*MarathonQuestDifficulty)(nil),                     // 140: pmaster.MarathonQuestDifficulty
-	(*Message)(nil),                                     // 141: pmaster.Message
-	(*MessageDetail)(nil),                               // 142: pmaster.MessageDetail
-	(*MessageGroup)(nil),                                // 143: pmaster.MessageGroup
-	(*Mission)(nil),                                     // 144: pmaster.Mission
-	(*MissionProgress)(nil),                             // 145: pmaster.MissionProgress
-	(*Music)(nil),                                       // 146: pmaster.Music
-	(*MusicMasteryReward)(nil),                          // 147: pmaster.MusicMasteryReward
-	(*MusicMasteryRewardSet)(nil),                       // 148: pmaster.MusicMasteryRewardSet
-	(*OrnamentHair)(nil),                                // 149: pmaster.OrnamentHair
-	(*PhotoAbility)(nil),                                // 150: pmaster.PhotoAbility
-	(*PhotoAbilityInfo)(nil),                            // 151: pmaster.PhotoAbilityInfo
-	(*PhotoAbilitySet)(nil),                             // 152: pmaster.PhotoAbilitySet
-	(*PhotoActivity)(nil),                               // 153: pmaster.PhotoActivity
-	(*PhotoAllInOne)(nil),                               // 154: pmaster.PhotoAllInOne
-	(*PhotoContestActivity)(nil),                        // 155: pmaster.PhotoContestActivity
-	(*PhotoContestQuestMusic)(nil),                      // 156: pmaster.PhotoContestQuestMusic
-	(*PhotoContestQuestStage)(nil),                      // 157: pmaster.PhotoContestQuestStage
-	(*PhotoContestSectionReward)(nil),                   // 158: pmaster.PhotoContestSectionReward
-	(*PhotoExpression)(nil),                             // 159: pmaster.PhotoExpression
-	(*PhotoExpressionStagePosition)(nil),                // 160: pmaster.PhotoExpressionStagePosition
-	(*PhotoFacial)(nil),                                 // 161: pmaster.PhotoFacial
-	(*PhotoFacialMotion)(nil),                           // 162: pmaster.PhotoFacialMotion
-	(*PhotoPoseMotion)(nil),                             // 163: pmaster.PhotoPoseMotion
-	(*PhotoQuestMusic)(nil),                             // 164: pmaster.PhotoQuestMusic
-	(*PhotoQuestStage)(nil),                             // 165: pmaster.PhotoQuestStage
-	(*PhotoRecipe)(nil),                                 // 166: pmaster.PhotoRecipe
-	(*PhotoRetouchEnhance)(nil),                         // 167: pmaster.PhotoRetouchEnhance
-	(*PhotoShootingCharacterMotion)(nil),                // 168: pmaster.PhotoShootingCharacterMotion
-	(*PhotoShootingReplaceCharacter)(nil),               // 169: pmaster.PhotoShootingReplaceCharacter
-	(*PhotoShootingSimplePersonalityMotion)(nil),        // 170: pmaster.PhotoShootingSimplePersonalityMotion
-	(*PhotoSituation)(nil),                              // 171: pmaster.PhotoSituation
-	(*Quest)(nil),                                       // 172: pmaster.Quest
-	(*QuestAchievedRankReward)(nil),                     // 173: pmaster.QuestAchievedRankReward
-	(*QuestCharacterAdvantage)(nil),                     // 174: pmaster.QuestCharacterAdvantage
-	(*RaceLiveBonus)(nil),                               // 175: pmaster.RaceLiveBonus
-	(*RaceLiveBonusGroup)(nil),                          // 176: pmaster.RaceLiveBonusGroup
-	(*RacePanel)(nil),                                   // 177: pmaster.RacePanel
-	(*RacePanelReward)(nil),                             // 178: pmaster.RacePanelReward
-	(*RaceQuest)(nil),                                   // 179: pmaster.RaceQuest
-	(*RaceQuestDifficulty)(nil),                         // 180: pmaster.RaceQuestDifficulty
-	(*RaceRankingReward)(nil),                           // 181: pmaster.RaceRankingReward
-	(*Setting)(nil),                                     // 182: pmaster.Setting
-	(*ShowcaseFrame)(nil),                               // 183: pmaster.ShowcaseFrame
-	(*ShowcaseMusic)(nil),                               // 184: pmaster.ShowcaseMusic
-	(*ShowcaseSetting)(nil),                             // 185: pmaster.ShowcaseSetting
-	(*ShowcaseToy)(nil),                                 // 186: pmaster.ShowcaseToy
-	(*SkillDetail)(nil),                                 // 187: pmaster.SkillDetail
-	(*SkillEfficacy)(nil),                               // 188: pmaster.SkillEfficacy
-	(*SkillLevel)(nil),                                  // 189: pmaster.SkillLevel
-	(*SkillTrigger)(nil),                                // 190: pmaster.SkillTrigger
-	(*StaffLevel)(nil),                                  // 191: pmaster.StaffLevel
-	(*Story)(nil),                                       // 192: pmaster.Story
-	(*StoryEpisode)(nil),                                // 193: pmaster.StoryEpisode
-	(*StoryPart)(nil),                                   // 194: pmaster.StoryPart
-	(*Telephone)(nil),                                   // 195: pmaster.Telephone
-	(*TourQuestSetting)(nil),                            // 196: pmaster.TourQuestSetting
-	(*Tutorial)(nil),                                    // 197: pmaster.Tutorial
-	(*AccessoryEnhancement)(nil),                        // 198: pmaster.AccessoryEnhancement
-	(*ActivityAbility)(nil),                             // 199: pmaster.ActivityAbility
-	(*AppCapacityLimit)(nil),                            // 200: pmaster.AppCapacityLimit
-	(*AssetDownload)(nil),                               // 201: pmaster.AssetDownload
-	(*BacksideAnimation)(nil),                           // 202: pmaster.BacksideAnimation
-	(*BoxGachaGroup)(nil),                               // 203: pmaster.BoxGachaGroup
-	(*CardDuplicateExp)(nil),                            // 204: pmaster.CardDuplicateExp
-	(*CardEvolutionLevel)(nil),                          // 205: pmaster.CardEvolutionLevel
-	(*CardEvolutionLevelRelease)(nil),                   // 206: pmaster.CardEvolutionLevelRelease
-	(*CardLevel)(nil),                                   // 207: pmaster.CardLevel
-	(*CardLevelRelease)(nil),                            // 208: pmaster.CardLevelRelease
-	(*CardParameter)(nil),                               // 209: pmaster.CardParameter
-	(*CardRank)(nil),                                    // 210: pmaster.CardRank
-	(*CardRarity)(nil),                                  // 211: pmaster.CardRarity
-	(*CharacterActivityLevel)(nil),                      // 212: pmaster.CharacterActivityLevel
-	(*ComboAdvantage)(nil),                              // 213: pmaster.ComboAdvantage
-	(*CompanyEnjoyCharacterLevel)(nil),                  // 214: pmaster.CompanyEnjoyCharacterLevel
-	(*CompanyEnjoyLevel)(nil),                           // 215: pmaster.CompanyEnjoyLevel
-	(*CompanyPoint)(nil),                                // 216: pmaster.CompanyPoint
-	(*Condition)(nil),                                   // 217: pmaster.Condition
-	(*ConditionDescription)(nil),                        // 218: pmaster.ConditionDescription
-	(*Consumption)(nil),                                 // 219: pmaster.Consumption
-	(*CostumeType)(nil),                                 // 220: pmaster.CostumeType
-	(*DeckEntrustCoefficient)(nil),                      // 221: pmaster.DeckEntrustCoefficient
-	(*Division)(nil),                                    // 222: pmaster.Division
-	(*DutyPoint)(nil),                                   // 223: pmaster.DutyPoint
-	(*ExerciseAccessoryGroup)(nil),                      // 224: pmaster.ExerciseAccessoryGroup
-	(*ExerciseDeck)(nil),                                // 225: pmaster.ExerciseDeck
-	(*ExerciseHint)(nil),                                // 226: pmaster.ExerciseHint
-	(*ExercisePhotoGroup)(nil),                          // 227: pmaster.ExercisePhotoGroup
-	(*ExerciseUser)(nil),                                // 228: pmaster.ExerciseUser
-	(*GachaStampSheetGroup)(nil),                        // 229: pmaster.GachaStampSheetGroup
-	(*Guild)(nil),                                       // 230: pmaster.Guild
-	(*HelpCategory)(nil),                                // 231: pmaster.HelpCategory
-	(*HierarchyGrade)(nil),                              // 232: pmaster.HierarchyGrade
-	(*HomeBackgroundCategory)(nil),                      // 233: pmaster.HomeBackgroundCategory
-	(*HomeDramaPosition)(nil),                           // 234: pmaster.HomeDramaPosition
-	(*HomeDramaPositionGroup)(nil),                      // 235: pmaster.HomeDramaPositionGroup
-	(*InviteHostReward)(nil),                            // 236: pmaster.InviteHostReward
-	(*Item)(nil),                                        // 237: pmaster.Item
-	(*LiveAbility)(nil),                                 // 238: pmaster.LiveAbility
-	(*LiveTip)(nil),                                     // 239: pmaster.LiveTip
-	(*LoveColor)(nil),                                   // 240: pmaster.LoveColor
-	(*LoveLevel)(nil),                                   // 241: pmaster.LoveLevel
-	(*ManagerLevel)(nil),                                // 242: pmaster.ManagerLevel
-	(*MusicChartPattern)(nil),                           // 243: pmaster.MusicChartPattern
-	(*MusicMasteryLevel)(nil),                           // 244: pmaster.MusicMasteryLevel
-	(*PhotoAbilityTarget)(nil),                          // 245: pmaster.PhotoAbilityTarget
-	(*PhotoPose)(nil),                                   // 246: pmaster.PhotoPose
-	(*PhotoRarityLevel)(nil),                            // 247: pmaster.PhotoRarityLevel
-	(*PhotoShootingMotionSet)(nil),                      // 248: pmaster.PhotoShootingMotionSet
-	(*QuestAudienceAdvantage)(nil),                      // 249: pmaster.QuestAudienceAdvantage
-	(*QuestContestRankingSeason)(nil),                   // 250: pmaster.QuestContestRankingSeason
-	(*QuestPressure)(nil),                               // 251: pmaster.QuestPressure
-	(*QuestStaminaConsumption)(nil),                     // 252: pmaster.QuestStaminaConsumption
-	(*Reward)(nil),                                      // 253: pmaster.Reward
-	(*RewardSort)(nil),                                  // 254: pmaster.RewardSort
-	(*Salary)(nil),                                      // 255: pmaster.Salary
-	(*ShowcaseHashtag)(nil),                             // 256: pmaster.ShowcaseHashtag
-	(*ShowcaseMusicFilter)(nil),                         // 257: pmaster.ShowcaseMusicFilter
-	(*ShowcaseToyCategory)(nil),                         // 258: pmaster.ShowcaseToyCategory
-	(*ShowcaseToyShopFilter)(nil),                       // 259: pmaster.ShowcaseToyShopFilter
-	(*Skill)(nil),                                       // 260: pmaster.Skill
-	(*SkillTarget)(nil),                                 // 261: pmaster.SkillTarget
-	(*StaffLevelLimitBreakRank)(nil),                    // 262: pmaster.StaffLevelLimitBreakRank
-	(*StaffTraining)(nil),                               // 263: pmaster.StaffTraining
-	(*StaffTrainingReset)(nil),                          // 264: pmaster.StaffTrainingReset
-	(*StaffTrainingResetGroup)(nil),                     // 265: pmaster.StaffTrainingResetGroup
-	(*Stage)(nil),                                       // 266: pmaster.Stage
-	(*StatusEffectName)(nil),                            // 267: pmaster.StatusEffectName
-	(*StoreGppProduct)(nil),                             // 268: pmaster.StoreGppProduct
-	(*StoreProduct)(nil),                                // 269: pmaster.StoreProduct
-	(*StoryEpisodeConsumption)(nil),                     // 270: pmaster.StoryEpisodeConsumption
-	(*TitleBackground)(nil),                             // 271: pmaster.TitleBackground
-	(*TotalStaffEnhanceAdvantage)(nil),                  // 272: pmaster.TotalStaffEnhanceAdvantage
-	(*Wording)(nil),                                     // 273: pmaster.Wording
-	(*ActivityAbilityLevel)(nil),                        // 274: pmaster.ActivityAbilityLevel
-	(*CardEvolutionLevelReleaseTarget)(nil),             // 275: pmaster.CardEvolutionLevelReleaseTarget
-	(*CardLevelReleaseTarget)(nil),                      // 276: pmaster.CardLevelReleaseTarget
-	(*ActivityFanEventWord)(nil),                        // 277: pmaster.ActivityFanEventWord
-	(*LoveCharacterInfo)(nil),                           // 278: pmaster.LoveCharacterInfo
-	(*ConditionSetting)(nil),                            // 279: pmaster.ConditionSetting
-	(*ConditionStartHours)(nil),                         // 280: pmaster.ConditionStartHours
-	(*ConditionNotLoginDays)(nil),                       // 281: pmaster.ConditionNotLoginDays
-	(*ConditionAccumulationLoginDays)(nil),              // 282: pmaster.ConditionAccumulationLoginDays
-	(*ConditionManagerLevel)(nil),                       // 283: pmaster.ConditionManagerLevel
-	(*ConditionDeckMaxOverallValue)(nil),                // 284: pmaster.ConditionDeckMaxOverallValue
-	(*ConditionAnimeStoryPoint)(nil),                    // 285: pmaster.ConditionAnimeStoryPoint
-	(*ConditionGameStoryPoint)(nil),                     // 286: pmaster.ConditionGameStoryPoint
-	(*ConditionGroupStoryPoint)(nil),                    // 287: pmaster.ConditionGroupStoryPoint
-	(*ConditionPhotoReportPityTimer)(nil),               // 288: pmaster.ConditionPhotoReportPityTimer
-	(*ConditionExchangeCount)(nil),                      // 289: pmaster.ConditionExchangeCount
-	(*ConditionTerm)(nil),                               // 290: pmaster.ConditionTerm
-	(*ConditionGameStartTerm)(nil),                      // 291: pmaster.ConditionGameStartTerm
-	(*ConditionDayOfWeek)(nil),                          // 292: pmaster.ConditionDayOfWeek
-	(*ConditionTime)(nil),                               // 293: pmaster.ConditionTime
-	(*ConditionGold)(nil),                               // 294: pmaster.ConditionGold
-	(*ConditionStone)(nil),                              // 295: pmaster.ConditionStone
-	(*ConditionDrawGacha)(nil),                          // 296: pmaster.ConditionDrawGacha
-	(*ConditionPurchaseShop)(nil),                       // 297: pmaster.ConditionPurchaseShop
-	(*ConditionPlatformType)(nil),                       // 298: pmaster.ConditionPlatformType
-	(*ConditionDivision)(nil),                           // 299: pmaster.ConditionDivision
-	(*ConditionJoinedGuild)(nil),                        // 300: pmaster.ConditionJoinedGuild
-	(*ConditionActivityFanEventLevel)(nil),              // 301: pmaster.ConditionActivityFanEventLevel
-	(*ConditionActivityPromotionLevel)(nil),             // 302: pmaster.ConditionActivityPromotionLevel
-	(*ConditionActivityRefreshLevel)(nil),               // 303: pmaster.ConditionActivityRefreshLevel
-	(*ConditionContestQuestTotalScore)(nil),             // 304: pmaster.ConditionContestQuestTotalScore
-	(*ConditionHierarchyPointGte)(nil),                  // 305: pmaster.ConditionHierarchyPointGte
-	(*ConditionDiary)(nil),                              // 306: pmaster.ConditionDiary
-	(*ConditionStaffTrainTotalCount)(nil),               // 307: pmaster.ConditionStaffTrainTotalCount
-	(*ConditionPhotoShootTotalCount)(nil),               // 308: pmaster.ConditionPhotoShootTotalCount
-	(*ConditionTourAreaProgress)(nil),                   // 309: pmaster.ConditionTourAreaProgress
-	(*ConditionActivityFanEventBestScoreRank)(nil),      // 310: pmaster.ConditionActivityFanEventBestScoreRank
-	(*ConditionActivityFanEventTotalCount)(nil),         // 311: pmaster.ConditionActivityFanEventTotalCount
-	(*ConditionActivityPromotionTotalHours)(nil),        // 312: pmaster.ConditionActivityPromotionTotalHours
-	(*ConditionActivityRefreshTotalCount)(nil),          // 313: pmaster.ConditionActivityRefreshTotalCount
-	(*ConditionHighestSalary)(nil),                      // 314: pmaster.ConditionHighestSalary
-	(*ConditionTutorialStep)(nil),                       // 315: pmaster.ConditionTutorialStep
-	(*ConditionForumCreateReplyCount)(nil),              // 316: pmaster.ConditionForumCreateReplyCount
-	(*ConditionBirthDay)(nil),                           // 317: pmaster.ConditionBirthDay
-	(*ConditionPvpOpen)(nil),                            // 318: pmaster.ConditionPvpOpen
-	(*ConditionComebackUser)(nil),                       // 319: pmaster.ConditionComebackUser
-	(*ConditionSatisfyConditions)(nil),                  // 320: pmaster.ConditionSatisfyConditions
-	(*ConditionNotSatisfyConditions)(nil),               // 321: pmaster.ConditionNotSatisfyConditions
-	(*ConditionDutyExchangeReward)(nil),                 // 322: pmaster.ConditionDutyExchangeReward
-	(*ConditionDutyExchangeRewardCount)(nil),            // 323: pmaster.ConditionDutyExchangeRewardCount
-	(*ConditionDutyTotalObtainPointCount)(nil),          // 324: pmaster.ConditionDutyTotalObtainPointCount
-	(*ConditionCompanyPointGte)(nil),                    // 325: pmaster.ConditionCompanyPointGte
-	(*ConditionCompanyEnjoyLevelGte)(nil),               // 326: pmaster.ConditionCompanyEnjoyLevelGte
-	(*ConditionCompanyEnjoyPointGte)(nil),               // 327: pmaster.ConditionCompanyEnjoyPointGte
-	(*ConditionCompanyTrustLevelGte)(nil),               // 328: pmaster.ConditionCompanyTrustLevelGte
-	(*ConditionCompanyTrustPointGte)(nil),               // 329: pmaster.ConditionCompanyTrustPointGte
-	(*ConditionCompanySalaryPointGte)(nil),              // 330: pmaster.ConditionCompanySalaryPointGte
-	(*ConditionStaffLevelGte)(nil),                      // 331: pmaster.ConditionStaffLevelGte
-	(*ConsumptionResource)(nil),                         // 332: pmaster.ConsumptionResource
-	(*ExerciseHintContent)(nil),                         // 333: pmaster.ExerciseHintContent
-	(*HelpContent)(nil),                                 // 334: pmaster.HelpContent
-	(*HomeSubCharacterStay)(nil),                        // 335: pmaster.HomeSubCharacterStay
-	(*CharacterTalk)(nil),                               // 336: pmaster.CharacterTalk
-	(*MusicDigest)(nil),                                 // 337: pmaster.MusicDigest
-	(*PhotoAbilityLevel)(nil),                           // 338: pmaster.PhotoAbilityLevel
-	(*PhotoAbilityGrade)(nil),                           // 339: pmaster.PhotoAbilityGrade
-	(*RewardResource)(nil),                              // 340: pmaster.RewardResource
-	(*PhotoPanoramaCameraPosition)(nil),                 // 341: pmaster.PhotoPanoramaCameraPosition
-	(*StoryBranchChoice)(nil),                           // 342: pmaster.StoryBranchChoice
-	(*StoryChapter)(nil),                                // 343: pmaster.StoryChapter
-	(*TutorialStep)(nil),                                // 344: pmaster.TutorialStep
-	(penum.AccessoryCategoryType)(0),                    // 345: penum.AccessoryCategoryType
-	(penum.AccessoryParameterType)(0),                   // 346: penum.AccessoryParameterType
-	(penum.ActivityFanEventType)(0),                     // 347: penum.ActivityFanEventType
-	(penum.AreaType)(0),                                 // 348: penum.AreaType
-	(penum.ItemType)(0),                                 // 349: penum.ItemType
-	(penum.AttributeType)(0),                            // 350: penum.AttributeType
-	(penum.MoodType)(0),                                 // 351: penum.MoodType
-	(penum.CardType)(0),                                 // 352: penum.CardType
-	(penum.CardDisplayType)(0),                          // 353: penum.CardDisplayType
-	(penum.CardImageType)(0),                            // 354: penum.CardImageType
-	(penum.CharacterPersonalityType)(0),                 // 355: penum.CharacterPersonalityType
-	(penum.SimpleCharacterPersonalityType)(0),           // 356: penum.SimpleCharacterPersonalityType
-	(penum.CharacterSdPersonalityType)(0),               // 357: penum.CharacterSdPersonalityType
-	(penum.PsylliumColorType)(0),                        // 358: penum.PsylliumColorType
-	(penum.CharacterType)(0),                            // 359: penum.CharacterType
-	(penum.CompanyEnjoyObtainPointItemGrowthType)(0),    // 360: penum.CompanyEnjoyObtainPointItemGrowthType
-	(penum.PhotoPoseType)(0),                            // 361: penum.PhotoPoseType
-	(penum.EventMissionType)(0),                         // 362: penum.EventMissionType
-	(penum.ExtraStoryType)(0),                           // 363: penum.ExtraStoryType
-	(penum.ExtraStoryPartType)(0),                       // 364: penum.ExtraStoryPartType
-	(penum.FunctionLockType)(0),                         // 365: penum.FunctionLockType
-	(penum.GachaType)(0),                                // 366: penum.GachaType
-	(penum.ResourceType)(0),                             // 367: penum.ResourceType
-	(penum.GachaLimitType)(0),                           // 368: penum.GachaLimitType
-	(penum.HierarchyRewardType)(0),                      // 369: penum.HierarchyRewardType
-	(penum.HomePositionType)(0),                         // 370: penum.HomePositionType
-	(penum.HomeActionType)(0),                           // 371: penum.HomeActionType
-	(penum.HomePlaceType)(0),                            // 372: penum.HomePlaceType
-	(penum.HomeBackgroundVersionType)(0),                // 373: penum.HomeBackgroundVersionType
-	(penum.LinkType)(0),                                 // 374: penum.LinkType
-	(penum.LiveAbilityType)(0),                          // 375: penum.LiveAbilityType
-	(penum.LiveAbilityLevelBackgroundRankType)(0),       // 376: penum.LiveAbilityLevelBackgroundRankType
-	(penum.LiveResultType)(0),                           // 377: penum.LiveResultType
-	(penum.LoadingType)(0),                              // 378: penum.LoadingType
-	(penum.LoadingDisplayTargetType)(0),                 // 379: penum.LoadingDisplayTargetType
-	(penum.LoginBonusType)(0),                           // 380: penum.LoginBonusType
-	(penum.LoveHomeActionType)(0),                       // 381: penum.LoveHomeActionType
-	(penum.MessageType)(0),                              // 382: penum.MessageType
-	(penum.MessageInstantType)(0),                       // 383: penum.MessageInstantType
-	(penum.MessageRarityType)(0),                        // 384: penum.MessageRarityType
-	(penum.MissionCategoryType)(0),                      // 385: penum.MissionCategoryType
-	(penum.MissionType)(0),                              // 386: penum.MissionType
-	(penum.CompanyEnjoyCharacterMissionCategoryType)(0), // 387: penum.CompanyEnjoyCharacterMissionCategoryType
-	(penum.CompanyTrustMissionCategoryType)(0),          // 388: penum.CompanyTrustMissionCategoryType
-	(penum.StageType)(0),                                // 389: penum.StageType
-	(penum.PhotoAbilityType)(0),                         // 390: penum.PhotoAbilityType
-	(penum.LiveType)(0),                                 // 391: penum.LiveType
-	(penum.StatusEffectType)(0),                         // 392: penum.StatusEffectType
-	(penum.PhotoShootingActionType)(0),                  // 393: penum.PhotoShootingActionType
-	(penum.LiveSkipType)(0),                             // 394: penum.LiveSkipType
-	(penum.RacePanelType)(0),                            // 395: penum.RacePanelType
-	(penum.RaceActivityLessonRewardType)(0),             // 396: penum.RaceActivityLessonRewardType
-	(penum.RaceRankingType)(0),                          // 397: penum.RaceRankingType
-	(penum.SkillEfficacyType)(0),                        // 398: penum.SkillEfficacyType
-	(penum.ShowcaseToyPutType)(0),                       // 399: penum.ShowcaseToyPutType
-	(penum.SkillTriggerType)(0),                         // 400: penum.SkillTriggerType
-	(penum.ParameterType)(0),                            // 401: penum.ParameterType
-	(penum.StoryAdvPlayType)(0),                         // 402: penum.StoryAdvPlayType
-	(penum.StoryPartType)(0),                            // 403: penum.StoryPartType
-	(penum.PointType)(0),                                // 404: penum.PointType
-	(penum.TutorialType)(0),                             // 405: penum.TutorialType
-	(penum.AssetDownloadType)(0),                        // 406: penum.AssetDownloadType
-	(penum.BacksidePanelType)(0),                        // 407: penum.BacksidePanelType
-	(penum.BacksidePanelAttributeType)(0),               // 408: penum.BacksidePanelAttributeType
-	(penum.HelpType)(0),                                 // 409: penum.HelpType
-	(penum.HelpDisplayTargetType)(0),                    // 410: penum.HelpDisplayTargetType
-	(penum.LiveTipType)(0),                              // 411: penum.LiveTipType
-	(penum.MusicChartType)(0),                           // 412: penum.MusicChartType
-	(penum.PhotoAbilityTargetType)(0),                   // 413: penum.PhotoAbilityTargetType
-	(penum.PhotoPoseMotionType)(0),                      // 414: penum.PhotoPoseMotionType
-	(penum.PhotoLookingType)(0),                         // 415: penum.PhotoLookingType
-	(penum.PhotoShootingMotionType)(0),                  // 416: penum.PhotoShootingMotionType
-	(penum.RewardSortTargetType)(0),                     // 417: penum.RewardSortTargetType
-	(penum.RewardSortResourceType)(0),                   // 418: penum.RewardSortResourceType
-	(penum.SalaryDetailType)(0),                         // 419: penum.SalaryDetailType
-	(penum.ShowcaseHashtagCategoryType)(0),              // 420: penum.ShowcaseHashtagCategoryType
-	(penum.SkillCategoryType)(0),                        // 421: penum.SkillCategoryType
-	(penum.SkillTargetType)(0),                          // 422: penum.SkillTargetType
-	(penum.PlatformType)(0),                             // 423: penum.PlatformType
-	(penum.TitleBackgroundType)(0),                      // 424: penum.TitleBackgroundType
-	(penum.ActivityAbilityType)(0),                      // 425: penum.ActivityAbilityType
-	(penum.CardLevelReleaseType)(0),                     // 426: penum.CardLevelReleaseType
-	(penum.DayOfWeekType)(0),                            // 427: penum.DayOfWeekType
-	(penum.JoinedGuildType)(0),                          // 428: penum.JoinedGuildType
-	(penum.ResultRankType)(0),                           // 429: penum.ResultRankType
-	(penum.ExerciseHintType)(0),                         // 430: penum.ExerciseHintType
-	(penum.PhotoAbilityGradeType)(0),                    // 431: penum.PhotoAbilityGradeType
-	(penum.TutorialNavigationType)(0),                   // 432: penum.TutorialNavigationType
-	(penum.TutorialNavigationPositionType)(0),           // 433: penum.TutorialNavigationPositionType
+	(*ExcursionGazeReaction)(nil),                       // 93: pmaster.ExcursionGazeReaction
+	(*ExcursionPlace)(nil),                              // 94: pmaster.ExcursionPlace
+	(*ExcursionPlaceSetting)(nil),                       // 95: pmaster.ExcursionPlaceSetting
+	(*Exercise)(nil),                                    // 96: pmaster.Exercise
+	(*ExerciseAccessory)(nil),                           // 97: pmaster.ExerciseAccessory
+	(*ExerciseCardGroup)(nil),                           // 98: pmaster.ExerciseCardGroup
+	(*ExerciseCostume)(nil),                             // 99: pmaster.ExerciseCostume
+	(*ExerciseDeckPosition)(nil),                        // 100: pmaster.ExerciseDeckPosition
+	(*ExercisePhoto)(nil),                               // 101: pmaster.ExercisePhoto
+	(*ExtraStory)(nil),                                  // 102: pmaster.ExtraStory
+	(*ExtraStoryEpisode)(nil),                           // 103: pmaster.ExtraStoryEpisode
+	(*ExtraStoryPart)(nil),                              // 104: pmaster.ExtraStoryPart
+	(*FunctionLock)(nil),                                // 105: pmaster.FunctionLock
+	(*Gacha)(nil),                                       // 106: pmaster.Gacha
+	(*GachaButton)(nil),                                 // 107: pmaster.GachaButton
+	(*GachaCardReward)(nil),                             // 108: pmaster.GachaCardReward
+	(*GachaExchange)(nil),                               // 109: pmaster.GachaExchange
+	(*GachaStamp)(nil),                                  // 110: pmaster.GachaStamp
+	(*GachaStampSheet)(nil),                             // 111: pmaster.GachaStampSheet
+	(*GuildTopMovie)(nil),                               // 112: pmaster.GuildTopMovie
+	(*Hair)(nil),                                        // 113: pmaster.Hair
+	(*HierarchyDetailGrade)(nil),                        // 114: pmaster.HierarchyDetailGrade
+	(*HierarchyDivisionReward)(nil),                     // 115: pmaster.HierarchyDivisionReward
+	(*HierarchyReward)(nil),                             // 116: pmaster.HierarchyReward
+	(*HomeAction)(nil),                                  // 117: pmaster.HomeAction
+	(*HomeBackground)(nil),                              // 118: pmaster.HomeBackground
+	(*HomeDrama)(nil),                                   // 119: pmaster.HomeDrama
+	(*HomeDramaDetail)(nil),                             // 120: pmaster.HomeDramaDetail
+	(*HomeDramaFree)(nil),                               // 121: pmaster.HomeDramaFree
+	(*HomeMainCharacterStay)(nil),                       // 122: pmaster.HomeMainCharacterStay
+	(*HomeNavigation)(nil),                              // 123: pmaster.HomeNavigation
+	(*HomeSubCharacterStayGroup)(nil),                   // 124: pmaster.HomeSubCharacterStayGroup
+	(*HomeTalk)(nil),                                    // 125: pmaster.HomeTalk
+	(*HomeTalkCallPattern)(nil),                         // 126: pmaster.HomeTalkCallPattern
+	(*InviteSetting)(nil),                               // 127: pmaster.InviteSetting
+	(*LiveAbilityLevel)(nil),                            // 128: pmaster.LiveAbilityLevel
+	(*LiveBonus)(nil),                                   // 129: pmaster.LiveBonus
+	(*LiveBonusGroup)(nil),                              // 130: pmaster.LiveBonusGroup
+	(*LiveResultAnimation)(nil),                         // 131: pmaster.LiveResultAnimation
+	(*LiveStartAnimation)(nil),                          // 132: pmaster.LiveStartAnimation
+	(*LiveStartVoiceAssetGroup)(nil),                    // 133: pmaster.LiveStartVoiceAssetGroup
+	(*Loading)(nil),                                     // 134: pmaster.Loading
+	(*LoginBonus)(nil),                                  // 135: pmaster.LoginBonus
+	(*LoginBonusText)(nil),                              // 136: pmaster.LoginBonusText
+	(*LoveHomeAction)(nil),                              // 137: pmaster.LoveHomeAction
+	(*LoveStoryEpisode)(nil),                            // 138: pmaster.LoveStoryEpisode
+	(*MarathonBoxGachaSetting)(nil),                     // 139: pmaster.MarathonBoxGachaSetting
+	(*MarathonLiveBonus)(nil),                           // 140: pmaster.MarathonLiveBonus
+	(*MarathonLiveBonusGroup)(nil),                      // 141: pmaster.MarathonLiveBonusGroup
+	(*MarathonQuest)(nil),                               // 142: pmaster.MarathonQuest
+	(*MarathonQuestDifficulty)(nil),                     // 143: pmaster.MarathonQuestDifficulty
+	(*Message)(nil),                                     // 144: pmaster.Message
+	(*MessageDetail)(nil),                               // 145: pmaster.MessageDetail
+	(*MessageGroup)(nil),                                // 146: pmaster.MessageGroup
+	(*Mission)(nil),                                     // 147: pmaster.Mission
+	(*MissionProgress)(nil),                             // 148: pmaster.MissionProgress
+	(*Music)(nil),                                       // 149: pmaster.Music
+	(*MusicMasteryReward)(nil),                          // 150: pmaster.MusicMasteryReward
+	(*MusicMasteryRewardSet)(nil),                       // 151: pmaster.MusicMasteryRewardSet
+	(*OrnamentHair)(nil),                                // 152: pmaster.OrnamentHair
+	(*PhotoAbility)(nil),                                // 153: pmaster.PhotoAbility
+	(*PhotoAbilityInfo)(nil),                            // 154: pmaster.PhotoAbilityInfo
+	(*PhotoAbilitySet)(nil),                             // 155: pmaster.PhotoAbilitySet
+	(*PhotoActivity)(nil),                               // 156: pmaster.PhotoActivity
+	(*PhotoAllInOne)(nil),                               // 157: pmaster.PhotoAllInOne
+	(*PhotoContestActivity)(nil),                        // 158: pmaster.PhotoContestActivity
+	(*PhotoContestQuestMusic)(nil),                      // 159: pmaster.PhotoContestQuestMusic
+	(*PhotoContestQuestStage)(nil),                      // 160: pmaster.PhotoContestQuestStage
+	(*PhotoContestSectionReward)(nil),                   // 161: pmaster.PhotoContestSectionReward
+	(*PhotoExpression)(nil),                             // 162: pmaster.PhotoExpression
+	(*PhotoExpressionStagePosition)(nil),                // 163: pmaster.PhotoExpressionStagePosition
+	(*PhotoFacial)(nil),                                 // 164: pmaster.PhotoFacial
+	(*PhotoFacialMotion)(nil),                           // 165: pmaster.PhotoFacialMotion
+	(*PhotoPoseMotion)(nil),                             // 166: pmaster.PhotoPoseMotion
+	(*PhotoQuestMusic)(nil),                             // 167: pmaster.PhotoQuestMusic
+	(*PhotoQuestStage)(nil),                             // 168: pmaster.PhotoQuestStage
+	(*PhotoRecipe)(nil),                                 // 169: pmaster.PhotoRecipe
+	(*PhotoRetouchEnhance)(nil),                         // 170: pmaster.PhotoRetouchEnhance
+	(*PhotoShootingCharacterMotion)(nil),                // 171: pmaster.PhotoShootingCharacterMotion
+	(*PhotoShootingReplaceCharacter)(nil),               // 172: pmaster.PhotoShootingReplaceCharacter
+	(*PhotoShootingSimplePersonalityMotion)(nil),        // 173: pmaster.PhotoShootingSimplePersonalityMotion
+	(*PhotoSituation)(nil),                              // 174: pmaster.PhotoSituation
+	(*Quest)(nil),                                       // 175: pmaster.Quest
+	(*QuestAchievedRankReward)(nil),                     // 176: pmaster.QuestAchievedRankReward
+	(*QuestCharacterAdvantage)(nil),                     // 177: pmaster.QuestCharacterAdvantage
+	(*RaceLiveBonus)(nil),                               // 178: pmaster.RaceLiveBonus
+	(*RaceLiveBonusGroup)(nil),                          // 179: pmaster.RaceLiveBonusGroup
+	(*RacePanel)(nil),                                   // 180: pmaster.RacePanel
+	(*RacePanelReward)(nil),                             // 181: pmaster.RacePanelReward
+	(*RaceQuest)(nil),                                   // 182: pmaster.RaceQuest
+	(*RaceQuestDifficulty)(nil),                         // 183: pmaster.RaceQuestDifficulty
+	(*RaceRankingReward)(nil),                           // 184: pmaster.RaceRankingReward
+	(*Setting)(nil),                                     // 185: pmaster.Setting
+	(*ShowcaseFrame)(nil),                               // 186: pmaster.ShowcaseFrame
+	(*ShowcaseMusic)(nil),                               // 187: pmaster.ShowcaseMusic
+	(*ShowcaseSetting)(nil),                             // 188: pmaster.ShowcaseSetting
+	(*ShowcaseToy)(nil),                                 // 189: pmaster.ShowcaseToy
+	(*SkillDetail)(nil),                                 // 190: pmaster.SkillDetail
+	(*SkillEfficacy)(nil),                               // 191: pmaster.SkillEfficacy
+	(*SkillLevel)(nil),                                  // 192: pmaster.SkillLevel
+	(*SkillTrigger)(nil),                                // 193: pmaster.SkillTrigger
+	(*StaffLevel)(nil),                                  // 194: pmaster.StaffLevel
+	(*Story)(nil),                                       // 195: pmaster.Story
+	(*StoryEpisode)(nil),                                // 196: pmaster.StoryEpisode
+	(*StoryPart)(nil),                                   // 197: pmaster.StoryPart
+	(*Telephone)(nil),                                   // 198: pmaster.Telephone
+	(*TourQuestSetting)(nil),                            // 199: pmaster.TourQuestSetting
+	(*Tutorial)(nil),                                    // 200: pmaster.Tutorial
+	(*AccessoryEnhancement)(nil),                        // 201: pmaster.AccessoryEnhancement
+	(*ActivityAbility)(nil),                             // 202: pmaster.ActivityAbility
+	(*AppCapacityLimit)(nil),                            // 203: pmaster.AppCapacityLimit
+	(*AssetDownload)(nil),                               // 204: pmaster.AssetDownload
+	(*BacksideAnimation)(nil),                           // 205: pmaster.BacksideAnimation
+	(*BoxGachaGroup)(nil),                               // 206: pmaster.BoxGachaGroup
+	(*CardDuplicateExp)(nil),                            // 207: pmaster.CardDuplicateExp
+	(*CardEvolutionLevel)(nil),                          // 208: pmaster.CardEvolutionLevel
+	(*CardEvolutionLevelRelease)(nil),                   // 209: pmaster.CardEvolutionLevelRelease
+	(*CardLevel)(nil),                                   // 210: pmaster.CardLevel
+	(*CardLevelRelease)(nil),                            // 211: pmaster.CardLevelRelease
+	(*CardParameter)(nil),                               // 212: pmaster.CardParameter
+	(*CardRank)(nil),                                    // 213: pmaster.CardRank
+	(*CardRarity)(nil),                                  // 214: pmaster.CardRarity
+	(*CharacterActivityLevel)(nil),                      // 215: pmaster.CharacterActivityLevel
+	(*ComboAdvantage)(nil),                              // 216: pmaster.ComboAdvantage
+	(*CompanyEnjoyCharacterLevel)(nil),                  // 217: pmaster.CompanyEnjoyCharacterLevel
+	(*CompanyEnjoyLevel)(nil),                           // 218: pmaster.CompanyEnjoyLevel
+	(*CompanyPoint)(nil),                                // 219: pmaster.CompanyPoint
+	(*Condition)(nil),                                   // 220: pmaster.Condition
+	(*ConditionDescription)(nil),                        // 221: pmaster.ConditionDescription
+	(*Consumption)(nil),                                 // 222: pmaster.Consumption
+	(*CostumeType)(nil),                                 // 223: pmaster.CostumeType
+	(*DeckEntrustCoefficient)(nil),                      // 224: pmaster.DeckEntrustCoefficient
+	(*Division)(nil),                                    // 225: pmaster.Division
+	(*DutyPoint)(nil),                                   // 226: pmaster.DutyPoint
+	(*ExerciseAccessoryGroup)(nil),                      // 227: pmaster.ExerciseAccessoryGroup
+	(*ExerciseDeck)(nil),                                // 228: pmaster.ExerciseDeck
+	(*ExerciseHint)(nil),                                // 229: pmaster.ExerciseHint
+	(*ExercisePhotoGroup)(nil),                          // 230: pmaster.ExercisePhotoGroup
+	(*ExerciseUser)(nil),                                // 231: pmaster.ExerciseUser
+	(*GachaStampSheetGroup)(nil),                        // 232: pmaster.GachaStampSheetGroup
+	(*Guild)(nil),                                       // 233: pmaster.Guild
+	(*HelpCategory)(nil),                                // 234: pmaster.HelpCategory
+	(*HierarchyGrade)(nil),                              // 235: pmaster.HierarchyGrade
+	(*HomeBackgroundCategory)(nil),                      // 236: pmaster.HomeBackgroundCategory
+	(*HomeDramaPosition)(nil),                           // 237: pmaster.HomeDramaPosition
+	(*HomeDramaPositionGroup)(nil),                      // 238: pmaster.HomeDramaPositionGroup
+	(*InviteHostReward)(nil),                            // 239: pmaster.InviteHostReward
+	(*Item)(nil),                                        // 240: pmaster.Item
+	(*LiveAbility)(nil),                                 // 241: pmaster.LiveAbility
+	(*LiveTip)(nil),                                     // 242: pmaster.LiveTip
+	(*LoveColor)(nil),                                   // 243: pmaster.LoveColor
+	(*LoveLevel)(nil),                                   // 244: pmaster.LoveLevel
+	(*ManagerLevel)(nil),                                // 245: pmaster.ManagerLevel
+	(*MusicChartPattern)(nil),                           // 246: pmaster.MusicChartPattern
+	(*MusicMasteryLevel)(nil),                           // 247: pmaster.MusicMasteryLevel
+	(*PhotoAbilityTarget)(nil),                          // 248: pmaster.PhotoAbilityTarget
+	(*PhotoPose)(nil),                                   // 249: pmaster.PhotoPose
+	(*PhotoRarityLevel)(nil),                            // 250: pmaster.PhotoRarityLevel
+	(*PhotoShootingMotionSet)(nil),                      // 251: pmaster.PhotoShootingMotionSet
+	(*QuestAudienceAdvantage)(nil),                      // 252: pmaster.QuestAudienceAdvantage
+	(*QuestContestRankingSeason)(nil),                   // 253: pmaster.QuestContestRankingSeason
+	(*QuestPressure)(nil),                               // 254: pmaster.QuestPressure
+	(*QuestStaminaConsumption)(nil),                     // 255: pmaster.QuestStaminaConsumption
+	(*Reward)(nil),                                      // 256: pmaster.Reward
+	(*RewardSort)(nil),                                  // 257: pmaster.RewardSort
+	(*Salary)(nil),                                      // 258: pmaster.Salary
+	(*ShowcaseHashtag)(nil),                             // 259: pmaster.ShowcaseHashtag
+	(*ShowcaseMusicFilter)(nil),                         // 260: pmaster.ShowcaseMusicFilter
+	(*ShowcaseToyCategory)(nil),                         // 261: pmaster.ShowcaseToyCategory
+	(*ShowcaseToyShopFilter)(nil),                       // 262: pmaster.ShowcaseToyShopFilter
+	(*Skill)(nil),                                       // 263: pmaster.Skill
+	(*SkillTarget)(nil),                                 // 264: pmaster.SkillTarget
+	(*StaffLevelLimitBreakRank)(nil),                    // 265: pmaster.StaffLevelLimitBreakRank
+	(*StaffTraining)(nil),                               // 266: pmaster.StaffTraining
+	(*StaffTrainingReset)(nil),                          // 267: pmaster.StaffTrainingReset
+	(*StaffTrainingResetGroup)(nil),                     // 268: pmaster.StaffTrainingResetGroup
+	(*Stage)(nil),                                       // 269: pmaster.Stage
+	(*StatusEffectName)(nil),                            // 270: pmaster.StatusEffectName
+	(*StoreGppProduct)(nil),                             // 271: pmaster.StoreGppProduct
+	(*StoreProduct)(nil),                                // 272: pmaster.StoreProduct
+	(*StoryEpisodeConsumption)(nil),                     // 273: pmaster.StoryEpisodeConsumption
+	(*TitleBackground)(nil),                             // 274: pmaster.TitleBackground
+	(*TotalStaffEnhanceAdvantage)(nil),                  // 275: pmaster.TotalStaffEnhanceAdvantage
+	(*Wording)(nil),                                     // 276: pmaster.Wording
+	(*ActivityAbilityLevel)(nil),                        // 277: pmaster.ActivityAbilityLevel
+	(*CardEvolutionLevelReleaseTarget)(nil),             // 278: pmaster.CardEvolutionLevelReleaseTarget
+	(*CardLevelReleaseTarget)(nil),                      // 279: pmaster.CardLevelReleaseTarget
+	(*ActivityFanEventWord)(nil),                        // 280: pmaster.ActivityFanEventWord
+	(*LoveCharacterInfo)(nil),                           // 281: pmaster.LoveCharacterInfo
+	(*ConditionSetting)(nil),                            // 282: pmaster.ConditionSetting
+	(*ConditionStartHours)(nil),                         // 283: pmaster.ConditionStartHours
+	(*ConditionNotLoginDays)(nil),                       // 284: pmaster.ConditionNotLoginDays
+	(*ConditionAccumulationLoginDays)(nil),              // 285: pmaster.ConditionAccumulationLoginDays
+	(*ConditionManagerLevel)(nil),                       // 286: pmaster.ConditionManagerLevel
+	(*ConditionDeckMaxOverallValue)(nil),                // 287: pmaster.ConditionDeckMaxOverallValue
+	(*ConditionAnimeStoryPoint)(nil),                    // 288: pmaster.ConditionAnimeStoryPoint
+	(*ConditionGameStoryPoint)(nil),                     // 289: pmaster.ConditionGameStoryPoint
+	(*ConditionGroupStoryPoint)(nil),                    // 290: pmaster.ConditionGroupStoryPoint
+	(*ConditionPhotoReportPityTimer)(nil),               // 291: pmaster.ConditionPhotoReportPityTimer
+	(*ConditionExchangeCount)(nil),                      // 292: pmaster.ConditionExchangeCount
+	(*ConditionTerm)(nil),                               // 293: pmaster.ConditionTerm
+	(*ConditionGameStartTerm)(nil),                      // 294: pmaster.ConditionGameStartTerm
+	(*ConditionDayOfWeek)(nil),                          // 295: pmaster.ConditionDayOfWeek
+	(*ConditionTime)(nil),                               // 296: pmaster.ConditionTime
+	(*ConditionGold)(nil),                               // 297: pmaster.ConditionGold
+	(*ConditionStone)(nil),                              // 298: pmaster.ConditionStone
+	(*ConditionDrawGacha)(nil),                          // 299: pmaster.ConditionDrawGacha
+	(*ConditionPurchaseShop)(nil),                       // 300: pmaster.ConditionPurchaseShop
+	(*ConditionPlatformType)(nil),                       // 301: pmaster.ConditionPlatformType
+	(*ConditionDivision)(nil),                           // 302: pmaster.ConditionDivision
+	(*ConditionJoinedGuild)(nil),                        // 303: pmaster.ConditionJoinedGuild
+	(*ConditionActivityFanEventLevel)(nil),              // 304: pmaster.ConditionActivityFanEventLevel
+	(*ConditionActivityPromotionLevel)(nil),             // 305: pmaster.ConditionActivityPromotionLevel
+	(*ConditionActivityRefreshLevel)(nil),               // 306: pmaster.ConditionActivityRefreshLevel
+	(*ConditionContestQuestTotalScore)(nil),             // 307: pmaster.ConditionContestQuestTotalScore
+	(*ConditionHierarchyPointGte)(nil),                  // 308: pmaster.ConditionHierarchyPointGte
+	(*ConditionDiary)(nil),                              // 309: pmaster.ConditionDiary
+	(*ConditionStaffTrainTotalCount)(nil),               // 310: pmaster.ConditionStaffTrainTotalCount
+	(*ConditionPhotoShootTotalCount)(nil),               // 311: pmaster.ConditionPhotoShootTotalCount
+	(*ConditionTourAreaProgress)(nil),                   // 312: pmaster.ConditionTourAreaProgress
+	(*ConditionActivityFanEventBestScoreRank)(nil),      // 313: pmaster.ConditionActivityFanEventBestScoreRank
+	(*ConditionActivityFanEventTotalCount)(nil),         // 314: pmaster.ConditionActivityFanEventTotalCount
+	(*ConditionActivityPromotionTotalHours)(nil),        // 315: pmaster.ConditionActivityPromotionTotalHours
+	(*ConditionActivityRefreshTotalCount)(nil),          // 316: pmaster.ConditionActivityRefreshTotalCount
+	(*ConditionHighestSalary)(nil),                      // 317: pmaster.ConditionHighestSalary
+	(*ConditionTutorialStep)(nil),                       // 318: pmaster.ConditionTutorialStep
+	(*ConditionForumCreateReplyCount)(nil),              // 319: pmaster.ConditionForumCreateReplyCount
+	(*ConditionBirthDay)(nil),                           // 320: pmaster.ConditionBirthDay
+	(*ConditionPvpOpen)(nil),                            // 321: pmaster.ConditionPvpOpen
+	(*ConditionComebackUser)(nil),                       // 322: pmaster.ConditionComebackUser
+	(*ConditionSatisfyConditions)(nil),                  // 323: pmaster.ConditionSatisfyConditions
+	(*ConditionNotSatisfyConditions)(nil),               // 324: pmaster.ConditionNotSatisfyConditions
+	(*ConditionDutyExchangeReward)(nil),                 // 325: pmaster.ConditionDutyExchangeReward
+	(*ConditionDutyExchangeRewardCount)(nil),            // 326: pmaster.ConditionDutyExchangeRewardCount
+	(*ConditionDutyTotalObtainPointCount)(nil),          // 327: pmaster.ConditionDutyTotalObtainPointCount
+	(*ConditionCompanyPointGte)(nil),                    // 328: pmaster.ConditionCompanyPointGte
+	(*ConditionCompanyEnjoyLevelGte)(nil),               // 329: pmaster.ConditionCompanyEnjoyLevelGte
+	(*ConditionCompanyEnjoyPointGte)(nil),               // 330: pmaster.ConditionCompanyEnjoyPointGte
+	(*ConditionCompanyTrustLevelGte)(nil),               // 331: pmaster.ConditionCompanyTrustLevelGte
+	(*ConditionCompanyTrustPointGte)(nil),               // 332: pmaster.ConditionCompanyTrustPointGte
+	(*ConditionCompanySalaryPointGte)(nil),              // 333: pmaster.ConditionCompanySalaryPointGte
+	(*ConditionStaffLevelGte)(nil),                      // 334: pmaster.ConditionStaffLevelGte
+	(*ConsumptionResource)(nil),                         // 335: pmaster.ConsumptionResource
+	(*ExerciseHintContent)(nil),                         // 336: pmaster.ExerciseHintContent
+	(*HelpContent)(nil),                                 // 337: pmaster.HelpContent
+	(*HomeSubCharacterStay)(nil),                        // 338: pmaster.HomeSubCharacterStay
+	(*CharacterTalk)(nil),                               // 339: pmaster.CharacterTalk
+	(*MusicDigest)(nil),                                 // 340: pmaster.MusicDigest
+	(*PhotoAbilityLevel)(nil),                           // 341: pmaster.PhotoAbilityLevel
+	(*PhotoAbilityGrade)(nil),                           // 342: pmaster.PhotoAbilityGrade
+	(*RewardResource)(nil),                              // 343: pmaster.RewardResource
+	(*PhotoPanoramaCameraPosition)(nil),                 // 344: pmaster.PhotoPanoramaCameraPosition
+	(*StoryBranchChoice)(nil),                           // 345: pmaster.StoryBranchChoice
+	(*StoryChapter)(nil),                                // 346: pmaster.StoryChapter
+	(*TutorialStep)(nil),                                // 347: pmaster.TutorialStep
+	(penum.AccessoryCategoryType)(0),                    // 348: penum.AccessoryCategoryType
+	(penum.AccessoryParameterType)(0),                   // 349: penum.AccessoryParameterType
+	(penum.ActivityFanEventType)(0),                     // 350: penum.ActivityFanEventType
+	(penum.AreaType)(0),                                 // 351: penum.AreaType
+	(penum.ItemType)(0),                                 // 352: penum.ItemType
+	(penum.AttributeType)(0),                            // 353: penum.AttributeType
+	(penum.MoodType)(0),                                 // 354: penum.MoodType
+	(penum.CardType)(0),                                 // 355: penum.CardType
+	(penum.CardDisplayType)(0),                          // 356: penum.CardDisplayType
+	(penum.CardImageType)(0),                            // 357: penum.CardImageType
+	(penum.CharacterPersonalityType)(0),                 // 358: penum.CharacterPersonalityType
+	(penum.SimpleCharacterPersonalityType)(0),           // 359: penum.SimpleCharacterPersonalityType
+	(penum.CharacterSdPersonalityType)(0),               // 360: penum.CharacterSdPersonalityType
+	(penum.PsylliumColorType)(0),                        // 361: penum.PsylliumColorType
+	(penum.CharacterType)(0),                            // 362: penum.CharacterType
+	(penum.CompanyEnjoyObtainPointItemGrowthType)(0),    // 363: penum.CompanyEnjoyObtainPointItemGrowthType
+	(penum.PhotoPoseType)(0),                            // 364: penum.PhotoPoseType
+	(penum.EventMissionType)(0),                         // 365: penum.EventMissionType
+	(penum.ExtraStoryType)(0),                           // 366: penum.ExtraStoryType
+	(penum.ExtraStoryPartType)(0),                       // 367: penum.ExtraStoryPartType
+	(penum.FunctionLockType)(0),                         // 368: penum.FunctionLockType
+	(penum.GachaType)(0),                                // 369: penum.GachaType
+	(penum.ResourceType)(0),                             // 370: penum.ResourceType
+	(penum.GachaLimitType)(0),                           // 371: penum.GachaLimitType
+	(penum.HierarchyRewardType)(0),                      // 372: penum.HierarchyRewardType
+	(penum.HomePositionType)(0),                         // 373: penum.HomePositionType
+	(penum.HomeActionType)(0),                           // 374: penum.HomeActionType
+	(penum.HomePlaceType)(0),                            // 375: penum.HomePlaceType
+	(penum.HomeBackgroundVersionType)(0),                // 376: penum.HomeBackgroundVersionType
+	(penum.LinkType)(0),                                 // 377: penum.LinkType
+	(penum.LiveAbilityType)(0),                          // 378: penum.LiveAbilityType
+	(penum.LiveAbilityLevelBackgroundRankType)(0),       // 379: penum.LiveAbilityLevelBackgroundRankType
+	(penum.LiveResultType)(0),                           // 380: penum.LiveResultType
+	(penum.LoadingType)(0),                              // 381: penum.LoadingType
+	(penum.LoadingDisplayTargetType)(0),                 // 382: penum.LoadingDisplayTargetType
+	(penum.LoginBonusType)(0),                           // 383: penum.LoginBonusType
+	(penum.LoveHomeActionType)(0),                       // 384: penum.LoveHomeActionType
+	(penum.MessageType)(0),                              // 385: penum.MessageType
+	(penum.MessageInstantType)(0),                       // 386: penum.MessageInstantType
+	(penum.MessageRarityType)(0),                        // 387: penum.MessageRarityType
+	(penum.MissionCategoryType)(0),                      // 388: penum.MissionCategoryType
+	(penum.MissionType)(0),                              // 389: penum.MissionType
+	(penum.CompanyEnjoyCharacterMissionCategoryType)(0), // 390: penum.CompanyEnjoyCharacterMissionCategoryType
+	(penum.CompanyTrustMissionCategoryType)(0),          // 391: penum.CompanyTrustMissionCategoryType
+	(penum.StageType)(0),                                // 392: penum.StageType
+	(penum.PhotoAbilityType)(0),                         // 393: penum.PhotoAbilityType
+	(penum.LiveType)(0),                                 // 394: penum.LiveType
+	(penum.StatusEffectType)(0),                         // 395: penum.StatusEffectType
+	(penum.PhotoShootingActionType)(0),                  // 396: penum.PhotoShootingActionType
+	(penum.LiveSkipType)(0),                             // 397: penum.LiveSkipType
+	(penum.RacePanelType)(0),                            // 398: penum.RacePanelType
+	(penum.RaceActivityLessonRewardType)(0),             // 399: penum.RaceActivityLessonRewardType
+	(penum.RaceRankingType)(0),                          // 400: penum.RaceRankingType
+	(penum.SkillEfficacyType)(0),                        // 401: penum.SkillEfficacyType
+	(penum.ShowcaseToyPutType)(0),                       // 402: penum.ShowcaseToyPutType
+	(penum.SkillTriggerType)(0),                         // 403: penum.SkillTriggerType
+	(penum.ParameterType)(0),                            // 404: penum.ParameterType
+	(penum.StoryAdvPlayType)(0),                         // 405: penum.StoryAdvPlayType
+	(penum.StoryPartType)(0),                            // 406: penum.StoryPartType
+	(penum.PointType)(0),                                // 407: penum.PointType
+	(penum.TutorialType)(0),                             // 408: penum.TutorialType
+	(penum.AssetDownloadType)(0),                        // 409: penum.AssetDownloadType
+	(penum.BacksidePanelType)(0),                        // 410: penum.BacksidePanelType
+	(penum.BacksidePanelAttributeType)(0),               // 411: penum.BacksidePanelAttributeType
+	(penum.HelpType)(0),                                 // 412: penum.HelpType
+	(penum.HelpDisplayTargetType)(0),                    // 413: penum.HelpDisplayTargetType
+	(penum.LiveTipType)(0),                              // 414: penum.LiveTipType
+	(penum.MusicChartType)(0),                           // 415: penum.MusicChartType
+	(penum.PhotoAbilityTargetType)(0),                   // 416: penum.PhotoAbilityTargetType
+	(penum.PhotoPoseMotionType)(0),                      // 417: penum.PhotoPoseMotionType
+	(penum.PhotoLookingType)(0),                         // 418: penum.PhotoLookingType
+	(penum.PhotoShootingMotionType)(0),                  // 419: penum.PhotoShootingMotionType
+	(penum.RewardSortTargetType)(0),                     // 420: penum.RewardSortTargetType
+	(penum.RewardSortResourceType)(0),                   // 421: penum.RewardSortResourceType
+	(penum.SalaryDetailType)(0),                         // 422: penum.SalaryDetailType
+	(penum.ShowcaseHashtagCategoryType)(0),              // 423: penum.ShowcaseHashtagCategoryType
+	(penum.SkillCategoryType)(0),                        // 424: penum.SkillCategoryType
+	(penum.SkillTargetType)(0),                          // 425: penum.SkillTargetType
+	(penum.PlatformType)(0),                             // 426: penum.PlatformType
+	(penum.TitleBackgroundType)(0),                      // 427: penum.TitleBackgroundType
+	(penum.ActivityAbilityType)(0),                      // 428: penum.ActivityAbilityType
+	(penum.CardLevelReleaseType)(0),                     // 429: penum.CardLevelReleaseType
+	(penum.DayOfWeekType)(0),                            // 430: penum.DayOfWeekType
+	(penum.JoinedGuildType)(0),                          // 431: penum.JoinedGuildType
+	(penum.ResultRankType)(0),                           // 432: penum.ResultRankType
+	(penum.ExerciseHintType)(0),                         // 433: penum.ExerciseHintType
+	(penum.PhotoAbilityGradeType)(0),                    // 434: penum.PhotoAbilityGradeType
+	(penum.TutorialNavigationType)(0),                   // 435: penum.TutorialNavigationType
+	(penum.TutorialNavigationPositionType)(0),           // 436: penum.TutorialNavigationPositionType
 }
 var file_pmaster_proto_depIdxs = []int32{
-	345, // 0: pmaster.Accessory.categoryType:type_name -> penum.AccessoryCategoryType
-	346, // 1: pmaster.Accessory.param1Type:type_name -> penum.AccessoryParameterType
-	346, // 2: pmaster.Accessory.param2Type:type_name -> penum.AccessoryParameterType
-	347, // 3: pmaster.ActivityFanEvent.type:type_name -> penum.ActivityFanEventType
+	348, // 0: pmaster.Accessory.categoryType:type_name -> penum.AccessoryCategoryType
+	349, // 1: pmaster.Accessory.param1Type:type_name -> penum.AccessoryParameterType
+	349, // 2: pmaster.Accessory.param2Type:type_name -> penum.AccessoryParameterType
+	350, // 3: pmaster.ActivityFanEvent.type:type_name -> penum.ActivityFanEventType
 	3,   // 4: pmaster.ActivityFanEvent.levels:type_name -> pmaster.ActivityFanEventLevel
 	6,   // 5: pmaster.ActivityPromotion.levels:type_name -> pmaster.ActivityPromotionLevel
 	8,   // 6: pmaster.ActivityRefresh.levels:type_name -> pmaster.ActivityRefreshLevel
-	348, // 7: pmaster.Area.type:type_name -> penum.AreaType
-	349, // 8: pmaster.Area.dailyTicketItemType:type_name -> penum.ItemType
-	350, // 9: pmaster.BacksideQuestSetting.position1AttributeType:type_name -> penum.AttributeType
-	350, // 10: pmaster.BacksideQuestSetting.position2AttributeType:type_name -> penum.AttributeType
-	350, // 11: pmaster.BacksideQuestSetting.position3AttributeType:type_name -> penum.AttributeType
-	350, // 12: pmaster.BacksideQuestSetting.position4AttributeType:type_name -> penum.AttributeType
-	350, // 13: pmaster.BacksideQuestSetting.position5AttributeType:type_name -> penum.AttributeType
-	351, // 14: pmaster.BacksideQuestSetting.moodType:type_name -> penum.MoodType
-	352, // 15: pmaster.Card.type:type_name -> penum.CardType
+	351, // 7: pmaster.Area.type:type_name -> penum.AreaType
+	352, // 8: pmaster.Area.dailyTicketItemType:type_name -> penum.ItemType
+	353, // 9: pmaster.BacksideQuestSetting.position1AttributeType:type_name -> penum.AttributeType
+	353, // 10: pmaster.BacksideQuestSetting.position2AttributeType:type_name -> penum.AttributeType
+	353, // 11: pmaster.BacksideQuestSetting.position3AttributeType:type_name -> penum.AttributeType
+	353, // 12: pmaster.BacksideQuestSetting.position4AttributeType:type_name -> penum.AttributeType
+	353, // 13: pmaster.BacksideQuestSetting.position5AttributeType:type_name -> penum.AttributeType
+	354, // 14: pmaster.BacksideQuestSetting.moodType:type_name -> penum.MoodType
+	355, // 15: pmaster.Card.type:type_name -> penum.CardType
 	22,  // 16: pmaster.Card.stories:type_name -> pmaster.CardStory
 	21,  // 17: pmaster.Card.messages:type_name -> pmaster.CardMessage
 	19,  // 18: pmaster.Card.homeTalks:type_name -> pmaster.CardHomeTalk
-	353, // 19: pmaster.CardImage.displayType:type_name -> penum.CardDisplayType
-	354, // 20: pmaster.CardImage.imageType:type_name -> penum.CardImageType
+	356, // 19: pmaster.CardImage.displayType:type_name -> penum.CardDisplayType
+	357, // 20: pmaster.CardImage.imageType:type_name -> penum.CardImageType
 	27,  // 21: pmaster.Character.altCharacters:type_name -> pmaster.CharacterDuplicate
-	277, // 22: pmaster.Character.activityFanEventWords:type_name -> pmaster.ActivityFanEventWord
-	355, // 23: pmaster.Character.personalityType:type_name -> penum.CharacterPersonalityType
-	356, // 24: pmaster.Character.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
-	357, // 25: pmaster.Character.sdPersonalityType:type_name -> penum.CharacterSdPersonalityType
-	358, // 26: pmaster.Character.psylliumColorType:type_name -> penum.PsylliumColorType
-	359, // 27: pmaster.Character.type:type_name -> penum.CharacterType
-	278, // 28: pmaster.Character.loveInfo:type_name -> pmaster.LoveCharacterInfo
+	280, // 22: pmaster.Character.activityFanEventWords:type_name -> pmaster.ActivityFanEventWord
+	358, // 23: pmaster.Character.personalityType:type_name -> penum.CharacterPersonalityType
+	359, // 24: pmaster.Character.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
+	360, // 25: pmaster.Character.sdPersonalityType:type_name -> penum.CharacterSdPersonalityType
+	361, // 26: pmaster.Character.psylliumColorType:type_name -> penum.PsylliumColorType
+	362, // 27: pmaster.Character.type:type_name -> penum.CharacterType
+	281, // 28: pmaster.Character.loveInfo:type_name -> pmaster.LoveCharacterInfo
 	25,  // 29: pmaster.Character.companyEnjoyStories:type_name -> pmaster.CharacterCompanyEnjoyStory
-	278, // 30: pmaster.Character.loveInfos:type_name -> pmaster.LoveCharacterInfo
+	281, // 30: pmaster.Character.loveInfos:type_name -> pmaster.LoveCharacterInfo
 	29,  // 31: pmaster.CharacterGroup.mappings:type_name -> pmaster.CharacterGroupMapping
-	359, // 32: pmaster.CharacterGroup.characterType:type_name -> penum.CharacterType
-	360, // 33: pmaster.CompanyEnjoyObtainPointItemSetting.growthType:type_name -> penum.CompanyEnjoyObtainPointItemGrowthType
-	361, // 34: pmaster.Costume.impossiblePhotoPoseTypes:type_name -> penum.PhotoPoseType
-	362, // 35: pmaster.EventMission.eventMissionType:type_name -> penum.EventMissionType
+	362, // 32: pmaster.CharacterGroup.characterType:type_name -> penum.CharacterType
+	363, // 33: pmaster.CompanyEnjoyObtainPointItemSetting.growthType:type_name -> penum.CompanyEnjoyObtainPointItemGrowthType
+	364, // 34: pmaster.Costume.impossiblePhotoPoseTypes:type_name -> penum.PhotoPoseType
+	365, // 35: pmaster.EventMission.eventMissionType:type_name -> penum.EventMissionType
 	92,  // 36: pmaster.EventStory.episodes:type_name -> pmaster.EventStoryEpisode
-	100, // 37: pmaster.ExtraStory.episodes:type_name -> pmaster.ExtraStoryEpisode
-	363, // 38: pmaster.ExtraStory.extraStoryType:type_name -> penum.ExtraStoryType
-	364, // 39: pmaster.ExtraStoryPart.type:type_name -> penum.ExtraStoryPartType
-	365, // 40: pmaster.FunctionLock.type:type_name -> penum.FunctionLockType
-	366, // 41: pmaster.Gacha.gachaType:type_name -> penum.GachaType
-	367, // 42: pmaster.Gacha.exchangeResourceType:type_name -> penum.ResourceType
-	105, // 43: pmaster.Gacha.cardRewards:type_name -> pmaster.GachaCardReward
-	368, // 44: pmaster.GachaButton.discountLimitType:type_name -> penum.GachaLimitType
-	368, // 45: pmaster.GachaButton.limitType:type_name -> penum.GachaLimitType
-	361, // 46: pmaster.Hair.impossiblePhotoPoseTypes:type_name -> penum.PhotoPoseType
-	369, // 47: pmaster.HierarchyReward.hierarchyRewardType:type_name -> penum.HierarchyRewardType
-	370, // 48: pmaster.HomeAction.positionType:type_name -> penum.HomePositionType
-	371, // 49: pmaster.HomeAction.actionType:type_name -> penum.HomeActionType
-	372, // 50: pmaster.HomeBackground.placeType:type_name -> penum.HomePlaceType
-	373, // 51: pmaster.HomeBackground.versionType:type_name -> penum.HomeBackgroundVersionType
-	372, // 52: pmaster.HomeDrama.placeType:type_name -> penum.HomePlaceType
-	117, // 53: pmaster.HomeDrama.details:type_name -> pmaster.HomeDramaDetail
-	356, // 54: pmaster.HomeDrama.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
-	370, // 55: pmaster.HomeMainCharacterStay.homePositionType:type_name -> penum.HomePositionType
-	374, // 56: pmaster.HomeNavigation.linkType:type_name -> penum.LinkType
-	335, // 57: pmaster.HomeSubCharacterStayGroup.stays:type_name -> pmaster.HomeSubCharacterStay
-	372, // 58: pmaster.HomeTalk.placeType:type_name -> penum.HomePlaceType
-	336, // 59: pmaster.HomeTalk.characterTalks:type_name -> pmaster.CharacterTalk
-	367, // 60: pmaster.InviteSetting.hostRewardResourceType:type_name -> penum.ResourceType
-	375, // 61: pmaster.LiveAbilityLevel.type:type_name -> penum.LiveAbilityType
-	351, // 62: pmaster.LiveAbilityLevel.moodType:type_name -> penum.MoodType
-	376, // 63: pmaster.LiveAbilityLevel.backgroundRankType:type_name -> penum.LiveAbilityLevelBackgroundRankType
-	355, // 64: pmaster.LiveResultAnimation.personalityType:type_name -> penum.CharacterPersonalityType
-	377, // 65: pmaster.LiveResultAnimation.resultType:type_name -> penum.LiveResultType
-	378, // 66: pmaster.Loading.loadingType:type_name -> penum.LoadingType
-	379, // 67: pmaster.Loading.targets:type_name -> penum.LoadingDisplayTargetType
-	380, // 68: pmaster.LoginBonus.type:type_name -> penum.LoginBonusType
-	381, // 69: pmaster.LoveHomeAction.actionType:type_name -> penum.LoveHomeActionType
-	350, // 70: pmaster.MarathonQuest.position1AttributeType:type_name -> penum.AttributeType
-	350, // 71: pmaster.MarathonQuest.position2AttributeType:type_name -> penum.AttributeType
-	350, // 72: pmaster.MarathonQuest.position3AttributeType:type_name -> penum.AttributeType
-	350, // 73: pmaster.MarathonQuest.position4AttributeType:type_name -> penum.AttributeType
-	350, // 74: pmaster.MarathonQuest.position5AttributeType:type_name -> penum.AttributeType
-	351, // 75: pmaster.MarathonQuest.moodType:type_name -> penum.MoodType
-	382, // 76: pmaster.Message.type:type_name -> penum.MessageType
-	383, // 77: pmaster.Message.instantType:type_name -> penum.MessageInstantType
-	384, // 78: pmaster.Message.rarityType:type_name -> penum.MessageRarityType
-	142, // 79: pmaster.Message.details:type_name -> pmaster.MessageDetail
-	385, // 80: pmaster.Mission.categoryType:type_name -> penum.MissionCategoryType
-	386, // 81: pmaster.Mission.missionType:type_name -> penum.MissionType
-	374, // 82: pmaster.Mission.linkType:type_name -> penum.LinkType
-	145, // 83: pmaster.Mission.progresses:type_name -> pmaster.MissionProgress
-	387, // 84: pmaster.Mission.companyEnjoyCharacterMissionCategoryType:type_name -> penum.CompanyEnjoyCharacterMissionCategoryType
-	388, // 85: pmaster.Mission.companyTrustMissionCategoryType:type_name -> penum.CompanyTrustMissionCategoryType
-	337, // 86: pmaster.Music.digests:type_name -> pmaster.MusicDigest
-	389, // 87: pmaster.Music.notSelectableStageTypes:type_name -> penum.StageType
-	390, // 88: pmaster.PhotoAbility.abilityType:type_name -> penum.PhotoAbilityType
-	351, // 89: pmaster.PhotoAbility.moodType:type_name -> penum.MoodType
-	338, // 90: pmaster.PhotoAbility.photoAbilityLevels:type_name -> pmaster.PhotoAbilityLevel
-	339, // 91: pmaster.PhotoAbility.photoAbilityGrades:type_name -> pmaster.PhotoAbilityGrade
-	352, // 92: pmaster.PhotoAbility.conditionCardType:type_name -> penum.CardType
-	391, // 93: pmaster.PhotoAbility.conditionLiveType:type_name -> penum.LiveType
-	392, // 94: pmaster.PhotoAbility.statusEffectType:type_name -> penum.StatusEffectType
-	393, // 95: pmaster.PhotoActivity.type:type_name -> penum.PhotoShootingActionType
-	151, // 96: pmaster.PhotoAllInOne.abilities:type_name -> pmaster.PhotoAbilityInfo
-	393, // 97: pmaster.PhotoContestActivity.type:type_name -> penum.PhotoShootingActionType
-	361, // 98: pmaster.PhotoExpressionStagePosition.possiblePhotoPoseType:type_name -> penum.PhotoPoseType
-	356, // 99: pmaster.PhotoShootingSimplePersonalityMotion.personalityType:type_name -> penum.SimpleCharacterPersonalityType
-	350, // 100: pmaster.Quest.position1AttributeType:type_name -> penum.AttributeType
-	350, // 101: pmaster.Quest.position2AttributeType:type_name -> penum.AttributeType
-	350, // 102: pmaster.Quest.position3AttributeType:type_name -> penum.AttributeType
-	350, // 103: pmaster.Quest.position4AttributeType:type_name -> penum.AttributeType
-	350, // 104: pmaster.Quest.position5AttributeType:type_name -> penum.AttributeType
-	351, // 105: pmaster.Quest.moodType:type_name -> penum.MoodType
-	173, // 106: pmaster.Quest.achievedRankRewards:type_name -> pmaster.QuestAchievedRankReward
-	394, // 107: pmaster.Quest.liveSkipType:type_name -> penum.LiveSkipType
-	395, // 108: pmaster.RacePanel.type:type_name -> penum.RacePanelType
-	350, // 109: pmaster.RaceQuest.position1AttributeType:type_name -> penum.AttributeType
-	350, // 110: pmaster.RaceQuest.position2AttributeType:type_name -> penum.AttributeType
-	350, // 111: pmaster.RaceQuest.position3AttributeType:type_name -> penum.AttributeType
-	350, // 112: pmaster.RaceQuest.position4AttributeType:type_name -> penum.AttributeType
-	350, // 113: pmaster.RaceQuest.position5AttributeType:type_name -> penum.AttributeType
-	351, // 114: pmaster.RaceQuest.moodType:type_name -> penum.MoodType
-	396, // 115: pmaster.RaceQuest.activityLessonRewardType:type_name -> penum.RaceActivityLessonRewardType
-	394, // 116: pmaster.RaceQuest.liveSkipType:type_name -> penum.LiveSkipType
-	397, // 117: pmaster.RaceRankingReward.type:type_name -> penum.RaceRankingType
-	392, // 118: pmaster.Setting.statusEffectTypeStrengthList:type_name -> penum.StatusEffectType
-	392, // 119: pmaster.Setting.statusEffectTypeWeaknessDownList:type_name -> penum.StatusEffectType
-	392, // 120: pmaster.Setting.statusEffectTypeWeaknessOtherList:type_name -> penum.StatusEffectType
-	398, // 121: pmaster.Setting.skillEfficacyTypeScoreList:type_name -> penum.SkillEfficacyType
-	398, // 122: pmaster.Setting.skillEfficacyTypeStrengthList:type_name -> penum.SkillEfficacyType
-	398, // 123: pmaster.Setting.skillEfficacyTypeSupportList:type_name -> penum.SkillEfficacyType
-	398, // 124: pmaster.Setting.skillEfficacyTypeWeaknessDownList:type_name -> penum.SkillEfficacyType
-	398, // 125: pmaster.Setting.skillEfficacyTypeWeaknessOtherList:type_name -> penum.SkillEfficacyType
-	399, // 126: pmaster.ShowcaseToy.putTypes:type_name -> penum.ShowcaseToyPutType
-	398, // 127: pmaster.SkillEfficacy.type:type_name -> penum.SkillEfficacyType
-	187, // 128: pmaster.SkillLevel.skillDetails:type_name -> pmaster.SkillDetail
-	400, // 129: pmaster.SkillTrigger.type:type_name -> penum.SkillTriggerType
-	401, // 130: pmaster.StaffLevel.parameterType:type_name -> penum.ParameterType
-	402, // 131: pmaster.Story.advPlayTypes:type_name -> penum.StoryAdvPlayType
-	342, // 132: pmaster.Story.branchChoices:type_name -> pmaster.StoryBranchChoice
-	403, // 133: pmaster.StoryPart.type:type_name -> penum.StoryPartType
-	404, // 134: pmaster.StoryPart.pointType:type_name -> penum.PointType
-	343, // 135: pmaster.StoryPart.chapters:type_name -> pmaster.StoryChapter
-	350, // 136: pmaster.TourQuestSetting.position1AttributeType:type_name -> penum.AttributeType
-	350, // 137: pmaster.TourQuestSetting.position2AttributeType:type_name -> penum.AttributeType
-	350, // 138: pmaster.TourQuestSetting.position3AttributeType:type_name -> penum.AttributeType
-	350, // 139: pmaster.TourQuestSetting.position4AttributeType:type_name -> penum.AttributeType
-	350, // 140: pmaster.TourQuestSetting.position5AttributeType:type_name -> penum.AttributeType
-	351, // 141: pmaster.TourQuestSetting.moodType:type_name -> penum.MoodType
-	405, // 142: pmaster.Tutorial.type:type_name -> penum.TutorialType
-	344, // 143: pmaster.Tutorial.stepInfo:type_name -> pmaster.TutorialStep
-	274, // 144: pmaster.ActivityAbility.levels:type_name -> pmaster.ActivityAbilityLevel
-	406, // 145: pmaster.AssetDownload.type:type_name -> penum.AssetDownloadType
-	407, // 146: pmaster.BacksideAnimation.panelType:type_name -> penum.BacksidePanelType
-	408, // 147: pmaster.BacksideAnimation.panelAttributeType:type_name -> penum.BacksidePanelAttributeType
-	367, // 148: pmaster.BoxGachaGroup.requiredResourceType:type_name -> penum.ResourceType
-	275, // 149: pmaster.CardEvolutionLevelRelease.targets:type_name -> pmaster.CardEvolutionLevelReleaseTarget
-	276, // 150: pmaster.CardLevelRelease.targets:type_name -> pmaster.CardLevelReleaseTarget
-	401, // 151: pmaster.CompanyEnjoyCharacterLevel.bonusParameterType:type_name -> penum.ParameterType
-	279, // 152: pmaster.Condition.settings:type_name -> pmaster.ConditionSetting
-	332, // 153: pmaster.Consumption.resources:type_name -> pmaster.ConsumptionResource
-	94,  // 154: pmaster.ExerciseAccessoryGroup.accessories:type_name -> pmaster.ExerciseAccessory
-	97,  // 155: pmaster.ExerciseDeck.positions:type_name -> pmaster.ExerciseDeckPosition
-	333, // 156: pmaster.ExerciseHint.contents:type_name -> pmaster.ExerciseHintContent
-	98,  // 157: pmaster.ExercisePhotoGroup.photos:type_name -> pmaster.ExercisePhoto
-	409, // 158: pmaster.HelpCategory.type:type_name -> penum.HelpType
-	410, // 159: pmaster.HelpCategory.targetTypes:type_name -> penum.HelpDisplayTargetType
-	334, // 160: pmaster.HelpCategory.contents:type_name -> pmaster.HelpContent
-	372, // 161: pmaster.HomeDramaPosition.placeType:type_name -> penum.HomePlaceType
-	356, // 162: pmaster.HomeDramaPosition.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
-	349, // 163: pmaster.Item.type:type_name -> penum.ItemType
-	125, // 164: pmaster.LiveAbility.levels:type_name -> pmaster.LiveAbilityLevel
-	411, // 165: pmaster.LiveTip.type:type_name -> penum.LiveTipType
-	412, // 166: pmaster.MusicChartPattern.type:type_name -> penum.MusicChartType
-	413, // 167: pmaster.PhotoAbilityTarget.type:type_name -> penum.PhotoAbilityTargetType
-	361, // 168: pmaster.PhotoPose.poseType:type_name -> penum.PhotoPoseType
-	414, // 169: pmaster.PhotoPose.poseMotionType:type_name -> penum.PhotoPoseMotionType
-	415, // 170: pmaster.PhotoPose.lookingType:type_name -> penum.PhotoLookingType
-	416, // 171: pmaster.PhotoShootingMotionSet.motionType1:type_name -> penum.PhotoShootingMotionType
-	416, // 172: pmaster.PhotoShootingMotionSet.motionType2:type_name -> penum.PhotoShootingMotionType
-	416, // 173: pmaster.PhotoShootingMotionSet.motionType3:type_name -> penum.PhotoShootingMotionType
-	340, // 174: pmaster.Reward.resources:type_name -> pmaster.RewardResource
-	417, // 175: pmaster.RewardSort.rewardSortTargetType:type_name -> penum.RewardSortTargetType
-	418, // 176: pmaster.RewardSort.rewardSortResourceType:type_name -> penum.RewardSortResourceType
-	419, // 177: pmaster.Salary.type:type_name -> penum.SalaryDetailType
-	420, // 178: pmaster.ShowcaseHashtag.categoryType:type_name -> penum.ShowcaseHashtagCategoryType
-	421, // 179: pmaster.Skill.categoryType:type_name -> penum.SkillCategoryType
-	189, // 180: pmaster.Skill.levels:type_name -> pmaster.SkillLevel
-	422, // 181: pmaster.SkillTarget.type:type_name -> penum.SkillTargetType
-	401, // 182: pmaster.StaffLevelLimitBreakRank.parameterType:type_name -> penum.ParameterType
-	401, // 183: pmaster.StaffTraining.parameterType:type_name -> penum.ParameterType
-	389, // 184: pmaster.Stage.type:type_name -> penum.StageType
-	341, // 185: pmaster.Stage.cameraPositions:type_name -> pmaster.PhotoPanoramaCameraPosition
-	392, // 186: pmaster.StatusEffectName.statusEffectType:type_name -> penum.StatusEffectType
-	423, // 187: pmaster.StoreProduct.platformType:type_name -> penum.PlatformType
-	424, // 188: pmaster.TitleBackground.type:type_name -> penum.TitleBackgroundType
-	425, // 189: pmaster.ActivityAbilityLevel.type:type_name -> penum.ActivityAbilityType
-	426, // 190: pmaster.CardEvolutionLevelReleaseTarget.type:type_name -> penum.CardLevelReleaseType
-	426, // 191: pmaster.CardLevelReleaseTarget.type:type_name -> penum.CardLevelReleaseType
+	103, // 37: pmaster.ExtraStory.episodes:type_name -> pmaster.ExtraStoryEpisode
+	366, // 38: pmaster.ExtraStory.extraStoryType:type_name -> penum.ExtraStoryType
+	367, // 39: pmaster.ExtraStoryPart.type:type_name -> penum.ExtraStoryPartType
+	368, // 40: pmaster.FunctionLock.type:type_name -> penum.FunctionLockType
+	369, // 41: pmaster.Gacha.gachaType:type_name -> penum.GachaType
+	370, // 42: pmaster.Gacha.exchangeResourceType:type_name -> penum.ResourceType
+	108, // 43: pmaster.Gacha.cardRewards:type_name -> pmaster.GachaCardReward
+	371, // 44: pmaster.GachaButton.discountLimitType:type_name -> penum.GachaLimitType
+	371, // 45: pmaster.GachaButton.limitType:type_name -> penum.GachaLimitType
+	364, // 46: pmaster.Hair.impossiblePhotoPoseTypes:type_name -> penum.PhotoPoseType
+	372, // 47: pmaster.HierarchyReward.hierarchyRewardType:type_name -> penum.HierarchyRewardType
+	373, // 48: pmaster.HomeAction.positionType:type_name -> penum.HomePositionType
+	374, // 49: pmaster.HomeAction.actionType:type_name -> penum.HomeActionType
+	375, // 50: pmaster.HomeBackground.placeType:type_name -> penum.HomePlaceType
+	376, // 51: pmaster.HomeBackground.versionType:type_name -> penum.HomeBackgroundVersionType
+	375, // 52: pmaster.HomeDrama.placeType:type_name -> penum.HomePlaceType
+	120, // 53: pmaster.HomeDrama.details:type_name -> pmaster.HomeDramaDetail
+	359, // 54: pmaster.HomeDrama.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
+	373, // 55: pmaster.HomeMainCharacterStay.homePositionType:type_name -> penum.HomePositionType
+	377, // 56: pmaster.HomeNavigation.linkType:type_name -> penum.LinkType
+	338, // 57: pmaster.HomeSubCharacterStayGroup.stays:type_name -> pmaster.HomeSubCharacterStay
+	375, // 58: pmaster.HomeTalk.placeType:type_name -> penum.HomePlaceType
+	339, // 59: pmaster.HomeTalk.characterTalks:type_name -> pmaster.CharacterTalk
+	370, // 60: pmaster.InviteSetting.hostRewardResourceType:type_name -> penum.ResourceType
+	378, // 61: pmaster.LiveAbilityLevel.type:type_name -> penum.LiveAbilityType
+	354, // 62: pmaster.LiveAbilityLevel.moodType:type_name -> penum.MoodType
+	379, // 63: pmaster.LiveAbilityLevel.backgroundRankType:type_name -> penum.LiveAbilityLevelBackgroundRankType
+	358, // 64: pmaster.LiveResultAnimation.personalityType:type_name -> penum.CharacterPersonalityType
+	380, // 65: pmaster.LiveResultAnimation.resultType:type_name -> penum.LiveResultType
+	381, // 66: pmaster.Loading.loadingType:type_name -> penum.LoadingType
+	382, // 67: pmaster.Loading.targets:type_name -> penum.LoadingDisplayTargetType
+	383, // 68: pmaster.LoginBonus.type:type_name -> penum.LoginBonusType
+	384, // 69: pmaster.LoveHomeAction.actionType:type_name -> penum.LoveHomeActionType
+	353, // 70: pmaster.MarathonQuest.position1AttributeType:type_name -> penum.AttributeType
+	353, // 71: pmaster.MarathonQuest.position2AttributeType:type_name -> penum.AttributeType
+	353, // 72: pmaster.MarathonQuest.position3AttributeType:type_name -> penum.AttributeType
+	353, // 73: pmaster.MarathonQuest.position4AttributeType:type_name -> penum.AttributeType
+	353, // 74: pmaster.MarathonQuest.position5AttributeType:type_name -> penum.AttributeType
+	354, // 75: pmaster.MarathonQuest.moodType:type_name -> penum.MoodType
+	385, // 76: pmaster.Message.type:type_name -> penum.MessageType
+	386, // 77: pmaster.Message.instantType:type_name -> penum.MessageInstantType
+	387, // 78: pmaster.Message.rarityType:type_name -> penum.MessageRarityType
+	145, // 79: pmaster.Message.details:type_name -> pmaster.MessageDetail
+	388, // 80: pmaster.Mission.categoryType:type_name -> penum.MissionCategoryType
+	389, // 81: pmaster.Mission.missionType:type_name -> penum.MissionType
+	377, // 82: pmaster.Mission.linkType:type_name -> penum.LinkType
+	148, // 83: pmaster.Mission.progresses:type_name -> pmaster.MissionProgress
+	390, // 84: pmaster.Mission.companyEnjoyCharacterMissionCategoryType:type_name -> penum.CompanyEnjoyCharacterMissionCategoryType
+	391, // 85: pmaster.Mission.companyTrustMissionCategoryType:type_name -> penum.CompanyTrustMissionCategoryType
+	340, // 86: pmaster.Music.digests:type_name -> pmaster.MusicDigest
+	392, // 87: pmaster.Music.notSelectableStageTypes:type_name -> penum.StageType
+	393, // 88: pmaster.PhotoAbility.abilityType:type_name -> penum.PhotoAbilityType
+	354, // 89: pmaster.PhotoAbility.moodType:type_name -> penum.MoodType
+	341, // 90: pmaster.PhotoAbility.photoAbilityLevels:type_name -> pmaster.PhotoAbilityLevel
+	342, // 91: pmaster.PhotoAbility.photoAbilityGrades:type_name -> pmaster.PhotoAbilityGrade
+	355, // 92: pmaster.PhotoAbility.conditionCardType:type_name -> penum.CardType
+	394, // 93: pmaster.PhotoAbility.conditionLiveType:type_name -> penum.LiveType
+	395, // 94: pmaster.PhotoAbility.statusEffectType:type_name -> penum.StatusEffectType
+	396, // 95: pmaster.PhotoActivity.type:type_name -> penum.PhotoShootingActionType
+	154, // 96: pmaster.PhotoAllInOne.abilities:type_name -> pmaster.PhotoAbilityInfo
+	396, // 97: pmaster.PhotoContestActivity.type:type_name -> penum.PhotoShootingActionType
+	364, // 98: pmaster.PhotoExpressionStagePosition.possiblePhotoPoseType:type_name -> penum.PhotoPoseType
+	359, // 99: pmaster.PhotoShootingSimplePersonalityMotion.personalityType:type_name -> penum.SimpleCharacterPersonalityType
+	353, // 100: pmaster.Quest.position1AttributeType:type_name -> penum.AttributeType
+	353, // 101: pmaster.Quest.position2AttributeType:type_name -> penum.AttributeType
+	353, // 102: pmaster.Quest.position3AttributeType:type_name -> penum.AttributeType
+	353, // 103: pmaster.Quest.position4AttributeType:type_name -> penum.AttributeType
+	353, // 104: pmaster.Quest.position5AttributeType:type_name -> penum.AttributeType
+	354, // 105: pmaster.Quest.moodType:type_name -> penum.MoodType
+	176, // 106: pmaster.Quest.achievedRankRewards:type_name -> pmaster.QuestAchievedRankReward
+	397, // 107: pmaster.Quest.liveSkipType:type_name -> penum.LiveSkipType
+	398, // 108: pmaster.RacePanel.type:type_name -> penum.RacePanelType
+	353, // 109: pmaster.RaceQuest.position1AttributeType:type_name -> penum.AttributeType
+	353, // 110: pmaster.RaceQuest.position2AttributeType:type_name -> penum.AttributeType
+	353, // 111: pmaster.RaceQuest.position3AttributeType:type_name -> penum.AttributeType
+	353, // 112: pmaster.RaceQuest.position4AttributeType:type_name -> penum.AttributeType
+	353, // 113: pmaster.RaceQuest.position5AttributeType:type_name -> penum.AttributeType
+	354, // 114: pmaster.RaceQuest.moodType:type_name -> penum.MoodType
+	399, // 115: pmaster.RaceQuest.activityLessonRewardType:type_name -> penum.RaceActivityLessonRewardType
+	397, // 116: pmaster.RaceQuest.liveSkipType:type_name -> penum.LiveSkipType
+	400, // 117: pmaster.RaceRankingReward.type:type_name -> penum.RaceRankingType
+	395, // 118: pmaster.Setting.statusEffectTypeStrengthList:type_name -> penum.StatusEffectType
+	395, // 119: pmaster.Setting.statusEffectTypeWeaknessDownList:type_name -> penum.StatusEffectType
+	395, // 120: pmaster.Setting.statusEffectTypeWeaknessOtherList:type_name -> penum.StatusEffectType
+	401, // 121: pmaster.Setting.skillEfficacyTypeScoreList:type_name -> penum.SkillEfficacyType
+	401, // 122: pmaster.Setting.skillEfficacyTypeStrengthList:type_name -> penum.SkillEfficacyType
+	401, // 123: pmaster.Setting.skillEfficacyTypeSupportList:type_name -> penum.SkillEfficacyType
+	401, // 124: pmaster.Setting.skillEfficacyTypeWeaknessDownList:type_name -> penum.SkillEfficacyType
+	401, // 125: pmaster.Setting.skillEfficacyTypeWeaknessOtherList:type_name -> penum.SkillEfficacyType
+	402, // 126: pmaster.ShowcaseToy.putTypes:type_name -> penum.ShowcaseToyPutType
+	401, // 127: pmaster.SkillEfficacy.type:type_name -> penum.SkillEfficacyType
+	190, // 128: pmaster.SkillLevel.skillDetails:type_name -> pmaster.SkillDetail
+	403, // 129: pmaster.SkillTrigger.type:type_name -> penum.SkillTriggerType
+	404, // 130: pmaster.StaffLevel.parameterType:type_name -> penum.ParameterType
+	405, // 131: pmaster.Story.advPlayTypes:type_name -> penum.StoryAdvPlayType
+	345, // 132: pmaster.Story.branchChoices:type_name -> pmaster.StoryBranchChoice
+	406, // 133: pmaster.StoryPart.type:type_name -> penum.StoryPartType
+	407, // 134: pmaster.StoryPart.pointType:type_name -> penum.PointType
+	346, // 135: pmaster.StoryPart.chapters:type_name -> pmaster.StoryChapter
+	353, // 136: pmaster.TourQuestSetting.position1AttributeType:type_name -> penum.AttributeType
+	353, // 137: pmaster.TourQuestSetting.position2AttributeType:type_name -> penum.AttributeType
+	353, // 138: pmaster.TourQuestSetting.position3AttributeType:type_name -> penum.AttributeType
+	353, // 139: pmaster.TourQuestSetting.position4AttributeType:type_name -> penum.AttributeType
+	353, // 140: pmaster.TourQuestSetting.position5AttributeType:type_name -> penum.AttributeType
+	354, // 141: pmaster.TourQuestSetting.moodType:type_name -> penum.MoodType
+	408, // 142: pmaster.Tutorial.type:type_name -> penum.TutorialType
+	347, // 143: pmaster.Tutorial.stepInfo:type_name -> pmaster.TutorialStep
+	277, // 144: pmaster.ActivityAbility.levels:type_name -> pmaster.ActivityAbilityLevel
+	409, // 145: pmaster.AssetDownload.type:type_name -> penum.AssetDownloadType
+	410, // 146: pmaster.BacksideAnimation.panelType:type_name -> penum.BacksidePanelType
+	411, // 147: pmaster.BacksideAnimation.panelAttributeType:type_name -> penum.BacksidePanelAttributeType
+	370, // 148: pmaster.BoxGachaGroup.requiredResourceType:type_name -> penum.ResourceType
+	278, // 149: pmaster.CardEvolutionLevelRelease.targets:type_name -> pmaster.CardEvolutionLevelReleaseTarget
+	279, // 150: pmaster.CardLevelRelease.targets:type_name -> pmaster.CardLevelReleaseTarget
+	404, // 151: pmaster.CompanyEnjoyCharacterLevel.bonusParameterType:type_name -> penum.ParameterType
+	282, // 152: pmaster.Condition.settings:type_name -> pmaster.ConditionSetting
+	335, // 153: pmaster.Consumption.resources:type_name -> pmaster.ConsumptionResource
+	97,  // 154: pmaster.ExerciseAccessoryGroup.accessories:type_name -> pmaster.ExerciseAccessory
+	100, // 155: pmaster.ExerciseDeck.positions:type_name -> pmaster.ExerciseDeckPosition
+	336, // 156: pmaster.ExerciseHint.contents:type_name -> pmaster.ExerciseHintContent
+	101, // 157: pmaster.ExercisePhotoGroup.photos:type_name -> pmaster.ExercisePhoto
+	412, // 158: pmaster.HelpCategory.type:type_name -> penum.HelpType
+	413, // 159: pmaster.HelpCategory.targetTypes:type_name -> penum.HelpDisplayTargetType
+	337, // 160: pmaster.HelpCategory.contents:type_name -> pmaster.HelpContent
+	375, // 161: pmaster.HomeDramaPosition.placeType:type_name -> penum.HomePlaceType
+	359, // 162: pmaster.HomeDramaPosition.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
+	352, // 163: pmaster.Item.type:type_name -> penum.ItemType
+	128, // 164: pmaster.LiveAbility.levels:type_name -> pmaster.LiveAbilityLevel
+	414, // 165: pmaster.LiveTip.type:type_name -> penum.LiveTipType
+	415, // 166: pmaster.MusicChartPattern.type:type_name -> penum.MusicChartType
+	416, // 167: pmaster.PhotoAbilityTarget.type:type_name -> penum.PhotoAbilityTargetType
+	364, // 168: pmaster.PhotoPose.poseType:type_name -> penum.PhotoPoseType
+	417, // 169: pmaster.PhotoPose.poseMotionType:type_name -> penum.PhotoPoseMotionType
+	418, // 170: pmaster.PhotoPose.lookingType:type_name -> penum.PhotoLookingType
+	419, // 171: pmaster.PhotoShootingMotionSet.motionType1:type_name -> penum.PhotoShootingMotionType
+	419, // 172: pmaster.PhotoShootingMotionSet.motionType2:type_name -> penum.PhotoShootingMotionType
+	419, // 173: pmaster.PhotoShootingMotionSet.motionType3:type_name -> penum.PhotoShootingMotionType
+	343, // 174: pmaster.Reward.resources:type_name -> pmaster.RewardResource
+	420, // 175: pmaster.RewardSort.rewardSortTargetType:type_name -> penum.RewardSortTargetType
+	421, // 176: pmaster.RewardSort.rewardSortResourceType:type_name -> penum.RewardSortResourceType
+	422, // 177: pmaster.Salary.type:type_name -> penum.SalaryDetailType
+	423, // 178: pmaster.ShowcaseHashtag.categoryType:type_name -> penum.ShowcaseHashtagCategoryType
+	424, // 179: pmaster.Skill.categoryType:type_name -> penum.SkillCategoryType
+	192, // 180: pmaster.Skill.levels:type_name -> pmaster.SkillLevel
+	425, // 181: pmaster.SkillTarget.type:type_name -> penum.SkillTargetType
+	404, // 182: pmaster.StaffLevelLimitBreakRank.parameterType:type_name -> penum.ParameterType
+	404, // 183: pmaster.StaffTraining.parameterType:type_name -> penum.ParameterType
+	392, // 184: pmaster.Stage.type:type_name -> penum.StageType
+	344, // 185: pmaster.Stage.cameraPositions:type_name -> pmaster.PhotoPanoramaCameraPosition
+	395, // 186: pmaster.StatusEffectName.statusEffectType:type_name -> penum.StatusEffectType
+	426, // 187: pmaster.StoreProduct.platformType:type_name -> penum.PlatformType
+	427, // 188: pmaster.TitleBackground.type:type_name -> penum.TitleBackgroundType
+	428, // 189: pmaster.ActivityAbilityLevel.type:type_name -> penum.ActivityAbilityType
+	429, // 190: pmaster.CardEvolutionLevelReleaseTarget.type:type_name -> penum.CardLevelReleaseType
+	429, // 191: pmaster.CardLevelReleaseTarget.type:type_name -> penum.CardLevelReleaseType
 	81,  // 192: pmaster.ConditionSetting.satisfyCondition:type_name -> pmaster.ConditionSatisfyCondition
 	70,  // 193: pmaster.ConditionSetting.notSatisfyCondition:type_name -> pmaster.ConditionNotSatisfyCondition
-	280, // 194: pmaster.ConditionSetting.startHours:type_name -> pmaster.ConditionStartHours
-	281, // 195: pmaster.ConditionSetting.notLoginDays:type_name -> pmaster.ConditionNotLoginDays
-	282, // 196: pmaster.ConditionSetting.accumulationLoginDays:type_name -> pmaster.ConditionAccumulationLoginDays
-	283, // 197: pmaster.ConditionSetting.managerLevel:type_name -> pmaster.ConditionManagerLevel
-	284, // 198: pmaster.ConditionSetting.deckMaxOverallValue:type_name -> pmaster.ConditionDeckMaxOverallValue
+	283, // 194: pmaster.ConditionSetting.startHours:type_name -> pmaster.ConditionStartHours
+	284, // 195: pmaster.ConditionSetting.notLoginDays:type_name -> pmaster.ConditionNotLoginDays
+	285, // 196: pmaster.ConditionSetting.accumulationLoginDays:type_name -> pmaster.ConditionAccumulationLoginDays
+	286, // 197: pmaster.ConditionSetting.managerLevel:type_name -> pmaster.ConditionManagerLevel
+	287, // 198: pmaster.ConditionSetting.deckMaxOverallValue:type_name -> pmaster.ConditionDeckMaxOverallValue
 	51,  // 199: pmaster.ConditionSetting.clearQuest:type_name -> pmaster.ConditionClearQuest
 	63,  // 200: pmaster.ConditionSetting.maxQuestScoreRank:type_name -> pmaster.ConditionMaxQuestScoreRank
 	57,  // 201: pmaster.ConditionSetting.dailyQuestClear:type_name -> pmaster.ConditionDailyQuestClear
 	56,  // 202: pmaster.ConditionSetting.dailyAreaClear:type_name -> pmaster.ConditionDailyAreaClear
-	285, // 203: pmaster.ConditionSetting.animeStoryPoint:type_name -> pmaster.ConditionAnimeStoryPoint
-	286, // 204: pmaster.ConditionSetting.gameStoryPoint:type_name -> pmaster.ConditionGameStoryPoint
-	287, // 205: pmaster.ConditionSetting.groupStoryPoint:type_name -> pmaster.ConditionGroupStoryPoint
+	288, // 203: pmaster.ConditionSetting.animeStoryPoint:type_name -> pmaster.ConditionAnimeStoryPoint
+	289, // 204: pmaster.ConditionSetting.gameStoryPoint:type_name -> pmaster.ConditionGameStoryPoint
+	290, // 205: pmaster.ConditionSetting.groupStoryPoint:type_name -> pmaster.ConditionGroupStoryPoint
 	79,  // 206: pmaster.ConditionSetting.readStory:type_name -> pmaster.ConditionReadStory
 	50,  // 207: pmaster.ConditionSetting.clearMission:type_name -> pmaster.ConditionClearMission
 	73,  // 208: pmaster.ConditionSetting.obtainCharacter:type_name -> pmaster.ConditionObtainCharacter
@@ -31935,59 +32398,59 @@ var file_pmaster_proto_depIdxs = []int32{
 	83,  // 211: pmaster.ConditionSetting.wearCostume:type_name -> pmaster.ConditionWearCostume
 	46,  // 212: pmaster.ConditionSetting.cardLevel:type_name -> pmaster.ConditionCardLevel
 	47,  // 213: pmaster.ConditionSetting.cardRarity:type_name -> pmaster.ConditionCardRarity
-	288, // 214: pmaster.ConditionSetting.photoReportPityTimer:type_name -> pmaster.ConditionPhotoReportPityTimer
+	291, // 214: pmaster.ConditionSetting.photoReportPityTimer:type_name -> pmaster.ConditionPhotoReportPityTimer
 	38,  // 215: pmaster.ConditionSetting.activityLevel:type_name -> pmaster.ConditionActivityLevel
-	289, // 216: pmaster.ConditionSetting.exchangeCount:type_name -> pmaster.ConditionExchangeCount
-	290, // 217: pmaster.ConditionSetting.term:type_name -> pmaster.ConditionTerm
-	292, // 218: pmaster.ConditionSetting.dayOfWeek:type_name -> pmaster.ConditionDayOfWeek
-	293, // 219: pmaster.ConditionSetting.time:type_name -> pmaster.ConditionTime
+	292, // 216: pmaster.ConditionSetting.exchangeCount:type_name -> pmaster.ConditionExchangeCount
+	293, // 217: pmaster.ConditionSetting.term:type_name -> pmaster.ConditionTerm
+	295, // 218: pmaster.ConditionSetting.dayOfWeek:type_name -> pmaster.ConditionDayOfWeek
+	296, // 219: pmaster.ConditionSetting.time:type_name -> pmaster.ConditionTime
 	77,  // 220: pmaster.ConditionSetting.obtainItem:type_name -> pmaster.ConditionObtainItem
 	61,  // 221: pmaster.ConditionSetting.itemAmount:type_name -> pmaster.ConditionItemAmount
-	294, // 222: pmaster.ConditionSetting.gold:type_name -> pmaster.ConditionGold
-	295, // 223: pmaster.ConditionSetting.stone:type_name -> pmaster.ConditionStone
+	297, // 222: pmaster.ConditionSetting.gold:type_name -> pmaster.ConditionGold
+	298, // 223: pmaster.ConditionSetting.stone:type_name -> pmaster.ConditionStone
 	75,  // 224: pmaster.ConditionSetting.obtainEmblem:type_name -> pmaster.ConditionObtainEmblem
 	78,  // 225: pmaster.ConditionSetting.openGacha:type_name -> pmaster.ConditionOpenGacha
-	296, // 226: pmaster.ConditionSetting.drawGacha:type_name -> pmaster.ConditionDrawGacha
-	297, // 227: pmaster.ConditionSetting.purchaseShop:type_name -> pmaster.ConditionPurchaseShop
-	298, // 228: pmaster.ConditionSetting.platformType:type_name -> pmaster.ConditionPlatformType
-	299, // 229: pmaster.ConditionSetting.division:type_name -> pmaster.ConditionDivision
-	300, // 230: pmaster.ConditionSetting.joinedGuild:type_name -> pmaster.ConditionJoinedGuild
-	301, // 231: pmaster.ConditionSetting.activityFanEventLevel:type_name -> pmaster.ConditionActivityFanEventLevel
-	302, // 232: pmaster.ConditionSetting.activityPromotionLevel:type_name -> pmaster.ConditionActivityPromotionLevel
-	303, // 233: pmaster.ConditionSetting.activityRefreshLevel:type_name -> pmaster.ConditionActivityRefreshLevel
-	304, // 234: pmaster.ConditionSetting.contestQuestTotalScore:type_name -> pmaster.ConditionContestQuestTotalScore
+	299, // 226: pmaster.ConditionSetting.drawGacha:type_name -> pmaster.ConditionDrawGacha
+	300, // 227: pmaster.ConditionSetting.purchaseShop:type_name -> pmaster.ConditionPurchaseShop
+	301, // 228: pmaster.ConditionSetting.platformType:type_name -> pmaster.ConditionPlatformType
+	302, // 229: pmaster.ConditionSetting.division:type_name -> pmaster.ConditionDivision
+	303, // 230: pmaster.ConditionSetting.joinedGuild:type_name -> pmaster.ConditionJoinedGuild
+	304, // 231: pmaster.ConditionSetting.activityFanEventLevel:type_name -> pmaster.ConditionActivityFanEventLevel
+	305, // 232: pmaster.ConditionSetting.activityPromotionLevel:type_name -> pmaster.ConditionActivityPromotionLevel
+	306, // 233: pmaster.ConditionSetting.activityRefreshLevel:type_name -> pmaster.ConditionActivityRefreshLevel
+	307, // 234: pmaster.ConditionSetting.contestQuestTotalScore:type_name -> pmaster.ConditionContestQuestTotalScore
 	49,  // 235: pmaster.ConditionSetting.clearArea:type_name -> pmaster.ConditionClearArea
 	80,  // 236: pmaster.ConditionSetting.reliability:type_name -> pmaster.ConditionReliability
 	60,  // 237: pmaster.ConditionSetting.hierarchyDetailGradeId:type_name -> pmaster.ConditionHierarchyDetailGradeId
-	305, // 238: pmaster.ConditionSetting.hierarchyPointGte:type_name -> pmaster.ConditionHierarchyPointGte
-	306, // 239: pmaster.ConditionSetting.diary:type_name -> pmaster.ConditionDiary
-	307, // 240: pmaster.ConditionSetting.staffTrainTotalCount:type_name -> pmaster.ConditionStaffTrainTotalCount
-	308, // 241: pmaster.ConditionSetting.photoShootTotalCount:type_name -> pmaster.ConditionPhotoShootTotalCount
-	309, // 242: pmaster.ConditionSetting.tourAreaProgress:type_name -> pmaster.ConditionTourAreaProgress
-	310, // 243: pmaster.ConditionSetting.activityFanEventBestScoreRank:type_name -> pmaster.ConditionActivityFanEventBestScoreRank
-	311, // 244: pmaster.ConditionSetting.activityFanEventTotalCount:type_name -> pmaster.ConditionActivityFanEventTotalCount
-	312, // 245: pmaster.ConditionSetting.activityPromotionTotalHours:type_name -> pmaster.ConditionActivityPromotionTotalHours
-	313, // 246: pmaster.ConditionSetting.activityRefreshTotalCount:type_name -> pmaster.ConditionActivityRefreshTotalCount
+	308, // 238: pmaster.ConditionSetting.hierarchyPointGte:type_name -> pmaster.ConditionHierarchyPointGte
+	309, // 239: pmaster.ConditionSetting.diary:type_name -> pmaster.ConditionDiary
+	310, // 240: pmaster.ConditionSetting.staffTrainTotalCount:type_name -> pmaster.ConditionStaffTrainTotalCount
+	311, // 241: pmaster.ConditionSetting.photoShootTotalCount:type_name -> pmaster.ConditionPhotoShootTotalCount
+	312, // 242: pmaster.ConditionSetting.tourAreaProgress:type_name -> pmaster.ConditionTourAreaProgress
+	313, // 243: pmaster.ConditionSetting.activityFanEventBestScoreRank:type_name -> pmaster.ConditionActivityFanEventBestScoreRank
+	314, // 244: pmaster.ConditionSetting.activityFanEventTotalCount:type_name -> pmaster.ConditionActivityFanEventTotalCount
+	315, // 245: pmaster.ConditionSetting.activityPromotionTotalHours:type_name -> pmaster.ConditionActivityPromotionTotalHours
+	316, // 246: pmaster.ConditionSetting.activityRefreshTotalCount:type_name -> pmaster.ConditionActivityRefreshTotalCount
 	62,  // 247: pmaster.ConditionSetting.liveCharacterHighestScore:type_name -> pmaster.ConditionLiveCharacterHighestScore
 	58,  // 248: pmaster.ConditionSetting.fanAmount:type_name -> pmaster.ConditionFanAmount
-	314, // 249: pmaster.ConditionSetting.highestSalary:type_name -> pmaster.ConditionHighestSalary
+	317, // 249: pmaster.ConditionSetting.highestSalary:type_name -> pmaster.ConditionHighestSalary
 	48,  // 250: pmaster.ConditionSetting.characterPhotoAmount:type_name -> pmaster.ConditionCharacterPhotoAmount
-	315, // 251: pmaster.ConditionSetting.tutorialStep:type_name -> pmaster.ConditionTutorialStep
-	316, // 252: pmaster.ConditionSetting.forumCreateReplyCount:type_name -> pmaster.ConditionForumCreateReplyCount
-	317, // 253: pmaster.ConditionSetting.birthday:type_name -> pmaster.ConditionBirthDay
+	318, // 251: pmaster.ConditionSetting.tutorialStep:type_name -> pmaster.ConditionTutorialStep
+	319, // 252: pmaster.ConditionSetting.forumCreateReplyCount:type_name -> pmaster.ConditionForumCreateReplyCount
+	320, // 253: pmaster.ConditionSetting.birthday:type_name -> pmaster.ConditionBirthDay
 	59,  // 254: pmaster.ConditionSetting.finishedMessage:type_name -> pmaster.ConditionFinishedMessage
-	318, // 255: pmaster.ConditionSetting.pvpOpen:type_name -> pmaster.ConditionPvpOpen
+	321, // 255: pmaster.ConditionSetting.pvpOpen:type_name -> pmaster.ConditionPvpOpen
 	71,  // 256: pmaster.ConditionSetting.obtainAccessory:type_name -> pmaster.ConditionObtainAccessory
 	36,  // 257: pmaster.ConditionSetting.accessoryAmount:type_name -> pmaster.ConditionAccessoryAmount
 	85,  // 258: pmaster.ConditionSetting.wearLiveCostume:type_name -> pmaster.ConditionWearLiveCostume
 	55,  // 259: pmaster.ConditionSetting.contestQuestHighestRank:type_name -> pmaster.ConditionContestQuestHighestRank
-	319, // 260: pmaster.ConditionSetting.comebackUser:type_name -> pmaster.ConditionComebackUser
-	291, // 261: pmaster.ConditionSetting.gameStartTerm:type_name -> pmaster.ConditionGameStartTerm
+	322, // 260: pmaster.ConditionSetting.comebackUser:type_name -> pmaster.ConditionComebackUser
+	294, // 261: pmaster.ConditionSetting.gameStartTerm:type_name -> pmaster.ConditionGameStartTerm
 	76,  // 262: pmaster.ConditionSetting.obtainHair:type_name -> pmaster.ConditionObtainHair
 	84,  // 263: pmaster.ConditionSetting.wearHair:type_name -> pmaster.ConditionWearHair
 	86,  // 264: pmaster.ConditionSetting.wearLiveHair:type_name -> pmaster.ConditionWearLiveHair
-	320, // 265: pmaster.ConditionSetting.satisfyConditions:type_name -> pmaster.ConditionSatisfyConditions
-	321, // 266: pmaster.ConditionSetting.notSatisfyConditions:type_name -> pmaster.ConditionNotSatisfyConditions
+	323, // 265: pmaster.ConditionSetting.satisfyConditions:type_name -> pmaster.ConditionSatisfyConditions
+	324, // 266: pmaster.ConditionSetting.notSatisfyConditions:type_name -> pmaster.ConditionNotSatisfyConditions
 	40,  // 267: pmaster.ConditionSetting.allObtainCostumes:type_name -> pmaster.ConditionAllObtainCostumes
 	43,  // 268: pmaster.ConditionSetting.anyObtainCostumes:type_name -> pmaster.ConditionAnyObtainCostumes
 	65,  // 269: pmaster.ConditionSetting.notAllObtainCostumes:type_name -> pmaster.ConditionNotAllObtainCostumes
@@ -32002,39 +32465,39 @@ var file_pmaster_proto_depIdxs = []int32{
 	67,  // 278: pmaster.ConditionSetting.notAnyObtainCards:type_name -> pmaster.ConditionNotAnyObtainCards
 	37,  // 279: pmaster.ConditionSetting.activatePhotoShootingStory:type_name -> pmaster.ConditionActivatePhotoShootingStory
 	82,  // 280: pmaster.ConditionSetting.shootPhotoShootingStory:type_name -> pmaster.ConditionShootPhotoShootingStory
-	322, // 281: pmaster.ConditionSetting.dutyExchangeReward:type_name -> pmaster.ConditionDutyExchangeReward
-	323, // 282: pmaster.ConditionSetting.dutyExchangeRewardCount:type_name -> pmaster.ConditionDutyExchangeRewardCount
-	324, // 283: pmaster.ConditionSetting.dutyTotalObtainPointCount:type_name -> pmaster.ConditionDutyTotalObtainPointCount
+	325, // 281: pmaster.ConditionSetting.dutyExchangeReward:type_name -> pmaster.ConditionDutyExchangeReward
+	326, // 282: pmaster.ConditionSetting.dutyExchangeRewardCount:type_name -> pmaster.ConditionDutyExchangeRewardCount
+	327, // 283: pmaster.ConditionSetting.dutyTotalObtainPointCount:type_name -> pmaster.ConditionDutyTotalObtainPointCount
 	54,  // 284: pmaster.ConditionSetting.companyGradeGte:type_name -> pmaster.ConditionCompanyGradeGte
-	325, // 285: pmaster.ConditionSetting.companyPointGte:type_name -> pmaster.ConditionCompanyPointGte
-	326, // 286: pmaster.ConditionSetting.companyEnjoyLevelGte:type_name -> pmaster.ConditionCompanyEnjoyLevelGte
-	327, // 287: pmaster.ConditionSetting.companyEnjoyPointGte:type_name -> pmaster.ConditionCompanyEnjoyPointGte
+	328, // 285: pmaster.ConditionSetting.companyPointGte:type_name -> pmaster.ConditionCompanyPointGte
+	329, // 286: pmaster.ConditionSetting.companyEnjoyLevelGte:type_name -> pmaster.ConditionCompanyEnjoyLevelGte
+	330, // 287: pmaster.ConditionSetting.companyEnjoyPointGte:type_name -> pmaster.ConditionCompanyEnjoyPointGte
 	52,  // 288: pmaster.ConditionSetting.companyEnjoyCharacterLevelGte:type_name -> pmaster.ConditionCompanyEnjoyCharacterLevelGte
-	328, // 289: pmaster.ConditionSetting.companyTrustLevelGte:type_name -> pmaster.ConditionCompanyTrustLevelGte
-	329, // 290: pmaster.ConditionSetting.companyTrustPointGte:type_name -> pmaster.ConditionCompanyTrustPointGte
-	330, // 291: pmaster.ConditionSetting.companySalaryPointGte:type_name -> pmaster.ConditionCompanySalaryPointGte
-	331, // 292: pmaster.ConditionSetting.staffLevelGte:type_name -> pmaster.ConditionStaffLevelGte
+	331, // 289: pmaster.ConditionSetting.companyTrustLevelGte:type_name -> pmaster.ConditionCompanyTrustLevelGte
+	332, // 290: pmaster.ConditionSetting.companyTrustPointGte:type_name -> pmaster.ConditionCompanyTrustPointGte
+	333, // 291: pmaster.ConditionSetting.companySalaryPointGte:type_name -> pmaster.ConditionCompanySalaryPointGte
+	334, // 292: pmaster.ConditionSetting.staffLevelGte:type_name -> pmaster.ConditionStaffLevelGte
 	53,  // 293: pmaster.ConditionSetting.companyEnjoyCharacterPointGte:type_name -> pmaster.ConditionCompanyEnjoyCharacterPointGte
 	45,  // 294: pmaster.ConditionSetting.cardEvolutionLevelGte:type_name -> pmaster.ConditionCardEvolutionLevelGte
-	427, // 295: pmaster.ConditionDayOfWeek.dayOfWeekType:type_name -> penum.DayOfWeekType
-	423, // 296: pmaster.ConditionPlatformType.platformType:type_name -> penum.PlatformType
-	428, // 297: pmaster.ConditionJoinedGuild.joinedGuildType:type_name -> penum.JoinedGuildType
-	429, // 298: pmaster.ConditionActivityFanEventBestScoreRank.rankType:type_name -> penum.ResultRankType
-	405, // 299: pmaster.ConditionTutorialStep.tutorialType:type_name -> penum.TutorialType
+	430, // 295: pmaster.ConditionDayOfWeek.dayOfWeekType:type_name -> penum.DayOfWeekType
+	426, // 296: pmaster.ConditionPlatformType.platformType:type_name -> penum.PlatformType
+	431, // 297: pmaster.ConditionJoinedGuild.joinedGuildType:type_name -> penum.JoinedGuildType
+	432, // 298: pmaster.ConditionActivityFanEventBestScoreRank.rankType:type_name -> penum.ResultRankType
+	408, // 299: pmaster.ConditionTutorialStep.tutorialType:type_name -> penum.TutorialType
 	81,  // 300: pmaster.ConditionSatisfyConditions.conditions:type_name -> pmaster.ConditionSatisfyCondition
 	70,  // 301: pmaster.ConditionNotSatisfyConditions.conditions:type_name -> pmaster.ConditionNotSatisfyCondition
-	401, // 302: pmaster.ConditionStaffLevelGte.parameterType:type_name -> penum.ParameterType
-	367, // 303: pmaster.ConsumptionResource.resourceType:type_name -> penum.ResourceType
-	430, // 304: pmaster.ExerciseHintContent.type:type_name -> penum.ExerciseHintType
-	410, // 305: pmaster.HelpContent.targetTypes:type_name -> penum.HelpDisplayTargetType
-	356, // 306: pmaster.HomeSubCharacterStay.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
-	370, // 307: pmaster.HomeSubCharacterStay.homePositionTypes:type_name -> penum.HomePositionType
-	370, // 308: pmaster.HomeSubCharacterStay.talkHomePositionTypes:type_name -> penum.HomePositionType
-	431, // 309: pmaster.PhotoAbilityGrade.type:type_name -> penum.PhotoAbilityGradeType
-	367, // 310: pmaster.RewardResource.resourceType:type_name -> penum.ResourceType
-	193, // 311: pmaster.StoryChapter.episodes:type_name -> pmaster.StoryEpisode
-	432, // 312: pmaster.TutorialStep.navigationType:type_name -> penum.TutorialNavigationType
-	433, // 313: pmaster.TutorialStep.navigationPositionType:type_name -> penum.TutorialNavigationPositionType
+	404, // 302: pmaster.ConditionStaffLevelGte.parameterType:type_name -> penum.ParameterType
+	370, // 303: pmaster.ConsumptionResource.resourceType:type_name -> penum.ResourceType
+	433, // 304: pmaster.ExerciseHintContent.type:type_name -> penum.ExerciseHintType
+	413, // 305: pmaster.HelpContent.targetTypes:type_name -> penum.HelpDisplayTargetType
+	359, // 306: pmaster.HomeSubCharacterStay.simplePersonalityType:type_name -> penum.SimpleCharacterPersonalityType
+	373, // 307: pmaster.HomeSubCharacterStay.homePositionTypes:type_name -> penum.HomePositionType
+	373, // 308: pmaster.HomeSubCharacterStay.talkHomePositionTypes:type_name -> penum.HomePositionType
+	434, // 309: pmaster.PhotoAbilityGrade.type:type_name -> penum.PhotoAbilityGradeType
+	370, // 310: pmaster.RewardResource.resourceType:type_name -> penum.ResourceType
+	196, // 311: pmaster.StoryChapter.episodes:type_name -> pmaster.StoryEpisode
+	435, // 312: pmaster.TutorialStep.navigationType:type_name -> penum.TutorialNavigationType
+	436, // 313: pmaster.TutorialStep.navigationPositionType:type_name -> penum.TutorialNavigationPositionType
 	314, // [314:314] is the sub-list for method output_type
 	314, // [314:314] is the sub-list for method input_type
 	314, // [314:314] is the sub-list for extension type_name
@@ -32053,7 +32516,7 @@ func file_pmaster_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pmaster_proto_rawDesc), len(file_pmaster_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   345,
+			NumMessages:   348,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

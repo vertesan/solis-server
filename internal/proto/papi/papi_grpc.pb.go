@@ -5199,6 +5199,222 @@ var Exchange_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
+	Excursion_List_FullMethodName                   = "/api.Excursion/List"
+	Excursion_Start_FullMethodName                  = "/api.Excursion/Start"
+	Excursion_SetWatchedGazeReaction_FullMethodName = "/api.Excursion/SetWatchedGazeReaction"
+	Excursion_Finish_FullMethodName                 = "/api.Excursion/Finish"
+)
+
+// ExcursionClient is the client API for Excursion service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ExcursionClient interface {
+	List(ctx context.Context, in *ExcursionListRequest, opts ...grpc.CallOption) (*ExcursionListResponse, error)
+	Start(ctx context.Context, in *ExcursionStartRequest, opts ...grpc.CallOption) (*ExcursionStartResponse, error)
+	SetWatchedGazeReaction(ctx context.Context, in *ExcursionSetWatchedGazeReactionRequest, opts ...grpc.CallOption) (*ExcursionSetWatchedGazeReactionResponse, error)
+	Finish(ctx context.Context, in *ExcursionFinishRequest, opts ...grpc.CallOption) (*ExcursionFinishResponse, error)
+}
+
+type excursionClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewExcursionClient(cc grpc.ClientConnInterface) ExcursionClient {
+	return &excursionClient{cc}
+}
+
+func (c *excursionClient) List(ctx context.Context, in *ExcursionListRequest, opts ...grpc.CallOption) (*ExcursionListResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExcursionListResponse)
+	err := c.cc.Invoke(ctx, Excursion_List_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *excursionClient) Start(ctx context.Context, in *ExcursionStartRequest, opts ...grpc.CallOption) (*ExcursionStartResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExcursionStartResponse)
+	err := c.cc.Invoke(ctx, Excursion_Start_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *excursionClient) SetWatchedGazeReaction(ctx context.Context, in *ExcursionSetWatchedGazeReactionRequest, opts ...grpc.CallOption) (*ExcursionSetWatchedGazeReactionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExcursionSetWatchedGazeReactionResponse)
+	err := c.cc.Invoke(ctx, Excursion_SetWatchedGazeReaction_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *excursionClient) Finish(ctx context.Context, in *ExcursionFinishRequest, opts ...grpc.CallOption) (*ExcursionFinishResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ExcursionFinishResponse)
+	err := c.cc.Invoke(ctx, Excursion_Finish_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ExcursionServer is the server API for Excursion service.
+// All implementations must embed UnimplementedExcursionServer
+// for forward compatibility.
+type ExcursionServer interface {
+	List(context.Context, *ExcursionListRequest) (*ExcursionListResponse, error)
+	Start(context.Context, *ExcursionStartRequest) (*ExcursionStartResponse, error)
+	SetWatchedGazeReaction(context.Context, *ExcursionSetWatchedGazeReactionRequest) (*ExcursionSetWatchedGazeReactionResponse, error)
+	Finish(context.Context, *ExcursionFinishRequest) (*ExcursionFinishResponse, error)
+	mustEmbedUnimplementedExcursionServer()
+}
+
+// UnimplementedExcursionServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedExcursionServer struct{}
+
+func (UnimplementedExcursionServer) List(context.Context, *ExcursionListRequest) (*ExcursionListResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedExcursionServer) Start(context.Context, *ExcursionStartRequest) (*ExcursionStartResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Start not implemented")
+}
+func (UnimplementedExcursionServer) SetWatchedGazeReaction(context.Context, *ExcursionSetWatchedGazeReactionRequest) (*ExcursionSetWatchedGazeReactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetWatchedGazeReaction not implemented")
+}
+func (UnimplementedExcursionServer) Finish(context.Context, *ExcursionFinishRequest) (*ExcursionFinishResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Finish not implemented")
+}
+func (UnimplementedExcursionServer) mustEmbedUnimplementedExcursionServer() {}
+func (UnimplementedExcursionServer) testEmbeddedByValue()                   {}
+
+// UnsafeExcursionServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ExcursionServer will
+// result in compilation errors.
+type UnsafeExcursionServer interface {
+	mustEmbedUnimplementedExcursionServer()
+}
+
+func RegisterExcursionServer(s grpc.ServiceRegistrar, srv ExcursionServer) {
+	// If the following call pancis, it indicates UnimplementedExcursionServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Excursion_ServiceDesc, srv)
+}
+
+func _Excursion_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExcursionListRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExcursionServer).List(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Excursion_List_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExcursionServer).List(ctx, req.(*ExcursionListRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Excursion_Start_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExcursionStartRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExcursionServer).Start(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Excursion_Start_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExcursionServer).Start(ctx, req.(*ExcursionStartRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Excursion_SetWatchedGazeReaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExcursionSetWatchedGazeReactionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExcursionServer).SetWatchedGazeReaction(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Excursion_SetWatchedGazeReaction_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExcursionServer).SetWatchedGazeReaction(ctx, req.(*ExcursionSetWatchedGazeReactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Excursion_Finish_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ExcursionFinishRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ExcursionServer).Finish(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Excursion_Finish_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ExcursionServer).Finish(ctx, req.(*ExcursionFinishRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Excursion_ServiceDesc is the grpc.ServiceDesc for Excursion service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Excursion_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "api.Excursion",
+	HandlerType: (*ExcursionServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "List",
+			Handler:    _Excursion_List_Handler,
+		},
+		{
+			MethodName: "Start",
+			Handler:    _Excursion_Start_Handler,
+		},
+		{
+			MethodName: "SetWatchedGazeReaction",
+			Handler:    _Excursion_SetWatchedGazeReaction_Handler,
+		},
+		{
+			MethodName: "Finish",
+			Handler:    _Excursion_Finish_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "papi.proto",
+}
+
+const (
 	Exercise_Top_FullMethodName       = "/api.Exercise/Top"
 	Exercise_SaveDeck_FullMethodName  = "/api.Exercise/SaveDeck"
 	Exercise_Start_FullMethodName     = "/api.Exercise/Start"
@@ -12943,6 +13159,8 @@ const (
 	Photo_CreateCardStoryShootings_FullMethodName           = "/api.Photo/CreateCardStoryShootings"
 	Photo_CheckExpressionShooting_FullMethodName            = "/api.Photo/CheckExpressionShooting"
 	Photo_CreateExpressionShootings_FullMethodName          = "/api.Photo/CreateExpressionShootings"
+	Photo_CheckExcursionShooting_FullMethodName             = "/api.Photo/CheckExcursionShooting"
+	Photo_CreateExcursionShootings_FullMethodName           = "/api.Photo/CreateExcursionShootings"
 )
 
 // PhotoClient is the client API for Photo service.
@@ -12973,6 +13191,8 @@ type PhotoClient interface {
 	CreateCardStoryShootings(ctx context.Context, in *PhotoCreateCardStoryShootingsRequest, opts ...grpc.CallOption) (*PhotoCreateCardStoryShootingsResponse, error)
 	CheckExpressionShooting(ctx context.Context, in *PhotoCheckExpressionShootingRequest, opts ...grpc.CallOption) (*PhotoCheckExpressionShootingResponse, error)
 	CreateExpressionShootings(ctx context.Context, in *PhotoCreateExpressionShootingsRequest, opts ...grpc.CallOption) (*PhotoCreateExpressionShootingsResponse, error)
+	CheckExcursionShooting(ctx context.Context, in *PhotoCheckExcursionShootingRequest, opts ...grpc.CallOption) (*PhotoCheckExcursionShootingResponse, error)
+	CreateExcursionShootings(ctx context.Context, in *PhotoCreateExcursionShootingsRequest, opts ...grpc.CallOption) (*PhotoCreateExcursionShootingsResponse, error)
 }
 
 type photoClient struct {
@@ -13223,6 +13443,26 @@ func (c *photoClient) CreateExpressionShootings(ctx context.Context, in *PhotoCr
 	return out, nil
 }
 
+func (c *photoClient) CheckExcursionShooting(ctx context.Context, in *PhotoCheckExcursionShootingRequest, opts ...grpc.CallOption) (*PhotoCheckExcursionShootingResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PhotoCheckExcursionShootingResponse)
+	err := c.cc.Invoke(ctx, Photo_CheckExcursionShooting_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *photoClient) CreateExcursionShootings(ctx context.Context, in *PhotoCreateExcursionShootingsRequest, opts ...grpc.CallOption) (*PhotoCreateExcursionShootingsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PhotoCreateExcursionShootingsResponse)
+	err := c.cc.Invoke(ctx, Photo_CreateExcursionShootings_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PhotoServer is the server API for Photo service.
 // All implementations must embed UnimplementedPhotoServer
 // for forward compatibility.
@@ -13251,6 +13491,8 @@ type PhotoServer interface {
 	CreateCardStoryShootings(context.Context, *PhotoCreateCardStoryShootingsRequest) (*PhotoCreateCardStoryShootingsResponse, error)
 	CheckExpressionShooting(context.Context, *PhotoCheckExpressionShootingRequest) (*PhotoCheckExpressionShootingResponse, error)
 	CreateExpressionShootings(context.Context, *PhotoCreateExpressionShootingsRequest) (*PhotoCreateExpressionShootingsResponse, error)
+	CheckExcursionShooting(context.Context, *PhotoCheckExcursionShootingRequest) (*PhotoCheckExcursionShootingResponse, error)
+	CreateExcursionShootings(context.Context, *PhotoCreateExcursionShootingsRequest) (*PhotoCreateExcursionShootingsResponse, error)
 	mustEmbedUnimplementedPhotoServer()
 }
 
@@ -13332,6 +13574,12 @@ func (UnimplementedPhotoServer) CheckExpressionShooting(context.Context, *PhotoC
 }
 func (UnimplementedPhotoServer) CreateExpressionShootings(context.Context, *PhotoCreateExpressionShootingsRequest) (*PhotoCreateExpressionShootingsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateExpressionShootings not implemented")
+}
+func (UnimplementedPhotoServer) CheckExcursionShooting(context.Context, *PhotoCheckExcursionShootingRequest) (*PhotoCheckExcursionShootingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckExcursionShooting not implemented")
+}
+func (UnimplementedPhotoServer) CreateExcursionShootings(context.Context, *PhotoCreateExcursionShootingsRequest) (*PhotoCreateExcursionShootingsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateExcursionShootings not implemented")
 }
 func (UnimplementedPhotoServer) mustEmbedUnimplementedPhotoServer() {}
 func (UnimplementedPhotoServer) testEmbeddedByValue()               {}
@@ -13786,6 +14034,42 @@ func _Photo_CreateExpressionShootings_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Photo_CheckExcursionShooting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhotoCheckExcursionShootingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhotoServer).CheckExcursionShooting(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Photo_CheckExcursionShooting_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhotoServer).CheckExcursionShooting(ctx, req.(*PhotoCheckExcursionShootingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Photo_CreateExcursionShootings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PhotoCreateExcursionShootingsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PhotoServer).CreateExcursionShootings(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Photo_CreateExcursionShootings_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PhotoServer).CreateExcursionShootings(ctx, req.(*PhotoCreateExcursionShootingsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Photo_ServiceDesc is the grpc.ServiceDesc for Photo service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -13888,6 +14172,14 @@ var Photo_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CreateExpressionShootings",
 			Handler:    _Photo_CreateExpressionShootings_Handler,
+		},
+		{
+			MethodName: "CheckExcursionShooting",
+			Handler:    _Photo_CheckExcursionShooting_Handler,
+		},
+		{
+			MethodName: "CreateExcursionShootings",
+			Handler:    _Photo_CreateExcursionShootings_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

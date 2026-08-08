@@ -576,6 +576,10 @@ message ExchangeItem {
   string viewConditionId = 13;
   string unlockConditionId = 14;
 }
+message ExcursionListResponse {
+  repeated string excursionPlaceIds = 1;
+  api.CommonResponse commonResponse = 9999;
+}
 message ExerciseDeckPosition {
   int32 position = 1;
   string cardId = 2;
@@ -978,6 +982,7 @@ message HomeEnterResponse {
   api.HomeSatelliteInfo satelliteInfo = 49;
   api.HomeFishHeavenInfo homeFishHeavenInfo = 50;
   repeated api.WarningInfo warningInfos = 51;
+  bool isDisplayExcursionLink = 52;
   api.PvpRewardResultInfo pvpRewardResultInfo = 100;
   api.GvgRewardResultInfo gvgRewardResultInfo = 101;
   repeated api.TourRewardResultInfo tourRewardResultInfos = 102;
@@ -3290,6 +3295,7 @@ message UpdatedData {
   repeated ptransaction.UserTourArea tourAreas = 49;
   repeated ptransaction.UserPhotoPose photoPoses = 50;
   ptransaction.UserStaffTrainingReset staffTrainingReset = 51;
+  repeated ptransaction.UserExcursionGazeReaction excursionGazeReactions = 52;
 }
 message DeletedData {
   repeated ptransaction.UserItem items = 1;
@@ -3868,6 +3874,34 @@ message ExchangeTryOnRequest {
   string hairId = 3;
 }
 message ExchangeTryOnResponse {
+  api.CommonResponse commonResponse = 9999;
+}
+message ExcursionListRequest {
+  string characterId = 1;
+}
+message ExcursionStartRequest {
+  string characterId = 1;
+  string excursionPlaceId = 2;
+}
+message ExcursionStartResponse {
+  repeated ptransaction.RewardResult rewardResults = 1;
+  api.CommonResponse commonResponse = 9999;
+}
+message ExcursionSetWatchedGazeReactionRequest {
+  string characterId = 1;
+  string excursionPlaceId = 2;
+  int32 number = 3;
+}
+message ExcursionSetWatchedGazeReactionResponse {
+  api.CommonResponse commonResponse = 9999;
+}
+message ExcursionFinishRequest {
+  repeated int32 gazeReactionNumbers = 1;
+  string costumeId = 2;
+  string hairId = 3;
+}
+message ExcursionFinishResponse {
+  repeated ptransaction.RewardResult rewardResults = 1;
   api.CommonResponse commonResponse = 9999;
 }
 message ExerciseTopResponse {
@@ -5737,6 +5771,32 @@ message PhotoCreateExpressionShootingParam {
 message PhotoDokanInfo {
   repeated api.DokanInfo expressions = 1;
 }
+message PhotoCheckExcursionShootingRequest {
+  string excursionPlaceId = 1;
+  string characterId = 2;
+  string costumeId = 3;
+  string hairId = 4;
+}
+message PhotoCheckExcursionShootingResponse {
+  api.CommonResponse commonResponse = 9999;
+}
+message PhotoCreateExcursionShootingsRequest {
+  string excursionPlaceId = 1;
+  string characterId = 2;
+  string costumeId = 3;
+  string hairId = 4;
+  repeated api.PhotoCreateExcursionShootingParam createExcursionShootingParams = 5;
+  int32 manualCount = 6;
+}
+message PhotoCreateExcursionShootingsResponse {
+  repeated ptransaction.UserPhoto photos = 1;
+  bool isGift = 2;
+  api.CommonResponse commonResponse = 9999;
+}
+message PhotoCreateExcursionShootingParam {
+  string photoImageId = 1;
+  string itemId = 2;
+}
 message PhotoContestTopRequest {
   string photoContestId = 1;
 }
@@ -7166,6 +7226,7 @@ message UserGetResponse {
   repeated ptransaction.UserTourArea tourAreas = 49;
   repeated ptransaction.UserPhotoPose photoPoses = 50;
   ptransaction.UserStaffTrainingReset staffTrainingReset = 51;
+  repeated ptransaction.UserExcursionGazeReaction excursionGazeReactions = 52;
   ptransaction.UserPublic userPublic = 999;
 }
 message UserUpdateRequest {
@@ -7329,6 +7390,12 @@ service Exchange {
   rpc List(Empty) returns (ExchangeListResponse);
   rpc Execute(ExchangeExecuteRequest) returns (ExchangeExecuteResponse);
   rpc TryOn(ExchangeTryOnRequest) returns (ExchangeTryOnResponse);
+}
+service Excursion {
+  rpc List(ExcursionListRequest) returns (ExcursionListResponse);
+  rpc Start(ExcursionStartRequest) returns (ExcursionStartResponse);
+  rpc SetWatchedGazeReaction(ExcursionSetWatchedGazeReactionRequest) returns (ExcursionSetWatchedGazeReactionResponse);
+  rpc Finish(ExcursionFinishRequest) returns (ExcursionFinishResponse);
 }
 service Exercise {
   rpc Top(Empty) returns (ExerciseTopResponse);
@@ -7567,6 +7634,8 @@ service Photo {
   rpc CreateCardStoryShootings(PhotoCreateCardStoryShootingsRequest) returns (PhotoCreateCardStoryShootingsResponse);
   rpc CheckExpressionShooting(PhotoCheckExpressionShootingRequest) returns (PhotoCheckExpressionShootingResponse);
   rpc CreateExpressionShootings(PhotoCreateExpressionShootingsRequest) returns (PhotoCreateExpressionShootingsResponse);
+  rpc CheckExcursionShooting(PhotoCheckExcursionShootingRequest) returns (PhotoCheckExcursionShootingResponse);
+  rpc CreateExcursionShootings(PhotoCreateExcursionShootingsRequest) returns (PhotoCreateExcursionShootingsResponse);
 }
 service PhotoPanorama {
   rpc List(Empty) returns (PhotoPanoramaListResponse);

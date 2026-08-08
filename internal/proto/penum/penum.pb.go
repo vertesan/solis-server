@@ -2814,6 +2814,7 @@ const (
 	FunctionLockType_FunctionLockType_Satellite                       FunctionLockType = 50
 	FunctionLockType_FunctionLockType_TowerAutoPlay                   FunctionLockType = 51
 	FunctionLockType_FunctionLockType_PersonalAccessoryFilter         FunctionLockType = 52
+	FunctionLockType_FunctionLockType_Excursion                       FunctionLockType = 53
 )
 
 // Enum value maps for FunctionLockType.
@@ -2872,6 +2873,7 @@ var (
 		50: "FunctionLockType_Satellite",
 		51: "FunctionLockType_TowerAutoPlay",
 		52: "FunctionLockType_PersonalAccessoryFilter",
+		53: "FunctionLockType_Excursion",
 	}
 	FunctionLockType_value = map[string]int32{
 		"FunctionLockType_Unknown":                         0,
@@ -2927,6 +2929,7 @@ var (
 		"FunctionLockType_Satellite":                       50,
 		"FunctionLockType_TowerAutoPlay":                   51,
 		"FunctionLockType_PersonalAccessoryFilter":         52,
+		"FunctionLockType_Excursion":                       53,
 	}
 )
 
@@ -6850,6 +6853,7 @@ const (
 	MissionType_MissionType_ShowcaseSpecifiedHashtagIdSaveCount                 MissionType = 2205
 	MissionType_MissionType_CompanyCharacterUseObtainEnjoyPointItemCount        MissionType = 2301
 	MissionType_MissionType_CompanyUseObtainEnjoyPointItemTotalCount            MissionType = 2302
+	MissionType_MissionType_ExcursionClearCount                                 MissionType = 2401
 )
 
 // Enum value maps for MissionType.
@@ -6994,6 +6998,7 @@ var (
 		2205: "MissionType_ShowcaseSpecifiedHashtagIdSaveCount",
 		2301: "MissionType_CompanyCharacterUseObtainEnjoyPointItemCount",
 		2302: "MissionType_CompanyUseObtainEnjoyPointItemTotalCount",
+		2401: "MissionType_ExcursionClearCount",
 	}
 	MissionType_value = map[string]int32{
 		"MissionType_Unknown":                                             0,
@@ -7135,6 +7140,7 @@ var (
 		"MissionType_ShowcaseSpecifiedHashtagIdSaveCount":                 2205,
 		"MissionType_CompanyCharacterUseObtainEnjoyPointItemCount":        2301,
 		"MissionType_CompanyUseObtainEnjoyPointItemTotalCount":            2302,
+		"MissionType_ExcursionClearCount":                                 2401,
 	}
 )
 
@@ -12609,6 +12615,7 @@ const (
 	TutorialType_TutorialType_Satellite                          TutorialType = 47
 	TutorialType_TutorialType_PhotoPanoramaShooting              TutorialType = 48
 	TutorialType_TutorialType_FishHeaven                         TutorialType = 49
+	TutorialType_TutorialType_Excursion                          TutorialType = 50
 )
 
 // Enum value maps for TutorialType.
@@ -12664,6 +12671,7 @@ var (
 		47: "TutorialType_Satellite",
 		48: "TutorialType_PhotoPanoramaShooting",
 		49: "TutorialType_FishHeaven",
+		50: "TutorialType_Excursion",
 	}
 	TutorialType_value = map[string]int32{
 		"TutorialType_Unknown":                            0,
@@ -12716,6 +12724,7 @@ var (
 		"TutorialType_Satellite":                          47,
 		"TutorialType_PhotoPanoramaShooting":              48,
 		"TutorialType_FishHeaven":                         49,
+		"TutorialType_Excursion":                          50,
 	}
 )
 
@@ -13143,7 +13152,7 @@ const file_penum_proto_rawDesc = "" +
 	"\x1fForumListReplyRequestType_Newer\x10\x02\x12#\n" +
 	"\x1fForumListReplyRequestType_Older\x10\x03\x12$\n" +
 	" ForumListReplyRequestType_Oldest\x10\x04\x12$\n" +
-	" ForumListReplyRequestType_Around\x10\x05*\x8d\x0f\n" +
+	" ForumListReplyRequestType_Around\x10\x05*\xad\x0f\n" +
 	"\x10FunctionLockType\x12\x1c\n" +
 	"\x18FunctionLockType_Unknown\x10\x00\x12%\n" +
 	"!FunctionLockType_ActivityFanEvent\x10\x01\x12&\n" +
@@ -13198,7 +13207,8 @@ const file_penum_proto_rawDesc = "" +
 	"&FunctionLockType_PhotoPanoramaShooting\x101\x12\x1e\n" +
 	"\x1aFunctionLockType_Satellite\x102\x12\"\n" +
 	"\x1eFunctionLockType_TowerAutoPlay\x103\x12,\n" +
-	"(FunctionLockType_PersonalAccessoryFilter\x104*\xda\x02\n" +
+	"(FunctionLockType_PersonalAccessoryFilter\x104\x12\x1e\n" +
+	"\x1aFunctionLockType_Excursion\x105*\xda\x02\n" +
 	"\x17FunctionMaintenanceType\x12#\n" +
 	"\x1fFunctionMaintenanceType_Unknown\x10\x00\x12!\n" +
 	"\x1dFunctionMaintenanceType_Gacha\x10\x01\x12$\n" +
@@ -13850,7 +13860,7 @@ const file_penum_proto_rawDesc = "" +
 	"\x1aMissionStatusType_Progress\x10\x01\x12\x1b\n" +
 	"\x17MissionStatusType_Clear\x10\x02\x12!\n" +
 	"\x1dMissionStatusType_NotReceived\x10\x03\x12\x1e\n" +
-	"\x1aMissionStatusType_Received\x10\x04*\xa5.\n" +
+	"\x1aMissionStatusType_Received\x10\x04*\xcb.\n" +
 	"\vMissionType\x12\x17\n" +
 	"\x13MissionType_Unknown\x10\x00\x12\x1a\n" +
 	"\x16MissionType_LoginCount\x10\x01\x12\x1f\n" +
@@ -13997,7 +14007,8 @@ const file_penum_proto_rawDesc = "" +
 	"+MissionType_ShowcasePhotoShootingTotalCount\x10\x9c\x11\x124\n" +
 	"/MissionType_ShowcaseSpecifiedHashtagIdSaveCount\x10\x9d\x11\x12=\n" +
 	"8MissionType_CompanyCharacterUseObtainEnjoyPointItemCount\x10\xfd\x11\x129\n" +
-	"4MissionType_CompanyUseObtainEnjoyPointItemTotalCount\x10\xfe\x11*\xea\x01\n" +
+	"4MissionType_CompanyUseObtainEnjoyPointItemTotalCount\x10\xfe\x11\x12$\n" +
+	"\x1fMissionType_ExcursionClearCount\x10\xe1\x12*\xea\x01\n" +
 	"\bMoodType\x12\x14\n" +
 	"\x10MoodType_Unknown\x10\x00\x12\x17\n" +
 	"\x13MoodType_BlackHeart\x10\x01\x12\x19\n" +
@@ -14882,7 +14893,7 @@ const file_penum_proto_rawDesc = "" +
 	"\x1eTutorialNavigationType_Unknown\x10\x00\x12$\n" +
 	" TutorialNavigationType_Character\x10\x01\x12!\n" +
 	"\x1dTutorialNavigationType_System\x10\x02\x12\x1f\n" +
-	"\x1bTutorialNavigationType_Tips\x10\x03*\xfe\v\n" +
+	"\x1bTutorialNavigationType_Tips\x10\x03*\x9a\f\n" +
 	"\fTutorialType\x12\x18\n" +
 	"\x14TutorialType_Unknown\x10\x00\x12\x1a\n" +
 	"\x16TutorialType_GameStart\x10\x01\x12$\n" +
@@ -14934,7 +14945,8 @@ const file_penum_proto_rawDesc = "" +
 	"\x1cTutorialType_PhotoExpression\x10.\x12\x1a\n" +
 	"\x16TutorialType_Satellite\x10/\x12&\n" +
 	"\"TutorialType_PhotoPanoramaShooting\x100\x12\x1b\n" +
-	"\x17TutorialType_FishHeaven\x101*a\n" +
+	"\x17TutorialType_FishHeaven\x101\x12\x1a\n" +
+	"\x16TutorialType_Excursion\x102*a\n" +
 	"\x16WatchAdvertisementType\x12\"\n" +
 	"\x1eWatchAdvertisementType_Unknown\x10\x00\x12#\n" +
 	"\x1fWatchAdvertisementType_Roulette\x10\x01B7Z5github.com/vertesan/solis-server/internal/proto/penumb\x06proto3"
