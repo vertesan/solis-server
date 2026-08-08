@@ -13,6 +13,7 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
 )
 
+// Transaction with the strongest common guarantee
 func WithTransaction(
 	ctx context.Context,
 	fn func(ctx context.Context) (any, error),
@@ -37,6 +38,37 @@ func WithTransaction(
 		ctx,
 		fn,
 		transactionOptions(),
+	)
+	if err != nil {
+		return fmt.Errorf("transaction failed: %w", err)
+	}
+	return nil
+}
+
+// Transaction with local read concern and w1 write concern
+func WithTransactionDangerous(
+	ctx context.Context,
+	fn func(ctx context.Context) (any, error),
+) error {
+	if session := mongo.SessionFromContext(ctx); session != nil && session.TransactionRunning() {
+		_, err := fn(ctx)
+		return err
+	}
+
+	// start session
+	session, err := depot.Client.StartSession()
+	if err != nil {
+		return fmt.Errorf("failed start session: %w", err)
+	}
+	defer session.EndSession(ctx)
+
+	transOptions := options.Transaction().SetReadConcern(readconcern.Local()).SetWriteConcern(writeconcern.W1())
+
+	// execute transaction within session
+	_, err = session.WithTransaction(
+		ctx,
+		fn,
+		transOptions,
 	)
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
