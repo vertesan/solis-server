@@ -109,6 +109,27 @@ func UpsertMany[T any](
 	return nil
 }
 
+func FindAndUpdateOne[T any](
+	ctx context.Context,
+	database *mongo.Database,
+	collection string,
+	filter map[string]any,
+	update bson.M,
+	opts ...options.Lister[options.FindOneAndUpdateOptions],
+) (*T, error) {
+	obj := new(T)
+	err := database.Collection(collection).FindOneAndUpdate(
+		ctx,
+		filter,
+		update,
+		opts...,
+	).Decode(obj)
+	if err != nil {
+		return nil, fmt.Errorf("failed to FindAndUpdateOne for [%s].[%s]: %w", database.Name(), collection, err)
+	}
+	return obj, nil
+}
+
 func Delete(
 	ctx context.Context,
 	database *mongo.Database,
