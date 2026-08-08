@@ -38,9 +38,6 @@ var (
 		"char-suz",
 		"char-szk",
 		"char-yu",
-		"char-skr",
-		"char-ktn",
-		"char-rui",
 	}
 	UserInitialCostumeIds = []string{
 		"cos-ai-schl-00",
