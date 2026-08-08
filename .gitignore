@@ -23,6 +23,7 @@ go.work
 .env
 .mcp.json
 .vscode/
+.codex/
 .vscode/mcp.json
 secrets/
 resources/
