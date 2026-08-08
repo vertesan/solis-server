@@ -51,6 +51,7 @@ var CreateUser fiber.Handler = func(c fiber.Ctx) error {
 		if !regexp.MustCompile(`^[a-zA-Z0-9]{8,16}$`).Match([]byte(request.Password)) {
 			return fiber.NewError(400, "password must be alphanumeric characters within the length of 8 - 16")
 		}
+		password = request.Password
 	}
 
 	err := user.CreateUser(c, publicUserId, serverUserId, password)

@@ -6,6 +6,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -55,22 +56,20 @@ func FindUserFanEvent(ctx context.Context, suid string, fanEventId string) (*pap
 }
 
 func UpsertUserFanEvent(ctx context.Context, suid string, fanEvent *papi.FanEvent) error {
-	info, err := FindUserFanEventInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	replaced := false
-	for i, e := range info.FanEvents {
-		if e.Id == fanEvent.Id {
-			info.FanEvents[i] = fanEvent
-			replaced = true
-			break
+	return mutateUserFanEventInfo(ctx, suid, func(info *papi.FanEventInfo) error {
+		replaced := false
+		for i, e := range info.FanEvents {
+			if e.Id == fanEvent.Id {
+				info.FanEvents[i] = fanEvent
+				replaced = true
+				break
+			}
 		}
-	}
-	if !replaced {
-		info.FanEvents = append(info.FanEvents, fanEvent)
-	}
-	return UpsertUserFanEventInfo(ctx, suid, info)
+		if !replaced {
+			info.FanEvents = append(info.FanEvents, fanEvent)
+		}
+		return nil
+	})
 }
 
 func FindUserActiveFanEvent(ctx context.Context, suid string) (*papi.ActiveFanEvent, error) {
@@ -82,24 +81,35 @@ func FindUserActiveFanEvent(ctx context.Context, suid string) (*papi.ActiveFanEv
 }
 
 func InsertUserActiveFanEvent(ctx context.Context, suid string, active *papi.ActiveFanEvent) error {
-	info, err := FindUserFanEventInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	if info.ActiveFanEvent != nil {
-		return fmt.Errorf("an active fanEvent already exists for suid %q", suid)
-	}
-	info.ActiveFanEvent = active
-	return UpsertUserFanEventInfo(ctx, suid, info)
+	return mutateUserFanEventInfo(ctx, suid, func(info *papi.FanEventInfo) error {
+		if info.ActiveFanEvent != nil {
+			return fmt.Errorf("an active fanEvent already exists for suid %q", suid)
+		}
+		info.ActiveFanEvent = active
+		return nil
+	})
 }
 
 func DeleteUserActiveFanEvent(ctx context.Context, suid string) error {
-	info, err := FindUserFanEventInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	info.ActiveFanEvent = nil
-	return UpsertUserFanEventInfo(ctx, suid, info)
+	return mutateUserFanEventInfo(ctx, suid, func(info *papi.FanEventInfo) error {
+		info.ActiveFanEvent = nil
+		return nil
+	})
+}
+
+// mutateUserFanEventInfo performs a fan-event read, in-memory mutation, and
+// replacement in one transaction to prevent lost updates.
+func mutateUserFanEventInfo(ctx context.Context, suid string, mutate func(*papi.FanEventInfo) error) error {
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		info, err := FindUserFanEventInfo(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		if err := mutate(info); err != nil {
+			return nil, err
+		}
+		return nil, UpsertUserFanEventInfo(ctx, suid, info)
+	})
 }
 
 // ---------- PromotionInfo ----------
@@ -146,22 +156,20 @@ func FindUserPromotion(ctx context.Context, suid string, promotionId string) (*p
 }
 
 func UpsertUserPromotion(ctx context.Context, suid string, promotion *papi.Promotion) error {
-	info, err := FindUserPromotionInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	replaced := false
-	for i, p := range info.Promotions {
-		if p.Id == promotion.Id {
-			info.Promotions[i] = promotion
-			replaced = true
-			break
+	return mutateUserPromotionInfo(ctx, suid, func(info *papi.PromotionInfo) error {
+		replaced := false
+		for i, p := range info.Promotions {
+			if p.Id == promotion.Id {
+				info.Promotions[i] = promotion
+				replaced = true
+				break
+			}
 		}
-	}
-	if !replaced {
-		info.Promotions = append(info.Promotions, promotion)
-	}
-	return UpsertUserPromotionInfo(ctx, suid, info)
+		if !replaced {
+			info.Promotions = append(info.Promotions, promotion)
+		}
+		return nil
+	})
 }
 
 func FindUserActivePromotion(ctx context.Context, suid string) (*papi.ActivePromotion, error) {
@@ -173,24 +181,35 @@ func FindUserActivePromotion(ctx context.Context, suid string) (*papi.ActiveProm
 }
 
 func InsertUserActivePromotion(ctx context.Context, suid string, active *papi.ActivePromotion) error {
-	info, err := FindUserPromotionInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	if info.ActivePromotion != nil {
-		return fmt.Errorf("an active promotion already exists for suid %q", suid)
-	}
-	info.ActivePromotion = active
-	return UpsertUserPromotionInfo(ctx, suid, info)
+	return mutateUserPromotionInfo(ctx, suid, func(info *papi.PromotionInfo) error {
+		if info.ActivePromotion != nil {
+			return fmt.Errorf("an active promotion already exists for suid %q", suid)
+		}
+		info.ActivePromotion = active
+		return nil
+	})
 }
 
 func DeleteUserActivePromotion(ctx context.Context, suid string) error {
-	info, err := FindUserPromotionInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	info.ActivePromotion = nil
-	return UpsertUserPromotionInfo(ctx, suid, info)
+	return mutateUserPromotionInfo(ctx, suid, func(info *papi.PromotionInfo) error {
+		info.ActivePromotion = nil
+		return nil
+	})
+}
+
+// mutateUserPromotionInfo performs a promotion read, in-memory mutation, and
+// replacement in one transaction to prevent lost updates.
+func mutateUserPromotionInfo(ctx context.Context, suid string, mutate func(*papi.PromotionInfo) error) error {
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		info, err := FindUserPromotionInfo(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		if err := mutate(info); err != nil {
+			return nil, err
+		}
+		return nil, UpsertUserPromotionInfo(ctx, suid, info)
+	})
 }
 
 // ---------- RefreshInfo ----------
@@ -237,22 +256,20 @@ func FindUserRefresh(ctx context.Context, suid string, refreshId string) (*papi.
 }
 
 func UpsertUserRefresh(ctx context.Context, suid string, refresh *papi.Refresh) error {
-	info, err := FindUserRefreshInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	replaced := false
-	for i, r := range info.Refreshes {
-		if r.Id == refresh.Id {
-			info.Refreshes[i] = refresh
-			replaced = true
-			break
+	return mutateUserRefreshInfo(ctx, suid, func(info *papi.RefreshInfo) error {
+		replaced := false
+		for i, r := range info.Refreshes {
+			if r.Id == refresh.Id {
+				info.Refreshes[i] = refresh
+				replaced = true
+				break
+			}
 		}
-	}
-	if !replaced {
-		info.Refreshes = append(info.Refreshes, refresh)
-	}
-	return UpsertUserRefreshInfo(ctx, suid, info)
+		if !replaced {
+			info.Refreshes = append(info.Refreshes, refresh)
+		}
+		return nil
+	})
 }
 
 func FindUserActiveRefresh(ctx context.Context, suid string) (*papi.ActiveRefresh, error) {
@@ -264,22 +281,33 @@ func FindUserActiveRefresh(ctx context.Context, suid string) (*papi.ActiveRefres
 }
 
 func InsertUserActiveRefresh(ctx context.Context, suid string, active *papi.ActiveRefresh) error {
-	info, err := FindUserRefreshInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	if info.ActiveRefresh != nil {
-		return fmt.Errorf("an active refresh already exists for suid %q", suid)
-	}
-	info.ActiveRefresh = active
-	return UpsertUserRefreshInfo(ctx, suid, info)
+	return mutateUserRefreshInfo(ctx, suid, func(info *papi.RefreshInfo) error {
+		if info.ActiveRefresh != nil {
+			return fmt.Errorf("an active refresh already exists for suid %q", suid)
+		}
+		info.ActiveRefresh = active
+		return nil
+	})
 }
 
 func DeleteUserActiveRefresh(ctx context.Context, suid string) error {
-	info, err := FindUserRefreshInfo(ctx, suid)
-	if err != nil {
-		return err
-	}
-	info.ActiveRefresh = nil
-	return UpsertUserRefreshInfo(ctx, suid, info)
+	return mutateUserRefreshInfo(ctx, suid, func(info *papi.RefreshInfo) error {
+		info.ActiveRefresh = nil
+		return nil
+	})
+}
+
+// mutateUserRefreshInfo performs a refresh read, in-memory mutation, and
+// replacement in one transaction to prevent lost updates.
+func mutateUserRefreshInfo(ctx context.Context, suid string, mutate func(*papi.RefreshInfo) error) error {
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		info, err := FindUserRefreshInfo(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		if err := mutate(info); err != nil {
+			return nil, err
+		}
+		return nil, UpsertUserRefreshInfo(ctx, suid, info)
+	})
 }

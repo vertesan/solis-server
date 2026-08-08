@@ -31,12 +31,9 @@ func UpsertUserHomePosition(ctx context.Context, suid string, homePosition *ptra
 }
 
 func UpsertManyUserHomePositions(ctx context.Context, suid string, homePositions []*ptransaction.UserHomePosition) error {
-	for _, homePosition := range homePositions {
-		if err := UpsertUserHomePosition(ctx, suid, homePosition); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, homePositions, func(ctx context.Context, homePosition *ptransaction.UserHomePosition) error {
+		return UpsertUserHomePosition(ctx, suid, homePosition)
+	})
 }
 
 func DeleteAllUserHomePositions(ctx context.Context, suid string) error {

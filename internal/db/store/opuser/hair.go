@@ -31,12 +31,9 @@ func UpsertUserHair(ctx context.Context, suid string, hair *ptransaction.UserHai
 }
 
 func UpsertManyUserHairs(ctx context.Context, suid string, hairs []*ptransaction.UserHair) error {
-	for _, hair := range hairs {
-		if err := UpsertUserHair(ctx, suid, hair); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, hairs, func(ctx context.Context, hair *ptransaction.UserHair) error {
+		return UpsertUserHair(ctx, suid, hair)
+	})
 }
 
 func DeleteAllUserHairs(ctx context.Context, suid string) error {

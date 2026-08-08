@@ -67,7 +67,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	// check last refresh time, or rotate a new refresh token
 	// TODO: revoke 7 days refreshing
 	var refreshToken string
-	if userAuth.LastRefreshAt.Add(time.Hour * 24 * 7).Before(time.Now()) {
+	if len(userAuth.RefreshTokens) == 0 || userAuth.LastRefreshAt.Add(time.Hour*24*7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
 		if err := opuser.InsertUserAuthRefreshToken(c, userAuth.FirebaseId, refreshToken); err != nil {
 			return fiber.NewError(500, "internal error")

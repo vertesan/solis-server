@@ -24,7 +24,7 @@ func FindAllUserPhotos(ctx context.Context, suid string) ([]*ptransaction.UserPh
 		ctx,
 		uname.UserPhoto,
 		bson.M{"SUID": suid},
-		options.Find().SetSort(bson.D{{Key: "ShootingTime", Value: -1}}),
+		options.Find().SetSort(bson.D{{Key: "shootingTime", Value: -1}}),
 	)
 }
 
@@ -43,14 +43,10 @@ func UpsertUserPhoto(ctx context.Context, suid string, photo *ptransaction.UserP
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserPhotos(ctx context.Context, suid string, photos []*ptransaction.UserPhoto) error {
-	for _, photo := range photos {
-		if err := UpsertUserPhoto(ctx, suid, photo); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, photos, func(ctx context.Context, photo *ptransaction.UserPhoto) error {
+		return UpsertUserPhoto(ctx, suid, photo)
+	})
 }
 
 func DeleteUserPhoto(ctx context.Context, suid string, photoId string) error {

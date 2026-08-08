@@ -34,12 +34,9 @@ func UpsertUserCharacter(ctx context.Context, suid string, character *ptransacti
 }
 
 func UpsertManyUserCharacters(ctx context.Context, suid string, characters []*ptransaction.UserCharacter) error {
-	for _, character := range characters {
-		if err := UpsertUserCharacter(ctx, suid, character); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, characters, func(ctx context.Context, character *ptransaction.UserCharacter) error {
+		return UpsertUserCharacter(ctx, suid, character)
+	})
 }
 
 func DeleteAllUserCharacters(ctx context.Context, suid string) error {

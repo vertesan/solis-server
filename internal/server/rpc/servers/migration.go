@@ -2,6 +2,7 @@ package servers
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -59,9 +61,15 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 }
 
 func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteRequest) (*pb.MigrationExecuteResponse, error) {
-	userAuth, err := opuser.GetUserAuthByOneTimeToken(ctx, req.OnetimeToken)
+	if req.GetOnetimeToken() == "" {
+		return nil, status.Error(codes.Unauthenticated, "invalid one-time token")
+	}
+	userAuth, err := opuser.GetUserAuthByOneTimeToken(ctx, req.GetOnetimeToken())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to GetUserAuthByOneTimeToken: %v", err)
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, status.Error(codes.Unauthenticated, "invalid one-time token")
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get one-time token: %v", err)
 	}
 
 	// create token
@@ -76,6 +84,14 @@ func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteR
 	tokenStr, err := jwto.CreateToken(token)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create migration token: %v", err)
+	}
+	// Consume only after token signing succeeds. Concurrent executions may both
+	// prepare a response, but exactly one can atomically clear the source token.
+	if _, err := opuser.ConsumeUserAuthOneTimeToken(ctx, userAuth.ServerUserId, req.GetOnetimeToken()); err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, status.Error(codes.Unauthenticated, "invalid one-time token")
+		}
+		return nil, status.Errorf(codes.Internal, "failed to consume one-time token: %v", err)
 	}
 	return &pb.MigrationExecuteResponse{
 		Token: tokenStr,

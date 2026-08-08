@@ -3,17 +3,20 @@ package test
 import (
 	"context"
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/http/game"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"testing"
-	"time"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3/client"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestMigrateScenario(t *testing.T) {
@@ -38,12 +41,22 @@ func TestMigrateScenario(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("failed to create mock userAuth: %v", err)
 	}
+	t.Cleanup(func() {
+		if err := opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
+			t.Errorf("failed to remove test userAuth: %v", err)
+		}
+	})
 	if err := opuser.UpsertUser(context.Background(), "00000000-0000-0000-0000-000000000000", &ptransaction.User{
 		Name:         "TestUser",
 		ManagerLevel: 1,
 	}); err != nil {
 		t.Fatalf("failed to create mock user: %v", err)
 	}
+	t.Cleanup(func() {
+		if err := opuser.DeleteUser(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
+			t.Errorf("failed to remove test user: %v", err)
+		}
+	})
 
 	mClient := papi.NewMigrationClient(testConfig.GrpcConn)
 
@@ -71,6 +84,13 @@ func TestMigrateScenario(t *testing.T) {
 	}
 	t.Logf("MigrationExecuteResponse:\n%v", resp2)
 	migrationToken := resp2.Token
+
+	// one-time tokens must not be replayable
+	replayCtx, replayCancel := getBasicGrpcCtx()
+	defer replayCancel()
+	if _, err := mClient.Execute(replayCtx, &papi.MigrationExecuteRequest{OnetimeToken: oneTimeToken}); status.Code(err) != codes.Unauthenticated {
+		t.Fatalf("replayed one-time token returned %v, want %v", err, codes.Unauthenticated)
+	}
 
 	// verifyCustomToken
 	resp3, err := testConfig.HttpClient.Post(fmt.Sprintf("%s/identitytoolkit/v3/relyingparty/verifyCustomToken", testConfig.HttpUrl), client.Config{
@@ -161,11 +181,4 @@ func TestMigrateScenario(t *testing.T) {
 		}
 	}
 
-	// cleanup test mock data
-	if err := opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
-		t.Fatalf("failed to remove test userAuth: %v", err)
-	}
-	if err := opuser.DeleteUser(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
-		t.Fatalf("failed to remove test user: %v", err)
-	}
 }

@@ -31,12 +31,9 @@ func UpsertUserPhotoPose(ctx context.Context, suid string, photoPose *ptransacti
 }
 
 func UpsertManyUserPhotoPoses(ctx context.Context, suid string, photoPoses []*ptransaction.UserPhotoPose) error {
-	for _, photoPose := range photoPoses {
-		if err := UpsertUserPhotoPose(ctx, suid, photoPose); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, photoPoses, func(ctx context.Context, photoPose *ptransaction.UserPhotoPose) error {
+		return UpsertUserPhotoPose(ctx, suid, photoPose)
+	})
 }
 
 func DeleteAllUserPhotoPoses(ctx context.Context, suid string) error {

@@ -52,14 +52,10 @@ func UpsertUserDeckPosition(ctx context.Context, suid string, pos *ptransaction.
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserDeckPositions(ctx context.Context, suid string, positions []*ptransaction.UserDeckPosition) error {
-	for _, pos := range positions {
-		if err := UpsertUserDeckPosition(ctx, suid, pos); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, positions, func(ctx context.Context, pos *ptransaction.UserDeckPosition) error {
+		return UpsertUserDeckPosition(ctx, suid, pos)
+	})
 }
 
 func DeleteUserDeckPosition(ctx context.Context, suid string, number int32, position int32) error {

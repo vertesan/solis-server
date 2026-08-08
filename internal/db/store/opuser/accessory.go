@@ -45,18 +45,14 @@ func UpsertUserAccessory(ctx context.Context, suid string, accessory *ptransacti
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserAccessories(ctx context.Context, suid string, accessories []*ptransaction.UserAccessory) error {
-	for _, accessory := range accessories {
-		if err := UpsertUserAccessory(ctx, suid, accessory); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, accessories, func(ctx context.Context, accessory *ptransaction.UserAccessory) error {
+		return UpsertUserAccessory(ctx, suid, accessory)
+	})
 }
 
 func IncsertUserAccessories(ctx context.Context, suid string, accs []*ptransaction.UserAccessory) error {
-	for _, acc := range accs {
+	return ucommon.ForEachAtomically(ctx, accs, func(ctx context.Context, acc *ptransaction.UserAccessory) error {
 		_, err := depot.User.Collection(uname.UserAccessory).UpdateOne(
 			ctx,
 			bson.M{
@@ -71,8 +67,8 @@ func IncsertUserAccessories(ctx context.Context, suid string, accs []*ptransacti
 		if err != nil {
 			return fmt.Errorf("failed incserting userAccessories: %w", err)
 		}
-	}
-	return nil
+		return nil
+	})
 }
 
 func DeleteUserAccessory(ctx context.Context, suid string, accessoryId string) error {

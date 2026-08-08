@@ -39,12 +39,9 @@ func UpsertUserPhotoActivity(ctx context.Context, suid string, activity *papi.Ph
 }
 
 func UpsertManyUserPhotoActivities(ctx context.Context, suid string, activities []*papi.PhotoActivity) error {
-	for _, a := range activities {
-		if err := UpsertUserPhotoActivity(ctx, suid, a); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, activities, func(ctx context.Context, activity *papi.PhotoActivity) error {
+		return UpsertUserPhotoActivity(ctx, suid, activity)
+	})
 }
 
 func DeleteAllUserPhotoActivities(ctx context.Context, suid string) error {

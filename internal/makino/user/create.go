@@ -23,24 +23,22 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"go.mongodb.org/mongo-driver/v2/mongo/readconcern"
-	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
 	"google.golang.org/protobuf/proto"
 )
 
 func CreateUser(ctx context.Context, publicUserId string, suid string, password string) error {
-	count, err := opuser.CountUserAuthByPublicOrServerUserId(ctx, publicUserId, suid)
-	if err != nil {
-		return err
-	}
-	if count > 0 {
-		return errors.New("a user with the same publicUserId or serverUserId already exists")
-	}
-
 	now := time.Now()
 	milliNow := now.UnixMilli()
 
-	err = transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
+		count, err := opuser.CountUserAuthByPublicOrServerUserId(ctx, publicUserId, suid)
+		if err != nil {
+			return nil, err
+		}
+		if count > 0 {
+			return nil, errors.New("a user with the same publicUserId or serverUserId already exists")
+		}
+
 		// userAuth
 		if err := opuser.InsertUserAuth(ctx, &umodel.UserAuth{
 			PublicUserId:  publicUserId,
@@ -174,10 +172,12 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		if err != nil {
 			return nil, fmt.Errorf("failed to spawn user deck: %w", err)
 		}
-		opuser.UpsertUserDeck(ctx, suid, deck)
+		if err := opuser.UpsertUserDeck(ctx, suid, deck); err != nil {
+			return nil, err
+		}
 
 		// UserDeckPosition
-		opuser.UpsertManyUserDeckPositions(
+		if err := opuser.UpsertManyUserDeckPositions(
 			ctx,
 			suid,
 			[]*ptransaction.UserDeckPosition{
@@ -232,7 +232,9 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 					PhotoIds:         []string{},
 				},
 			},
-		)
+		); err != nil {
+			return nil, err
+		}
 
 		// UserPublic
 		if err := opuser.UpsertUserPublic(ctx, &ptransaction.UserPublic{
@@ -604,7 +606,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		return nil, nil
-	}, readconcern.Local(), writeconcern.W1()) // db.WithTransaction
+	})
 	if err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}

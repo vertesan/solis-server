@@ -9,6 +9,10 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 )
 
+// Bump this when the prepared document or managed-index contract changes so
+// existing installations perform one complete, transactionally marked repair.
+const CurrentMasterImportRevision int32 = 1
+
 func level1Migration() error {
 	return transaction.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
 		// serverProfile
@@ -43,14 +47,16 @@ func level1Migration() error {
 
 		// bannerInfo
 		// menu banners
-		opsolis.UpsertMenuBanner(ctx, &papi.Banner{
+		if err := opsolis.UpsertMenuBanner(ctx, &papi.Banner{
 			Id:              "banner-pr-raido-21-0826-02",
 			AssetId:         "img_banner_s_pr-radio-21-0831",
 			LinkType:        penum.LinkType_LinkType_ExternalWebPage,
 			LinkDetail:      "https://youtube.com/playlist?list=PL0eMwNDVvw1Sa1Fp6eQj7yUw2BF5z86Ad",
 			Order:           150,
 			ViewConditionId: "cd-week-radio-tuesday",
-		})
+		}); err != nil {
+			return nil, err
+		}
 
 		// exchangeBoothIds
 
@@ -69,5 +75,5 @@ func level1Migration() error {
 			return nil, err
 		}
 		return nil, nil
-	}, nil, nil)
+	})
 }

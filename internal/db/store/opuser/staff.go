@@ -31,12 +31,9 @@ func UpsertUserStaff(ctx context.Context, suid string, staff *ptransaction.UserS
 }
 
 func UpsertManyUserStaffs(ctx context.Context, suid string, staffs []*ptransaction.UserStaff) error {
-	for _, staff := range staffs {
-		if err := UpsertUserStaff(ctx, suid, staff); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, staffs, func(ctx context.Context, staff *ptransaction.UserStaff) error {
+		return UpsertUserStaff(ctx, suid, staff)
+	})
 }
 
 func DeleteAllUserStaffs(ctx context.Context, suid string) error {

@@ -39,12 +39,9 @@ func UpsertUserPhotoMusic(ctx context.Context, suid string, music *papi.PhotoMus
 }
 
 func UpsertManyUserPhotoMusics(ctx context.Context, suid string, musics []*papi.PhotoMusic) error {
-	for _, m := range musics {
-		if err := UpsertUserPhotoMusic(ctx, suid, m); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, musics, func(ctx context.Context, music *papi.PhotoMusic) error {
+		return UpsertUserPhotoMusic(ctx, suid, music)
+	})
 }
 
 func DeleteAllUserPhotoMusics(ctx context.Context, suid string) error {

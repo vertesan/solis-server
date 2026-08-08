@@ -4,13 +4,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/db/model/solis/sdoc"
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/model/solis/sname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis/internal/scommon"
 	"github.com/vertesan/solis-server/internal/proto/octo"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
@@ -18,7 +21,7 @@ func FindManifestMetaInfo(ctx context.Context) (*smodel.OctoManifest, error) {
 	return scommon.FindOne[smodel.OctoManifest](
 		ctx,
 		sname.OctoManifest,
-		bson.M{},
+		bson.M{"_id": sdoc.OctoManifestDocumentID},
 		options.FindOne().SetProjection(bson.M{"revision": 1, "urlFormat": 1}),
 	)
 }
@@ -27,7 +30,7 @@ func FindFullManifest(ctx context.Context) (*octo.Database, error) {
 	return scommon.FindOne[octo.Database](
 		ctx,
 		sname.OctoManifest,
-		bson.M{},
+		bson.M{"_id": sdoc.OctoManifestDocumentID},
 	)
 }
 
@@ -44,6 +47,9 @@ func FindManifestObject(ctx context.Context, objectName string, objectType strin
 
 	var data octo.Data
 	pipeline := []bson.M{
+		{
+			"$match": bson.M{"_id": sdoc.OctoManifestDocumentID},
+		},
 		{
 			"$addFields": bson.M{
 				"matchedObject": bson.M{
@@ -69,23 +75,27 @@ func FindManifestObject(ctx context.Context, objectName string, objectType strin
 		pipeline,
 	)
 	if err != nil {
-		return nil, fmt.Errorf("failed to aggregate octo data: %v", err)
+		return nil, fmt.Errorf("failed to aggregate octo data: %w", err)
 	}
 	defer cursor.Close(ctx)
 
 	if cursor.Next(ctx) {
 		if err := cursor.Decode(&data); err != nil {
-			return nil, fmt.Errorf("failed to aggregate octo data: %v", err)
+			return nil, fmt.Errorf("failed to decode octo data: %w", err)
 		}
+		return &data, nil
 	}
-	return &data, nil
+	if err := cursor.Err(); err != nil {
+		return nil, fmt.Errorf("failed while aggregating octo data: %w", err)
+	}
+	return nil, fmt.Errorf("manifest object %q (%s): %w", objectName, objectType, mongo.ErrNoDocuments)
 }
 
 func DeleteAllManifests(ctx context.Context) error {
 	return scommon.Delete(
 		ctx,
 		sname.OctoManifest,
-		bson.M{},
+		bson.M{"_id": sdoc.OctoManifestDocumentID},
 	)
 }
 
@@ -93,6 +103,9 @@ func InsertManifest(ctx context.Context, octodb *octo.Database) error {
 	return scommon.InsertOne(
 		ctx,
 		sname.OctoManifest,
-		octodb,
+		&struct {
+			ID             string `bson:"_id"`
+			*octo.Database `bson:",inline"`
+		}{ID: sdoc.OctoManifestDocumentID, Database: octodb},
 	)
 }

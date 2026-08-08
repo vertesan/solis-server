@@ -31,12 +31,9 @@ func UpsertUserEmblem(ctx context.Context, suid string, emblem *ptransaction.Use
 }
 
 func UpsertManyUserEmblems(ctx context.Context, suid string, emblems []*ptransaction.UserEmblem) error {
-	for _, emblem := range emblems {
-		if err := UpsertUserEmblem(ctx, suid, emblem); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, emblems, func(ctx context.Context, emblem *ptransaction.UserEmblem) error {
+		return UpsertUserEmblem(ctx, suid, emblem)
+	})
 }
 
 func DeleteAllUserEmblems(ctx context.Context, suid string) error {

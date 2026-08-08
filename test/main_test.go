@@ -77,5 +77,9 @@ func TestMain(m *testing.M) {
 	if testConfig.GrpcConn != nil {
 		testConfig.GrpcConn.Close()
 	}
+	if err := db.Disconnect(); err != nil {
+		log.Printf("failed to disconnect test database client: %v", err)
+		code = 1
+	}
 	os.Exit(code)
 }

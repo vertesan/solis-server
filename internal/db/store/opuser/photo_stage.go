@@ -31,12 +31,9 @@ func UpsertUserPhotoStage(ctx context.Context, suid string, stage *papi.PhotoSta
 }
 
 func UpsertManyUserPhotoStages(ctx context.Context, suid string, stages []*papi.PhotoStage) error {
-	for _, s := range stages {
-		if err := UpsertUserPhotoStage(ctx, suid, s); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, stages, func(ctx context.Context, stage *papi.PhotoStage) error {
+		return UpsertUserPhotoStage(ctx, suid, stage)
+	})
 }
 
 func DeleteAllUserPhotoStages(ctx context.Context, suid string) error {

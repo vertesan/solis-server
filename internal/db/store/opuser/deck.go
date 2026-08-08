@@ -43,14 +43,10 @@ func UpsertUserDeck(ctx context.Context, suid string, deck *ptransaction.UserDec
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserDecks(ctx context.Context, suid string, decks []*ptransaction.UserDeck) error {
-	for _, deck := range decks {
-		if err := UpsertUserDeck(ctx, suid, deck); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, decks, func(ctx context.Context, deck *ptransaction.UserDeck) error {
+		return UpsertUserDeck(ctx, suid, deck)
+	})
 }
 
 func DeleteUserDeck(ctx context.Context, suid string, number int32) error {

@@ -31,12 +31,9 @@ func UpsertUserPoint(ctx context.Context, suid string, point *ptransaction.UserP
 }
 
 func UpsertManyUserPoints(ctx context.Context, suid string, points []*ptransaction.UserPoint) error {
-	for _, point := range points {
-		if err := UpsertUserPoint(ctx, suid, point); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, points, func(ctx context.Context, point *ptransaction.UserPoint) error {
+		return UpsertUserPoint(ctx, suid, point)
+	})
 }
 
 func DeleteAllUserPoints(ctx context.Context, suid string) error {

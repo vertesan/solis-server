@@ -2,11 +2,32 @@ package ucommon
 
 import (
 	"context"
+
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 	"github.com/vertesan/solis-server/internal/db/store/internal/opcommon"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
+
+// ForEachAtomically applies fn to all objects in one transaction when more
+// than one write is required, while joining any transaction already in ctx.
+func ForEachAtomically[T any](ctx context.Context, objs []*T, fn func(context.Context, *T) error) error {
+	if len(objs) == 0 {
+		return nil
+	}
+	if len(objs) == 1 {
+		return fn(ctx, objs[0])
+	}
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		for _, obj := range objs {
+			if err := fn(ctx, obj); err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	})
+}
 
 func FindOne[T any](
 	ctx context.Context,
@@ -53,15 +74,6 @@ func UpsertOne[T any](
 	opts ...options.Lister[options.UpdateOneOptions],
 ) error {
 	return opcommon.UpsertOne(ctx, depot.User, collection, filter, obj, opts...)
-}
-
-func UpsertMany[T any](
-	ctx context.Context,
-	collection string,
-	filter map[string]any,
-	objs []*T, opts ...options.Lister[options.UpdateOneOptions],
-) error {
-	return opcommon.UpsertMany(ctx, depot.User, collection, filter, objs, opts...)
 }
 
 func FindAndUpdateOne[T any](

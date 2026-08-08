@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
@@ -18,7 +19,19 @@ type UserServer struct {
 
 func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse, error) {
 	suid := viber.GetSuid(ctx).String()
+	var response *papi.UserGetResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		var err error
+		response, err = s.get(ctx, suid)
+		return response, err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
 
+func (s *UserServer) get(ctx context.Context, suid string) (*papi.UserGetResponse, error) {
 	user, err := opuser.FindUser(ctx, suid)
 	if err != nil {
 		return nil, err

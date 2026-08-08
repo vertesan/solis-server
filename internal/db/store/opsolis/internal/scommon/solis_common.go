@@ -55,15 +55,6 @@ func UpsertOne[T any](
 	return opcommon.UpsertOne(ctx, depot.Solis, collection, filter, obj, opts...)
 }
 
-func UpsertMany[T any](
-	ctx context.Context,
-	collection string,
-	filter map[string]any,
-	objs []*T, opts ...options.Lister[options.UpdateOneOptions],
-) error {
-	return opcommon.UpsertMany(ctx, depot.Solis, collection, filter, objs, opts...)
-}
-
 func FindAndUpdateOne[T any](
 	ctx context.Context,
 	collection string,

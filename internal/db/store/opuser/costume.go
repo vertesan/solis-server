@@ -43,14 +43,10 @@ func UpsertUserCostume(ctx context.Context, suid string, costume *ptransaction.U
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserCostumes(ctx context.Context, suid string, costumes []*ptransaction.UserCostume) error {
-	for _, costume := range costumes {
-		if err := UpsertUserCostume(ctx, suid, costume); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, costumes, func(ctx context.Context, costume *ptransaction.UserCostume) error {
+		return UpsertUserCostume(ctx, suid, costume)
+	})
 }
 
 func DeleteUserCostume(ctx context.Context, suid string, costumeId string) error {

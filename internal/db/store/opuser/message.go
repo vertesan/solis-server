@@ -31,12 +31,9 @@ func UpsertUserMessage(ctx context.Context, suid string, message *ptransaction.U
 }
 
 func UpsertManyUserMessages(ctx context.Context, suid string, messages []*ptransaction.UserMessage) error {
-	for _, message := range messages {
-		if err := UpsertUserMessage(ctx, suid, message); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, messages, func(ctx context.Context, message *ptransaction.UserMessage) error {
+		return UpsertUserMessage(ctx, suid, message)
+	})
 }
 
 func DeleteAllUserMessages(ctx context.Context, suid string) error {

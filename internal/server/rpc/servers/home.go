@@ -6,6 +6,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/internal/viber"
@@ -21,54 +22,74 @@ var jstZone = time.FixedZone("JST", 9*60*60)
 
 func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.HomeLoginResponse, error) {
 	suid := viber.GetSuid(ctx).String()
-	updatedData := &papi.UpdatedData{}
-
 	now := time.Now()
+	var response *papi.HomeLoginResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		updatedData := &papi.UpdatedData{}
 
-	user, err := opuser.FindAndUpdateUser(
-		ctx,
-		suid,
-		bson.M{
-			"lastLoginTime": now.UnixMilli(),
-		},
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	prevLogin := time.UnixMilli(user.LastLoginTime).In(jstZone)
-	nowJst := now.In(jstZone)
-	isFirstOfDay := prevLogin.Year() != nowJst.Year() ||
-		prevLogin.YearDay() != nowJst.YearDay()
-
-	user.LastLoginTime = now.UnixMilli()
-	updatedData.User = user
-
-	if isFirstOfDay {
-		totalCount, err := opuser.FindAndUpdateUserTotalCount(
+		user, err := opuser.FindAndUpdateUser(
 			ctx,
 			suid,
-			bson.M{"$inc": bson.M{
-				"loginCount": 1,
+			bson.M{"$set": bson.M{
+				"lastLoginTime": now.UnixMilli(),
 			}},
-			options.FindOneAndUpdate().SetReturnDocument(options.After),
 		)
 		if err != nil {
 			return nil, err
 		}
-		updatedData.TotalCount = totalCount
-	}
 
-	return &papi.HomeLoginResponse{
-		CommonResponse: &papi.CommonResponse{
-			UpdatedData: updatedData,
-			DeletedData: &papi.DeletedData{},
-		},
-	}, nil
+		prevLogin := time.UnixMilli(user.LastLoginTime).In(jstZone)
+		nowJst := now.In(jstZone)
+		isFirstOfDay := prevLogin.Year() != nowJst.Year() ||
+			prevLogin.YearDay() != nowJst.YearDay()
+
+		user.LastLoginTime = now.UnixMilli()
+		updatedData.User = user
+
+		if isFirstOfDay {
+			totalCount, err := opuser.FindAndUpdateUserTotalCount(
+				ctx,
+				suid,
+				bson.M{"$inc": bson.M{
+					"loginCount": 1,
+				}},
+				options.FindOneAndUpdate().SetReturnDocument(options.After),
+			)
+			if err != nil {
+				return nil, err
+			}
+			updatedData.TotalCount = totalCount
+		}
+
+		response = &papi.HomeLoginResponse{
+			CommonResponse: &papi.CommonResponse{
+				UpdatedData: updatedData,
+				DeletedData: &papi.DeletedData{},
+			},
+		}
+		return response, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
 
 func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
 	suid := viber.GetSuid(ctx).String()
+	var response *papi.HomeEnterResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		var err error
+		response, err = s.enter(ctx, suid)
+		return response, err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+}
+
+func (s *HomeServer) enter(ctx context.Context, suid string) (*papi.HomeEnterResponse, error) {
 	gachaInfos, err := opuser.FindAllUserGachaInfos(ctx, suid)
 	if err != nil {
 		return nil, err

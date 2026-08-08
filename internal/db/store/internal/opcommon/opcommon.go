@@ -66,13 +66,17 @@ func UpdateOne[T any](
 	obj *T,
 	opts ...options.Lister[options.UpdateOneOptions],
 ) error {
-	if _, err := database.Collection(collection).UpdateOne(
+	result, err := database.Collection(collection).UpdateOne(
 		ctx,
 		filter,
 		bson.M{"$set": obj},
 		opts...,
-	); err != nil {
+	)
+	if err != nil {
 		return fmt.Errorf("failed to UpdateOne for [%s].[%s]: %w", database.Name(), collection, err)
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("failed to UpdateOne for [%s].[%s]: %w", database.Name(), collection, mongo.ErrNoDocuments)
 	}
 	return nil
 }
@@ -92,19 +96,6 @@ func UpsertOne[T any](
 		append(opts, options.UpdateOne().SetUpsert(true))...,
 	); err != nil {
 		return fmt.Errorf("failed to UpsertOne for [%s].[%s]: %w", database.Name(), collection, err)
-	}
-	return nil
-}
-
-func UpsertMany[T any](
-	ctx context.Context,
-	database *mongo.Database,
-	collection string,
-	filter map[string]any,
-	objs []*T, opts ...options.Lister[options.UpdateOneOptions],
-) error {
-	for _, obj := range objs {
-		UpsertOne(ctx, database, collection, filter, obj, opts...)
 	}
 	return nil
 }

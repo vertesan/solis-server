@@ -2,13 +2,15 @@ package opuser
 
 import (
 	"context"
-	"errors"
 	"fmt"
+
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func InsertUserAuth(ctx context.Context, userAuth *umodel.UserAuth) error {
@@ -40,17 +42,17 @@ func UpdateUserAuthOneTimeToken(ctx context.Context, suid string, oneTimeToken s
 			"$set": bson.M{"oneTimeToken": oneTimeToken},
 		},
 	)
-	if err != nil || result.ModifiedCount == 0 {
-		if err == nil && result.ModifiedCount == 0 {
-			err = errors.New("modified count = 0")
-		}
+	if err != nil {
 		return fmt.Errorf("failed update one time token in db: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("failed update one time token in db: %w", mongo.ErrNoDocuments)
 	}
 	return nil
 }
 
 func UpdateUserAuthLastLoginTime(ctx context.Context, suid string, epoch int64) error {
-	_, err := depot.User.Collection(uname.UserAuth).UpdateOne(
+	result, err := depot.User.Collection(uname.UserAuth).UpdateOne(
 		ctx,
 		bson.M{"serverUserId": suid},
 		bson.M{
@@ -59,6 +61,9 @@ func UpdateUserAuthLastLoginTime(ctx context.Context, suid string, epoch int64) 
 	)
 	if err != nil {
 		return fmt.Errorf("failed update last login time for userAuth: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return fmt.Errorf("failed update last login time for userAuth: %w", mongo.ErrNoDocuments)
 	}
 	return nil
 }
@@ -69,7 +74,7 @@ func InsertUserAuthRefreshToken(ctx context.Context, firebaseId string, refreshT
 		bson.M{"firebaseId": firebaseId},
 		bson.D{
 			{
-				Key: "$push",
+				Key: "$addToSet",
 				Value: bson.M{
 					"refreshTokens": refreshToken,
 				},
@@ -85,7 +90,7 @@ func InsertUserAuthRefreshToken(ctx context.Context, firebaseId string, refreshT
 	if err != nil {
 		return fmt.Errorf("failed insert refresh token into db: %w", err)
 	}
-	if result.ModifiedCount == 0 {
+	if result.MatchedCount == 0 {
 		return fmt.Errorf("no document found with firebaseId '%q'", firebaseId)
 	}
 	return nil
@@ -131,6 +136,25 @@ func GetUserAuthByFirebaseId(ctx context.Context, firebaseId string) (*umodel.Us
 
 func GetUserAuthByOneTimeToken(ctx context.Context, oneTimeToken string) (*umodel.UserAuth, error) {
 	return getUserAuthByField(ctx, "oneTimeToken", oneTimeToken)
+}
+
+// ConsumeUserAuthOneTimeToken conditionally removes a matching nonempty token
+// and returns its previous auth document, allowing only one caller to consume it.
+func ConsumeUserAuthOneTimeToken(ctx context.Context, suid string, oneTimeToken string) (*umodel.UserAuth, error) {
+	if oneTimeToken == "" {
+		return nil, fmt.Errorf("one-time token must not be empty: %w", mongo.ErrNoDocuments)
+	}
+	var user umodel.UserAuth
+	err := depot.User.Collection(uname.UserAuth).FindOneAndUpdate(
+		ctx,
+		bson.M{"serverUserId": suid, "oneTimeToken": oneTimeToken},
+		bson.M{"$unset": bson.M{"oneTimeToken": ""}},
+		options.FindOneAndUpdate().SetReturnDocument(options.Before),
+	).Decode(&user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to consume userAuth one-time token: %w", err)
+	}
+	return &user, nil
 }
 
 func getUserAuthByField(ctx context.Context, fieldName, value string) (*umodel.UserAuth, error) {

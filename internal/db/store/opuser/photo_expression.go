@@ -31,12 +31,9 @@ func UpsertUserPhotoExpression(ctx context.Context, suid string, expr *papi.Phot
 }
 
 func UpsertManyUserPhotoExpressions(ctx context.Context, suid string, exprs []*papi.PhotoExpression) error {
-	for _, e := range exprs {
-		if err := UpsertUserPhotoExpression(ctx, suid, e); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, exprs, func(ctx context.Context, expr *papi.PhotoExpression) error {
+		return UpsertUserPhotoExpression(ctx, suid, expr)
+	})
 }
 
 func DeleteAllUserPhotoExpressions(ctx context.Context, suid string) error {

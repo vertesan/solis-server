@@ -40,12 +40,9 @@ func UpsertUserGachaInfo(ctx context.Context, suid string, info *papi.GachaInfo)
 }
 
 func UpsertManyUserGachaInfos(ctx context.Context, suid string, infos []*papi.GachaInfo) error {
-	for _, info := range infos {
-		if err := UpsertUserGachaInfo(ctx, suid, info); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, infos, func(ctx context.Context, info *papi.GachaInfo) error {
+		return UpsertUserGachaInfo(ctx, suid, info)
+	})
 }
 
 func DeleteAllUserGachaInfos(ctx context.Context, suid string) error {

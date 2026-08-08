@@ -104,6 +104,7 @@ func YieldMany[T interface{}, U interface{},
 			logger.Error("failed to get protos from master db", zap.Error(err))
 			return
 		}
+		defer cursor.Close(ctx)
 		for cursor.Next(ctx) {
 			obj := new(W)
 			if err := cursor.Decode(obj); err != nil {
@@ -118,6 +119,9 @@ func YieldMany[T interface{}, U interface{},
 			if !yield(p) {
 				return
 			}
+		}
+		if err := cursor.Err(); err != nil {
+			logger.Error("failed while reading protos from master db", zap.Error(err))
 		}
 	}
 }

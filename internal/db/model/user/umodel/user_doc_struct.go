@@ -14,7 +14,7 @@ type UserStruct[T proto.Message] struct {
 type UserAuth struct {
 	PublicUserId  string    `bson:"publicUserId"`
 	ServerUserId  string    `bson:"serverUserId"`
-	OnetimeToken  string    `bson:"onetimeToken"`
+	OnetimeToken  string    `bson:"oneTimeToken"`
 	Password      string    `bson:"password"`
 	FirebaseId    string    `bson:"firebaseId"`
 	RefreshTokens []string  `bson:"refreshTokens"`

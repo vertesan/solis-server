@@ -39,12 +39,9 @@ func UpsertUserEventStoryInfo(ctx context.Context, suid string, info *papi.Event
 }
 
 func UpsertManyUserEventStoryInfos(ctx context.Context, suid string, infos []*papi.EventStoryInfo) error {
-	for _, info := range infos {
-		if err := UpsertUserEventStoryInfo(ctx, suid, info); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, infos, func(ctx context.Context, info *papi.EventStoryInfo) error {
+		return UpsertUserEventStoryInfo(ctx, suid, info)
+	})
 }
 
 func DeleteAllUserEventStoryInfos(ctx context.Context, suid string) error {

@@ -31,12 +31,9 @@ func UpsertUserExtraStoryPartInfo(ctx context.Context, suid string, info *papi.E
 }
 
 func UpsertManyUserExtraStoryPartInfos(ctx context.Context, suid string, infos []*papi.ExtraStoryPartInfo) error {
-	for _, info := range infos {
-		if err := UpsertUserExtraStoryPartInfo(ctx, suid, info); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, infos, func(ctx context.Context, info *papi.ExtraStoryPartInfo) error {
+		return UpsertUserExtraStoryPartInfo(ctx, suid, info)
+	})
 }
 
 func DeleteAllUserExtraStoryPartInfos(ctx context.Context, suid string) error {

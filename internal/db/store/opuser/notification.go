@@ -31,12 +31,9 @@ func UpsertUserNotification(ctx context.Context, suid string, notification *ptra
 }
 
 func UpsertManyUserNotifications(ctx context.Context, suid string, notifications []*ptransaction.UserNotification) error {
-	for _, notification := range notifications {
-		if err := UpsertUserNotification(ctx, suid, notification); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, notifications, func(ctx context.Context, notification *ptransaction.UserNotification) error {
+		return UpsertUserNotification(ctx, suid, notification)
+	})
 }
 
 func DeleteAllUserNotifications(ctx context.Context, suid string) error {

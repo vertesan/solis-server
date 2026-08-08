@@ -31,12 +31,9 @@ func UpsertUserTutorial(ctx context.Context, suid string, tutorial *ptransaction
 }
 
 func UpsertManyUserTutorials(ctx context.Context, suid string, tutorials []*ptransaction.UserTutorial) error {
-	for _, tutorial := range tutorials {
-		if err := UpsertUserTutorial(ctx, suid, tutorial); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, tutorials, func(ctx context.Context, tutorial *ptransaction.UserTutorial) error {
+		return UpsertUserTutorial(ctx, suid, tutorial)
+	})
 }
 
 func DeleteAllUserTutorials(ctx context.Context, suid string) error {

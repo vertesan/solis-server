@@ -3,29 +3,27 @@ package transaction
 import (
 	"context"
 	"fmt"
+
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.mongodb.org/mongo-driver/v2/mongo/readconcern"
+	"go.mongodb.org/mongo-driver/v2/mongo/readpref"
 	"go.mongodb.org/mongo-driver/v2/mongo/writeconcern"
 )
 
 func WithTransaction(
 	ctx context.Context,
 	fn func(ctx context.Context) (any, error),
-	rConcern *readconcern.ReadConcern,
-	wConcern *writeconcern.WriteConcern,
 ) error {
-	// prepare read/wirte concerns
-	if rConcern == nil {
-		rConcern = readconcern.Snapshot()
+	// MongoDB does not support nested transactions. Reuse the active transaction
+	// so helpers can provide atomic behavior both on their own and as part of a
+	// larger state transition.
+	if session := mongo.SessionFromContext(ctx); session != nil && session.TransactionRunning() {
+		_, err := fn(ctx)
+		return err
 	}
-	if wConcern == nil {
-		wConcern = writeconcern.Majority()
-	}
-	txnOpts := options.Transaction().
-		SetReadConcern(rConcern).
-		SetWriteConcern(wConcern)
 
 	// start session
 	session, err := depot.Client.StartSession()
@@ -38,10 +36,22 @@ func WithTransaction(
 	_, err = session.WithTransaction(
 		ctx,
 		fn,
-		txnOpts,
+		transactionOptions(),
 	)
 	if err != nil {
 		return fmt.Errorf("transaction failed: %w", err)
 	}
 	return nil
+}
+
+// transactionOptions defines the snapshot, primary-read, and
+// majority-journaled guarantees shared by every application transaction.
+func transactionOptions() *options.TransactionOptionsBuilder {
+	journaled := true
+	wConcern := writeconcern.Majority()
+	wConcern.Journal = &journaled
+	return options.Transaction().
+		SetReadConcern(readconcern.Snapshot()).
+		SetReadPreference(readpref.Primary()).
+		SetWriteConcern(wConcern)
 }

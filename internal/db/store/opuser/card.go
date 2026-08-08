@@ -43,14 +43,10 @@ func UpsertUserCard(ctx context.Context, suid string, card *ptransaction.UserCar
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserCards(ctx context.Context, suid string, cards []*ptransaction.UserCard) error {
-	for _, card := range cards {
-		if err := UpsertUserCard(ctx, suid, card); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, cards, func(ctx context.Context, card *ptransaction.UserCard) error {
+		return UpsertUserCard(ctx, suid, card)
+	})
 }
 
 func DeleteUserCard(ctx context.Context, suid string, cardId string) error {

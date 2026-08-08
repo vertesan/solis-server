@@ -45,14 +45,10 @@ func UpsertUserItem(ctx context.Context, suid string, item *ptransaction.UserIte
 	)
 }
 
-// Note: This function is preferred to be used inside a transaction if there are more than 1 objects in the slice
 func UpsertManyUserItems(ctx context.Context, suid string, items []*ptransaction.UserItem) error {
-	for _, item := range items {
-		if err := UpsertUserItem(ctx, suid, item); err != nil {
-			return err
-		}
-	}
-	return nil
+	return ucommon.ForEachAtomically(ctx, items, func(ctx context.Context, item *ptransaction.UserItem) error {
+		return UpsertUserItem(ctx, suid, item)
+	})
 }
 
 func DeleteUserItem(ctx context.Context, suid string, itemId string, expiredTime int64) error {
