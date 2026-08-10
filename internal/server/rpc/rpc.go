@@ -19,7 +19,7 @@ import (
 	_ "google.golang.org/grpc/encoding/gzip"
 )
 
-func StartGRPC(ctx context.Context, logger *zap.Logger) error {
+func StartGRPC(ctx context.Context, logger *zap.SugaredLogger) error {
 	grpcPort := config.GetGrpcPort()
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", grpcPort))
 	if err != nil {
@@ -45,14 +45,14 @@ func StartGRPC(ctx context.Context, logger *zap.Logger) error {
 		}
 	}()
 
-	logger.Sugar().Infof("grpc server listening at port: %v", grpcPort)
+	logger.Infof("grpc server listening at port: %v", grpcPort)
 	if err := s.Serve(lis); err != nil && ctx.Err() == nil {
 		return fmt.Errorf("failed to serve: %w", err)
 	}
 	return nil
 }
 
-func initServer(base *zap.Logger) (*grpc.Server, error) {
+func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	// register codec
 	encoding.RegisterCodec(&codec.QuaServerCodec{})
 

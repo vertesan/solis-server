@@ -39,7 +39,7 @@ var GetAsset fiber.Handler = func(c fiber.Ctx) error {
 		},
 	)
 	if err != nil {
-		logger.Sugar().Errorf("failed sending resource file %q - %q: %v", objectType, objectName, err)
+		logger.Errorf("failed sending resource file %q - %q: %v", objectType, objectName, err)
 		return fiber.NewError(500, "internal error")
 	}
 	return err

@@ -15,7 +15,7 @@ import (
 	"github.com/gofiber/fiber/v3"
 )
 
-func StartHTTP(ctx context.Context, base *zap.Logger) error {
+func StartHTTP(ctx context.Context, base *zap.SugaredLogger) error {
 	app := fiber.New(fiber.Config{
 		AppName:      "solis-server-http",
 		ReadTimeout:  time.Second * 30,
@@ -44,12 +44,12 @@ func StartHTTP(ctx context.Context, base *zap.Logger) error {
 
 	// catch all for debug purpose
 	app.All("*", func(c fiber.Ctx) error {
-		base.Sugar().Warnf("unhandled request: [%s] %s", c.Method(), c.Path())
+		base.Warnf("unhandled request: [%s] %s", c.Method(), c.Path())
 		return fiber.NewError(404, "not found")
 	})
 
 	port := config.GetHttpPort()
-	base.Sugar().Infof("http server listening at port: %v", port)
+	base.Infof("http server listening at port: %v", port)
 	if err := app.Listen(":"+port, fiber.ListenConfig{
 		DisableStartupMessage: true,
 		GracefulContext:       ctx,

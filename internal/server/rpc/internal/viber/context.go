@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func FromContext(ctx context.Context) (*zap.Logger, *uuid.UUID) {
+func FromContext(ctx context.Context) (*zap.SugaredLogger, *uuid.UUID) {
 	return mcontext.GetLogger(ctx), GetSuid(ctx)
 }
 

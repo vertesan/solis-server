@@ -38,8 +38,8 @@ func StartServers(base *zap.Logger) (retErr error) {
 	}
 
 	// spawn child loggers
-	grpcLogger := base.Named("GRPC").With(zap.String("layer", "grpc"))
-	httpLogger := base.Named("HTTP").With(zap.String("layer", "http"))
+	grpcLogger := base.Named("GRPC").With(zap.String("layer", "grpc")).Sugar()
+	httpLogger := base.Named("HTTP").With(zap.String("layer", "http")).Sugar()
 
 	// prepare for signal context
 	signalCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)

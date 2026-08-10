@@ -40,7 +40,7 @@ var (
 	}
 )
 
-func UnaryServerInterceptor(base *zap.Logger) grpc.UnaryServerInterceptor {
+func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req any,
@@ -48,7 +48,7 @@ func UnaryServerInterceptor(base *zap.Logger) grpc.UnaryServerInterceptor {
 		handler grpc.UnaryHandler,
 	) (resp any, err error) {
 		logger := base.With(zap.String("api", info.FullMethod))
-		logger.Sugar().Infof("[gRPC] %s", info.FullMethod)
+		logger.Infof("[gRPC] %s", info.FullMethod)
 
 		// retrieve metadata
 		md, ok := metadata.FromIncomingContext(ctx)

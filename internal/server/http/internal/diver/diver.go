@@ -14,7 +14,7 @@ func NewFiberError(ctx context.Context, code int, message ...any) *fiber.Error {
 	if l == 1 {
 		logger.Error(message[0].(string))
 	} else if l > 1 {
-		logger.Sugar().Errorf(message[0].(string), message[1:]...)
+		logger.Errorf(message[0].(string), message[1:]...)
 	}
 
 	return fiber.NewErrorf(code, message...)

@@ -29,12 +29,12 @@ var GetManifest fiber.Handler = func(c fiber.Ctx) error {
 
 	octoKey := c.Get("X-OCTO-KEY")
 	if octoKey != depot.ServerProfile.OctoApiKey {
-		logger.Sugar().Warnf("client octo key header mismatched, gives %q", octoKey)
+		logger.Warnf("client octo key header mismatched, gives %q", octoKey)
 		return fiber.NewError(403, "bad x-octo-key")
 	}
 
 	if someid != fixId {
-		logger.Sugar().Errorf("client requested id %q, mismatched with current server fix id %q", someid, fixId)
+		logger.Errorf("client requested id %q, mismatched with current server fix id %q", someid, fixId)
 		return fiber.NewError(404, "not found")
 	}
 

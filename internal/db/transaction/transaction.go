@@ -45,8 +45,9 @@ func WithTransaction(
 	return nil
 }
 
-// Transaction with local read concern and w1 write concern
-func WithTransactionDangerous(
+// Transaction with local read concern and w1 write concern.
+// For cases where changes must be visible within transaction.
+func WithTransactionDangerously(
 	ctx context.Context,
 	fn func(ctx context.Context) (any, error),
 ) error {
