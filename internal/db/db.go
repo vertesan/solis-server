@@ -9,7 +9,6 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 	"github.com/vertesan/solis-server/internal/db/internal/migration"
-	"github.com/vertesan/solis-server/internal/db/internal/schema"
 	"github.com/vertesan/solis-server/internal/db/internal/update"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -33,17 +32,11 @@ func Initialize() (retErr error) {
 		}
 	}()
 
-	if retErr = schema.Prepare(context.Background()); retErr != nil {
-		return fmt.Errorf("failed to prepare database schema: %w", retErr)
-	}
 	if retErr = migration.MigrationCheck(); retErr != nil {
 		return fmt.Errorf("failed to run MigrationCheck: %w", retErr)
 	}
 	if retErr = update.DataUpdateCheck(); retErr != nil {
 		return fmt.Errorf("failed to run DataUpdateCheck: %w", retErr)
-	}
-	if retErr = schema.Ensure(context.Background()); retErr != nil {
-		return fmt.Errorf("failed to ensure database schema: %w", retErr)
 	}
 
 	return nil

@@ -9,10 +9,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 )
 
-// Bump this when the prepared document or managed-index contract changes so
-// existing installations perform one complete, transactionally marked repair.
-const CurrentMasterImportRevision int32 = 1
-
 func level1Migration() error {
 	return transaction.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
 		// serverProfile

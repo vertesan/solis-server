@@ -52,7 +52,7 @@ var (
 		HttpUrlDev:         "http://localhost:50052",
 		HttpUrlPrd:         "",
 		FirebaseProductKey: "AIzaSyCabjC7_mOU21qkcNobnhN1khTi1-1F-kA",
-		XAppVersion:        "4.10.4",
+		XAppVersion:        "6.0.2",
 		XPlatform:          "Android",
 		TestUserPublicId:   "00000000",
 		TestUserSuid:       "00000000-0000-0000-0000-000000000000",

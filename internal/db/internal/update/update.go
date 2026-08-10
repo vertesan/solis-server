@@ -9,7 +9,6 @@ import (
 	"path"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
-	mversion "github.com/vertesan/solis-server/internal/db/store/opmaster/version"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/octo"
@@ -38,23 +37,8 @@ func DataUpdateCheck() error {
 		return fmt.Errorf("failed to unmarshal masterTag: %w", err)
 	}
 
-	masterVersion, masterImportCurrent, err := mversion.GetMasterVersionStatus(ctx)
-	if err != nil {
-		return err
-	}
-	zap.L().Sugar().Infof("master database version: %s", masterVersion)
-	storedMasterTagPackTypes, err := opsolis.GetAllMasterTagPackTypes(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to get stored master tag pack types: %w", err)
-	}
-
-	// A matching profile with a lagging master._version is left behind by the
-	// legacy split-commit update path and still needs a complete repair. The
-	// old upsert-only pack update can also leave removed pack types behind.
-	if serverProfile.MasterVersion != masterTag.Version ||
-		masterVersion != masterTag.Version ||
-		!masterImportCurrent ||
-		!sameMasterTagPackTypes(storedMasterTagPackTypes, masterTag.MasterTagPacks) {
+	// masterTagPack
+	if serverProfile.MasterVersion != masterTag.Version {
 		zap.L().Sugar().Infof("mastertag json version: %s", masterTag.Version)
 		// download encrypted database files from official server
 		zap.L().Info("download master files from official server...")
@@ -63,15 +47,32 @@ func DataUpdateCheck() error {
 		}
 		zap.L().Info("download completed")
 
-		if err := crypto.UpdateAllMaster(ctx, serverProfile.MasterVersion, masterTag); err != nil {
-			var fileErr *crypto.MasterFileError
-			if errors.As(err, &fileErr) {
-				if removeErr := os.Remove(fileErr.FilePath); removeErr != nil && !os.IsNotExist(removeErr) {
-					err = errors.Join(err, fmt.Errorf("failed to remove invalid cached master database file: %w", removeErr))
+		// upsert all masterTagPacks
+		err := transaction.WithTransactionDangerous(ctx, func(ctx context.Context) (any, error) {
+			for _, masterTagPack := range masterTag.MasterTagPacks {
+				if err := opsolis.UpsertMasterTagPack(ctx, masterTagPack); err != nil {
+					return nil, err
 				}
 			}
-			return fmt.Errorf("failed to update master database: %w", err)
+			if err := opsolis.UpdateServerProfileMasterVersion(ctx, masterTag.Version); err != nil {
+				return nil, err
+			}
+			return nil, nil
+		})
+		if err != nil {
+			return fmt.Errorf("failed to upsert masterTagPack: %w", err)
 		}
+		zap.L().Info("masterTagPack collection update completed")
+	}
+
+	// refresh serverProfile after updating
+	serverProfile, err = opsolis.FindServerProfile(ctx)
+	if err != nil {
+		return err
+	}
+
+	if err := crypto.CheckAndUpdateAllMaster(serverProfile.MasterVersion); err != nil {
+		return fmt.Errorf("failed to update master database: %w", err)
 	}
 
 	// octoManifest
@@ -91,22 +92,7 @@ func DataUpdateCheck() error {
 	if octodb.Revision != serverManifest.Revision {
 		zap.L().Sugar().Infof("OctoManifest json revision: %d", octodb.Revision)
 		// replace all octoManifest
-		err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-			currentManifest, err := opsolis.FindManifestMetaInfo(ctx)
-			if err != nil {
-				if errors.Is(err, mongo.ErrNoDocuments) {
-					currentManifest = &smodel.OctoManifest{Revision: 0}
-				} else {
-					return nil, fmt.Errorf("failed to revalidate octoManifest revision: %w", err)
-				}
-			}
-			replace, err := shouldReplaceOctoManifest(serverManifest.Revision, octodb.Revision, currentManifest.Revision)
-			if err != nil {
-				return nil, err
-			}
-			if !replace {
-				return nil, nil
-			}
+		err := transaction.WithTransactionDangerous(ctx, func(ctx context.Context) (any, error) {
 			if err := opsolis.DeleteAllManifests(ctx); err != nil {
 				return nil, err
 			}

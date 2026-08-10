@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
-	"github.com/vertesan/solis-server/internal/db/model/solis/sdoc"
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/model/solis/sname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis/internal/scommon"
@@ -21,7 +20,7 @@ func FindManifestMetaInfo(ctx context.Context) (*smodel.OctoManifest, error) {
 	return scommon.FindOne[smodel.OctoManifest](
 		ctx,
 		sname.OctoManifest,
-		bson.M{"_id": sdoc.OctoManifestDocumentID},
+		bson.M{},
 		options.FindOne().SetProjection(bson.M{"revision": 1, "urlFormat": 1}),
 	)
 }
@@ -30,7 +29,7 @@ func FindFullManifest(ctx context.Context) (*octo.Database, error) {
 	return scommon.FindOne[octo.Database](
 		ctx,
 		sname.OctoManifest,
-		bson.M{"_id": sdoc.OctoManifestDocumentID},
+		bson.M{},
 	)
 }
 
@@ -47,9 +46,6 @@ func FindManifestObject(ctx context.Context, objectName string, objectType strin
 
 	var data octo.Data
 	pipeline := []bson.M{
-		{
-			"$match": bson.M{"_id": sdoc.OctoManifestDocumentID},
-		},
 		{
 			"$addFields": bson.M{
 				"matchedObject": bson.M{
@@ -95,7 +91,7 @@ func DeleteAllManifests(ctx context.Context) error {
 	return scommon.Delete(
 		ctx,
 		sname.OctoManifest,
-		bson.M{"_id": sdoc.OctoManifestDocumentID},
+		bson.M{},
 	)
 }
 
@@ -103,9 +99,6 @@ func InsertManifest(ctx context.Context, octodb *octo.Database) error {
 	return scommon.InsertOne(
 		ctx,
 		sname.OctoManifest,
-		&struct {
-			ID             string `bson:"_id"`
-			*octo.Database `bson:",inline"`
-		}{ID: sdoc.OctoManifestDocumentID, Database: octodb},
+		octodb,
 	)
 }
