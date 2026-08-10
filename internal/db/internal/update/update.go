@@ -9,6 +9,7 @@ import (
 	"path"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
+	mversion "github.com/vertesan/solis-server/internal/db/store/opmaster/version"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/octo"
@@ -19,11 +20,13 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/client"
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.uber.org/zap"
 	"golang.org/x/sync/errgroup"
 )
 
+// check and update both master data and octo manifest data
 func DataUpdateCheck() error {
 	ctx := context.Background()
 	serverProfile, err := opsolis.FindServerProfile(ctx)
@@ -47,8 +50,8 @@ func DataUpdateCheck() error {
 		}
 		zap.L().Info("download completed")
 
-		// upsert all masterTagPacks
-		err := transaction.WithTransactionDangerous(ctx, func(ctx context.Context) (any, error) {
+		// upsert all masterTagPacks and master version for serverProfile
+		err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 			for _, masterTagPack := range masterTag.MasterTagPacks {
 				if err := opsolis.UpsertMasterTagPack(ctx, masterTagPack); err != nil {
 					return nil, err
@@ -71,7 +74,7 @@ func DataUpdateCheck() error {
 		return err
 	}
 
-	if err := crypto.CheckAndUpdateAllMaster(serverProfile.MasterVersion); err != nil {
+	if err := checkAndUpdateAllMaster(serverProfile.MasterVersion); err != nil {
 		return fmt.Errorf("failed to update master database: %w", err)
 	}
 
@@ -92,7 +95,7 @@ func DataUpdateCheck() error {
 	if octodb.Revision != serverManifest.Revision {
 		zap.L().Sugar().Infof("OctoManifest json revision: %d", octodb.Revision)
 		// replace all octoManifest
-		err := transaction.WithTransactionDangerous(ctx, func(ctx context.Context) (any, error) {
+		err := transaction.WithTransactionDangerously(ctx, func(ctx context.Context) (any, error) {
 			if err := opsolis.DeleteAllManifests(ctx); err != nil {
 				return nil, err
 			}
@@ -110,48 +113,73 @@ func DataUpdateCheck() error {
 	return nil
 }
 
-// sameMasterTagPackTypes reports whether the database contains exactly the
-// target set of master-pack types, without missing, stale, or duplicate types.
-func sameMasterTagPackTypes(stored []string, target []*ptransaction.MasterTagPack) bool {
-	if len(stored) != len(target) {
-		return false
+func checkAndUpdateAllMaster(profileVersion string) error {
+	ctx := context.Background()
+	ver, err := mversion.GetMasterVersion(ctx)
+	if err != nil {
+		return err
 	}
-	types := make(map[string]struct{}, len(target))
-	for _, pack := range target {
-		if pack == nil || pack.Type == "" {
-			return false
-		}
-		if _, exists := types[pack.Type]; exists {
-			return false
-		}
-		types[pack.Type] = struct{}{}
+	zap.L().Sugar().Infof("master database version %s", ver)
+	// check current version vs version string in serverProfile
+	if profileVersion != "" && ver == profileVersion {
+		return nil
 	}
-	for _, packType := range stored {
-		if _, exists := types[packType]; !exists {
-			return false
-		}
-		delete(types, packType)
+	zap.L().Info("updating master database from storage")
+	// get all masterTagPacks
+	tags, err := opsolis.GetAllMasterTagPack(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to get master tag pack: %w", err)
 	}
-	return len(types) == 0
-}
+	// prepare an indexMap for creating indexes after transaction
+	indexMap := make(map[string]bson.D)
 
-// shouldReplaceOctoManifest revalidates a prepared manifest update and rejects
-// stale writers or revision downgrades before replacement.
-func shouldReplaceOctoManifest(observed, target, current int32) (bool, error) {
-	if current == target {
-		return false, nil
+	// start a transaction to migrate master databases from SQLite to MongoDB
+	err = transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
+		for _, tag := range tags {
+			filePath := path.Join(config.GetDBDir(), tag.FileName)
+			data, err := crypto.DecryptMasterDbFile(tag.Type, filePath, tag.CryptoKey)
+			if err != nil {
+				return nil, fmt.Errorf("failed to decrypt db: %w", err)
+			}
+			// create indexMap
+			if len(data) > 0 {
+				var indexes bson.D
+				for key := range data[0] {
+					if key != "data" {
+						indexes = append(indexes, bson.E{Key: key, Value: 1})
+					}
+				}
+				indexMap[tag.Type] = indexes
+			}
+			// update db
+			if err := mversion.DeleteMasterDb(ctx, tag.Type); err != nil {
+				return nil, err
+			}
+			if err := mversion.InsertMasterDb(ctx, tag.Type, data); err != nil {
+				return nil, err
+			}
+		}
+		return nil, nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to update master db: %w", err)
 	}
-	if target < current {
-		return false, fmt.Errorf("refusing to downgrade octoManifest revision from %d to %d", current, target)
+
+	// creating indexes is not allowed in a transaction, we have to do this separately
+	zap.L().Info("creating indexes for master database, this may take a few minutes...")
+	for k, v := range indexMap {
+		if err := mversion.CreateIndexToMasterDb(ctx, k, v); err != nil {
+			return err
+		}
 	}
-	if current != observed {
-		return false, fmt.Errorf(
-			"octoManifest revision changed while preparing update: expected %d, got %d",
-			observed,
-			current,
-		)
+
+	// finally, upsert master version in master._version
+	if err := mversion.UpsertMasterVersion(ctx, profileVersion); err != nil {
+		return err
 	}
-	return true, nil
+
+	zap.L().Info("master database update completed")
+	return nil
 }
 
 func downloadAllEncryptedDb(masterTag *ptransaction.MasterTag) error {

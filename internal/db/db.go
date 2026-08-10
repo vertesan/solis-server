@@ -20,8 +20,6 @@ import (
 	"go.uber.org/zap"
 )
 
-// Initialize connects to MongoDB, repairs legacy singleton documents, runs
-// migrations and data updates, and then installs the required indexes.
 func Initialize() (retErr error) {
 	if retErr = Connect(); retErr != nil {
 		return fmt.Errorf("failed to connect to database: %w", retErr)
@@ -91,7 +89,7 @@ func (topology topologyInfo) supportsTransactions() bool {
 // on top of the supplied MongoDB URI.
 func clientOptions(dbUri string) *options.ClientOptions {
 	journaled := true
-	wConcern := writeconcern.Majority()
+	wConcern := writeconcern.W1()
 	wConcern.Journal = &journaled
 	return options.Client().ApplyURI(dbUri).
 		SetBSONOptions(&options.BSONOptions{
@@ -102,7 +100,9 @@ func clientOptions(dbUri string) *options.ClientOptions {
 		SetConnectTimeout(time.Second * 30).
 		SetMaxConnIdleTime(time.Minute * 5).
 		SetMaxConnecting(5).
-		SetReadConcern(readconcern.Majority()).
+		// Cannot use `Snapshot` as read concern. In most cases,
+		// changes to data must be visible to subsequent queries in the same context
+		SetReadConcern(readconcern.Local()).
 		SetReadPreference(readpref.Primary()).
 		SetWriteConcern(wConcern)
 }
