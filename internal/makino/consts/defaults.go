@@ -1,7 +1,7 @@
 package consts
 
-var (
-	UserInitialCardIds = []string{
+func GetUserInitialCardIds() []string {
+	return []string{
 		"card-ai-03-schl-00",
 		"card-aoi-03-schl-00",
 		"card-chs-03-schl-00",
@@ -20,7 +20,10 @@ var (
 		"card-szk-03-schl-00",
 		"card-yu-03-schl-00",
 	}
-	UserInitialCharacterIds = []string{
+}
+
+func GetUserInitialCharacterIds() []string {
+	return []string{
 		"char-ai",
 		"char-aoi",
 		"char-chs",
@@ -39,7 +42,10 @@ var (
 		"char-szk",
 		"char-yu",
 	}
-	UserInitialCostumeIds = []string{
+}
+
+func GetUserInitialCostumeIds() []string {
+	return []string{
 		"cos-ai-schl-00",
 		"cos-ai-trng-00",
 		"cos-aoi-schl-00",
@@ -75,7 +81,10 @@ var (
 		"cos-yu-schl-00",
 		"cos-yu-trng-00",
 	}
-	UserInitialHairIds = []string{
+}
+
+func GetUserInitialHairIds() []string {
+	return []string{
 		"hair-ai-schl-00",
 		"hair-ai-trng-00",
 		"hair-aoi-schl-00",
@@ -111,7 +120,10 @@ var (
 		"hair-yu-schl-00",
 		"hair-yu-trng-00",
 	}
-	UserInitialPhotoPoseIds = []string{
+}
+
+func GetUserInitialPhotoPoseIds() []string {
+	return []string{
 		"photo-pose-bedrockbath-lying",
 		"photo-pose-bedrockbath-naturally",
 		"photo-pose-bedrockbath-new",
@@ -129,13 +141,19 @@ var (
 		"photo-pose-standing-idol",
 		"photo-pose-standing-peace",
 	}
-	UserInitialShopIds = []string{
+}
+
+func GetUserInitialShopIds() []string {
+	return []string{
 		"shop_login_login-pack-01",
 		"shop_login_login-pack-02",
 		"shop_top_dia",
 		"shop_top_shop",
 	}
-	UserInitialExchangeBoothIds = []string{
+}
+
+func GetUserInitialExchangeBoothIds() []string {
+	return []string{
 		"exchange-acc-limit-001",
 		"exchange-friend-medal-23-0926",
 		"exchange-gacha_point-26-0401-0430",
@@ -147,7 +165,10 @@ var (
 		"exchange-pvp_medal-26-0401-0430",
 		"exchange-rarity_exp_medal-21-1228",
 	}
-	UserInitialNotiStoneShopItemIds = []string{
+}
+
+func GetUserInitialNotiStoneShopItemIds() []string {
+	return []string{
 		"shop_item_stone-10000",
 		"shop_item_stone-120",
 		"shop_item_stone-1960",
@@ -156,9 +177,14 @@ var (
 		"shop_item_stone-4900",
 		"shop_item_stone-980",
 	}
-	UserInitialHierarchyNotiCurrentDetailGradeId = "hie-007-003"
+}
 
-	UserInitialNotiNormalShopItemIds = []string{
+func GetUserInitialHierarchyNotiCurrentDetailGradeId() string {
+	return "hie-007-003"
+}
+
+func GetUserInitialNotiNormalShopItemIds() []string {
+	return []string{
 		"shop_item_gacha_ticket_piece-010",
 		"shop_item_normal-daily-01",
 		"shop_item_normal-daily-stone-01",
@@ -180,8 +206,16 @@ var (
 		"shop_item_normal-weekly-08-23-0624",
 		"shop_top_normal-weekly-stone-21-0721-02",
 	}
-	UserInitialUnlockedShowcaseNumbers = []int32{1, 2, 3, 4, 5}
+}
 
-	UserInitialCurrentMainAreaId   = "area-main-001"
-	UserInitialCurrentTowerQuestId = "qt-tower-001"
-)
+func GetUserInitialUnlockedShowcaseNumbers() []int32 {
+	return []int32{1, 2, 3, 4, 5}
+}
+
+func GetUserInitialCurrentMainAreaId() string {
+	return "area-main-001"
+}
+
+func GetUserInitialCurrentTowerQuestId() string {
+	return "qt-tower-001"
+}

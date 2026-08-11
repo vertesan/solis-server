@@ -9,7 +9,7 @@ import (
 )
 
 func SpawnUserInitialExtraStoryPartInfos(ctx context.Context) ([]*papi.ExtraStoryPartInfo, error) {
-	parts, err := opmaster.FindExtraStoryPartsByIds(ctx, consts.UserInitialDynamicExtraStoryPartIds)
+	parts, err := opmaster.FindExtraStoryPartsByIds(ctx, consts.GetUserInitialDynamicExtraStoryPartIds())
 	if err != nil {
 		return nil, fmt.Errorf("failed to find extra story parts: %w", err)
 	}
@@ -38,8 +38,9 @@ func SpawnUserInitialExtraStoryPartInfos(ctx context.Context) ([]*papi.ExtraStor
 		}
 	}
 
-	infos := make([]*papi.ExtraStoryPartInfo, 0, len(consts.UserInitialStaticExtraStoryPartInfos)+len(parts))
-	infos = append(infos, consts.UserInitialStaticExtraStoryPartInfos...)
+	staticInfos := consts.GetUserInitialStaticExtraStoryPartInfos()
+	infos := make([]*papi.ExtraStoryPartInfo, 0, len(staticInfos)+len(parts))
+	infos = append(infos, staticInfos...)
 	for _, part := range parts {
 		partStories := make([]*papi.ExtraStoryInfo, 0, len(part.ExtraStoryIds))
 		for _, sid := range part.ExtraStoryIds {

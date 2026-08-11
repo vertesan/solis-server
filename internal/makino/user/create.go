@@ -141,7 +141,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserCard
-		for _, cardId := range consts.UserInitialCardIds {
+		for _, cardId := range consts.GetUserInitialCardIds() {
 			userCard, err := card.SpawnUserCardById(ctx, cardId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user card, cardId %q: %w", cardId, err)
@@ -152,7 +152,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserCharacter
-		for _, characterId := range consts.UserInitialCharacterIds {
+		for _, characterId := range consts.GetUserInitialCharacterIds() {
 			userCharacter, err := character.SpawnUserCharacterById(ctx, characterId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user character: %w", err)
@@ -163,7 +163,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserCostume
-		for _, costumeId := range consts.UserInitialCostumeIds {
+		for _, costumeId := range consts.GetUserInitialCostumeIds() {
 			costume, err := costume.SpawnUserCostumeById(ctx, costumeId)
 			if err != nil {
 				return nil, fmt.Errorf("failed to spawn user costume: %w", err)
@@ -379,7 +379,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserHair
-		for _, hairId := range consts.UserInitialHairIds {
+		for _, hairId := range consts.GetUserInitialHairIds() {
 			if err := opuser.UpsertUserHair(ctx, suid, &ptransaction.UserHair{
 				HairId:  hairId,
 				Checked: true,
@@ -402,7 +402,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserPhotoPose
-		for _, poseId := range consts.UserInitialPhotoPoseIds {
+		for _, poseId := range consts.GetUserInitialPhotoPoseIds() {
 			if err := opuser.UpsertUserPhotoPose(ctx, suid, &ptransaction.UserPhotoPose{
 				PhotoPoseId: poseId,
 			}); err != nil {
@@ -453,7 +453,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserShopIds
 		if err := opuser.UpsertUserShopId(
 			ctx,
-			&umodel.UserShopId{SUID: suid, ShopIds: consts.UserInitialShopIds},
+			&umodel.UserShopId{SUID: suid, ShopIds: consts.GetUserInitialShopIds()},
 		); err != nil {
 			return nil, err
 		}
@@ -461,7 +461,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserExchangeBooth
 		if err := opuser.UpsertUserExchangeBooth(
 			ctx,
-			&umodel.UserExchangeBooth{SUID: suid, BoothIds: consts.UserInitialExchangeBoothIds},
+			&umodel.UserExchangeBooth{SUID: suid, BoothIds: consts.GetUserInitialExchangeBoothIds()},
 		); err != nil {
 			return nil, err
 		}
@@ -469,7 +469,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserNotiStoneShopItem
 		if err := opuser.UpsertUserNotiStoneShopItem(ctx, suid, &papi.NotiShopItem{
 			ShopId:      "shop_top_dia",
-			ShopItemIds: consts.UserInitialNotiStoneShopItemIds,
+			ShopItemIds: consts.GetUserInitialNotiStoneShopItemIds(),
 		}); err != nil {
 			return nil, err
 		}
@@ -477,19 +477,19 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserNotiNormalShopItem
 		if err := opuser.UpsertUserNotiNormalShopItem(ctx, suid, &papi.NotiShopItem{
 			ShopId:      "shop_top_shop",
-			ShopItemIds: consts.UserInitialNotiNormalShopItemIds,
+			ShopItemIds: consts.GetUserInitialNotiNormalShopItemIds(),
 		}); err != nil {
 			return nil, err
 		}
 
 		// UserEventInfo
-		if err := opuser.UpsertUserEventInfo(ctx, suid, proto.Clone(consts.UserInitialEventInfo).(*papi.HomeEventInfo)); err != nil {
+		if err := opuser.UpsertUserEventInfo(ctx, suid, consts.GetUserInitialEventInfo()); err != nil {
 			return nil, err
 		}
 
 		// UserHierarchyNotiInfo
 		if err := opuser.UpsertUserHierarchyNotiInfo(ctx, suid, &papi.HierarchyNotiInfo{
-			CurrentDetailGradeId: consts.UserInitialHierarchyNotiCurrentDetailGradeId,
+			CurrentDetailGradeId: consts.GetUserInitialHierarchyNotiCurrentDetailGradeId(),
 		}); err != nil {
 			return nil, err
 		}
@@ -553,7 +553,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserPhotoStage
-		if err := opuser.UpsertManyUserPhotoStages(ctx, suid, consts.UserInitialPhotoStages); err != nil {
+		if err := opuser.UpsertManyUserPhotoStages(ctx, suid, consts.GetUserInitialPhotoStages()); err != nil {
 			return nil, err
 		}
 
@@ -567,14 +567,14 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserNotiShowcaseShopItem
-		if err := opuser.UpsertUserNotiShowcaseShopItem(ctx, suid, proto.Clone(consts.UserInitialNotiShowcaseShopItem).(*papi.NotiShopItem)); err != nil {
+		if err := opuser.UpsertUserNotiShowcaseShopItem(ctx, suid, consts.GetUserInitialNotiShowcaseShopItem()); err != nil {
 			return nil, err
 		}
 
 		// UserShowcaseToyShopId
 		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
 			SUID:    suid,
-			ShopIds: consts.UserInitialShowcaseToyShopIds,
+			ShopIds: consts.GetUserInitialShowcaseToyShopIds(),
 		}); err != nil {
 			return nil, err
 		}
@@ -582,7 +582,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserUnlockedShowcaseNumber
 		if err := opuser.UpsertUserUnlockedShowcaseNumber(ctx, &umodel.UserUnlockedShowcaseNumber{
 			SUID:    suid,
-			Numbers: consts.UserInitialUnlockedShowcaseNumbers,
+			Numbers: consts.GetUserInitialUnlockedShowcaseNumbers(),
 		}); err != nil {
 			return nil, err
 		}
@@ -606,8 +606,8 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserCurrentQuestArea
 		if err := opuser.UpsertUserCurrentQuestArea(ctx, &umodel.UserCurrentQuestArea{
 			SUID:                suid,
-			CurrentMainAreaId:   consts.UserInitialCurrentMainAreaId,
-			CurrentTowerQuestId: consts.UserInitialCurrentTowerQuestId,
+			CurrentMainAreaId:   consts.GetUserInitialCurrentMainAreaId(),
+			CurrentTowerQuestId: consts.GetUserInitialCurrentTowerQuestId(),
 		}); err != nil {
 			return nil, err
 		}
