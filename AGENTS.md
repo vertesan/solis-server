@@ -76,16 +76,15 @@ You can use MongoDB MCP server to retrieve or manipulate data if you need.
 
 ## Logging Rules
 
-Avoid using global logger (`zap.L()`) when possible.
-In HTTP and gRPC handlers, a `*zap.Logger` is threaded in the `context` through the entire invocation, use `GetLogger(ctx context.Context) *zap.Logger` function in `internal/utils/mcontext` to retrieve logger instance in these cases.
-In scopes where don't have context, such as utility functions, using global logger is acceptable.
+In HTTP and gRPC handlers, a `*zap.SugaredLogger` is threaded in the `context` through the entire invocation, use `GetLogger(ctx context.Context) *zap.SugaredLogger` function in `internal/utils/mcontext` to retrieve logger instance in these cases.
+In scopes where don't have context, such as utility functions, using global logger (`zap.L()`) is acceptable.
 Sugaring a logger is perfectly acceptable, our program is not that performance critical.
 
 ## Testing Rules
 
 - Integration tests live in `test/`, each test function is supposed to test an entire scenario flow
 - Write tests to make sure everything works as expect once you completed a scenario. If the test fails, fix the issue and test again until success
-- Remember to do cleanups at the end of each test if mock data is created in the database during the test
+- Remember to do cleanups at the end of each test if mock data is created during the test
 
 ## Tools
 

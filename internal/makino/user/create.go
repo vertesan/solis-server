@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
@@ -20,7 +23,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/protobuf/proto"
@@ -37,6 +39,10 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 		if count > 0 {
 			return nil, errors.New("a user with the same publicUserId or serverUserId already exists")
+		}
+
+		if !regexp.MustCompile(`^[a-zA-Z0-9]{8,16}$`).Match([]byte(password)) {
+			return nil, errors.New("password must be alphanumeric characters within the length of 8 - 16")
 		}
 
 		// userAuth
@@ -405,8 +411,9 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserGachaInfo
-		gachaInfos := make([]*papi.GachaInfo, 0, len(consts.UserInitialGachaInfos))
-		for _, info := range consts.UserInitialGachaInfos {
+		userInitialGachaInfos := consts.GetUserInitialGachaInfos()
+		gachaInfos := make([]*papi.GachaInfo, 0, len(userInitialGachaInfos))
+		for _, info := range userInitialGachaInfos {
 			cloned := proto.Clone(info).(*papi.GachaInfo)
 			for _, btn := range cloned.Buttons {
 				btn.DrawTime = milliNow
@@ -421,22 +428,22 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserFanEventInfo
-		if err := opuser.UpsertUserFanEventInfo(ctx, suid, proto.Clone(consts.UserInitialFanEventInfo).(*papi.FanEventInfo)); err != nil {
+		if err := opuser.UpsertUserFanEventInfo(ctx, suid, consts.GetUserInitialFanEventInfo()); err != nil {
 			return nil, err
 		}
 
 		// UserPromotionInfo
-		if err := opuser.UpsertUserPromotionInfo(ctx, suid, proto.Clone(consts.UserInitialPromotionInfo).(*papi.PromotionInfo)); err != nil {
+		if err := opuser.UpsertUserPromotionInfo(ctx, suid, consts.GetUserInitialPromotionInfo()); err != nil {
 			return nil, err
 		}
 
 		// UserRefreshInfo
-		if err := opuser.UpsertUserRefreshInfo(ctx, suid, proto.Clone(consts.UserInitialRefreshInfo).(*papi.RefreshInfo)); err != nil {
+		if err := opuser.UpsertUserRefreshInfo(ctx, suid, consts.GetUserInitialRefreshInfo()); err != nil {
 			return nil, err
 		}
 
 		// UserLessonProgress
-		lessonProgress := proto.Clone(consts.UserInitialLessonProgress).(*papi.ActivityLessonProgress)
+		lessonProgress := consts.GetUserInitialLessonProgress()
 		lessonProgress.LastReceiveTime = milliNow
 		lessonProgress.MaxRewardTime = milliNow
 		if err := opuser.UpsertUserLessonProgress(ctx, suid, lessonProgress); err != nil {

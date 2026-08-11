@@ -9,6 +9,7 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 )
 
+// server first startup database initialization
 func level1Migration() error {
 	return transaction.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
 		// serverProfile

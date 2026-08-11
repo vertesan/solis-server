@@ -33,3 +33,7 @@ func (s *SystemServer) Check(ctx context.Context, req *pb.SystemCheckRequest) (*
 		EnableApiParallelExecutionSuppression: false,
 	}, nil
 }
+
+func (s *SystemServer) CheckApp(ctx context.Context, _ *pb.Empty) (*pb.Empty, error) {
+	return &pb.Empty{}, nil
+}
