@@ -40,7 +40,11 @@ var CreateUser fiber.Handler = func(c fiber.Ctx) error {
 	}
 	var serverUserId string
 	if request.ServerUserId != "" {
-		serverUserId = request.ServerUserId
+		parsed, err := uuid.Parse(request.ServerUserId)
+		if err != nil {
+			return fiber.NewError(400, "serverUserId must be a valid UUID")
+		}
+		serverUserId = parsed.String()
 	} else {
 		serverUserId = uuid.NewString()
 	}

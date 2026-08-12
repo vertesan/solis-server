@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -22,13 +23,13 @@ func MigrationCheck() error {
 		migrationFlag = migration.Migration
 	}
 
-	// first startup
 	if migrationFlag < 1 {
-		zap.L().Info("migration flag < 1, looks like this is the first startup, initializing server profile...")
+		zap.L().Info("looks like this is the first startup, initializing database...")
 		if err := level1Migration(); err != nil {
-			return fmt.Errorf("failed to initialize database: %w", err)
+			return fmt.Errorf("failed database migration level 1: %w", err)
 		}
-		zap.L().Info("server profile initialized")
+		migrationFlag = 1
+		zap.L().Info("database initialization completed")
 	}
 
 	return nil

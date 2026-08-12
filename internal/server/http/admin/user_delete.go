@@ -39,7 +39,7 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 	}
 
 	return c.JSON(&CommonAdminResponse{
-		ok:  true,
-		msg: "",
+		Ok:  true,
+		Msg: "",
 	})
 }

@@ -1,6 +1,6 @@
 package admin
 
 type CommonAdminResponse struct {
-	ok  bool
-	msg string
+	Ok  bool   `json:"ok"`
+	Msg string `json:"msg"`
 }

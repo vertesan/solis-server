@@ -239,7 +239,7 @@ func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse,
 			return nil, err
 		}
 
-		return &papi.UserGetResponse{
+		response = &papi.UserGetResponse{
 			User:                     user,
 			Items:                    items,
 			Cards:                    cards,
@@ -292,7 +292,8 @@ func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse,
 			PhotoPoses:               photoPoses,
 			StaffTrainingReset:       staffTrainingReset,
 			UserPublic:               userPublic,
-		}, nil
+		}
+		return response, nil
 	})
 	if err != nil {
 		return nil, err

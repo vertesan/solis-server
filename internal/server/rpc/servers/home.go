@@ -26,6 +26,10 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 	var response *papi.HomeLoginResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 		updatedData := &papi.UpdatedData{}
+		balance, err := opuser.FindUserBalance(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
 
 		user, err := opuser.FindAndUpdateUser(
 			ctx,
@@ -62,10 +66,10 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 		}
 
 		response = &papi.HomeLoginResponse{
-			CommonResponse: &papi.CommonResponse{
-				UpdatedData: updatedData,
-				DeletedData: &papi.DeletedData{},
-			},
+			CommonResponse: newCommonResponse(updatedData),
+		}
+		if balance.PaidBalance > 0 {
+			response.PaidJpy = &papi.PaidJpy{Amount: balance.PaidBalance}
 		}
 		return response, nil
 	})
@@ -119,7 +123,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 		if err != nil {
 			return nil, err
 		}
-		eventInfo, err := opuser.FindUserEventInfo(ctx, suid)
+		eventInfo, err := opsolis.FindHomeEventInfo(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -168,7 +172,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 			return nil, err
 		}
 
-		return &papi.HomeEnterResponse{
+		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
 			FanEventInfo:            fanEventInfo,
 			PromotionInfo:           promotionInfo,
@@ -195,11 +199,9 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 			ShowcaseToyShopIds:      showcaseToyShopIds.ShopIds,
 			UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
 			PhotoExpressions:        photoExpressions,
-			CommonResponse: &papi.CommonResponse{
-				UpdatedData: &papi.UpdatedData{},
-				DeletedData: &papi.DeletedData{},
-			},
-		}, nil
+			CommonResponse:          newCommonResponse(nil),
+		}
+		return response, nil
 	})
 	if err != nil {
 		return nil, err

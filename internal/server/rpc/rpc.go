@@ -102,5 +102,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	pb.RegisterUserServer(server, &ss.UserServer{})
 	pb.RegisterHomeServer(server, &ss.HomeServer{})
 	pb.RegisterDokanServer(server, &ss.DokanServer{})
+	pb.RegisterNoticeServer(server, &ss.NoticeServer{})
+	pb.RegisterStoryServer(server, &ss.StoryServer{})
 	return server, nil
 }

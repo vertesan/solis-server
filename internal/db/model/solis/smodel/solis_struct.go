@@ -1,5 +1,7 @@
 package smodel
 
+import "github.com/vertesan/solis-server/internal/proto/papi"
+
 type OctoManifest struct {
 	Revision  int32  `bson:"revision"`
 	UrlFormat string `bson:"urlFormat"`
@@ -23,4 +25,10 @@ type ServerProfile struct {
 
 type Migration struct {
 	Migration int32 `bson:"migration"`
+}
+
+type NoticeCatalog struct {
+	Notices            []*papi.NoticeInfo `bson:"notices"`
+	MalfunctionNotices []*papi.NoticeInfo `bson:"malfunctionNotices"`
+	PrNotices          []*papi.NoticeInfo `bson:"prNotices"`
 }

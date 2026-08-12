@@ -482,11 +482,6 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			return nil, err
 		}
 
-		// UserEventInfo
-		if err := opuser.UpsertUserEventInfo(ctx, suid, consts.GetUserInitialEventInfo()); err != nil {
-			return nil, err
-		}
-
 		// UserHierarchyNotiInfo
 		if err := opuser.UpsertUserHierarchyNotiInfo(ctx, suid, &papi.HierarchyNotiInfo{
 			CurrentDetailGradeId: consts.GetUserInitialHierarchyNotiCurrentDetailGradeId(),
