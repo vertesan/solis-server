@@ -1,0 +1,11 @@
+notices:
+  - id: info-news-26-0812-01
+    title: Welcome to IDOLY PRIDE private server
+    bannerAssetId: img_banner_l_campaign-26-0731-01
+    linkType: LinkType_WebView
+    linkDetail: ""
+    displayNotification: true
+    startTime: 1785466800000
+    listTitle: Welcome to IDOLY PRIDE private server
+malfunctionNotices: []
+prNotices: []

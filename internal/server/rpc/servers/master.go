@@ -3,7 +3,7 @@ package servers
 import (
 	"context"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/depot"
 
@@ -12,15 +12,15 @@ import (
 )
 
 type MasterServer struct {
-	pb.UnimplementedMasterServer
+	papi.UnimplementedMasterServer
 }
 
-func (s *MasterServer) Get(ctx context.Context, req *pb.Empty) (*pb.MasterGetResponse, error) {
+func (s *MasterServer) Get(ctx context.Context, req *papi.Empty) (*papi.MasterGetResponse, error) {
 	masterTagPacks, err := opsolis.GetAllMasterTagPack(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to GetAllMasterTagPack: %v", err)
 	}
-	return &pb.MasterGetResponse{
+	return &papi.MasterGetResponse{
 		MasterTag: &ptransaction.MasterTag{
 			Version:        depot.ServerProfile.MasterVersion,
 			MasterTagPacks: masterTagPacks,

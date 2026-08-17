@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 
@@ -18,10 +18,10 @@ import (
 )
 
 type MigrationServer struct {
-	pb.UnimplementedMigrationServer
+	papi.UnimplementedMigrationServer
 }
 
-func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.MigrationMigratePasswordRequest) (*pb.MigrationMigrateResponse, error) {
+func (s *MigrationServer) MigratePassword(ctx context.Context, req *papi.MigrationMigratePasswordRequest) (*papi.MigrationMigrateResponse, error) {
 	// retireve userAuth from db
 	userAuth, err := opuser.GetUserAuthByPublicId(ctx, req.UserId)
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 		return nil, status.Errorf(codes.Internal, "failed to UpdateOneTimeToken: %v", err)
 	}
 
-	return &pb.MigrationMigrateResponse{
+	return &papi.MigrationMigrateResponse{
 		LinkedUserId: userAuth.PublicUserId,
 		LinkedUser: &ptransaction.User{
 			Name:         user.Name,
@@ -60,7 +60,7 @@ func (s *MigrationServer) MigratePassword(ctx context.Context, req *pb.Migration
 	}, nil
 }
 
-func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteRequest) (*pb.MigrationExecuteResponse, error) {
+func (s *MigrationServer) Execute(ctx context.Context, req *papi.MigrationExecuteRequest) (*papi.MigrationExecuteResponse, error) {
 	if req.GetOnetimeToken() == "" {
 		return nil, status.Error(codes.Unauthenticated, "invalid one-time token")
 	}
@@ -93,7 +93,7 @@ func (s *MigrationServer) Execute(ctx context.Context, req *pb.MigrationExecuteR
 		}
 		return nil, status.Errorf(codes.Internal, "failed to consume one-time token: %v", err)
 	}
-	return &pb.MigrationExecuteResponse{
+	return &papi.MigrationExecuteResponse{
 		Token: tokenStr,
 	}, nil
 }

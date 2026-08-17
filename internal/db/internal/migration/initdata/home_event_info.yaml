@@ -1,0 +1,12 @@
+dreamInfo:
+  name: イメージトレーニング
+  startTime: 1784084400000
+  endTime: 1944275439000
+  assetId: event-dream-defalut
+  bannerAssetId: img_banner_l_event-dream-defalut
+  order: 60
+  unlockConditionId: cd-dream-25-0320-play
+  isUnlocked: false
+  generateAreaItemId: item-dream-generate-dream-25-0320
+  isReceivableLoginReward: false
+  eventMissionId: event-dream-26-07

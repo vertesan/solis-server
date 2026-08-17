@@ -34,6 +34,17 @@ type UserExchangeBooth struct {
 	BoothIds []string `bson:"boothIds"`
 }
 
+type UserExchangePurchase struct {
+	SUID           string           `bson:"SUID"`
+	PurchaseCounts map[string]int32 `bson:"purchaseCounts"`
+	ResetTimes     map[string]int64 `bson:"resetTimes"`
+}
+
+type UserGodState struct {
+	SUID                string `bson:"SUID"`
+	UnlockCurrentEvents bool   `bson:"unlockCurrentEvents"`
+}
+
 type UserShowcaseToyShopId struct {
 	SUID    string   `bson:"SUID"`
 	ShopIds []string `bson:"shopIds"`

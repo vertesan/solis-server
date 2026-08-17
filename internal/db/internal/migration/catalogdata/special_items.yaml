@@ -1,0 +1,37 @@
+"shopItems":
+    - "id": "shop_top_special-shop-pack2-26-0731-01"
+      "name": "特別パック1"
+      "description": "特別パック1"
+      "consumptionId": "con-paid_stone-2700"
+      "rewardId": "rd-shop_top_special-shop-pack2-26-0731-01"
+      "thumbnailAssetId": "img_shop_item_thumb_shop-pack2-26-0731-01"
+      "purchaseLimit": 1
+      "leftCount": 1
+      "order": 12
+      "viewConditionId": "cd-special-shop-pack2-26-0731-0816-02"
+      "resetTimingType": 4
+      "unlocked": true
+      "colorCode": "71BDFD"
+      "backgroundColorCode": "3388D1"
+      "productId": ""
+      "pushSegment": ""
+      "nextResetTime": "0"
+      "unlockConditionId": ""
+    - "id": "shop_top_special-shop-pack2-26-0731-02"
+      "name": "特別パック2"
+      "description": "特別パック2"
+      "consumptionId": "con-paid_stone-2700"
+      "rewardId": "rd-shop_top_special-shop-pack2-26-0731-02"
+      "thumbnailAssetId": "img_shop_item_thumb_shop-pack2-26-0731-02"
+      "purchaseLimit": 1
+      "leftCount": 1
+      "order": 20
+      "viewConditionId": "cd-special-shop-pack2-26-0731-0816-02"
+      "resetTimingType": 4
+      "unlocked": true
+      "colorCode": "71BDFD"
+      "backgroundColorCode": "3388D1"
+      "productId": ""
+      "pushSegment": ""
+      "nextResetTime": "0"
+      "unlockConditionId": ""

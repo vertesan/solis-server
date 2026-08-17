@@ -5,6 +5,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/makino/user"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"go.uber.org/zap"
 
@@ -38,7 +39,7 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(500, "internal error")
 	}
 
-	return c.JSON(&CommonAdminResponse{
+	return c.JSON(&diver.CommonAdminResponse{
 		Ok:  true,
 		Msg: "",
 	})

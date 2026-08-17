@@ -2,25 +2,28 @@ package servers
 
 import (
 	"context"
+	"errors"
 	"time"
 
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
-	"github.com/vertesan/solis-server/internal/server/rpc/internal/viber"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
+	"google.golang.org/protobuf/reflect/protoreflect"
 )
 
 type HomeServer struct {
-	pb.UnimplementedHomeServer
+	papi.UnimplementedHomeServer
 }
 
 var jstZone = time.FixedZone("JST", 9*60*60)
 
-func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.HomeLoginResponse, error) {
+func (s *HomeServer) Login(ctx context.Context, req *papi.HomeLoginRequest) (*papi.HomeLoginResponse, error) {
 	suid := viber.GetSuid(ctx).String()
 	now := time.Now()
 	var response *papi.HomeLoginResponse
@@ -66,7 +69,7 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 		}
 
 		response = &papi.HomeLoginResponse{
-			CommonResponse: newCommonResponse(updatedData),
+			CommonResponse: viber.NewCommonResponse(updatedData),
 		}
 		if balance.PaidBalance > 0 {
 			response.PaidJpy = &papi.PaidJpy{Amount: balance.PaidBalance}
@@ -79,7 +82,7 @@ func (s *HomeServer) Login(ctx context.Context, req *pb.HomeLoginRequest) (*pb.H
 	return response, nil
 }
 
-func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.HomeEnterResponse, error) {
+func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*papi.HomeEnterResponse, error) {
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.HomeEnterResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
@@ -127,6 +130,13 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 		if err != nil {
 			return nil, err
 		}
+		godState, err := opuser.FindUserGodState(ctx, suid)
+		if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, err
+		}
+		if err == nil && godState.UnlockCurrentEvents {
+			unlockHomeEventInfo(eventInfo.ProtoReflect())
+		}
 		hierarchyNotiInfo, err := opuser.FindUserHierarchyNotiInfo(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -171,6 +181,30 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 		if err != nil {
 			return nil, err
 		}
+		visibleShopIds, visibleShowcaseShopIds, visibleExchangeBoothIds,
+			allShopIds, allShowcaseShopIds, allExchangeBoothIds, err := viber.FilterHomeCommerceIDs(
+			ctx,
+			suid,
+			shopIds.ShopIds,
+			showcaseToyShopIds.ShopIds,
+			exchangeBooth.BoothIds,
+		)
+		if err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserShopId(ctx, &umodel.UserShopId{SUID: suid, ShopIds: allShopIds}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
+			SUID: suid, ShopIds: allShowcaseShopIds,
+		}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserExchangeBooth(ctx, &umodel.UserExchangeBooth{
+			SUID: suid, BoothIds: allExchangeBoothIds,
+		}); err != nil {
+			return nil, err
+		}
 
 		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
@@ -179,8 +213,8 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 			RefreshInfo:             refreshInfo,
 			LessonProgress:          lessonProgress,
 			BannerInfo:              &papi.BannerInfo{MenuBanners: menuBanners},
-			ShopIds:                 shopIds.ShopIds,
-			ExchangeBoothIds:        exchangeBooth.BoothIds,
+			ShopIds:                 visibleShopIds,
+			ExchangeBoothIds:        visibleExchangeBoothIds,
 			NotiStoneShopItem:       notiStoneShopItem,
 			NotiNormalShopItem:      notiNormalShopItem,
 			CurrentMainAreaId:       userCurrentQuestArea.CurrentMainAreaId,
@@ -196,10 +230,10 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 			ExtraStoryPartInfos:     extraStoryPartInfos,
 			SpecialHomeActionInfos:  []*papi.SpecialHomeActionInfo{}, // TODO
 			NotiShowcaseShopItem:    notiShowcaseShopItem,
-			ShowcaseToyShopIds:      showcaseToyShopIds.ShopIds,
+			ShowcaseToyShopIds:      visibleShowcaseShopIds,
 			UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
 			PhotoExpressions:        photoExpressions,
-			CommonResponse:          newCommonResponse(nil),
+			CommonResponse:          viber.NewCommonResponse(nil),
 		}
 		return response, nil
 	})
@@ -207,4 +241,25 @@ func (s *HomeServer) Enter(ctx context.Context, req *pb.HomeEnterRequest) (*pb.H
 		return nil, err
 	}
 	return response, nil
+}
+
+func unlockHomeEventInfo(message protoreflect.Message) {
+	fields := message.Descriptor().Fields()
+	for index := 0; index < fields.Len(); index++ {
+		field := fields.Get(index)
+		if field.Kind() == protoreflect.BoolKind && (field.JSONName() == "isUnlocked" || field.JSONName() == "unlocked") {
+			message.Set(field, protoreflect.ValueOfBool(true))
+			continue
+		}
+		if field.IsList() && field.Message() != nil {
+			list := message.Get(field).List()
+			for itemIndex := 0; itemIndex < list.Len(); itemIndex++ {
+				unlockHomeEventInfo(list.Get(itemIndex).Message())
+			}
+			continue
+		}
+		if field.Message() != nil && message.Has(field) {
+			unlockHomeEventInfo(message.Get(field).Message())
+		}
+	}
 }

@@ -451,18 +451,55 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserShopIds
+		shopCatalog, err := opsolis.FindAllShopCatalogEntries(ctx)
+		if err != nil {
+			return nil, err
+		}
+		shopIds := make([]string, 0, len(shopCatalog))
+		showcaseShopIds := make([]string, 0, len(shopCatalog))
+		for _, shop := range shopCatalog {
+			if shop.Info == nil {
+				continue
+			}
+			switch shop.Info.GetType() {
+			case penum.ShopType_ShopType_ShowcaseToyShop,
+				penum.ShopType_ShopType_DefaultShowcaseToyShop,
+				penum.ShopType_ShopType_OnlyShowcaseShop:
+				showcaseShopIds = append(showcaseShopIds, shop.ShopId)
+			default:
+				shopIds = append(shopIds, shop.ShopId)
+			}
+		}
 		if err := opuser.UpsertUserShopId(
 			ctx,
-			&umodel.UserShopId{SUID: suid, ShopIds: consts.GetUserInitialShopIds()},
+			&umodel.UserShopId{SUID: suid, ShopIds: shopIds},
 		); err != nil {
 			return nil, err
 		}
 
 		// UserExchangeBooth
+		exchangeCatalog, err := opsolis.FindAllExchangeBooths(ctx)
+		if err != nil {
+			return nil, err
+		}
+		boothIds := make([]string, 0, len(exchangeCatalog))
+		for _, booth := range exchangeCatalog {
+			boothIds = append(boothIds, booth.GetId())
+		}
 		if err := opuser.UpsertUserExchangeBooth(
 			ctx,
-			&umodel.UserExchangeBooth{SUID: suid, BoothIds: consts.GetUserInitialExchangeBoothIds()},
+			&umodel.UserExchangeBooth{SUID: suid, BoothIds: boothIds},
 		); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserExchangePurchase(ctx, &umodel.UserExchangePurchase{
+			SUID:           suid,
+			PurchaseCounts: map[string]int32{},
+			ResetTimes:     map[string]int64{},
+		}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserGodState(ctx, &umodel.UserGodState{SUID: suid}); err != nil {
 			return nil, err
 		}
 
@@ -569,7 +606,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserShowcaseToyShopId
 		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
 			SUID:    suid,
-			ShopIds: consts.GetUserInitialShowcaseToyShopIds(),
+			ShopIds: showcaseShopIds,
 		}); err != nil {
 			return nil, err
 		}

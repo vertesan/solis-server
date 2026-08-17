@@ -3,13 +3,49 @@ package photo
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-	"time"
 
 	"github.com/google/uuid"
 )
+
+// NewUserPhotoFromAllInOne materializes an independently-owned user photo from
+// its master-data definition. A fresh ID is required because a player can own
+// more than one photo backed by the same asset.
+func NewUserPhotoFromAllInOne(master *pmaster.PhotoAllInOne) *ptransaction.UserPhoto {
+	abilities := make([]*ptransaction.UserPhotoAbility, 0, len(master.GetAbilities()))
+	for _, ability := range master.GetAbilities() {
+		if ability == nil {
+			continue
+		}
+		abilities = append(abilities, &ptransaction.UserPhotoAbility{
+			PhotoAbilityId: ability.GetPhotoAbilityId(),
+			EffectValue:    int64(ability.GetEffectValue()),
+			MissionId:      ability.GetMissionId(),
+			Grade:          ability.GetGrade(),
+			IsAvailable:    true,
+		})
+	}
+
+	return &ptransaction.UserPhoto{
+		PhotoId:          uuid.NewString(),
+		AssetId:          master.GetAssetId(),
+		ImageType:        penum.PhotoImageType_PhotoImageType_Asset,
+		CharacterIds:     append([]string(nil), master.GetCharacterIds()...),
+		Name:             master.GetName(),
+		Rarity:           master.GetRarity(),
+		PlaceName:        master.GetPlaceName(),
+		EventName:        master.GetEventName(),
+		Level:            master.GetLevel(),
+		Abilities:        abilities,
+		ShootingTime:     master.GetShootingTime(),
+		FocusCharacterId: master.GetFocusCharacterId(),
+	}
+}
 
 func UpsertInitialManaPhoto(ctx context.Context, suid string) error {
 	if err := opuser.UpsertUserPhoto(ctx, suid, &ptransaction.UserPhoto{

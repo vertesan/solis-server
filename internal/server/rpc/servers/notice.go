@@ -6,8 +6,9 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -16,10 +17,10 @@ import (
 const noticePageSize = 20
 
 type NoticeServer struct {
-	pb.UnimplementedNoticeServer
+	papi.UnimplementedNoticeServer
 }
 
-func (s *NoticeServer) List(ctx context.Context, _ *pb.Empty) (*pb.NoticeListResponse, error) {
+func (s *NoticeServer) List(ctx context.Context, _ *papi.Empty) (*papi.NoticeListResponse, error) {
 	catalog, err := findNoticeCatalog(ctx)
 	if err != nil {
 		return nil, err
@@ -28,18 +29,18 @@ func (s *NoticeServer) List(ctx context.Context, _ *pb.Empty) (*pb.NoticeListRes
 	notices, noticeHasNext := firstNoticePage(catalog.Notices)
 	malfunctionNotices, malfunctionNoticeHasNext := firstNoticePage(catalog.MalfunctionNotices)
 	prNotices, prNoticeHasNext := firstNoticePage(catalog.PrNotices)
-	return &pb.NoticeListResponse{
+	return &papi.NoticeListResponse{
 		Notices:                  notices,
 		MalfunctionNotices:       malfunctionNotices,
 		PrNotices:                prNotices,
 		NoticeHasNext:            noticeHasNext,
 		MalfunctionNoticeHasNext: malfunctionNoticeHasNext,
 		PrNoticeHasNext:          prNoticeHasNext,
-		CommonResponse:           newCommonResponse(nil),
+		CommonResponse:           viber.NewCommonResponse(nil),
 	}, nil
 }
 
-func (s *NoticeServer) FetchList(ctx context.Context, req *pb.NoticeFetchRequest) (*pb.NoticeFetchResponse, error) {
+func (s *NoticeServer) FetchList(ctx context.Context, req *papi.NoticeFetchRequest) (*papi.NoticeFetchResponse, error) {
 	if req.GetOffset() < 0 {
 		return nil, status.Error(codes.InvalidArgument, "offset must not be negative")
 	}
@@ -57,7 +58,7 @@ func (s *NoticeServer) FetchList(ctx context.Context, req *pb.NoticeFetchRequest
 		return nil, err
 	}
 
-	var notices []*pb.NoticeInfo
+	var notices []*papi.NoticeInfo
 	switch penum.NoticeCategoryType(req.GetNoticeCategoryType()) {
 	case penum.NoticeCategoryType_NoticeCategoryType_Notice:
 		notices = catalog.Notices
@@ -68,10 +69,10 @@ func (s *NoticeServer) FetchList(ctx context.Context, req *pb.NoticeFetchRequest
 	}
 
 	page, hasNext := noticePage(notices, int(req.GetOffset()))
-	return &pb.NoticeFetchResponse{
+	return &papi.NoticeFetchResponse{
 		Notices:        page,
 		HasNext:        hasNext,
-		CommonResponse: newCommonResponse(nil),
+		CommonResponse: viber.NewCommonResponse(nil),
 	}, nil
 }
 
@@ -86,13 +87,13 @@ func findNoticeCatalog(ctx context.Context) (*smodel.NoticeCatalog, error) {
 	return nil, err
 }
 
-func firstNoticePage(notices []*pb.NoticeInfo) ([]*pb.NoticeInfo, bool) {
+func firstNoticePage(notices []*papi.NoticeInfo) ([]*papi.NoticeInfo, bool) {
 	return noticePage(notices, 0)
 }
 
-func noticePage(notices []*pb.NoticeInfo, offset int) ([]*pb.NoticeInfo, bool) {
+func noticePage(notices []*papi.NoticeInfo, offset int) ([]*papi.NoticeInfo, bool) {
 	if offset >= len(notices) {
-		return []*pb.NoticeInfo{}, false
+		return []*papi.NoticeInfo{}, false
 	}
 	end := offset + noticePageSize
 	if end < len(notices) {

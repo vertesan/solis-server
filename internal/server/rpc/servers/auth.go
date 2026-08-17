@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
@@ -16,10 +16,10 @@ import (
 )
 
 type AuthServer struct {
-	pb.UnimplementedAuthServer
+	papi.UnimplementedAuthServer
 }
 
-func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.AuthLoginResponse, error) {
+func (s *AuthServer) Login(ctx context.Context, req *papi.AuthLoginRequest) (*papi.AuthLoginResponse, error) {
 	_, claim, err := jwto.ParseRS256Token(req.GetFirebaseIDToken())
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "failed parsing token: %v", err)
@@ -62,7 +62,7 @@ func (s *AuthServer) Login(ctx context.Context, req *pb.AuthLoginRequest) (*pb.A
 		return nil, status.Errorf(codes.Internal, "failed to update last login time during user login: %v", err)
 	}
 
-	return &pb.AuthLoginResponse{
+	return &papi.AuthLoginResponse{
 		GameAuthToken: gameAuthToken,
 		UserPublic: &ptransaction.UserPublic{
 			ServerUserId: userAuth.ServerUserId,

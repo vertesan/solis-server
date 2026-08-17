@@ -41,6 +41,7 @@ func StartHTTP(ctx context.Context, base *zap.SugaredLogger) error {
 	// admin
 	app.Post("/admin/user/create", admin.CreateUser)
 	app.Post("/admin/user/delete", admin.DeleteUser)
+	app.Post("/admin/user/god", admin.GodUser)
 
 	// catch all for debug purpose
 	app.All("*", func(c fiber.Ctx) error {

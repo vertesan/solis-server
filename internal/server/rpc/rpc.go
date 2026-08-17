@@ -6,7 +6,7 @@ import (
 	"net"
 	"time"
 
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/codec"
 	"github.com/vertesan/solis-server/internal/server/rpc/internal/interceptor"
 	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
@@ -95,14 +95,19 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 		interceptor,
 	)
 	server := grpc.NewServer(opts...)
-	pb.RegisterSystemServer(server, &ss.SystemServer{})
-	pb.RegisterMigrationServer(server, &ss.MigrationServer{})
-	pb.RegisterAuthServer(server, &ss.AuthServer{})
-	pb.RegisterMasterServer(server, &ss.MasterServer{})
-	pb.RegisterUserServer(server, &ss.UserServer{})
-	pb.RegisterHomeServer(server, &ss.HomeServer{})
-	pb.RegisterDokanServer(server, &ss.DokanServer{})
-	pb.RegisterNoticeServer(server, &ss.NoticeServer{})
-	pb.RegisterStoryServer(server, &ss.StoryServer{})
+	papi.RegisterSystemServer(server, &ss.SystemServer{})
+	papi.RegisterMigrationServer(server, &ss.MigrationServer{})
+	papi.RegisterAuthServer(server, &ss.AuthServer{})
+	papi.RegisterMasterServer(server, &ss.MasterServer{})
+	papi.RegisterUserServer(server, &ss.UserServer{})
+	papi.RegisterHomeServer(server, &ss.HomeServer{})
+	papi.RegisterDokanServer(server, &ss.DokanServer{})
+	papi.RegisterNoticeServer(server, &ss.NoticeServer{})
+	papi.RegisterStoryServer(server, &ss.StoryServer{})
+	papi.RegisterAccessoryServer(server, &ss.AccessoryServer{})
+	papi.RegisterCardServer(server, &ss.CardServer{})
+	papi.RegisterDivisionServer(server, &ss.DivisionServer{})
+	papi.RegisterExchangeServer(server, &ss.ExchangeServer{})
+	papi.RegisterShopServer(server, &ss.ShopServer{})
 	return server, nil
 }

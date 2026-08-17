@@ -7,17 +7,16 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-	"github.com/vertesan/solis-server/internal/server/rpc/internal/viber"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
 type UserServer struct {
-	pb.UnimplementedUserServer
+	papi.UnimplementedUserServer
 }
 
-func (s *UserServer) Get(ctx context.Context, _ *pb.Empty) (*pb.UserGetResponse, error) {
+func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetResponse, error) {
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.UserGetResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {

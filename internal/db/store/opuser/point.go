@@ -5,6 +5,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -15,6 +16,14 @@ func FindAllUserPoints(ctx context.Context, suid string) ([]*ptransaction.UserPo
 		ctx,
 		uname.UserPoint,
 		bson.M{"SUID": suid},
+	)
+}
+
+func FindUserPoint(ctx context.Context, suid string, pointType penum.PointType) (*ptransaction.UserPoint, error) {
+	return ucommon.FindOne[ptransaction.UserPoint](
+		ctx,
+		uname.UserPoint,
+		bson.M{"SUID": suid, "pointType": pointType},
 	)
 }
 

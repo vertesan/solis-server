@@ -29,10 +29,11 @@ func FindOne[T interface{}, U interface{},
 	ctx context.Context,
 	dbName string,
 	filter interface{},
+	opts ...options.Lister[options.FindOneOptions],
 ) (V, error) {
 	data := W(new(T))
 	err := depot.Master.Collection(dbName).FindOne(
-		ctx, filter,
+		ctx, filter, opts...,
 	).Decode(data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode value from master db: %w", err)

@@ -1,0 +1,112 @@
+"loginBonusPackageItem":
+    "shopItem":
+        "id": "shop_item-login-001"
+        "name": "毎日ログインパック"
+        "description": "毎日ログインすることでレッドダイヤを獲得できるパック"
+        "productId": "game.qualiarts.solis.110.android"
+        "thumbnailAssetId": "img_shop_item_thumb_login-pack-01"
+        "purchaseLimit": 1
+        "leftCount": 1
+        "order": 10
+        "resetTimingType": 1
+        "nextResetTime": "1786546800000"
+        "unlocked": true
+        "colorCode": "71BDFD"
+        "backgroundColorCode": "3388D1"
+        "consumptionId": ""
+        "rewardId": ""
+        "viewConditionId": ""
+        "pushSegment": ""
+        "unlockConditionId": ""
+    "loginBonuses":
+        - "day": 1
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 2
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 3
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 4
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 5
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 6
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 7
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 8
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 9
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 10
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 11
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 12
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 13
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 14
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 15
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 16
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 17
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 18
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 19
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 20
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 21
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 22
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 23
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 24
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 25
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 26
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 27
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 28
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 29
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+        - "day": 30
+          "rewardId": "rd_auto;stone;;100"
+          "isReceived": false
+    "isPurchased": false

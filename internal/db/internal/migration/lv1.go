@@ -9,8 +9,6 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/transaction"
-	"github.com/vertesan/solis-server/internal/proto/papi"
-	"github.com/vertesan/solis-server/internal/proto/penum"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
@@ -18,21 +16,17 @@ import (
 
 // server first startup database initialization
 func level1Migration() error {
+	data, err := loadLevel1Data()
+	if err != nil {
+		return fmt.Errorf("failed to load level 1 migration data: %w", err)
+	}
+
 	return transaction.WithTransaction(context.Background(), func(ctx context.Context) (any, error) {
 		// serverProfile
 		if err := opsolis.DeleteServerProfile(ctx); err != nil {
 			return nil, err
 		}
-		if err := opsolis.InsertServerProfile(ctx, &smodel.ServerProfile{
-			AppVersion:         "6.0.2",
-			Platform:           "Android",
-			MasterVersion:      "",
-			FirebaseProductKey: "AIzaSyCabjC7_mOU21qkcNobnhN1khTi1-1F-kA",
-			FirebaseProjectId:  "543065248020",
-			PackageName:        "game.qualiarts.idolypride",
-			OctoApiKey:         "xop8c3tqrl8dcgij6mc9y4yf5o7btknt",
-			OctoManifestKey:    "aa8a30926db9d49410360d0a99aa735d035638dfc09ef99fb575d9c91a8f6cdc",
-		}); err != nil {
+		if err := opsolis.InsertServerProfile(ctx, data.serverProfile); err != nil {
 			return nil, err
 		}
 
@@ -40,10 +34,7 @@ func level1Migration() error {
 		if err := opsolis.DeleteAllDivisions(ctx); err != nil {
 			return nil, err
 		}
-		if err := opsolis.UpsertDivision(ctx, &papi.DivisionInfo{
-			Id:       "hVs7e3Np-00001",
-			LevelAvg: 1,
-		}); err != nil {
+		if err := opsolis.UpsertDivision(ctx, data.division); err != nil {
 			return nil, err
 		}
 
@@ -51,14 +42,7 @@ func level1Migration() error {
 
 		// bannerInfo
 		// menu banners
-		if err := opsolis.UpsertMenuBanner(ctx, &papi.Banner{
-			Id:              "banner-pr-raido-21-0826-02",
-			AssetId:         "img_banner_s_pr-radio-21-0831",
-			LinkType:        penum.LinkType_LinkType_ExternalWebPage,
-			LinkDetail:      "https://youtube.com/playlist?list=PL0eMwNDVvw1Sa1Fp6eQj7yUw2BF5z86Ad",
-			Order:           150,
-			ViewConditionId: "cd-week-radio-tuesday",
-		}); err != nil {
+		if err := opsolis.UpsertMenuBanner(ctx, data.menuBanner); err != nil {
 			return nil, err
 		}
 
@@ -73,47 +57,27 @@ func level1Migration() error {
 		// functionMaintenanceInfos
 
 		// notifications
-		if err := opsolis.UpsertNoticeCatalog(ctx, &smodel.NoticeCatalog{
-			Notices: []*papi.NoticeInfo{
-				{
-					Id:                  "info-news-26-0812-01",
-					Title:               "Welcome to IDOLY PRIDE private server",
-					BannerAssetId:       "img_banner_l_campaign-26-0731-01",
-					LinkType:            penum.LinkType_LinkType_WebView,
-					LinkDetail:          "",
-					DisplayNotification: true,
-					StartTime:           1785466800000,
-					ListTitle:           "Welcome to IDOLY PRIDE private server",
-				},
-			},
-			MalfunctionNotices: []*papi.NoticeInfo{},
-			PrNotices:          []*papi.NoticeInfo{},
-		}); err != nil {
+		if err := opsolis.UpsertNoticeCatalog(ctx, data.noticeCatalog); err != nil {
 			return nil, err
 		}
 
 		// home events
-		if err := opsolis.UpsertHomeEventInfo(ctx, &papi.HomeEventInfo{
-			DreamInfo: &papi.HomeDreamInfo{
-				Name:                    "イメージトレーニング",
-				StartTime:               1784084400000,
-				EndTime:                 1944275439000,
-				AssetId:                 "event-dream-defalut",
-				BannerAssetId:           "img_banner_l_event-dream-defalut",
-				Order:                   60,
-				UnlockConditionId:       "cd-dream-25-0320-play",
-				IsUnlocked:              false,
-				GenerateAreaItemId:      "item-dream-generate-dream-25-0320",
-				IsReceivableLoginReward: false,
-				EventMissionId:          "event-dream-26-07",
-			},
-		}); err != nil {
+		if err := opsolis.UpsertHomeEventInfo(ctx, data.homeEventInfo); err != nil {
+			return nil, err
+		}
+
+		// installs the server-wide commerce catalogs introduced by the Exchange and Shop services
+		if err := UpsertCommerceCatalogs(ctx); err != nil {
 			return nil, err
 		}
 
 		// userAuth indexes
 		if err := ensureUserAuthIndexes(ctx); err != nil {
 			return nil, err
+		}
+
+		if err := ensureUserIndexes(context.Background()); err != nil {
+			return nil, fmt.Errorf("failed to ensure user indexes: %w", err)
 		}
 
 		// update migration flag
@@ -163,6 +127,61 @@ func ensureUserAuthIndexes(ctx context.Context) error {
 
 	if _, err := indexes.CreateMany(ctx, models); err != nil {
 		return fmt.Errorf("failed to ensure userAuth indexes: %w", err)
+	}
+	return nil
+}
+
+func ensureUserIndexes(ctx context.Context) error {
+	definitions := []struct {
+		collection string
+		keys       bson.D
+	}{
+		{uname.UserCard, bson.D{{Key: "SUID", Value: 1}, {Key: "cardId", Value: 1}}},
+		{uname.UserCharacter, bson.D{{Key: "SUID", Value: 1}, {Key: "characterId", Value: 1}}},
+		{uname.UserCostume, bson.D{{Key: "SUID", Value: 1}, {Key: "costumeId", Value: 1}}},
+		{uname.UserHair, bson.D{{Key: "SUID", Value: 1}, {Key: "hairId", Value: 1}}},
+		{uname.UserDecoration, bson.D{{Key: "SUID", Value: 1}, {Key: "decorationId", Value: 1}}},
+		{uname.UserEmblem, bson.D{{Key: "SUID", Value: 1}, {Key: "emblemId", Value: 1}}},
+		{uname.UserMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "musicId", Value: 1}}},
+		{uname.UserLove, bson.D{{Key: "SUID", Value: 1}, {Key: "loveId", Value: 1}}},
+		{uname.UserCharacterMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "characterId", Value: 1}, {Key: "musicId", Value: 1}}},
+		{uname.UserHomeTalk, bson.D{{Key: "SUID", Value: 1}, {Key: "homeTalkId", Value: 1}}},
+		{uname.UserStory, bson.D{{Key: "SUID", Value: 1}, {Key: "storyId", Value: 1}}},
+		{uname.UserTelephone, bson.D{{Key: "SUID", Value: 1}, {Key: "telephoneId", Value: 1}}},
+		{uname.UserMessage, bson.D{{Key: "SUID", Value: 1}, {Key: "messageId", Value: 1}}},
+		{uname.UserShowcaseMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "showcaseMusicId", Value: 1}}},
+		{uname.UserShowcaseToy, bson.D{{Key: "SUID", Value: 1}, {Key: "showcaseToyId", Value: 1}}},
+		{uname.UserStaff, bson.D{{Key: "SUID", Value: 1}, {Key: "parameterType", Value: 1}}},
+		{uname.UserArea, bson.D{{Key: "SUID", Value: 1}, {Key: "areaId", Value: 1}}},
+		{uname.UserQuest, bson.D{{Key: "SUID", Value: 1}, {Key: "questId", Value: 1}}},
+		{uname.UserTutorial, bson.D{{Key: "SUID", Value: 1}, {Key: "tutorialType", Value: 1}}},
+		{uname.UserEventStoryInfo, bson.D{{Key: "SUID", Value: 1}, {Key: "id", Value: 1}}},
+		{uname.UserExtraStoryPartInfo, bson.D{{Key: "SUID", Value: 1}, {Key: "id", Value: 1}}},
+		{uname.UserPhotoActivity, bson.D{{Key: "SUID", Value: 1}, {Key: "photoActivityId", Value: 1}}},
+		{uname.UserPhotoExpression, bson.D{{Key: "SUID", Value: 1}, {Key: "photoExpressionId", Value: 1}}},
+		{uname.UserPhotoPose, bson.D{{Key: "SUID", Value: 1}, {Key: "photoPoseId", Value: 1}}},
+		{uname.UserPhotoMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "musicId", Value: 1}}},
+		{uname.UserPhotoStage, bson.D{{Key: "SUID", Value: 1}, {Key: "stageId", Value: 1}}},
+		{uname.UserAccessory, bson.D{{Key: "SUID", Value: 1}, {Key: "accessoryId", Value: 1}}},
+		{uname.UserItem, bson.D{{Key: "SUID", Value: 1}, {Key: "itemId", Value: 1}, {Key: "expiredTime", Value: 1}}},
+		{uname.UserPhoto, bson.D{{Key: "SUID", Value: 1}, {Key: "photoId", Value: 1}}},
+		{uname.UserPhotoRecipe, bson.D{{Key: "SUID", Value: 1}, {Key: "photoRecipeId", Value: 1}}},
+		{uname.UserPoint, bson.D{{Key: "SUID", Value: 1}, {Key: "pointType", Value: 1}}},
+		{uname.UserMission, bson.D{{Key: "SUID", Value: 1}, {Key: "missionId", Value: 1}}},
+		{uname.UserCardSupport, bson.D{{Key: "SUID", Value: 1}, {Key: "number", Value: 1}}},
+		{uname.UserCardSupport, bson.D{{Key: "SUID", Value: 1}, {Key: "cardId", Value: 1}}},
+		{uname.UserExchangePurchase, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserGodState, bson.D{{Key: "SUID", Value: 1}}},
+	}
+
+	for _, definition := range definitions {
+		model := mongo.IndexModel{
+			Keys:    definition.keys,
+			Options: options.Index().SetUnique(true),
+		}
+		if _, err := depot.User.Collection(definition.collection).Indexes().CreateOne(ctx, model); err != nil {
+			return fmt.Errorf("failed to ensure identity index for %q: %w", definition.collection, err)
+		}
 	}
 	return nil
 }

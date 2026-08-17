@@ -9,15 +9,10 @@ import (
 
 // returned value: photoCount, skillIds, abilityIds
 func CalcUnlocks(ctx context.Context, lteLevel int32, card *pmaster.Card) (int32, []string, []string, error) {
-	cardLevelReleases, err := opmaster.FindCardLevelReleases(
-		ctx,
-		card.CardLevelReleaseId,
-		lteLevel,
-	)
+	releaseMap, err := CalcReleaseCounts(ctx, lteLevel, card)
 	if err != nil {
 		return 0, nil, nil, err
 	}
-	releaseMap := calcCardLevelRelease(1, cardLevelReleases)
 	photoCount := releaseMap[penum.CardLevelReleaseType_CardLevelReleaseType_Photo]
 	skillIds := convertSkillIds(
 		releaseMap[penum.CardLevelReleaseType_CardLevelReleaseType_Skill],
@@ -29,6 +24,18 @@ func CalcUnlocks(ctx context.Context, lteLevel int32, card *pmaster.Card) (int32
 		card,
 	)
 	return photoCount, skillIds, abilityIds, nil
+}
+
+func CalcReleaseCounts(ctx context.Context, lteLevel int32, card *pmaster.Card) (map[penum.CardLevelReleaseType]int32, error) {
+	cardLevelReleases, err := opmaster.FindCardLevelReleases(
+		ctx,
+		card.CardLevelReleaseId,
+		lteLevel,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return calcCardLevelRelease(lteLevel, cardLevelReleases), nil
 }
 
 func calcCardLevelRelease(lteLevel int32, levelRelease []*pmaster.CardLevelRelease) map[penum.CardLevelReleaseType]int32 {

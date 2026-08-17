@@ -46,6 +46,18 @@ func FindCardRarity(ctx context.Context, rarity int64) (*pmaster.CardRarity, err
 	)
 }
 
+func FindCardLevel(ctx context.Context, level int32) (*pmaster.CardLevel, error) {
+	return mcommon.FindOne[mmodel.CardLevel, pmaster.CardLevel](
+		ctx, mname.CardLevel, bson.M{"Level": level},
+	)
+}
+
+func FindManagerLevel(ctx context.Context, level int32) (*pmaster.ManagerLevel, error) {
+	return mcommon.FindOne[mmodel.ManagerLevel, pmaster.ManagerLevel](
+		ctx, mname.ManagerLevel, bson.M{"Level": level},
+	)
+}
+
 func FindCardLevelReleases(ctx context.Context, id string, lteLevel int32) ([]*pmaster.CardLevelRelease, error) {
 	return mcommon.FindMany[mmodel.CardLevelRelease, pmaster.CardLevelRelease](
 		ctx, mname.CardLevelRelease, bson.D{

@@ -1,0 +1,3201 @@
+"booths":
+    - "id": "exchange-acc-limit-001"
+      "name": "スピリットアクセ交換所"
+      "bannerAssetId": "exchange-acc-limit-001"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-exchange-acc-limit-001"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 100
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-acc-limit-001-item-1"
+          "rewardId": "rd_auto;accessory;ac-1-dance-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ダンススピリット×1"
+          "description": "ダンススピリット"
+          "requiredResourceAmount": "1"
+          "order": 1
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-acc-limit-001-item-2"
+          "rewardId": "rd_auto;accessory;ac-1-visual-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ビジュアルスピリット×1"
+          "description": "ビジュアルスピリット"
+          "requiredResourceAmount": "1"
+          "order": 2
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-acc-limit-001-item-3"
+          "rewardId": "rd_auto;accessory;ac-1-vocal-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ボーカルスピリット×1"
+          "description": "ボーカルスピリット"
+          "requiredResourceAmount": "1"
+          "order": 3
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-acc-limit-001-item-4"
+          "rewardId": "rd_auto;accessory;ac-2-mental-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "メンタルスピリット×1"
+          "description": "メンタルスピリット"
+          "requiredResourceAmount": "1"
+          "order": 4
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-acc-limit-001-item-5"
+          "rewardId": "rd_auto;accessory;ac-2-stamina-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スタミナスピリット×1"
+          "description": "スタミナスピリット"
+          "requiredResourceAmount": "1"
+          "order": 5
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-acc-limit-001-item-6"
+          "rewardId": "rd_auto;accessory;ac-2-technique-21;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "クリティカルスピリット×1"
+          "description": "クリティカルスピリット"
+          "requiredResourceAmount": "1"
+          "order": 6
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "acc-limit"
+      "viewConditionId": "cd-exchange-acc-limit-001"
+      "unlockConditionId": "cd-exchange-acc-limit-001"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+    - "id": "exchange-dress-medal-26-0731"
+      "name": "復刻衣装メダル交換所"
+      "bannerAssetId": "rev-dress"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-exchange-dress-medal-26-0731"
+      "resetTimingType": 4
+      "unlocked": true
+      "endTime": "1787583599000"
+      "order": 20
+      "limited": true
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-dress-medal-26-0731-item-1"
+          "rewardId": "rd_auto;costume;cos-rio-msic-00;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ウィズユアソングス×1"
+          "description": "神崎莉央の衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 1
+          "viewConditionId": "cd-possession-cos-rio-msic-00-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-2"
+          "rewardId": "rd_auto;costume;cos-rio-arab-00;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ジャンピングオールライト×1"
+          "description": "神崎莉央の衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 2
+          "viewConditionId": "cd-possession-cos-rio-arab-00-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-3"
+          "rewardId": "rd_auto;costume;cos-rio-chna-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "舞踊闘衣×1"
+          "description": "神崎莉央の衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 3
+          "viewConditionId": "cd-possession-cos-rio-chna-01-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-5"
+          "rewardId": "rd_auto;costume;cos-rio-yukt-00;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "カルプ×1"
+          "description": "神崎莉央の衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 5
+          "viewConditionId": "cd-possession-cos-rio-yukt-00-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-10"
+          "rewardId": "rd_auto;costume;cos-aoi-chna-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "舞踊闘衣×1"
+          "description": "井川葵の衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 10
+          "viewConditionId": "cd-possession-cos-aoi-chna-01-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-16"
+          "rewardId": "rd_auto;costume;cos-kkr-arab-00;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ジャンピングオールライト×1"
+          "description": "赤崎こころの衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 16
+          "viewConditionId": "cd-possession-cos-kkr-arab-00-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-17"
+          "rewardId": "rd_auto;costume;cos-kkr-chna-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "舞踊闘衣×1"
+          "description": "赤崎こころの衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 17
+          "viewConditionId": "cd-possession-cos-kkr-chna-01-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-18"
+          "rewardId": "rd_auto;costume;cos-kkr-yukt-00;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "カルプ×1"
+          "description": "赤崎こころの衣装"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 18
+          "viewConditionId": "cd-possession-cos-kkr-yukt-00-not-26-0731"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-dress-medal-26-0731-item-22"
+          "rewardId": "rd_auto;item;item-act_promotion_shorten-sp;3"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "SPスキップウォッチ×3"
+          "description": "プロモーションの時間を10時間分すぐに進行する"
+          "requiredResourceAmount": "1"
+          "order": 22
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_dress"
+      "viewConditionId": "cd-exchange-dress-medal-26-0731"
+      "nextResetTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-friend-medal-23-0926"
+      "name": "フレンドメダル交換"
+      "bannerAssetId": "medal-friend"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-medal-friend"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 200
+      "colorCode": "FD9090"
+      "backgroundColorCode": "FD5858"
+      "exchanges":
+        - "id": "exchange-friend-medal-23-0926-item-11"
+          "rewardId": "rd_auto;item;item-gacha_ticket-r5-23-0624;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5確定ガチャチケ3rd×1"
+          "description": "★5確定ガチャ3rdを引くことができる"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "150"
+          "order": 1
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-1"
+          "rewardId": "rd_auto;item;item-card_limit_break;10"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "ブルームピース×10"
+          "description": "アイドルを才能開花させることができる"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "25"
+          "order": 2
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-2"
+          "rewardId": "rd_auto;item;item-card_limit_break;10"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "ブルームピース×10"
+          "description": "アイドルを才能開花させることができる"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "50"
+          "order": 3
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-3"
+          "rewardId": "rd_auto;item;item-photo_enhance;10"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "アドバンスフィルム×10"
+          "description": "フォトの品質アップをすることができる"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "25"
+          "order": 4
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-7"
+          "rewardId": "rd_auto;item;item-card_enhance;10000000"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "レッスンピース×10,000,000"
+          "description": "アイドルのLvを上昇させることができる"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "25"
+          "order": 5
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-8"
+          "rewardId": "rd_auto;item;item-card_enhance;5000000"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "レッスンピース×5,000,000"
+          "description": "アイドルのLvを上昇させることができる"
+          "requiredResourceAmount": "25"
+          "order": 6
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-9"
+          "rewardId": "rd_auto;item;item-card_skill;8000"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "スキルパウダー×8,000"
+          "description": "アピールのLvを上昇させることができる"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "25"
+          "order": 7
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-10"
+          "rewardId": "rd_auto;item;item-card_skill;4000"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スキルパウダー×4,000"
+          "description": "アピールのLvを上昇させることができる"
+          "requiredResourceAmount": "25"
+          "order": 8
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-23-0926-item-6"
+          "rewardId": "rd_auto;item;item-photo_ink-basic-01;300"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "レタッチインク×300"
+          "description": "フォトレタッチとレタッチフォトの品質アップに使用する"
+          "requiredResourceAmount": "50"
+          "order": 9
+          "viewConditionId": "cd-function_lock-photo_retouch-exchange"
+          "unlockConditionId": "cd-function_lock-photo_retouch-exchange"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-friend-medal-23-0926-item-5"
+          "rewardId": "rd_auto;item;item-photo_ink-basic-02;25"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "金のレタッチインク×25"
+          "description": "フォトレタッチとレタッチフォトの品質アップに使用する"
+          "requiredResourceAmount": "50"
+          "order": 10
+          "viewConditionId": "cd-function_lock-photo_retouch-exchange"
+          "unlockConditionId": "cd-function_lock-photo_retouch-exchange"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-friend-medal-23-0926-item-4"
+          "rewardId": "rd_auto;item;item-photo_ink-basic-03;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "虹のレタッチインク×1"
+          "description": "フォトレタッチとレタッチフォトの品質アップに使用する"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "100"
+          "order": 11
+          "viewConditionId": "cd-function_lock-photo_retouch-exchange"
+          "unlockConditionId": "cd-function_lock-photo_retouch-exchange"
+          "assetId": ""
+        - "id": "exchange-friend-medal-23-0926-item-12"
+          "rewardId": "rd_auto;item;item-showcase_ticket_buttonbadge-001;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "缶バッジパック Vol.1 ×1"
+          "description": "グッズケース機能の「開封」から、缶バッジパック Vol.1を開封できる"
+          "exchangeLimit": 20
+          "leftCount": 20
+          "requiredResourceAmount": "15"
+          "order": 12
+          "viewConditionId": "cd-teim-exchange-friend-medal-23-0926-item-12"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-friend-medal-25-0318-item-1"
+          "rewardId": "rd_auto;item;item-showcase_ticket_buttonbadge-002;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "缶バッジパック Vol.2 ×1"
+          "description": "グッズケース機能の「開封」から、缶バッジパック Vol.2を開封できる"
+          "exchangeLimit": 20
+          "leftCount": 20
+          "requiredResourceAmount": "15"
+          "order": 12
+          "viewConditionId": "cd-showcase-005-view"
+          "unlockConditionId": "cd-showcase-005-view"
+          "assetId": ""
+      "iconAssetId": "medal_friend"
+      "viewConditionId": "cd-exchange-friend-medal-23-0926"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-gacha_medal-buttonbadge-birthday-26-0803"
+      "name": "渚誕生日ガチャ2026\n誕生日缶バッジ"
+      "bannerAssetId": "medal-gacha-buttonbadge-birthday"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-gacha_medal-buttonbadge-birthday-26-0803"
+      "resetTimingType": 4
+      "unlocked": true
+      "endTime": "1786589999000"
+      "order": 25
+      "limited": true
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-gacha_medal-buttonbadge-birthday-26-0803-item-1"
+          "rewardId": "rd_auto;showcase_toy;toy-goods-buttonbadge_card-ngs-05-birt-03;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "缶バッジ 伊吹渚"
+          "description": "伊吹渚の缶バッジです。"
+          "requiredResourceAmount": "10"
+          "order": 1
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_buttonbadge-gacha-birthday"
+      "viewConditionId": "cd-time-medal-buttonbadge-birthday-26-0803"
+      "nextResetTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-gacha_medal-buttonbadge-excursion-01-26-0731"
+      "name": "黒百合達のoff time\n限定缶バッジ"
+      "bannerAssetId": "medal-gacha-buttonbadge"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-gacha_medal-buttonbadge-lm-set-bloom-26-0731"
+      "resetTimingType": 4
+      "unlocked": true
+      "endTime": "1787194799000"
+      "order": 32
+      "limited": true
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-1"
+          "rewardId": "rd_auto;showcase_toy;toy-goods-buttonbadge_card-rio-05-casl-04;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "缶バッジ 神崎莉央"
+          "description": "神崎莉央の缶バッジです。"
+          "requiredResourceAmount": "10"
+          "order": 1
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-2"
+          "rewardId": "rd_auto;showcase_toy;toy-goods-buttonbadge_card-aoi-05-casl-04;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "缶バッジ 井川葵"
+          "description": "井川葵の缶バッジです。"
+          "requiredResourceAmount": "10"
+          "order": 2
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-3"
+          "rewardId": "rd_auto;showcase_toy;toy-goods-buttonbadge_card-ai-05-casl-04;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "缶バッジ 小美山愛"
+          "description": "小美山愛の缶バッジです。"
+          "requiredResourceAmount": "10"
+          "order": 3
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-4"
+          "rewardId": "rd_auto;showcase_toy;toy-goods-buttonbadge_card-kkr-05-casl-04;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "缶バッジ 赤崎こころ"
+          "description": "赤崎こころの缶バッジです。"
+          "requiredResourceAmount": "10"
+          "order": 4
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_buttonbadge-gacha"
+      "viewConditionId": "cd-time-medal-buttonbadge-lm-set-bloom-26-0731"
+      "nextResetTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-gacha_point-26-0801-0831"
+      "name": "共通ガチャPt交換"
+      "bannerAssetId": "gacha"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-gacha_point"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 160
+      "colorCode": "C39DFD"
+      "backgroundColorCode": "B889FC"
+      "exchanges":
+        - "id": "exchange-gacha_medal-item-26-0801-0831-01"
+          "rewardId": "rd_auto;item;item-quest_contest_ticket;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ハイスコアパス×1"
+          "description": "ハイスコアライブなどに挑戦できる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 60
+          "leftCount": 60
+          "requiredResourceAmount": "2"
+          "order": 1
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-item-26-0801-0831-02"
+          "rewardId": "rd_auto;item;item-quest_contest_ticket;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ハイスコアパス×1"
+          "description": "ハイスコアライブなどに挑戦できる"
+          "requiredResourceAmount": "4"
+          "order": 2
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-item-26-0801-0831-03"
+          "rewardId": "rd_auto;item;item-act_refresh_shorten;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アワーグラス×1"
+          "description": "リフレッシュの時間を2時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "3"
+          "order": 3
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-gacha_medal-item-26-0801-0831-04"
+          "rewardId": "rd_auto;item;item-act_promotion_shorten;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スキップウォッチ×1"
+          "description": "プロモーションの時間を2時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 30
+          "leftCount": 30
+          "requiredResourceAmount": "4"
+          "order": 4
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "pt_gacha"
+      "viewConditionId": "cd-time-exchange-gacha_point-26-0801-0831"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-idle_medal-26-0801-0831"
+      "name": "アイドルメダル交換"
+      "bannerAssetId": "idolmedal"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-gacha_medal"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 100
+      "colorCode": "FD9090"
+      "backgroundColorCode": "FD5858"
+      "exchanges":
+        - "id": "exchange-idle_medal-item-26-0801-0831-03"
+          "rewardId": "rd_auto;item;item-card_limit_break;10"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ブルームピース×10"
+          "description": "アイドルを才能開花させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 20
+          "leftCount": 20
+          "requiredResourceAmount": "200"
+          "order": 50
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-idle_medal-item-26-0801-0831-04"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece-r5;5"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5確定ガチャ補助券×5"
+          "description": "30枚で★5確定補助券ガチャを1回引くことができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 9
+          "leftCount": 9
+          "requiredResourceAmount": "200"
+          "order": 51
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-idle_medal-item-26-0801-0831-05"
+          "rewardId": "rd_auto;item;item-photo_enhance;5"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アドバンスフィルム×5"
+          "description": "フォトの品質アップをすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 8
+          "leftCount": 8
+          "requiredResourceAmount": "50"
+          "order": 52
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-idle_medal-item-26-0801-0831-06"
+          "rewardId": "rd_auto;item;item-photo_enhance;5"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アドバンスフィルム×5"
+          "description": "フォトの品質アップをすることができる"
+          "requiredResourceAmount": "125"
+          "order": 53
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_idol"
+      "viewConditionId": "cd-time-exchange-idle_medal-26-0801-0831"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-league_medal-26-0801-0831"
+      "name": "リーグメダル交換"
+      "bannerAssetId": "leaguemedal"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-league_medal"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 130
+      "colorCode": "FFCF2E"
+      "backgroundColorCode": "FFB100"
+      "exchanges":
+        - "id": "exchange-league_medal-item-26-0801-0831-01"
+          "rewardId": "rd_auto;item;item-card_rank;25"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "ポテンシャルピース×25"
+          "description": "アイドルを潜在強化させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "650"
+          "order": 1
+          "viewConditionId": "cd-time-exchange-league-open"
+          "unlockConditionId": "cd-manager_level_gte-100"
+          "assetId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-02"
+          "rewardId": "rd_auto;item;item-accessory_limit_break-01;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "スピリットライザー×1"
+          "description": "アクセサリの上限突破に使用する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "500"
+          "order": 2
+          "viewConditionId": "cd-time-exchange-league-open"
+          "unlockConditionId": "cd-function_lock-accessory-limit-break-exchange"
+          "assetId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-03"
+          "rewardId": "rd_auto;item;item-card_ability;50"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "エールパウダー×50"
+          "description": "エールのLvを上昇させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 8
+          "leftCount": 8
+          "requiredResourceAmount": "250"
+          "order": 3
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-04"
+          "rewardId": "rd_auto;item;item-act_lesson-boost;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "魚魚っとさんドリンク×1"
+          "description": "自主トレの時間を2時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "100"
+          "order": 4
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-05"
+          "rewardId": "rd_auto;item;item-act_promotion_shorten-sp;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "SPスキップウォッチ×1"
+          "description": "プロモーションの時間を10時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "150"
+          "order": 6
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-06"
+          "rewardId": "rd_auto;item;item-act_fan-reward-up;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "スイーツギフト×1"
+          "description": "ファンイベントの報酬アイテムの獲得効率が2倍になる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "100"
+          "order": 7
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-07"
+          "rewardId": "rd_auto;item;item-card_enhance;6000000"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "レッスンピース×6,000,000"
+          "description": "アイドルのLvを上昇させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "50"
+          "order": 8
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-08"
+          "rewardId": "rd_auto;item;item-card_skill;3000"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "スキルパウダー×3,000"
+          "description": "アピールのLvを上昇させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "50"
+          "order": 9
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-league_medal-item-26-0801-0831-09"
+          "rewardId": "rd_auto;gold;;10000000"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "コイン×10,000,000"
+          "description": "お仕事の実行やアクセサリを合成することができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "50"
+          "order": 10
+          "viewConditionId": "cd-time-exchange-league-open"
+          "assetId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_league"
+      "viewConditionId": "cd-time-exchange-league_medal-26-0801-0831"
+      "unlockConditionId": "cd-time-exchange-league-open"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+    - "id": "exchange-mini-tour_medal-22-0408"
+      "name": "ミニイベントメダル交換"
+      "bannerAssetId": "event-mini-tour-default"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-mini-tour_medal-tour-21-0721"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 150
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-mini-tour_medal-22-0408-item-1"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece-r5;5"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "★5確定ガチャ補助券×5"
+          "description": "30枚で★5確定補助券ガチャを1回引くことができる"
+          "exchangeLimit": 3
+          "leftCount": 3
+          "requiredResourceAmount": "300"
+          "order": 1
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-2"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece-r5;5"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "★5確定ガチャ補助券×5"
+          "description": "30枚で★5確定補助券ガチャを1回引くことができる"
+          "exchangeLimit": 3
+          "leftCount": 3
+          "requiredResourceAmount": "600"
+          "order": 2
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-97"
+          "rewardId": "rd_auto;item;item-photo_ink-basic-03;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "虹のレタッチインク×1"
+          "description": "フォトレタッチとレタッチフォトの品質アップや虹のレタッチインク交換所のアイテム交換に使用する"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "1500"
+          "order": 3
+          "viewConditionId": "exchange-mini-tour_medal-22-0408-item-97"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-63"
+          "rewardId": "rd_auto;item;item-accessory_limit_break-01;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "スピリットライザー×1"
+          "description": "アクセサリの上限突破に使用する"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "1000"
+          "order": 4
+          "viewConditionId": "cd-function_lock-accessory-limit-break-exchange"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-3"
+          "rewardId": "rd_auto;item;item-card_ability;20"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "エールパウダー×20"
+          "description": "エールのLvを上昇させることができる"
+          "exchangeLimit": 20
+          "leftCount": 20
+          "requiredResourceAmount": "250"
+          "order": 5
+          "viewConditionId": "cd-manager_level_gte-110"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-4"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece;10"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "ガチャ補助券×10"
+          "description": "30枚で補助券ガチャを1回引くことができる"
+          "exchangeLimit": 15
+          "leftCount": 15
+          "requiredResourceAmount": "100"
+          "order": 6
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-112"
+          "rewardId": "rd_auto;activate_photo_shooting_story_ticket;;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "撮影解放チケット×1"
+          "description": "ストーリーの撮影を解放できる"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "100"
+          "order": 7
+          "viewConditionId": "cd-function_lock-photo-shooting-story-exchange"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-9"
+          "rewardId": "rd_auto;item;item-photo_shooting-08;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "撮影フィルムLv.8×1"
+          "description": "撮影を行うことができるLvが高いほど高品質なフォトを獲得できる"
+          "exchangeLimit": 3
+          "leftCount": 3
+          "requiredResourceAmount": "300"
+          "order": 8
+          "viewConditionId": "cd-manager_level_gte-170"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-40"
+          "rewardId": "rd_auto;item;item-act_refresh_shorten;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "アワーグラス×1"
+          "description": "リフレッシュの時間を2時間分すぐに進行する"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "100"
+          "order": 13
+          "assetId": ""
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-37"
+          "rewardId": "rd_auto;accessory;ac-1-vocal-18;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルマイク★2"
+          "description": "ボーカル +19300ボーカル +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "700"
+          "order": 15
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-38"
+          "rewardId": "rd_auto;accessory;ac-1-dance-18;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルヒール★2"
+          "description": "ダンス +19300ダンス +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "700"
+          "order": 17
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-39"
+          "rewardId": "rd_auto;accessory;ac-1-visual-18;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルミラー★2"
+          "description": "ビジュアル +19300ビジュアル +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "700"
+          "order": 19
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-34"
+          "rewardId": "rd_auto;accessory;ac-1-vocal-17;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルマイク★1"
+          "description": "ボーカル +17000ボーカル +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "500"
+          "order": 21
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-35"
+          "rewardId": "rd_auto;accessory;ac-1-dance-17;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルヒール★1"
+          "description": "ダンス +17000ダンス +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "500"
+          "order": 23
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-36"
+          "rewardId": "rd_auto;accessory;ac-1-visual-17;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "クリスタルミラー★1"
+          "description": "ビジュアル +17000ビジュアル +25.0%"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "500"
+          "order": 25
+          "viewConditionId": "cd-manager_level_gte-140"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-49"
+          "rewardId": "rd_auto;item;item-card_skill;2800"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スキルパウダー×2800"
+          "description": "アピールのLvを上昇させることができる"
+          "requiredResourceAmount": "150"
+          "order": 52
+          "viewConditionId": "cd-manager_level_gte-180"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-161"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0115-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『月ストっぽく』"
+          "description": "ポーズ『月ストっぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 200
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-161-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-162"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0206-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『サニピっぽく』"
+          "description": "ポーズ『サニピっぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 201
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-162-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-163"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0318-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『トリエルっぽく』"
+          "description": "ポーズ『トリエルっぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 202
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-163-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-164"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0405-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『リズノワっぽく』"
+          "description": "ポーズ『リズノワっぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 203
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-164-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-165"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0518-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『スリクスっぽく』"
+          "description": "ポーズ『スリクスっぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 204
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-165-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-166"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0624-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『麻奈っぽく』"
+          "description": "ポーズ『麻奈っぽく』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 205
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-166-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-167"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0718-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『夏らしく(寝る)』"
+          "description": "ポーズ『夏らしく(寝る)』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 206
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-167-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-168"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0815-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『クロッカスの扉』"
+          "description": "ポーズ『クロッカスの扉』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 207
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-168-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-169"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-0917-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『ココロDistance』"
+          "description": "ポーズ『ココロDistance』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 208
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-169-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-170"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-1017-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『つながる心Binary』"
+          "description": "ポーズ『つながる心Binary』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 209
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-170-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-171"
+          "rewardId": "rd_auto;photo_pose;photo-pose-25-1119-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『天使と悪魔』"
+          "description": "ポーズ『天使と悪魔』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 210
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-171-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-172"
+          "rewardId": "rd_auto;photo_pose;photo-pose-26-0115-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『チョコラブキッス』"
+          "description": "ポーズ『チョコラブキッス』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 211
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-172-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-173"
+          "rewardId": "rd_auto;photo_pose;photo-pose-26-0217-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『マイクを持って』"
+          "description": "ポーズ『マイクを持って』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 212
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-173-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-174"
+          "rewardId": "rd_auto;photo_pose;photo-pose-26-0605-liz;1"
+          "resetTimingType": 4
+          "name": "ポーズ『おしとやかに』"
+          "description": "ポーズ『おしとやかに』(LizNoir)"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "200"
+          "order": 213
+          "viewConditionId": "cd-exchange-mini-tour_medal-26-0731"
+          "unlockConditionId": "cd-cd-exchange-mini-tour_medal-22-0408-item-174-not"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlocked": false
+        - "id": "exchange-mini-tour_medal-22-0408-item-57"
+          "rewardId": "rd_auto;card_rarity_exp;card-szk-02-mizg-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ぷかぷかリゾート 兵藤雫才能開花Pt"
+          "description": "ぷかぷかリゾート 兵藤雫の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1055
+          "viewConditionId": "cd-possession-card-szk-02-mizg-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-58"
+          "rewardId": "rd_auto;card_rarity_exp;card-ski-02-mizg-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "夏の夜に輝く星 白石沙季才能開花Pt"
+          "description": "夏の夜に輝く星 白石沙季の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1056
+          "viewConditionId": "cd-possession-card-ski-02-mizg-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-59"
+          "rewardId": "rd_auto;card_rarity_exp;card-rio-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "心引き締まるレッスン合宿 神崎莉央才能開花Pt"
+          "description": "心引き締まるレッスン合宿 神崎莉央の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1057
+          "viewConditionId": "cd-possession-card-rio-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-60"
+          "rewardId": "rd_auto;card_rarity_exp;card-hrk-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "図らずもバースデーライブ 佐伯遙子才能開花Pt"
+          "description": "図らずもバースデーライブ 佐伯遙子の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "requiredResourceAmount": "150"
+          "order": 1058
+          "viewConditionId": "cd-possession-card-hrk-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-61"
+          "rewardId": "rd_auto;card_rarity_exp;card-rei-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ココロDistance 一ノ瀬怜才能開花Pt"
+          "description": "ココロDistance 一ノ瀬怜の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1059
+          "viewConditionId": "cd-possession-card-rei-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-62"
+          "rewardId": "rd_auto;card_rarity_exp;card-suz-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "期待で胸いっぱい 成宮すず才能開花Pt"
+          "description": "期待で胸いっぱい 成宮すずの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1060
+          "viewConditionId": "cd-possession-card-suz-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-72"
+          "rewardId": "rd_auto;card_rarity_exp;card-chs-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "賑やかなお正月 白石千紗才能開花Pt"
+          "description": "賑やかなお正月 白石千紗の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1061
+          "viewConditionId": "cd-possession-card-chs-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-73"
+          "rewardId": "rd_auto;card_rarity_exp;card-rio-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "緊張の一瞬 神崎莉央才能開花Pt"
+          "description": "緊張の一瞬 神崎莉央の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1062
+          "viewConditionId": "cd-possession-card-rio-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-74"
+          "rewardId": "rd_auto;card_rarity_exp;card-rui-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "対等な関係 天動瑠依才能開花Pt"
+          "description": "対等な関係 天動瑠依の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1063
+          "viewConditionId": "cd-possession-card-rui-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-75"
+          "rewardId": "rd_auto;card_rarity_exp;card-ktn-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "誰にも負けないくらい好き 長瀬琴乃才能開花Pt"
+          "description": "誰にも負けないくらい好き 長瀬琴乃の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1064
+          "viewConditionId": "cd-possession-card-ktn-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-76"
+          "rewardId": "rd_auto;card_rarity_exp;card-ngs-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "姉妹の活躍に染められて 伊吹渚才能開花Pt"
+          "description": "姉妹の活躍に染められて 伊吹渚の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1065
+          "viewConditionId": "cd-possession-card-ngs-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-83"
+          "rewardId": "rd_auto;card_rarity_exp;card-szk-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "みんなのピースを 兵藤雫才能開花Pt"
+          "description": "みんなのピースを 兵藤雫の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1066
+          "viewConditionId": "cd-possession-card-szk-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-84"
+          "rewardId": "rd_auto;card_rarity_exp;card-skr-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "仲良しアピール 川咲さくら才能開花Pt"
+          "description": "仲良しアピール 川咲さくらの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1067
+          "viewConditionId": "cd-possession-card-skr-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-85"
+          "rewardId": "rd_auto;card_rarity_exp;card-rio-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "どたばたバカンス 神崎莉央才能開花Pt"
+          "description": "どたばたバカンス 神崎莉央の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1068
+          "viewConditionId": "cd-possession-card-rio-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-86"
+          "rewardId": "rd_auto;card_rarity_exp;card-aoi-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "そっとしておく仲間の背中 井川葵才能開花Pt"
+          "description": "そっとしておく仲間の背中 井川葵の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1069
+          "viewConditionId": "cd-possession-card-aoi-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-87"
+          "rewardId": "rd_auto;card_rarity_exp;card-mei-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "距離が縮まる露天風呂 早坂芽衣才能開花Pt"
+          "description": "距離が縮まる露天風呂 早坂芽衣の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1070
+          "viewConditionId": "cd-possession-card-mei-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-88"
+          "rewardId": "rd_auto;card_rarity_exp;card-ktn-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "月ストサンタからの贈り物 長瀬琴乃才能開花Pt"
+          "description": "月ストサンタからの贈り物 長瀬琴乃の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1071
+          "viewConditionId": "cd-possession-card-ktn-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-93"
+          "rewardId": "rd_auto;card_rarity_exp;card-ai-02-eve-00;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "初日に誓う今年の飛躍 小美山愛才能開花Pt"
+          "description": "初日に誓う今年の飛躍 小美山愛の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1072
+          "viewConditionId": "cd-possession-card-ai-02-eve-00-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-94"
+          "rewardId": "rd_auto;card_rarity_exp;card-smr-02-eve-00;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "憧れのスクールラブ 奥山すみれ才能開花Pt"
+          "description": "憧れのスクールラブ 奥山すみれの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1073
+          "viewConditionId": "cd-possession-card-smr-02-eve-00-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-95"
+          "rewardId": "rd_auto;card_rarity_exp;card-kkr-02-eve-00;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "こころのカワイイTV 赤崎こころ才能開花Pt"
+          "description": "こころのカワイイTV 赤崎こころの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1074
+          "viewConditionId": "cd-possession-card-kkr-02-eve-00-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-96"
+          "rewardId": "rd_auto;card_rarity_exp;card-hrk-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "巡る季節と色褪せない日々 佐伯遙子才能開花Pt"
+          "description": "巡る季節と色褪せない日々 佐伯遙子の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1075
+          "viewConditionId": "cd-possession-card-hrk-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-117"
+          "rewardId": "rd_auto;card_rarity_exp;card-skr-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "あなたに贈る感謝の花束 川咲さくら才能開花Pt"
+          "description": "あなたに贈る感謝の花束 川咲さくらの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "requiredResourceAmount": "150"
+          "order": 1076
+          "viewConditionId": "cd-possession-card-skr-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-118"
+          "rewardId": "rd_auto;card_rarity_exp;card-kan-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "kanaちゃんジャッジメント kana才能開花Pt"
+          "description": "kanaちゃんジャッジメント kanaの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1077
+          "viewConditionId": "cd-possession-card-kan-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-119"
+          "rewardId": "rd_auto;card_rarity_exp;card-rui-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アシスタントの瑠依さん 天動瑠依才能開花Pt"
+          "description": "アシスタントの瑠依さん 天動瑠依の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1078
+          "viewConditionId": "cd-possession-card-rui-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-120"
+          "rewardId": "rd_auto;card_rarity_exp;card-mhk-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "孤高の理解者 miho才能開花Pt"
+          "description": "孤高の理解者 mihoの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1079
+          "viewConditionId": "cd-possession-card-mhk-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-122"
+          "rewardId": "rd_auto;card_rarity_exp;card-mna-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "きみと過ごしたシーパラ 長瀬麻奈才能開花Pt"
+          "description": "きみと過ごしたシーパラ 長瀬麻奈の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1080
+          "viewConditionId": "cd-possession-card-mna-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-127"
+          "rewardId": "rd_auto;card_rarity_exp;card-mna-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "remember shiny days 長瀬麻奈才能開花Pt"
+          "description": "remember shiny days 長瀬麻奈の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1081
+          "viewConditionId": "cd-possession-card-mna-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-128"
+          "rewardId": "rd_auto;card_rarity_exp;card-smr-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ほっと一息故郷の湯 奥山すみれ才能開花Pt"
+          "description": "ほっと一息故郷の湯 奥山すみれの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1082
+          "viewConditionId": "cd-possession-card-smr-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-129"
+          "rewardId": "rd_auto;card_rarity_exp;card-suz-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "おせちにもスパイスを！ 成宮すず才能開花Pt"
+          "description": "おせちにもスパイスを！ 成宮すずの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1083
+          "viewConditionId": "cd-possession-card-suz-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-130"
+          "rewardId": "rd_auto;card_rarity_exp;card-szk-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "みんなの願いを叶えるツアー！ 兵藤雫才能開花Pt"
+          "description": "みんなの願いを叶えるツアー！ 兵藤雫の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1084
+          "viewConditionId": "cd-possession-card-szk-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-137"
+          "rewardId": "rd_auto;card_rarity_exp;card-mhk-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "獅子達のベガス征服 miho才能開花Pt"
+          "description": "獅子達のベガス征服 mihoの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1085
+          "viewConditionId": "cd-possession-card-mhk-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-138"
+          "rewardId": "rd_auto;card_rarity_exp;card-aoi-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "熱情クールダウン 井川葵才能開花Pt"
+          "description": "熱情クールダウン 井川葵の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1086
+          "viewConditionId": "cd-possession-card-aoi-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-139"
+          "rewardId": "rd_auto;card_rarity_exp;card-ktn-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "月と太陽 長瀬琴乃才能開花Pt"
+          "description": "月と太陽 長瀬琴乃の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1087
+          "viewConditionId": "cd-possession-card-ktn-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-140"
+          "rewardId": "rd_auto;card_rarity_exp;card-chs-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "サニピでサバイバル！ 白石千紗才能開花Pt"
+          "description": "サニピでサバイバル！ 白石千紗の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1088
+          "viewConditionId": "cd-possession-card-chs-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-141"
+          "rewardId": "rd_auto;card_rarity_exp;card-kor-02-eve-00;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "夢幻の楽園 fran才能開花Pt"
+          "description": "夢幻の楽園 franの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1089
+          "viewConditionId": "cd-possession-card-kor-02-eve-00-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-142"
+          "rewardId": "rd_auto;card_rarity_exp;card-rui-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "天使達の晴れ舞台  天動瑠依才能開花Pt"
+          "description": "天使達の晴れ舞台  天動瑠依の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1090
+          "viewConditionId": "cd-possession-card-rui-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-147"
+          "rewardId": "rd_auto;card_rarity_exp;card-mei-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ニコイチTwins！ 早坂芽衣才能開花Pt"
+          "description": "ニコイチTwins！ 早坂芽衣の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1091
+          "viewConditionId": "cd-possession-card-mei-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-148"
+          "rewardId": "rd_auto;card_rarity_exp;card-yu-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "京狐のお出迎え 鈴村優才能開花Pt"
+          "description": "京狐のお出迎え 鈴村優の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1092
+          "viewConditionId": "cd-possession-card-yu-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-149"
+          "rewardId": "rd_auto;card_rarity_exp;card-rei-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "レンズの向こうに渡す想い 一ノ瀬怜才能開花Pt"
+          "description": "レンズの向こうに渡す想い 一ノ瀬怜の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1093
+          "viewConditionId": "cd-possession-card-rei-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-150"
+          "rewardId": "rd_auto;card_rarity_exp;card-skr-02-eve-03;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "『劇団★見』初公演！ 川咲さくら才能開花Pt"
+          "description": "『劇団★見』初公演！ 川咲さくらの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1094
+          "viewConditionId": "cd-possession-card-skr-02-eve-03-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-157"
+          "rewardId": "rd_auto;card_rarity_exp;card-kor-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "未来へのオールイン fran才能開花Pt"
+          "description": "未来へのオールイン franの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1096
+          "viewConditionId": "cd-possession-card-kor-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-158"
+          "rewardId": "rd_auto;card_rarity_exp;card-kan-02-eve-02;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "会いたかったよお父さん kana才能開花Pt"
+          "description": "会いたかったよお父さん kanaの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1097
+          "viewConditionId": "cd-possession-card-kan-02-eve-02-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-159"
+          "rewardId": "rd_auto;card_rarity_exp;card-rui-02-eve-04;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "学園祭でミュージカル！ 天動瑠依才能開花Pt"
+          "description": "学園祭でミュージカル！ 天動瑠依の才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1098
+          "viewConditionId": "cd-possession-card-rui-02-eve-04-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-mini-tour_medal-22-0408-item-160"
+          "rewardId": "rd_auto;card_rarity_exp;card-kkr-02-eve-01;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "こころ掴む海外ツアー 赤崎こころ才能開花Pt"
+          "description": "こころ掴む海外ツアー 赤崎こころの才能開花Ptを上昇させることができる"
+          "exchangeLimit": 5
+          "leftCount": 5
+          "requiredResourceAmount": "150"
+          "order": 1099
+          "viewConditionId": "cd-possession-card-kkr-02-eve-01-not-rarity-max"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+      "iconAssetId": "medal_event_mini-tour"
+      "viewConditionId": "cd-exchange-ever-event_mini-tour-22-0408"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-photo-ink-basic-03"
+      "name": "虹のレタッチインク交換"
+      "bannerAssetId": "photo-ink-basic-03"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-photo_ink-basic-03"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 130
+      "colorCode": "487EFF"
+      "backgroundColorCode": "6D98FF"
+      "exchanges":
+        - "id": "exchange-photo-ink-basic-03-01"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-001;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 1
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-02"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-002;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 2
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-03"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-003;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 3
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-04"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-004;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 4
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-05"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-005;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 5
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-06"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-006;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 6
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-07"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-007;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 7
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-08"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-008;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 8
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-09"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-009;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 9
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-10"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-019;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 10
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-11"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-020;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 11
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-12"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-021;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 12
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-13"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-022;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 13
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-14"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-023;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 14
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-15"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-024;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 15
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-16"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-034;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 16
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-17"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-035;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 17
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-ink-basic-03-18"
+          "assetId": "img_item_thumb_photo-recipe-exchange-r5-125-145"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-5-rare-3-036;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "フォトレシピ★5×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 18
+          "viewConditionId": "cd-clear-area-main-040"
+          "unlockConditionId": ""
+      "iconAssetId": "photo-ink-basic-03"
+      "viewConditionId": "cd-exchange-photo_ink-basic-03"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-photo-medal"
+      "name": "プレミアムフォトメダル交換"
+      "bannerAssetId": "photomedal"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-photo-medal"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 300
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-photo-medal-item-59"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-25-1224-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "頂点を目指して"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-25-1224"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-45"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-1224-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "サヨナラから始まる物語"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-24-1224"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-52"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-25-0624-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "あの日の頼み事"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-25-0624"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-47"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-25-0324-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "みんなでBBQ"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-25-0324"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-46"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-25-0124-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "おはよう"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-25-0124"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-66"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-26-0624-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "認め合うアイドルと共に"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 19
+          "viewConditionId": "cd-exchange-photo-medal-26-0624"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-41"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-0924-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "話がわかりますわ！"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 20
+          "viewConditionId": "cd-exchange-photo-medal-24-0924"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-37"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-0824-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "誰も知らない 雲の向こう"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 21
+          "viewConditionId": "cd-exchange-photo-medal-24-0824"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-36"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-0724-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "私たちらしく"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 22
+          "viewConditionId": "cd-exchange-photo-medal-24-0724"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-35"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-0624-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "夢なんだから"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 23
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-31"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-24-0524-prem-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "もっと強くなれるね"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 23
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-30"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-16;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "一緒に"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 23
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-29"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-15;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "お姉ちゃん"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 23
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-25"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-13;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "平気平気！"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 24
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-17"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-11;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "君へのエール送るよ"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 25
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-16"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-10;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "友達だよ、いつの日も"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 26
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-12"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-7;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "桜色の風"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 27
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-4"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-3;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "明るく君を照らしたい"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 28
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-1"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-5-2;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "それでいいんだよ"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "requiredResourceAmount": "1"
+          "order": 29
+          "viewConditionId": "cd-time-premiumphoto-space-adjust-21-0624-1"
+          "assetId": ""
+          "nextResetTime": "0"
+          "leftCount": 0
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-63"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-43;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 30
+          "viewConditionId": "cd-time-exchange-photo-medal-26-0624"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-64"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-44;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 31
+          "viewConditionId": "cd-time-exchange-photo-medal-26-0624"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-65"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-45;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 32
+          "viewConditionId": "cd-time-exchange-photo-medal-26-0624"
+          "assetId": ""
+          "nextResetTime": "0"
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-5"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-1;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 36
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-6"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-2;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 37
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-7"
+          "rewardId": "rd_auto;photo_recipe;photo-recipe-exchange-5-3;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フォトレシピ★5 ×1"
+          "description": "フォトの効果を変更することができます。"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "2"
+          "order": 38
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-48"
+          "rewardId": "rd_auto;item;item-photo_shooting-09-25-0318;1"
+          "resetTimingType": 3
+          "nextResetTime": "1788188400000"
+          "unlocked": true
+          "name": "★5確定撮影フィルムLv.9×1"
+          "description": "撮影を行うことができる ★5確定で品質160のフォトを獲得できる"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "1"
+          "order": 39
+          "viewConditionId": "cd-time-exchange-photo-medal-25-0318-open"
+          "assetId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-photo-medal-item-2"
+          "rewardId": "rd_auto;item;item-photo_enhance;30"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アドバンスフィルム×30"
+          "description": "フォトの品質アップをすることができる"
+          "requiredResourceAmount": "1"
+          "order": 40
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_photo"
+      "viewConditionId": "cd-exchange-photo-medal-22-0624"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""
+    - "id": "exchange-pvp_medal-26-0801-0831"
+      "name": "VENUSメダル交換"
+      "bannerAssetId": "pvpmedal"
+      "requiredResourceType": 9
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 120
+      "colorCode": "C39DFD"
+      "backgroundColorCode": "B889FC"
+      "exchanges":
+        - "id": "exchange-pvp_medal-item-26-0801-0831-03"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-pvp-5-3;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "月のテンペスト"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "3600"
+          "order": 1
+          "unlockConditionId": "cd-manager_level_gte-120"
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-02"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-pvp-5-2;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "サニーピース"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "3600"
+          "order": 2
+          "unlockConditionId": "cd-manager_level_gte-100"
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-01"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-pvp-5-1;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "TRINITYAiLE"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "3600"
+          "order": 3
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-04"
+          "rewardId": "rd_auto;photo_all_in_one;phot-exchange-pvp-4-1;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "LizNoir"
+          "description": "編成するとパラメータがアップする"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "900"
+          "order": 4
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-05"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece-r5;5"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5確定ガチャ補助券×5"
+          "description": "30枚で★5確定補助券ガチャを1回引くことができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 6
+          "leftCount": 6
+          "requiredResourceAmount": "850"
+          "order": 5
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-11"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece;10"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ガチャ補助券×10"
+          "description": "30枚で補助券ガチャを1回引くことができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 15
+          "leftCount": 15
+          "requiredResourceAmount": "120"
+          "order": 6
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-17"
+          "rewardId": "rd_auto;item;item-card_skill;2000"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スキルパウダー×2000"
+          "description": "アピールのLvを上昇させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 20
+          "leftCount": 20
+          "requiredResourceAmount": "200"
+          "order": 7
+          "viewConditionId": "cd-manager_level_gte-120"
+          "unlockConditionId": "cd-manager_level_gte-120"
+          "assetId": ""
+          "nextResetTime": "0"
+        - "id": "exchange-pvp_medal-item-26-0801-0831-06"
+          "rewardId": "rd_auto;item;item-photo_enhance;5"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "アドバンスフィルム×5"
+          "description": "フォトの品質アップをすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "300"
+          "order": 8
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-19"
+          "rewardId": "rd_auto;item;item-act_lesson-boost;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "魚魚っとさんドリンク×1"
+          "description": "自主トレの時間を2時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "240"
+          "order": 9
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-20"
+          "rewardId": "rd_auto;item;item-act_fan-reward-up;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "スイーツギフト×1"
+          "description": "ファンイベントの報酬アイテムの獲得効率が2倍になる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "360"
+          "order": 10
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-08"
+          "rewardId": "rd_auto;item;item-act_speed_up;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "エナジーゼリー×1"
+          "description": "ファンイベントの進行速度を100%UPさせる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "120"
+          "order": 11
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-09"
+          "rewardId": "rd_auto;item;item-act_super_mode;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "フィーバードリンク×1"
+          "description": "一定ステップの間、FEVER状態になり、応援ゲージ+1回\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "240"
+          "order": 12
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-10"
+          "rewardId": "rd_auto;item;item-act_cheer_point_up;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "応援キャンディ×1"
+          "description": "ファンレターによる応援ゲージの上昇を100%UPさせる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "120"
+          "order": 13
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-21"
+          "rewardId": "rd_auto;item;item-act_promotion_shorten-sp;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "SPスキップウォッチ×1"
+          "description": "プロモーションの時間を10時間分すぐに進行する\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 1
+          "leftCount": 1
+          "requiredResourceAmount": "600"
+          "order": 14
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-07"
+          "rewardId": "rd_auto;item;item-quest_contest_ticket;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "ハイスコアパス×1"
+          "description": "ハイスコアライブなどに挑戦できる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 30
+          "leftCount": 30
+          "requiredResourceAmount": "120"
+          "order": 15
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-18"
+          "rewardId": "rd_auto;item;item-card_ability;20"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "エールパウダー×20"
+          "description": "エールのLvを上昇させることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 10
+          "leftCount": 10
+          "requiredResourceAmount": "700"
+          "order": 16
+          "viewConditionId": "cd-manager_level_gte-110"
+          "unlockConditionId": "cd-manager_level_gte-110"
+          "assetId": ""
+          "nextResetTime": "0"
+        - "id": "exchange-pvp_medal-item-26-0801-0831-22"
+          "rewardId": "rd_auto;item;item-enjoy-present-snack-01-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "うまいぜスティック×1"
+          "description": "交流でアイドルにプレゼントすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "500"
+          "order": 17
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-23"
+          "rewardId": "rd_auto;item;item-enjoy-present-adult-01-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "コーヒー×1"
+          "description": "交流でアイドルにプレゼントすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "500"
+          "order": 18
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-24"
+          "rewardId": "rd_auto;item;item-enjoy-present-sweet-01-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "映えスイーツ×1"
+          "description": "交流でアイドルにプレゼントすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "500"
+          "order": 19
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+        - "id": "exchange-pvp_medal-item-26-0801-0831-25"
+          "rewardId": "rd_auto;item;item-enjoy-present-stoic-01-01;1"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "プロテインドリンク×1"
+          "description": "交流でアイドルにプレゼントすることができる\n在庫リセット\n9/1(火) 00:00"
+          "exchangeLimit": 2
+          "leftCount": 2
+          "requiredResourceAmount": "500"
+          "order": 20
+          "assetId": ""
+          "nextResetTime": "0"
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_venus"
+      "viewConditionId": "cd-time-exchange-pvp_medal-26-0801-0831"
+      "unlockConditionId": "cd-time-exchange-pvp-open"
+      "requiredResourceId": ""
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+    - "id": "exchange-rarity_exp_medal-21-1228"
+      "name": "開花Ptメダル交換"
+      "bannerAssetId": "rarity_exp-21-1228"
+      "requiredResourceType": 1
+      "requiredResourceId": "item-rarity_exp_medal-21-1228"
+      "resetTimingType": 4
+      "unlocked": true
+      "order": 105
+      "colorCode": "A0B4C1"
+      "backgroundColorCode": "526072"
+      "exchanges":
+        - "id": "exchange-rarity_exp_medal-21-1228-item-37"
+          "rewardId": "rd-rarity_exp-card-ktn-05-prem-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5長瀬琴乃 開花Pt×100"
+          "description": "リーダー達のレアショット 長瀬琴乃の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 330
+          "viewConditionId": "cd-possession-card-ktn-05-prem-00-not-rarity-max"
+          "unlockConditionId": "cd-card-ktn-05-prem-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-36"
+          "rewardId": "rd-rarity_exp-card-mna-05-prem-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5長瀬麻奈 開花Pt×100"
+          "description": "花火に鼓動が高鳴る夜 長瀬麻奈の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 360
+          "viewConditionId": "cd-possession-card-mna-05-prem-00-not-rarity-max"
+          "unlockConditionId": "cd-card-mna-05-prem-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-75"
+          "rewardId": "rd-rarity_exp-card-rei-05-chia-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5一ノ瀬怜 開花Pt×100"
+          "description": "ダンシングキューピッド 一ノ瀬怜の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 994
+          "viewConditionId": "cd-possession-card-rei-05-chia-00-not-rarity-max"
+          "unlockConditionId": "cd-card-rei-05-chia-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-76"
+          "rewardId": "rd-rarity_exp-card-hrk-05-pajm-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5佐伯遙子 開花Pt×100"
+          "description": "私の理想のデートプラン 佐伯遙子の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 995
+          "viewConditionId": "cd-possession-card-hrk-05-pajm-00-not-rarity-max"
+          "unlockConditionId": "cd-card-hrk-05-pajm-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-79"
+          "rewardId": "rd-rarity_exp-card-smr-05-idol-04"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5奥山すみれ 開花Pt×100"
+          "description": "飛び立つための羽休め 奥山すみれの開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 998
+          "viewConditionId": "cd-possession-card-smr-05-idol-04-not-rarity-max"
+          "unlockConditionId": "cd-card-smr-05-idol-04"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-80"
+          "rewardId": "rd-rarity_exp-card-ngs-05-casl-02"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5伊吹渚 開花Pt×100"
+          "description": "もしも幼なじみと恋をしたら 伊吹渚の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 999
+          "viewConditionId": "cd-possession-card-ngs-05-casl-02-not-rarity-max"
+          "unlockConditionId": "cd-card-ngs-05-casl-02"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-81"
+          "rewardId": "rd-rarity_exp-card-kan-05-chna-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5kana 開花Pt×100"
+          "description": "主役はkanaかな？ kanaの開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1000
+          "viewConditionId": "cd-possession-card-kan-05-chna-00-not-rarity-max"
+          "unlockConditionId": "cd-card-kan-05-chna-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-82"
+          "rewardId": "rd-rarity_exp-card-aoi-05-circ-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5井川葵 開花Pt×100"
+          "description": "ダーティーアクセル 井川葵の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1001
+          "viewConditionId": "cd-possession-card-aoi-05-circ-00-not-rarity-max"
+          "unlockConditionId": "cd-card-aoi-05-circ-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-86"
+          "rewardId": "rd-rarity_exp-card-szk-05-yukt-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5兵藤雫 開花Pt×100"
+          "description": "大輪彩る夏夜の一瞬 兵藤雫の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1005
+          "viewConditionId": "cd-possession-card-szk-05-yukt-00-not-rarity-max"
+          "unlockConditionId": "cd-card-szk-05-yukt-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-58"
+          "rewardId": "rd-rarity_exp-card-kor-05-idol-03"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5fran 開花Pt×100"
+          "description": "俊傑は我が道を貫く franの開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1010
+          "viewConditionId": "cd-possession-card-kor-05-idol-03-not-rarity-max"
+          "unlockConditionId": "cd-card-kor-05-idol-03"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-60"
+          "rewardId": "rd-rarity_exp-card-chs-05-pajm-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5白石千紗 開花Pt×100"
+          "description": "お姫様抱っこで夢の中 白石千紗の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1012
+          "viewConditionId": "cd-possession-card-chs-05-pajm-00-not-rarity-max"
+          "unlockConditionId": "cd-card-chs-05-pajm-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-61"
+          "rewardId": "rd-rarity_exp-card-ai-05-rock-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5小美山愛 開花Pt×100"
+          "description": "クールにキメるぼっち収録 小美山愛の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1013
+          "viewConditionId": "cd-possession-card-ai-05-rock-00-not-rarity-max"
+          "unlockConditionId": "cd-card-ai-05-rock-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-63"
+          "rewardId": "rd-rarity_exp-card-skr-05-chna-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5川咲さくら 開花Pt×100"
+          "description": "パクパク満腹笑顔 川咲さくらの開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1015
+          "viewConditionId": "cd-possession-card-skr-05-chna-00-not-rarity-max"
+          "unlockConditionId": "cd-card-skr-05-chna-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-40"
+          "rewardId": "rd-rarity_exp-card-hrk-05-onep-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5佐伯遙子 開花Pt×100"
+          "description": "ゆるり妄想温泉の旅 佐伯遙子の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1019
+          "viewConditionId": "cd-possession-card-hrk-05-onep-00-not-rarity-max"
+          "unlockConditionId": "cd-card-hrk-05-onep-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-47"
+          "rewardId": "rd-rarity_exp-card-mei-05-mizg-02"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5早坂芽衣 開花Pt×100"
+          "description": "隠しきれない顔の火照り 早坂芽衣の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1026
+          "viewConditionId": "cd-possession-card-mei-05-mizg-02-not-rarity-max"
+          "unlockConditionId": "cd-card-mei-05-mizg-02"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-28"
+          "rewardId": "rd-rarity_exp-card-ai-05-tact-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5小美山愛 開花Pt×100"
+          "description": "セクシーシューティング 小美山愛の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1029
+          "viewConditionId": "cd-possession-card-ai-05-tact-00-not-rarity-max"
+          "unlockConditionId": "cd-card-ai-05-tact-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-35"
+          "rewardId": "rd-rarity_exp-card-ski-05-waso-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5白石沙季 開花Pt×100"
+          "description": "胸に秘めていた情熱 白石沙季の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1036
+          "viewConditionId": "cd-possession-card-ski-05-waso-00-not-rarity-max"
+          "unlockConditionId": "cd-card-ski-05-waso-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-1"
+          "rewardId": "rd-rarity_exp-card-ngs-05-flow-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5伊吹渚 開花Pt×100"
+          "description": "この瞬間の主役 伊吹渚の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1037
+          "viewConditionId": "cd-possession-card-ngs-05-flow-00-not-rarity-max"
+          "unlockConditionId": "cd-card-ngs-05-flow-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-2"
+          "rewardId": "rd-rarity_exp-card-szk-05-chna-00"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5兵藤雫 開花Pt×100"
+          "description": "夢は、きっと叶う 兵藤雫の開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1038
+          "viewConditionId": "cd-possession-card-szk-05-chna-00-not-rarity-max"
+          "unlockConditionId": "cd-card-szk-05-chna-00"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-9"
+          "rewardId": "rd-rarity_exp-card-smr-05-mizg-01"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5奥山すみれ 開花Pt×100"
+          "description": "常夏ウォーターパーク 奥山すみれの開花Pt"
+          "requiredResourceAmount": "1"
+          "order": 1045
+          "viewConditionId": "cd-possession-card-smr-05-mizg-01-not-rarity-max"
+          "unlockConditionId": "cd-card-smr-05-mizg-01"
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+        - "id": "exchange-rarity_exp_medal-21-1228-item-27"
+          "rewardId": "rd_auto;item;item-gacha_ticket_piece-r5;10"
+          "resetTimingType": 4
+          "unlocked": true
+          "name": "★5確定ガチャ補助券×10"
+          "description": "★5確定ガチャ補助券"
+          "requiredResourceAmount": "1"
+          "order": 1063
+          "assetId": ""
+          "nextResetTime": "0"
+          "exchangeLimit": 0
+          "leftCount": 0
+          "viewConditionId": ""
+          "unlockConditionId": ""
+      "iconAssetId": "medal_rarity_exp"
+      "viewConditionId": "cd-exchange-ever-event_rarity_exp-21-1228"
+      "nextResetTime": "0"
+      "endTime": "0"
+      "linkType": 0
+      "linkDetail": ""
+      "limited": false
+      "costumeId": ""
+      "unlockConditionId": ""

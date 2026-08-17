@@ -2,16 +2,16 @@ package servers
 
 import (
 	"context"
-	pb "github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 )
 
 type SystemServer struct {
-	pb.UnimplementedSystemServer
+	papi.UnimplementedSystemServer
 }
 
-func (s *SystemServer) Check(ctx context.Context, req *pb.SystemCheckRequest) (*pb.SystemCheckResponse, error) {
-	return &pb.SystemCheckResponse{
-		MaintenanceInfo: &pb.MaintenanceInfo{
+func (s *SystemServer) Check(ctx context.Context, req *papi.SystemCheckRequest) (*papi.SystemCheckResponse, error) {
+	return &papi.SystemCheckResponse{
+		MaintenanceInfo: &papi.MaintenanceInfo{
 			InMaintenance:   false,
 			TopMessage:      "",
 			BottomMessage:   "",
@@ -22,7 +22,7 @@ func (s *SystemServer) Check(ctx context.Context, req *pb.SystemCheckRequest) (*
 			MvUrl:           "",
 			GamePvUrl:       "",
 		},
-		ReviewInfo: &pb.ReviewInfo{
+		ReviewInfo: &papi.ReviewInfo{
 			InReview:           false,
 			AlternativeApiHost: "",
 		},
@@ -34,6 +34,6 @@ func (s *SystemServer) Check(ctx context.Context, req *pb.SystemCheckRequest) (*
 	}, nil
 }
 
-func (s *SystemServer) CheckApp(ctx context.Context, _ *pb.Empty) (*pb.Empty, error) {
-	return &pb.Empty{}, nil
+func (s *SystemServer) CheckApp(ctx context.Context, _ *papi.Empty) (*papi.Empty, error) {
+	return &papi.Empty{}, nil
 }

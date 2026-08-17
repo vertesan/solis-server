@@ -10,6 +10,12 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserPhotoPose(ctx context.Context, suid, photoPoseId string) (*ptransaction.UserPhotoPose, error) {
+	return ucommon.FindOne[ptransaction.UserPhotoPose](
+		ctx, uname.UserPhotoPose, bson.M{"SUID": suid, "photoPoseId": photoPoseId},
+	)
+}
+
 func FindAllUserPhotoPoses(ctx context.Context, suid string) ([]*ptransaction.UserPhotoPose, error) {
 	return ucommon.FindAll[ptransaction.UserPhotoPose](
 		ctx,

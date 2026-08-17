@@ -32,3 +32,13 @@ type NoticeCatalog struct {
 	MalfunctionNotices []*papi.NoticeInfo `bson:"malfunctionNotices"`
 	PrNotices          []*papi.NoticeInfo `bson:"prNotices"`
 }
+
+// ShopCatalogEntry groups the global definition of a shop with the items
+// exposed by the shop-specific APIs. User purchase/unlock state belongs in the
+// user database and is deliberately not stored here.
+type ShopCatalogEntry struct {
+	ShopId                string                      `bson:"shopId"`
+	Info                  *papi.ShopInfo              `bson:"info"`
+	Items                 []*papi.ShopItem            `bson:"items"`
+	LoginBonusPackageItem *papi.LoginBonusPackageItem `bson:"loginBonusPackageItem,omitempty"`
+}

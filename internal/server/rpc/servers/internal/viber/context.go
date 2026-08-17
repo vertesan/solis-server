@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/server/rpc/internal/interceptor"
-	mcontext "github.com/vertesan/solis-server/internal/utils/mcontext"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"go.uber.org/zap"
 )
 
