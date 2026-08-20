@@ -37,3 +37,7 @@ func (s *SystemServer) Check(ctx context.Context, req *papi.SystemCheckRequest) 
 func (s *SystemServer) CheckApp(ctx context.Context, _ *papi.Empty) (*papi.Empty, error) {
 	return &papi.Empty{}, nil
 }
+
+func (s *SystemServer) GetMetadata(ctx context.Context, _ *papi.Empty) (*papi.Empty, error) {
+	return &papi.Empty{}, nil
+}
