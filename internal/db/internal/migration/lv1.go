@@ -136,6 +136,7 @@ func ensureUserIndexes(ctx context.Context) error {
 		{uname.UserMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "musicId", Value: 1}}},
 		{uname.UserLove, bson.D{{Key: "SUID", Value: 1}, {Key: "loveId", Value: 1}}},
 		{uname.UserCharacterMusic, bson.D{{Key: "SUID", Value: 1}, {Key: "characterId", Value: 1}, {Key: "musicId", Value: 1}}},
+		{uname.UserHomePosition, bson.D{{Key: "SUID", Value: 1}, {Key: "homePositionType", Value: 1}}},
 		{uname.UserHomeTalk, bson.D{{Key: "SUID", Value: 1}, {Key: "homeTalkId", Value: 1}}},
 		{uname.UserStory, bson.D{{Key: "SUID", Value: 1}, {Key: "storyId", Value: 1}}},
 		{uname.UserTelephone, bson.D{{Key: "SUID", Value: 1}, {Key: "telephoneId", Value: 1}}},
