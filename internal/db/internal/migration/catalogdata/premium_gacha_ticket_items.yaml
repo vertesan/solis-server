@@ -1,0 +1,19 @@
+shopItems:
+  - id: shop_top_premium-shop-pack-22-0624-01
+    name: プレミアムガチャチケ×10
+    description: プレミアムガチャを引くことができるチケット
+    productId: ""
+    consumptionId: ""
+    rewardId: rd-shop_top_premium-shop-pack-22-0624-01
+    thumbnailAssetId: img_shop_item_thumb_premium-shop-pack-0624-01
+    purchaseLimit: 0
+    leftCount: 0
+    order: 10
+    viewConditionId: ""
+    pushSegment: ""
+    resetTimingType: 4
+    nextResetTime: "0"
+    unlockConditionId: ""
+    unlocked: true
+    colorCode: 71BDFD
+    backgroundColorCode: 3388D1

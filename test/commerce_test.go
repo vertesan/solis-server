@@ -130,8 +130,16 @@ func TestCommerceAPIs(t *testing.T) {
 	}
 	for _, actual := range shopResponse.GetShops() {
 		entry := shopCatalogByID[actual.GetId()]
-		if entry == nil || !proto.Equal(actual, entry.Info) {
-			t.Fatalf("Shop.List response is inconsistent with current catalog: shop=%v catalog=%v", actual, entry)
+		if entry == nil {
+			t.Fatalf("Shop.List returned shop %q absent from current catalog", actual.GetId())
+		}
+		expected := proto.Clone(entry.Info).(*papi.ShopInfo)
+		// Purchase and login-package progress are rendered from per-user state.
+		expected.IsPurchased = actual.GetIsPurchased()
+		expected.Progress = actual.GetProgress()
+		expected.MaxProgress = actual.GetMaxProgress()
+		if !proto.Equal(actual, expected) {
+			t.Fatalf("Shop.List response is inconsistent with current catalog: shop=%v catalog=%v", actual, expected)
 		}
 	}
 
@@ -177,6 +185,10 @@ func TestCommerceAPIs(t *testing.T) {
 			}
 			expected = proto.Clone(expected).(*papi.ShopItem)
 			expected.Unlocked = actual.GetUnlocked()
+			// Stock and reset windows are per-user runtime state, not stable
+			// server-wide catalog metadata.
+			expected.LeftCount = actual.GetLeftCount()
+			expected.NextResetTime = actual.GetNextResetTime()
 			if !proto.Equal(actual, expected) {
 				t.Fatalf("Shop.ListItem response is inconsistent with current catalog: item=%v catalog=%v", actual, expected)
 			}
@@ -214,12 +226,21 @@ func TestCommerceAPIs(t *testing.T) {
 		if response.GetCommonResponse() == nil || response.GetLoginBonusPackageItem() == nil {
 			t.Fatalf("Shop.GetLoginBonusPackageItem returned incomplete response: %v", response)
 		}
+		actual := response.GetLoginBonusPackageItem()
 		expected := proto.Clone(entry.LoginBonusPackageItem).(*papi.LoginBonusPackageItem)
 		if expected.ShopItem != nil {
-			expected.ShopItem.Unlocked = response.GetLoginBonusPackageItem().GetShopItem().GetUnlocked()
+			expected.ShopItem.Unlocked = actual.GetShopItem().GetUnlocked()
 		}
-		if !proto.Equal(response.GetLoginBonusPackageItem(), expected) {
-			t.Fatalf("Shop.GetLoginBonusPackageItem is inconsistent with current catalog: package=%v catalog=%v", response.GetLoginBonusPackageItem(), expected)
+		expected.IsPurchased = actual.GetIsPurchased()
+		actualReceivedByDay := make(map[int32]bool, len(actual.GetLoginBonuses()))
+		for _, bonus := range actual.GetLoginBonuses() {
+			actualReceivedByDay[bonus.GetDay()] = bonus.GetIsReceived()
+		}
+		for _, bonus := range expected.GetLoginBonuses() {
+			bonus.IsReceived = actualReceivedByDay[bonus.GetDay()]
+		}
+		if !proto.Equal(actual, expected) {
+			t.Fatalf("Shop.GetLoginBonusPackageItem is inconsistent with current catalog: package=%v catalog=%v", actual, expected)
 		}
 	})
 

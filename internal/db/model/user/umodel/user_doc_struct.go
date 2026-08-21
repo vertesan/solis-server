@@ -40,6 +40,15 @@ type UserExchangePurchase struct {
 	ResetTimes     map[string]int64 `bson:"resetTimes"`
 }
 
+type UserShopPurchase struct {
+	SUID                     string           `bson:"SUID"`
+	PurchaseCounts           map[string]int32 `bson:"purchaseCounts"`
+	ResetTimes               map[string]int64 `bson:"resetTimes"`
+	PurchasedItemIds         []string         `bson:"purchasedItemIds"`
+	LoginBonusProgress       map[string]int32 `bson:"loginBonusProgress"`
+	LoginBonusLastGrantTimes map[string]int64 `bson:"loginBonusLastGrantTimes"`
+}
+
 type UserGodState struct {
 	SUID                string `bson:"SUID"`
 	UnlockCurrentEvents bool   `bson:"unlockCurrentEvents"`
@@ -59,4 +68,17 @@ type UserCurrentQuestArea struct {
 	SUID                string `bson:"SUID"`
 	CurrentMainAreaId   string `bson:"currentMainAreaId"`
 	CurrentTowerQuestId string `bson:"currentTowerQuestId"`
+}
+
+type UserDiaryState struct {
+	SUID    string   `bson:"SUID"`
+	ReadIds []string `bson:"readIds"`
+	AllRead bool     `bson:"allRead"`
+}
+
+type UserMessageProgress struct {
+	SUID                  string `bson:"SUID"`
+	MessageId             string `bson:"messageId"`
+	LastMessageDetailId   string `bson:"lastMessageDetailId"`
+	LastMessageDetailTime int64  `bson:"lastMessageDetailTime"`
 }

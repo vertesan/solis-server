@@ -52,6 +52,44 @@ func ParseAutoReward(rewardId string) ([]*pmaster.RewardResource, error) {
 	}}, nil
 }
 
+// ResolveRewardResources expands either an inline rd_auto reward or a master
+// Reward and scales every resource by count.
+func ResolveRewardResources(ctx context.Context, rewardID string, count int32) ([]*pmaster.RewardResource, error) {
+	if rewardID == "" || count <= 0 {
+		return nil, status.Error(codes.FailedPrecondition, "reward and positive count are required")
+	}
+	resources, err := ParseAutoReward(rewardID)
+	if err != nil {
+		return nil, err
+	}
+	if resources == nil {
+		reward, err := FindMasterReward(ctx, rewardID)
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return nil, status.Errorf(codes.FailedPrecondition, "reward %q is missing from master data", rewardID)
+			}
+			return nil, err
+		}
+		resources = reward.GetResources()
+	}
+	resolved := make([]*pmaster.RewardResource, 0, len(resources))
+	for _, resource := range resources {
+		if resource == nil || resource.GetAmount() <= 0 ||
+			int64(resource.GetAmount()) > math.MaxInt32/int64(count) {
+			return nil, status.Error(codes.FailedPrecondition, "reward amount is invalid")
+		}
+		resolved = append(resolved, &pmaster.RewardResource{
+			ResourceType: resource.GetResourceType(),
+			ResourceId:   resource.GetResourceId(),
+			Amount:       resource.GetAmount() * count,
+		})
+	}
+	if len(resolved) == 0 {
+		return nil, status.Error(codes.FailedPrecondition, "reward has no resources")
+	}
+	return resolved, nil
+}
+
 var autoRewardResourceTypes = map[string]penum.ResourceType{
 	"item":                                 penum.ResourceType_ResourceType_Item,
 	"accessory":                            penum.ResourceType_ResourceType_Accessory,
@@ -71,7 +109,17 @@ func ValidateExchangeResources(costType penum.ResourceType, rewards []*pmaster.R
 	if !isSupportedExchangeCost(costType) {
 		return status.Errorf(codes.Unimplemented, "exchange cost resource type %s is unsupported", costType)
 	}
+	return ValidateExchangeRewardResources(rewards)
+}
+
+// ValidateExchangeRewardResources validates a complete reward before callers
+// begin a transaction's writes. GrantExchangeRewards still validates concrete
+// master identities while applying each resource.
+func ValidateExchangeRewardResources(rewards []*pmaster.RewardResource) error {
 	for _, reward := range rewards {
+		if reward == nil || reward.GetAmount() <= 0 {
+			return status.Error(codes.FailedPrecondition, "reward resource is invalid")
+		}
 		if !isSupportedExchangeReward(reward.ResourceType) {
 			return status.Errorf(codes.Unimplemented, "exchange reward resource type %s is unsupported", reward.ResourceType)
 		}
@@ -97,7 +145,11 @@ func isSupportedExchangeReward(resourceType penum.ResourceType) bool {
 		penum.ResourceType_ResourceType_Stone,
 		penum.ResourceType_ResourceType_PaidStone,
 		penum.ResourceType_ResourceType_CardRarityExp,
+		penum.ResourceType_ResourceType_CardRarityExpLimitChange,
 		penum.ResourceType_ResourceType_PhotoRecipe,
+		penum.ResourceType_ResourceType_Emblem,
+		penum.ResourceType_ResourceType_Decoration,
+		penum.ResourceType_ResourceType_Hair,
 		penum.ResourceType_ResourceType_ShowcaseToy,
 		penum.ResourceType_ResourceType_PhotoPose,
 		penum.ResourceType_ResourceType_PhotoAllInOne:
@@ -134,9 +186,26 @@ func ConsumeExchangeResource(
 }
 
 func consumeExchangeItems(ctx context.Context, suid, itemId string, amount int64, updated *papi.UpdatedData) error {
+	_, err := ConsumeExchangeItemStacks(ctx, suid, itemId, amount, updated)
+	return err
+}
+
+// ConsumeExchangeItemStacks consumes dated item stacks nearest-expiry first
+// and returns one result per mutated stack, matching the stack post-images in
+// UpdatedData.Items.
+func ConsumeExchangeItemStacks(
+	ctx context.Context,
+	suid string,
+	itemId string,
+	amount int64,
+	updated *papi.UpdatedData,
+) ([]*ptransaction.ConsumptionResult, error) {
+	if amount <= 0 {
+		return nil, status.Error(codes.FailedPrecondition, "exchange cost must be positive")
+	}
 	items, err := opuser.FindUserItems(ctx, suid, itemId)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	// Mongo sorts the permanent stack (expiredTime == 0) before dated stacks.
 	// Consume dated currency by nearest expiry first and preserve permanent
@@ -159,22 +228,31 @@ func consumeExchangeItems(ctx context.Context, suid, itemId string, amount int64
 		}
 	}
 	if total < amount {
-		return ErrExchangeInsufficientResource
+		return nil, ErrExchangeInsufficientResource
 	}
 	remaining := amount
+	results := make([]*ptransaction.ConsumptionResult, 0, len(items))
 	for _, item := range items {
 		if remaining == 0 || item.Amount <= 0 || (item.ExpiredTime > 0 && item.ExpiredTime <= now) {
 			continue
 		}
+		before := item.Amount
 		consumed := min(item.Amount, remaining)
 		item.Amount -= consumed
 		remaining -= consumed
 		if err := opuser.UpsertUserItem(ctx, suid, item); err != nil {
-			return err
+			return nil, err
 		}
 		updated.Items = append(updated.Items, item)
+		results = append(results, &ptransaction.ConsumptionResult{
+			ResourceType: penum.ResourceType_ResourceType_Item,
+			ResourceId:   itemId,
+			Amount:       consumed,
+			BeforeAmount: before,
+			AfterAmount:  item.Amount,
+		})
 	}
-	return nil
+	return results, nil
 }
 
 func consumeExchangePoint(ctx context.Context, suid string, pointType penum.PointType, amount int64, updated *papi.UpdatedData) error {
@@ -222,37 +300,137 @@ func consumeExchangeBalance(ctx context.Context, suid string, resourceType penum
 	return nil
 }
 
+// GrantExchangeRewards applies one reward resource and returns every resource
+// unlocked by it. Most resources have one result, while a newly-owned costume
+// also grants its master-data default hair.
+func GrantExchangeRewards(ctx context.Context, suid string, reward *pmaster.RewardResource, updated *papi.UpdatedData) ([]*ptransaction.RewardResult, error) {
+	if reward == nil {
+		return nil, status.Error(codes.FailedPrecondition, "reward is required")
+	}
+	amount := int64(reward.GetAmount())
+	if amount <= 0 {
+		return nil, status.Error(codes.FailedPrecondition, "reward amount must be positive")
+	}
+	if reward.GetResourceType() == penum.ResourceType_ResourceType_Costume {
+		return grantExchangeCostume(ctx, suid, reward.GetResourceId(), amount, updated)
+	}
+	result, err := grantExchangeReward(ctx, suid, reward, amount, updated)
+	if err != nil {
+		return nil, err
+	}
+	return []*ptransaction.RewardResult{result}, nil
+}
+
+// GrantExchangeReward preserves the single-result API for callers which do
+// not expose reward results. Multi-result callers should use
+// GrantExchangeRewards so dependent grants are included in their response.
 func GrantExchangeReward(ctx context.Context, suid string, reward *pmaster.RewardResource, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
-	amount := int64(reward.Amount)
-	switch reward.ResourceType {
+	results, err := GrantExchangeRewards(ctx, suid, reward, updated)
+	if err != nil {
+		return nil, err
+	}
+	return results[0], nil
+}
+
+func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.RewardResource, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	switch reward.GetResourceType() {
 	case penum.ResourceType_ResourceType_Item:
-		return grantExchangeItem(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangeItem(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Accessory:
-		return grantExchangeAccessory(ctx, suid, reward.ResourceId, amount, updated)
-	case penum.ResourceType_ResourceType_Costume:
-		return grantExchangeCostume(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangeAccessory(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Stone, penum.ResourceType_ResourceType_PaidStone:
-		return grantExchangeBalance(ctx, suid, reward.ResourceType, amount, updated)
-	case penum.ResourceType_ResourceType_CardRarityExp:
-		return grantExchangeCardRarityExp(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangeBalance(ctx, suid, reward.GetResourceType(), amount, updated)
+	case penum.ResourceType_ResourceType_CardRarityExp,
+		penum.ResourceType_ResourceType_CardRarityExpLimitChange:
+		return grantExchangeCardRarityExp(ctx, suid, reward.GetResourceType(), reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_PhotoRecipe:
-		return grantExchangePhotoRecipe(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangePhotoRecipe(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_ShowcaseToy:
-		return grantExchangeShowcaseToy(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangeShowcaseToy(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_PhotoPose:
-		return grantExchangePhotoPose(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangePhotoPose(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_PhotoAllInOne:
-		return grantExchangePhotoAllInOne(ctx, suid, reward.ResourceId, amount, updated)
+		return grantExchangePhotoAllInOne(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_Emblem:
+		return grantExchangeEmblem(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_Decoration:
+		return grantExchangeDecoration(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_Hair:
+		return grantExchangeHair(ctx, suid, reward.GetResourceId(), amount, updated)
 	default:
-		pointType, ok := exchangePointType(reward.ResourceType)
+		pointType, ok := exchangePointType(reward.GetResourceType())
 		if !ok {
-			return nil, status.Errorf(codes.Unimplemented, "exchange reward resource type %s is unsupported", reward.ResourceType)
+			return nil, status.Errorf(codes.Unimplemented, "exchange reward resource type %s is unsupported", reward.GetResourceType())
 		}
-		return grantExchangePoint(ctx, suid, reward.ResourceType, pointType, amount, updated)
+		return grantExchangePoint(ctx, suid, reward.GetResourceType(), pointType, amount, updated)
 	}
 }
 
+func grantExchangeHair(ctx context.Context, suid, hairID string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	if amount != 1 {
+		return nil, status.Error(codes.FailedPrecondition, "hair rewards must have amount one")
+	}
+	if _, err := opmaster.FindHair(ctx, hairID); err != nil {
+		return nil, invalidExchangeMasterResource("hair", hairID, err)
+	}
+	if _, err := opuser.FindUserHair(ctx, suid, hairID); err == nil {
+		return exchangeRewardResult(penum.ResourceType_ResourceType_Hair, hairID, 1, 1, 0), nil
+	} else if !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	hair := &ptransaction.UserHair{HairId: hairID}
+	if err := opuser.UpsertUserHair(ctx, suid, hair); err != nil {
+		return nil, err
+	}
+	updated.Hairs = append(updated.Hairs, hair)
+	return exchangeRewardResult(penum.ResourceType_ResourceType_Hair, hairID, 0, 1, 1), nil
+}
+
+func grantExchangeEmblem(ctx context.Context, suid, emblemID string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	if amount != 1 {
+		return nil, status.Error(codes.FailedPrecondition, "emblem rewards must have amount one")
+	}
+	if _, err := opmaster.FindEmblem(ctx, emblemID); err != nil {
+		return nil, invalidExchangeMasterResource("emblem", emblemID, err)
+	}
+	if _, err := opuser.FindUserEmblem(ctx, suid, emblemID); err == nil {
+		return exchangeRewardResult(penum.ResourceType_ResourceType_Emblem, emblemID, 1, 1, 0), nil
+	} else if !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	emblem := &ptransaction.UserEmblem{EmblemId: emblemID}
+	if err := opuser.UpsertUserEmblem(ctx, suid, emblem); err != nil {
+		return nil, err
+	}
+	updated.Emblems = append(updated.Emblems, emblem)
+	return exchangeRewardResult(penum.ResourceType_ResourceType_Emblem, emblemID, 0, 1, 1), nil
+}
+
+func grantExchangeDecoration(ctx context.Context, suid, decorationID string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	if amount != 1 {
+		return nil, status.Error(codes.FailedPrecondition, "decoration rewards must have amount one")
+	}
+	if _, err := opmaster.FindDecoration(ctx, decorationID); err != nil {
+		return nil, invalidExchangeMasterResource("decoration", decorationID, err)
+	}
+	if _, err := opuser.FindUserDecoration(ctx, suid, decorationID); err == nil {
+		return exchangeRewardResult(penum.ResourceType_ResourceType_Decoration, decorationID, 1, 1, 0), nil
+	} else if !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	decoration := &ptransaction.UserDecoration{DecorationId: decorationID}
+	if err := opuser.UpsertUserDecoration(ctx, suid, decoration); err != nil {
+		return nil, err
+	}
+	updated.Decorations = append(updated.Decorations, decoration)
+	return exchangeRewardResult(penum.ResourceType_ResourceType_Decoration, decorationID, 0, 1, 1), nil
+}
+
 func grantExchangeItem(ctx context.Context, suid, itemId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	return grantExchangeItemWithExpiration(ctx, suid, itemId, amount, 0, updated)
+}
+
+func grantExchangeItemWithExpiration(ctx context.Context, suid, itemId string, amount, expiredTime int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
 	if _, err := opmaster.FindItem(ctx, itemId); err != nil {
 		return nil, invalidExchangeMasterResource("item", itemId, err)
 	}
@@ -264,17 +442,23 @@ func grantExchangeItem(ctx context.Context, suid, itemId string, amount int64, u
 	var item *ptransaction.UserItem
 	now := time.Now().UnixMilli()
 	for _, candidate := range items {
+		if candidate.Amount < 0 {
+			return nil, status.Error(codes.FailedPrecondition, "item amount is invalid")
+		}
 		if candidate.ExpiredTime == 0 || candidate.ExpiredTime > now {
+			if before > math.MaxInt64-candidate.Amount {
+				return nil, status.Error(codes.FailedPrecondition, "total item amount overflows")
+			}
 			before += candidate.Amount
 		}
-		if candidate.ExpiredTime == 0 {
+		if candidate.ExpiredTime == expiredTime {
 			item = candidate
 		}
 	}
 	if item == nil {
-		item = &ptransaction.UserItem{ItemId: itemId}
+		item = &ptransaction.UserItem{ItemId: itemId, ExpiredTime: expiredTime}
 	}
-	if item.Amount > math.MaxInt64-amount {
+	if item.Amount > math.MaxInt64-amount || before > math.MaxInt64-amount {
 		return nil, status.Error(codes.FailedPrecondition, "item amount overflows")
 	}
 	item.Amount += amount
@@ -308,9 +492,13 @@ func grantExchangeAccessory(ctx context.Context, suid, accessoryId string, amoun
 	return exchangeRewardResult(penum.ResourceType_ResourceType_Accessory, accessoryId, before, accessory.Amount, amount), nil
 }
 
-func grantExchangeCostume(ctx context.Context, suid, costumeId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+func grantExchangeCostume(ctx context.Context, suid, costumeId string, amount int64, updated *papi.UpdatedData) ([]*ptransaction.RewardResult, error) {
 	if amount != 1 {
 		return nil, status.Error(codes.FailedPrecondition, "costume rewards must have amount one")
+	}
+	masterCostume, err := opmaster.FindCostume(ctx, costumeId)
+	if err != nil {
+		return nil, invalidExchangeMasterResource("costume", costumeId, err)
 	}
 	costume, err := opuser.FindUserCostume(ctx, suid, costumeId)
 	isNew := false
@@ -328,17 +516,42 @@ func grantExchangeCostume(ctx context.Context, suid, costumeId string, amount in
 		}
 		updated.Costumes = append(updated.Costumes, costume)
 	}
-	if !isNew {
-		if _, err := opmaster.FindCostume(ctx, costumeId); err != nil {
-			return nil, invalidExchangeMasterResource("costume", costumeId, err)
-		}
-	}
 	before := int64(1)
 	delta := int64(0)
 	if isNew {
 		before, delta = 0, 1
 	}
-	return exchangeRewardResult(penum.ResourceType_ResourceType_Costume, costumeId, before, 1, delta), nil
+	results := []*ptransaction.RewardResult{
+		exchangeRewardResult(penum.ResourceType_ResourceType_Costume, costumeId, before, 1, delta),
+	}
+	if !isNew || masterCostume.GetDefaultHairId() == "" {
+		return results, nil
+	}
+	hairResult, err := grantCostumeDefaultHair(ctx, suid, masterCostume.GetDefaultHairId(), updated)
+	if err != nil {
+		return nil, err
+	}
+	if hairResult != nil {
+		results = append(results, hairResult)
+	}
+	return results, nil
+}
+
+func grantCostumeDefaultHair(ctx context.Context, suid, hairID string, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	if _, err := opmaster.FindHair(ctx, hairID); err != nil {
+		return nil, invalidExchangeMasterResource("hair", hairID, err)
+	}
+	if _, err := opuser.FindUserHair(ctx, suid, hairID); err == nil {
+		return nil, nil
+	} else if !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	hair := &ptransaction.UserHair{HairId: hairID, Checked: true}
+	if err := opuser.UpsertUserHair(ctx, suid, hair); err != nil {
+		return nil, err
+	}
+	updated.Hairs = append(updated.Hairs, hair)
+	return exchangeRewardResult(penum.ResourceType_ResourceType_Hair, hairID, 0, 1, 1), nil
 }
 
 func grantExchangeBalance(ctx context.Context, suid string, resourceType penum.ResourceType, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
@@ -372,7 +585,7 @@ func grantExchangeBalance(ctx context.Context, suid string, resourceType penum.R
 	return exchangeRewardResult(resourceType, "", before, after, amount), nil
 }
 
-func grantExchangeCardRarityExp(ctx context.Context, suid, cardId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+func grantExchangeCardRarityExp(ctx context.Context, suid string, resourceType penum.ResourceType, cardId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
 	if _, err := opmaster.FindCard(ctx, cardId); err != nil {
 		return nil, invalidExchangeMasterResource("card", cardId, err)
 	}
@@ -388,8 +601,18 @@ func grantExchangeCardRarityExp(ctx context.Context, suid, cardId string, amount
 	if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 		return nil, err
 	}
+	putUpdatedRewardCard(updated, card)
+	return exchangeRewardResult(resourceType, cardId, before, before+amount, amount), nil
+}
+
+func putUpdatedRewardCard(updated *papi.UpdatedData, card *ptransaction.UserCard) {
+	for index, existing := range updated.GetCards() {
+		if existing.GetCardId() == card.GetCardId() {
+			updated.Cards[index] = card
+			return
+		}
+	}
 	updated.Cards = append(updated.Cards, card)
-	return exchangeRewardResult(penum.ResourceType_ResourceType_CardRarityExp, cardId, before, before+amount, amount), nil
 }
 
 func grantExchangePhotoRecipe(ctx context.Context, suid, recipeId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
@@ -503,6 +726,28 @@ func grantExchangePoint(ctx context.Context, suid string, resourceType penum.Res
 		return nil, err
 	}
 	updated.Points = append(updated.Points, point)
+	if resourceType == penum.ResourceType_ResourceType_Gold {
+		totalCount, err := opuser.FindUserTotalCount(ctx, suid)
+		if err != nil {
+			if !errors.Is(err, mongo.ErrNoDocuments) {
+				return nil, err
+			}
+			totalCount = &ptransaction.UserTotalCount{}
+		}
+		if totalCount.PointGoldAmount > math.MaxInt64-amount {
+			return nil, status.Error(codes.FailedPrecondition, "total earned gold overflows")
+		}
+		totalCount.PointGoldAmount += amount
+		if err := opuser.UpsertUserTotalCount(ctx, suid, totalCount); err != nil {
+			return nil, err
+		}
+		updated.TotalCount = totalCount
+		missions, err := AdvanceUserMissions(ctx, suid, penum.MissionType_MissionType_PointGoldAmount, amount)
+		if err != nil {
+			return nil, err
+		}
+		updated.Missions = append(updated.Missions, missions...)
+	}
 	return exchangeRewardResult(resourceType, "", before, point.Amount, amount), nil
 }
 

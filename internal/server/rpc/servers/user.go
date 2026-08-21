@@ -3,6 +3,7 @@ package servers
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
@@ -108,10 +109,11 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
-		gachaButtons, err := opuser.FindAllUserGachaButtons(ctx, suid)
+		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, time.Now().UnixMilli())
 		if err != nil {
 			return nil, err
 		}
+		gachaButtons := viber.FlattenGachaButtons(gachaInfos)
 		homeTalks, err := opuser.FindAllUserHomeTalks(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -226,6 +228,10 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		excursionGazeReactions, err := opuser.FindAllUserExcursionGazeReactions(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
 		var staffTrainingReset *ptransaction.UserStaffTrainingReset
 		staffTrainingReset, err = opuser.FindUserStaffTrainingReset(ctx, suid)
 		if err != nil {
@@ -289,6 +295,7 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 			ShowcaseMysets:           showcaseMysets,
 			TourAreas:                tourAreas,
 			PhotoPoses:               photoPoses,
+			ExcursionGazeReactions:   excursionGazeReactions,
 			StaffTrainingReset:       staffTrainingReset,
 			UserPublic:               userPublic,
 		}

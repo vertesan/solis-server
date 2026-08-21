@@ -82,7 +82,9 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
-		photoCount, skillIDs, abilityIDs, err := usercard.CalcUnlocks(ctx, req.Level, masterCard)
+		photoCount, skillIDs, abilityIDs, err := usercard.CalcUnlocksWithEvolution(
+			ctx, req.Level, card.GetEvolutionLevel(), masterCard,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -98,6 +100,7 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		card.PhotoEquipableCount, card.BasePhotoEquipableCount = photoCount, photoCount
 		card.SkillId1, card.SkillId2, card.SkillId3 = skillIDs[0], skillIDs[1], skillIDs[2]
 		card.BaseSkillId1, card.BaseSkillId2, card.BaseSkillId3 = skillIDs[0], skillIDs[1], skillIDs[2]
+		card.SkillId4, card.BaseSkillId4 = skillIDs[3], skillIDs[3]
 		card.LiveAbilityId, card.ActivityAbilityId = abilityIDs[0], abilityIDs[1]
 		card.BaseLiveAbilityId, card.BaseActivityAbilityId = abilityIDs[0], abilityIDs[1]
 		card.LastEnhanceTime = time.Now().UnixMilli()
@@ -169,13 +172,8 @@ func (s *CardServer) LimitBreak(ctx context.Context, req *papi.CardLimitBreakReq
 		if err != nil {
 			return nil, err
 		}
-		displayType, err := usercard.CalcCardDisplayType(ctx, card.CardId, req.Rarity, card.EvolutionLevel)
-		if err != nil {
-			return nil, err
-		}
 		card.Rarity = req.Rarity
 		card.RarityTotalExp = targetRarity.RequiredExp
-		card.DisplayType = displayType
 		card.Vocal, card.Dance, card.Visual, card.Stamina = attributes.Vocal, attributes.Dance, attributes.Visual, attributes.Stamina
 		card.BaseVocal, card.BaseDance, card.BaseVisual, card.BaseStamina = attributes.Vocal, attributes.Dance, attributes.Visual, attributes.Stamina
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
@@ -355,7 +353,9 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 		if err != nil {
 			return nil, err
 		}
-		photoCount, skillIDs, abilityIDs, err := usercard.CalcUnlocks(ctx, supportLevel, masterCard)
+		photoCount, skillIDs, abilityIDs, err := usercard.CalcUnlocksWithEvolution(
+			ctx, supportLevel, card.GetEvolutionLevel(), masterCard,
+		)
 		if err != nil {
 			return nil, err
 		}
@@ -368,6 +368,7 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 		card.Vocal, card.Dance, card.Visual, card.Stamina = attributes.Vocal, attributes.Dance, attributes.Visual, attributes.Stamina
 		card.PhotoEquipableCount = photoCount
 		card.SkillId1, card.SkillId2, card.SkillId3 = skillIDs[0], skillIDs[1], skillIDs[2]
+		card.SkillId4 = skillIDs[3]
 		card.LiveAbilityId, card.ActivityAbilityId = abilityIDs[0], abilityIDs[1]
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 			return nil, err

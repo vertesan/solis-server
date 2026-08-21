@@ -9,6 +9,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserTelephone(ctx context.Context, suid string, telephoneId string) (*ptransaction.UserTelephone, error) {
+	return ucommon.FindOne[ptransaction.UserTelephone](
+		ctx,
+		uname.UserTelephone,
+		bson.M{"SUID": suid, "telephoneId": telephoneId},
+	)
+}
+
 func FindAllUserTelephones(ctx context.Context, suid string) ([]*ptransaction.UserTelephone, error) {
 	return ucommon.FindAll[ptransaction.UserTelephone](
 		ctx,

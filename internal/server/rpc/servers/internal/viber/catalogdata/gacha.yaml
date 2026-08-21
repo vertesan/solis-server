@@ -1,0 +1,1010 @@
+standardCardRarityProbabilities:
+  3: 81500
+  4: 15000
+  5: 3500
+ratioUpCardProbability: 750
+guaranteedCardBatchSize: 10
+guaranteedCardMinimumRarity: 4
+premiumGuaranteeDrawCount: 200
+premiumMasterRewardProbability: 1000
+buttonBonusExpirationGraceHours: 72
+noticeAliases:
+  - gachaId: gacha-all-star-01-26-0817
+    noticeId: info-gacha-all-star-01-26-0817
+  - gachaId: gacha-beginner-21-1126
+    noticeId: info-gacha-beginner-21-1126
+  - gachaId: gacha-beginner-dream-23-0329
+    noticeId: info-gacha-beginner-dream-23-0329
+  - gachaId: gacha-beginner-fixed-selection-24-1228
+    noticeId: info-gacha-beginner-fixed-selection-24-1228
+  - gachaId: gacha-continuous-26-0718
+    noticeId: info-gacha-continuous-26-0718
+  - gachaId: gacha-excursion-01-26-0731
+    noticeId: info-gacha-excursion-01-26-0731
+  - gachaId: gacha-excursion-02-26-0731
+    noticeId: info-gacha-excursion-02-26-0731
+  - gachaId: gacha-excursion-01-26-0817-free
+    noticeId: info-gacha-excursion-01-26-0817
+  - gachaId: gacha-fs-set-bloom-25-1224-02
+    noticeId: info-gacha-fs-set-bloom-25-1224-02
+  - gachaId: gacha-normal-26-0718
+    noticeId: info-gacha-normal-21-0811-01
+  - gachaId: gacha-paid-21-0928-r5-beginner
+    noticeId: info-gacha-paid-21-0928-r5-beginner
+  - gachaId: gacha-premium-26-0724
+    noticeId: info-gacha-premium-26-0724
+  - gachaId: gacha-rev-select-01-26-0819
+    noticeId: info-gacha-rev-select-01-26-0819
+  - gachaId: gacha-rev-step-rockon-26-0812-1st
+    noticeId: info-gacha-rev-step-rockon-26-0812-1st
+  - gachaId: gacha-rev-step-rockon-26-0819-1st
+    noticeId: info-gacha-rev-step-rockon-26-0819-1st
+  - gachaId: gacha-ticket-21-0816-01-r5
+    noticeId: info-gacha-ticket-21-0731-01-r5
+guaranteedRarityGachas:
+  - id: gacha-all-star-01-26-0817
+    minimumRarity: 5
+    useMasterCardRewards: true
+  - id: gacha-ticket-21-0816-01-r5
+    minimumRarity: 5
+  - id: gacha-paid-21-0928-r5-beginner
+    minimumRarity: 5
+continuousGachas:
+  - id: gacha-continuous-26-0718
+    externalRewardId: external_reward-continuous-26-0718
+    rewardId: rd-gacha_continuous-26-0718
+premiumItems:
+  - itemId: item-photo-medal
+    amount: 1
+    probability: 4000
+    featured: true
+  - itemId: item-accessory_limit_break-01
+    amount: 2
+    probability: 1000
+    featured: true
+  - itemId: item-photo_ink-basic-03
+    amount: 2
+    probability: 1000
+    featured: true
+  - itemId: item-photo_shooting-08-character_only-01
+    amount: 1
+    probability: 1000
+    featured: true
+  - itemId: item-card_limit_break
+    amount: 100
+    probability: 1000
+    featured: true
+  - itemId: item-exchange-acc-limit-001
+    amount: 1
+    probability: 3125
+    featured: true
+  - itemId: item-card_rank
+    amount: 25
+    probability: 3125
+    featured: true
+  - itemId: item-card_ability
+    amount: 50
+    probability: 3125
+    featured: true
+  - itemId: item-enjoy-present-sweet-02-01
+    amount: 5
+    probability: 3125
+    featured: true
+  - itemId: item-photo_enhance
+    amount: 50
+    probability: 3125
+    featured: true
+  - itemId: item-act_promotion_shorten-sp
+    amount: 1
+    probability: 10767
+  - itemId: item-card_skill
+    amount: 7500
+    probability: 10767
+  - itemId: item-card_support_release
+    amount: 1000
+    probability: 10767
+  - itemId: item-daily_quest_ticket_01
+    amount: 5
+    probability: 10767
+  - itemId: item-daily_quest_ticket_02
+    amount: 5
+    probability: 10767
+  - itemId: item-daily_quest_ticket_03
+    amount: 5
+    probability: 10767
+  - itemId: item-enjoy-present-general-02-01
+    amount: 1
+    probability: 10767
+
+itemGachas:
+  - id: gacha-item-21-0624-03-ticket-piece
+    rewards:
+      - resourceType: 2
+        resourceId: card-ai-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ai-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ai-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-aoi-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-aoi-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-aoi-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-chs-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-chs-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-chs-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-hrk-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-hrk-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-hrk-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-kkr-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-kkr-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-kkr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ktn-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ktn-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ktn-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-mei-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-mei-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-mei-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ngs-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ngs-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ngs-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rei-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rei-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rei-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rio-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rio-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rio-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ski-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ski-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ski-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-smr-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-smr-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-smr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-suz-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-suz-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-suz-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-szk-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-szk-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-szk-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-yu-03-schl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-yu-04-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-yu-05-idol-00
+        amount: 1
+  - id: gacha-item-21-0624-04-ticket-r5-piece
+    rewards:
+      - resourceType: 2
+        resourceId: card-ai-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-aoi-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-chs-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-hrk-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-kkr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ktn-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-mei-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ngs-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rei-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rio-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-ski-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-smr-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-suz-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-szk-05-idol-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-yu-05-idol-00
+        amount: 1
+  - id: gacha-item-activity-fan-01-mlv-180-24-0701
+    rewards:
+      - resourceType: 1
+        resourceId: item-act_promotion_shorten
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_promotion_shorten-sp
+        amount: 1
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 210
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 320
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 630
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 1870
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 3110
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_01
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_01
+        amount: 5
+      - resourceType: 2
+        resourceId: card-rio-01-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-02-casl-00
+        amount: 1
+  - id: gacha-item-activity-promotion-01-mlv-180-24-0701
+    rewards:
+      - resourceType: 1
+        resourceId: item-act_cheer_point_up
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_speed_up
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_super_mode
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_02
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_02
+        amount: 5
+      - resourceType: 2
+        resourceId: card-ktn-02-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-01-casl-00
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-21
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-21
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-21
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-21
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-21
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-12
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-13
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-14
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-15
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-16
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-17
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-18
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-19
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-21
+        amount: 1
+  - id: gacha-item-activity-fan-01-mlv-1-24-0701
+    rewards:
+      - resourceType: 1
+        resourceId: item-act_promotion_shorten
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_promotion_shorten-sp
+        amount: 1
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 60
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 100
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 180
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 520
+      - resourceType: 1
+        resourceId: item-card_skill
+        amount: 870
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_01
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_01
+        amount: 5
+      - resourceType: 2
+        resourceId: card-rio-01-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-skr-02-casl-00
+        amount: 1
+  - id: gacha-item-activity-promotion-01-mlv-1-24-0701
+    rewards:
+      - resourceType: 1
+        resourceId: item-act_cheer_point_up
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_speed_up
+        amount: 1
+      - resourceType: 1
+        resourceId: item-act_super_mode
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_02
+        amount: 1
+      - resourceType: 1
+        resourceId: item-daily_quest_ticket_02
+        amount: 5
+      - resourceType: 2
+        resourceId: card-ktn-02-casl-00
+        amount: 1
+      - resourceType: 2
+        resourceId: card-rui-01-casl-00
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-dance-09
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-visual-09
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-1-vocal-09
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-mental-09
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-stamina-09
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-02
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-03
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-04
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-05
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-06
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-07
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-08
+        amount: 1
+      - resourceType: 3
+        resourceId: ac-2-technique-09
+        amount: 1
+showcaseToyGachas:
+  - id: gacha-toy-buttonbadge-001
+    rewards:
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ai-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-aoi-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-chs-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-hrk-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kan-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kkr-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kor-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ktn-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mei-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mhk-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mna-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ngs-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rei-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rio-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rui-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ski-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-skr-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-smr-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-suz-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-szk-01
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-yu-01
+        amount: 1
+  - id: gacha-toy-buttonbadge-002
+    rewards:
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ai-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-aoi-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-chs-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-hrk-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kan-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kkr-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kor-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ktn-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mei-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mhk-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mna-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ngs-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rei-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rio-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rui-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ski-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-skr-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-smr-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-suz-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-szk-02
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-yu-02
+        amount: 1
+  - id: gacha-toy-buttonbadge-003
+    rewards:
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ai-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-aoi-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-chs-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-hrk-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kan-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kkr-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kor-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ktn-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mei-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mhk-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mna-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ngs-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rei-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rio-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rui-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ski-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-skr-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-smr-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-suz-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-szk-03
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-yu-03
+        amount: 1
+  - id: gacha-toy-buttonbadge-004
+    rewards:
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ai-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-aoi-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-chs-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-hrk-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kan-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kkr-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-kor-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ktn-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mei-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mhk-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-mna-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ngs-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rei-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rio-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-rui-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-ski-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-skr-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-smr-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-suz-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-szk-04
+        amount: 1
+      - resourceType: 32
+        resourceId: toy-goods-buttonbadge_char-yu-04
+        amount: 1

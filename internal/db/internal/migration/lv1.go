@@ -71,15 +71,6 @@ func level1Migration() error {
 			return nil, err
 		}
 
-		// userAuth indexes
-		if err := ensureUserAuthIndexes(ctx); err != nil {
-			return nil, err
-		}
-
-		if err := ensureUserIndexes(context.Background()); err != nil {
-			return nil, fmt.Errorf("failed to ensure user indexes: %w", err)
-		}
-
 		// update migration flag
 		if err := opsolis.UpsertMigration(ctx, &smodel.Migration{Migration: 1}); err != nil {
 			return nil, err
@@ -167,11 +158,28 @@ func ensureUserIndexes(ctx context.Context) error {
 		{uname.UserPhoto, bson.D{{Key: "SUID", Value: 1}, {Key: "photoId", Value: 1}}},
 		{uname.UserPhotoRecipe, bson.D{{Key: "SUID", Value: 1}, {Key: "photoRecipeId", Value: 1}}},
 		{uname.UserPoint, bson.D{{Key: "SUID", Value: 1}, {Key: "pointType", Value: 1}}},
+		{uname.UserNotification, bson.D{{Key: "SUID", Value: 1}, {Key: "notificationType", Value: 1}}},
 		{uname.UserMission, bson.D{{Key: "SUID", Value: 1}, {Key: "missionId", Value: 1}}},
 		{uname.UserCardSupport, bson.D{{Key: "SUID", Value: 1}, {Key: "number", Value: 1}}},
 		{uname.UserCardSupport, bson.D{{Key: "SUID", Value: 1}, {Key: "cardId", Value: 1}}},
 		{uname.UserExchangePurchase, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserShopPurchase, bson.D{{Key: "SUID", Value: 1}}},
 		{uname.UserGodState, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserGachaInfo, bson.D{{Key: "SUID", Value: 1}, {Key: "id", Value: 1}}},
+		{uname.UserGift, bson.D{{Key: "SUID", Value: 1}, {Key: "giftId", Value: 1}}},
+		{uname.UserGiftHistory, bson.D{{Key: "SUID", Value: 1}, {Key: "giftId", Value: 1}}},
+		{uname.UserLoginBonus, bson.D{{Key: "SUID", Value: 1}, {Key: "loginBonusId", Value: 1}}},
+		{uname.UserDiaryState, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserMessageProgress, bson.D{{Key: "SUID", Value: 1}, {Key: "messageId", Value: 1}}},
+		{uname.UserMarketState, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserExcursionState, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserExcursionGazeReaction, bson.D{
+			{Key: "SUID", Value: 1},
+			{Key: "characterId", Value: 1},
+			{Key: "excursionPlaceId", Value: 1},
+			{Key: "gazeReactionNumber", Value: 1},
+		}},
+		{uname.UserGachaHistory, bson.D{{Key: "SUID", Value: 1}, {Key: "gachaType", Value: 1}}},
 	}
 
 	for _, definition := range definitions {

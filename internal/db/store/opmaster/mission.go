@@ -21,3 +21,11 @@ func FindMissionsByIds(ctx context.Context, ids []string) ([]*pmaster.Mission, e
 		bson.M{"Id": bson.M{"$in": ids}},
 	)
 }
+
+func FindAllMissions(ctx context.Context) ([]*pmaster.Mission, error) {
+	return mcommon.FindMany[mmodel.Mission, pmaster.Mission](
+		ctx,
+		mname.Mission,
+		bson.M{},
+	)
+}

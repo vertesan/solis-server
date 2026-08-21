@@ -1,0 +1,136 @@
+paidResetLimit: 10
+requiredResetStoneAmount: 50
+regularNumberOffset: 20
+discountNumberOffset: 30
+regularUnlockConditionId: cd-time-market-phase-003
+discountUnlockConditionId: cd-time-market-phase-003-discount-day
+discountDayConditionId: cd-time-market-phase-003-discount-day
+regularDiscountRatePermils: [0, 0, 0, 300, 500]
+discountDayRatePermil: 500
+tiers:
+  - maxManagerLevel: 99
+    slots:
+      - number: 1
+        resourceType: gold
+        baseAmount: 19000
+        rewardKind: item
+        rewardIds: [item-card_enhance]
+        rewardAmount: 23000
+      - number: 3
+        resourceType: gold
+        baseAmount: 540000
+        rewardKind: accessory
+        accessoryRarity: 9
+        rewardAmount: 1
+      - number: 4
+        resourceType: gold
+        baseAmount: 540000
+        rewardKind: accessory
+        accessoryRarity: 9
+        rewardAmount: 1
+      - number: 5
+        resourceType: gold
+        baseAmount: 540000
+        rewardKind: accessory
+        accessoryRarity: 9
+        rewardAmount: 1
+      - number: 6
+        variants:
+          - resourceType: gold
+            baseAmount: 540000
+            rewardKind: accessory
+            accessoryRarity: 9
+            rewardAmount: 1
+          - resourceType: stone
+            baseAmount: 90
+            rewardKind: item
+            rewardIds:
+              - item-enjoy-present-general-01-01
+              - item-enjoy-present-sweet-01-01
+              - item-enjoy-present-adult-01-01
+            rewardAmount: 1
+      - number: 8
+        resourceType: stone
+        baseAmount: 50
+        rewardKind: item
+        rewardIds: [item-act_promotion_shorten]
+        rewardAmount: 1
+  - maxManagerLevel: 0
+    slots:
+      - number: 1
+        resourceType: gold
+        baseAmount: 1088000
+        rewardKind: item
+        rewardIds: [item-card_enhance]
+        rewardAmount: 1360000
+      - number: 2
+        resourceType: gold
+        baseAmount: 1320000
+        rewardKind: item
+        rewardIds: [item-card_skill]
+        rewardAmount: 4400
+      - number: 3
+        resourceType: gold
+        baseAmount: 64375000
+        rewardKind: accessory
+        accessoryRarity: 19
+        rewardAmount: 1
+      - number: 4
+        resourceType: gold
+        baseAmount: 64375000
+        rewardKind: accessory
+        accessoryRarity: 19
+        rewardAmount: 1
+      - number: 5
+        resourceType: gold
+        baseAmount: 64375000
+        rewardKind: accessory
+        accessoryRarity: 19
+        rewardAmount: 1
+      - number: 6
+        variants:
+          - resourceType: gold
+            baseAmount: 64375000
+            rewardKind: accessory
+            accessoryRarity: 19
+            rewardAmount: 1
+          - resourceType: stone
+            baseAmount: 90
+            rewardKind: item
+            rewardIds:
+              - item-enjoy-present-general-01-01
+              - item-enjoy-present-sweet-01-01
+              - item-enjoy-present-adult-01-01
+            rewardAmount: 1
+      - number: 7
+        variants:
+          - resourceType: stone
+            baseAmount: 120
+            rewardKind: item
+            rewardIds: [item-pvp_ticket]
+            rewardAmount: 1
+          - resourceType: stone
+            baseAmount: 150
+            rewardKind: item
+            rewardIds: [item-act_promotion_shorten]
+            rewardAmount: 3
+      - number: 8
+        resourceType: stone
+        baseAmount: 50
+        rewardKind: item
+        rewardIds: [item-act_promotion_shorten]
+        rewardAmount: 1
+      - number: 9
+        resourceType: stone
+        baseAmount: 100
+        rewardKind: item
+        rewardIds:
+          - item-daily_quest_ticket_01
+          - item-daily_quest_ticket_02
+        rewardAmount: 1
+      - number: 10
+        resourceType: stone
+        baseAmount: 100
+        rewardKind: item
+        rewardIds: [item-daily_quest_ticket_03]
+        rewardAmount: 1

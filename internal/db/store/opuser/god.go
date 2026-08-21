@@ -7,6 +7,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -58,17 +59,63 @@ func UpsertManyForGod[T proto.Message](
 	return nil
 }
 
-func RaiseUserResourcesForGod(ctx context.Context, suid string, minimum int64) error {
+func RaiseUserResourcesForGod(
+	ctx context.Context,
+	suid string,
+	minimum int64,
+	excludedItemIds []string,
+) error {
 	for _, collection := range []string{uname.UserItem, uname.UserAccessory, uname.UserPhotoRecipe} {
+		filter := bson.M{"SUID": suid, "amount": bson.M{"$lt": minimum}}
+		if collection == uname.UserItem && len(excludedItemIds) > 0 {
+			filter["itemId"] = bson.M{"$nin": excludedItemIds}
+		}
 		if _, err := depot.User.Collection(collection).UpdateMany(
 			ctx,
-			bson.M{"SUID": suid, "amount": bson.M{"$lt": minimum}},
+			filter,
 			bson.M{"$set": bson.M{"amount": minimum}},
 		); err != nil {
 			return fmt.Errorf("failed to raise god resources for collection %q: %w", collection, err)
 		}
 	}
 	return nil
+}
+
+func DeleteGodGrantedUserItems(
+	ctx context.Context,
+	suid string,
+	itemIds []string,
+	minimum int64,
+) error {
+	if len(itemIds) == 0 {
+		return nil
+	}
+	if _, err := depot.User.Collection(uname.UserItem).DeleteMany(ctx, bson.M{
+		"SUID":        suid,
+		"itemId":      bson.M{"$in": itemIds},
+		"expiredTime": int64(0),
+		"amount":      minimum,
+	}); err != nil {
+		return fmt.Errorf("failed to remove legacy god gacha tickets: %w", err)
+	}
+	return nil
+}
+
+func MarkUserStoriesReadForGod(ctx context.Context, suid string, storyIds []string) error {
+	models := make([]mongo.WriteModel, 0, len(storyIds))
+	for _, storyId := range storyIds {
+		models = append(models, mongo.NewUpdateOneModel().
+			SetFilter(bson.M{"SUID": suid, "storyId": storyId}).
+			SetUpdate(bson.M{
+				"$setOnInsert": bson.M{"SUID": suid, "storyId": storyId},
+				"$set": bson.M{
+					"statusType": penum.StoryStatusType_StoryStatusType_Read,
+					"isInvalid":  false,
+				},
+			}).
+			SetUpsert(true))
+	}
+	return bulkWriteGodData(ctx, uname.UserStory, models)
 }
 
 func RaiseUserPointsForGod(ctx context.Context, suid string, minimum int64) error {

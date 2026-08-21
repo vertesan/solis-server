@@ -3,12 +3,20 @@ package servers
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/proto/pmaster"
+	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -21,6 +29,8 @@ type ShopServer struct {
 	papi.UnimplementedShopServer
 }
 
+var errShopPurchaseLimitExceeded = errors.New("shop purchase limit exceeded")
+
 func (s *ShopServer) List(ctx context.Context, _ *papi.Empty) (*papi.ShopListResponse, error) {
 	suid := viber.GetSuid(ctx).String()
 	allowed, err := findUserShopAccess(ctx, suid)
@@ -28,6 +38,10 @@ func (s *ShopServer) List(ctx context.Context, _ *papi.Empty) (*papi.ShopListRes
 		return nil, err
 	}
 	entries, err := opsolis.FindAllShopCatalogEntries(ctx)
+	if err != nil {
+		return nil, err
+	}
+	purchase, err := viber.FindUserShopPurchaseOrEmpty(ctx, suid)
 	if err != nil {
 		return nil, err
 	}
@@ -49,8 +63,22 @@ func (s *ShopServer) List(ctx context.Context, _ *papi.Empty) (*papi.ShopListRes
 		if err != nil {
 			return nil, err
 		}
-		if visible {
-			shops = append(shops, proto.Clone(entry.Info).(*papi.ShopInfo))
+		if !visible {
+			continue
+		}
+		hasContent, err := viber.ShopCatalogHasVisibleContent(evaluator, entry)
+		if err != nil {
+			return nil, err
+		}
+		if hasContent {
+			info := proto.Clone(entry.Info).(*papi.ShopInfo)
+			if entry.LoginBonusPackageItem != nil {
+				info, _, err = viber.RenderLoginBonusShop(entry, purchase)
+				if err != nil {
+					return nil, err
+				}
+			}
+			shops = append(shops, info)
 		}
 	}
 	return &papi.ShopListResponse{
@@ -65,29 +93,174 @@ func (s *ShopServer) ListItem(ctx context.Context, req *papi.ShopListItemRequest
 		return nil, status.Error(codes.InvalidArgument, "shopId is required")
 	}
 	suid := viber.GetSuid(ctx).String()
-	evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, time.Now().UnixMilli())
-	entry, err := findAuthorizedShopEntry(ctx, suid, req.GetShopId(), evaluator)
+	var response *papi.ShopListItemResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		now := time.Now()
+		evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, now.UnixMilli())
+		entry, err := findAuthorizedShopEntry(ctx, suid, req.GetShopId(), evaluator)
+		if err != nil {
+			return nil, err
+		}
+		purchase, err := viber.FindUserShopPurchaseOrEmpty(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		items := make([]*papi.ShopItem, 0, len(entry.Items))
+		for _, definition := range entry.Items {
+			item, visible, err := renderShopItem(evaluator, definition, purchase, now)
+			if err != nil {
+				return nil, err
+			}
+			if visible {
+				items = append(items, item)
+			}
+		}
+		if len(items) == 0 {
+			return nil, status.Error(codes.NotFound, "shop has no available items")
+		}
+		if err := opuser.UpsertUserShopPurchase(ctx, purchase); err != nil {
+			return nil, err
+		}
+		response = &papi.ShopListItemResponse{
+			ShopItems:      items,
+			CommonResponse: viber.NewCommonResponse(nil),
+		}
+		return nil, nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	items := make([]*papi.ShopItem, 0, len(entry.Items))
-	for _, item := range entry.Items {
-		visible, err := evaluator.Satisfied(item.GetViewConditionId())
-		if err != nil {
-			return nil, err
-		}
-		if !visible {
-			continue
-		}
-		unlocked, err := evaluator.Satisfied(item.GetUnlockConditionId())
-		if err != nil {
-			return nil, err
-		}
-		cloned := proto.Clone(item).(*papi.ShopItem)
-		cloned.Unlocked = unlocked
-		items = append(items, cloned)
+	return response, nil
+}
+
+func (s *ShopServer) Purchase(ctx context.Context, req *papi.ShopPurchaseRequest) (*papi.ShopPurchaseResponse, error) {
+	if req.GetShopItemId() == "" {
+		return nil, status.Error(codes.InvalidArgument, "shopItemId is required")
 	}
-	return &papi.ShopListItemResponse{ShopItems: items, CommonResponse: viber.NewCommonResponse(nil)}, nil
+
+	suid := viber.GetSuid(ctx).String()
+	var response *papi.ShopPurchaseResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		now := time.Now()
+		definition, err := opsolis.FindShopCatalogEntryByItemId(ctx, req.GetShopItemId())
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return nil, status.Error(codes.NotFound, "shop item not found")
+			}
+			return nil, err
+		}
+		evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, now.UnixMilli())
+		entry, err := findAuthorizedShopEntry(ctx, suid, definition.ShopId, evaluator)
+		if err != nil {
+			return nil, err
+		}
+		itemDefinition := findShopItem(entry, req.GetShopItemId())
+		if itemDefinition == nil {
+			return nil, status.Error(codes.NotFound, "shop item not found")
+		}
+		purchase, err := viber.FindUserShopPurchaseOrEmpty(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		item, visible, err := renderShopItem(evaluator, itemDefinition, purchase, now)
+		if err != nil {
+			return nil, err
+		}
+		if !visible || !item.GetUnlocked() {
+			return nil, status.Error(codes.PermissionDenied, "shop item is locked")
+		}
+		if item.GetProductId() != "" {
+			return nil, status.Error(codes.FailedPrecondition, "real-money shop item requires the purchase transaction API")
+		}
+		if item.GetPurchaseLimit() > 0 && item.GetLeftCount() <= 0 {
+			return nil, errShopPurchaseLimitExceeded
+		}
+		if viber.IsLoginBonusShopItem(entry, item.GetId()) {
+			if item.GetConsumptionId() != "" || item.GetRewardId() != "" {
+				return nil, status.Error(codes.FailedPrecondition, "login bonus package is not a free entitlement")
+			}
+			viber.ActivateLoginBonusShop(purchase, entry)
+			if err := opuser.UpsertUserShopPurchase(ctx, purchase); err != nil {
+				return nil, err
+			}
+			response = &papi.ShopPurchaseResponse{
+				Rewards:        []*ptransaction.RewardResult{},
+				CommonResponse: viber.NewCommonResponse(nil),
+			}
+			return nil, nil
+		}
+
+		rewards, err := viber.ResolveRewardResources(ctx, item.GetRewardId(), 1)
+		if err != nil {
+			return nil, err
+		}
+		if err := viber.ValidateExchangeRewardResources(rewards); err != nil {
+			return nil, err
+		}
+		consumption, err := findShopConsumption(ctx, item.GetConsumptionId(), rewards)
+		if err != nil {
+			return nil, err
+		}
+
+		updated := &papi.UpdatedData{}
+		if consumption != nil {
+			for _, resource := range consumption.GetResources() {
+				resourceID := ""
+				if len(resource.GetResourceIds()) == 1 {
+					resourceID = resource.GetResourceIds()[0]
+				}
+				if err := viber.ConsumeExchangeResource(
+					ctx, suid, resource.GetResourceType(), resourceID, int64(resource.GetAmount()), updated,
+				); err != nil {
+					return nil, err
+				}
+			}
+		}
+
+		results := make([]*ptransaction.RewardResult, 0, len(rewards))
+		for _, reward := range rewards {
+			granted, err := viber.GrantExchangeRewards(ctx, suid, reward, updated)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, granted...)
+		}
+		results, err = viber.AggregateRewardResults(results)
+		if err != nil {
+			return nil, err
+		}
+
+		if item.GetPurchaseLimit() > 0 {
+			current := purchase.PurchaseCounts[item.GetId()]
+			if current < 0 || current == math.MaxInt32 {
+				return nil, status.Error(codes.FailedPrecondition, "shop purchase count is invalid")
+			}
+			purchase.PurchaseCounts[item.GetId()] = current + 1
+		}
+		purchase.PurchasedItemIds = appendUniqueString(purchase.PurchasedItemIds, item.GetId())
+		if err := opuser.UpsertUserShopPurchase(ctx, purchase); err != nil {
+			return nil, err
+		}
+
+		response = &papi.ShopPurchaseResponse{
+			Rewards:        results,
+			CommonResponse: viber.NewCommonResponse(updated),
+		}
+		return nil, nil
+	})
+	if err != nil {
+		switch {
+		case mongo.IsDuplicateKeyError(err):
+			return nil, status.Error(codes.FailedPrecondition, "shop purchase state changed concurrently")
+		case errors.Is(err, viber.ErrExchangeInsufficientResource):
+			return nil, status.Error(codes.ResourceExhausted, "insufficient shop resource")
+		case errors.Is(err, errShopPurchaseLimitExceeded):
+			return nil, status.Error(codes.FailedPrecondition, "shop purchase limit exceeded")
+		default:
+			return nil, err
+		}
+	}
+	return response, nil
 }
 
 func (s *ShopServer) GetLoginBonusPackageItem(ctx context.Context, req *papi.ShopGetLoginBonusPackageItemRequest) (*papi.ShopGetLoginBonusPackageItemResponse, error) {
@@ -115,7 +288,14 @@ func (s *ShopServer) GetLoginBonusPackageItem(ctx context.Context, req *papi.Sho
 	if err != nil {
 		return nil, err
 	}
-	loginPackage := proto.Clone(entry.LoginBonusPackageItem).(*papi.LoginBonusPackageItem)
+	purchase, err := viber.FindUserShopPurchaseOrEmpty(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
+	_, loginPackage, err := viber.RenderLoginBonusShop(entry, purchase)
+	if err != nil {
+		return nil, err
+	}
 	if loginPackage.ShopItem != nil {
 		loginPackage.ShopItem.Unlocked = unlocked
 	}
@@ -176,4 +356,119 @@ func findUserShopAccess(ctx context.Context, suid string) (map[string]struct{}, 
 		}
 	}
 	return allowed, nil
+}
+
+func findShopItem(entry *smodel.ShopCatalogEntry, shopItemID string) *papi.ShopItem {
+	for _, item := range entry.Items {
+		if item.GetId() == shopItemID {
+			return item
+		}
+	}
+	return nil
+}
+
+func renderShopItem(
+	evaluator *viber.CommerceConditionEvaluator,
+	definition *papi.ShopItem,
+	purchase *umodel.UserShopPurchase,
+	now time.Time,
+) (*papi.ShopItem, bool, error) {
+	visible, err := evaluator.Satisfied(definition.GetViewConditionId())
+	if err != nil || !visible {
+		return nil, visible, err
+	}
+	unlocked, err := evaluator.Satisfied(definition.GetUnlockConditionId())
+	if err != nil {
+		return nil, false, err
+	}
+	item := proto.Clone(definition).(*papi.ShopItem)
+	item.Unlocked = unlocked
+	applyShopStock(item, purchase, now)
+	return item, true, nil
+}
+
+func applyShopStock(item *papi.ShopItem, purchase *umodel.UserShopPurchase, now time.Time) {
+	resetShopPurchaseCountIfNeeded(purchase, item, now)
+	if item.GetPurchaseLimit() > 0 {
+		item.LeftCount = max(item.GetPurchaseLimit()-purchase.PurchaseCounts[item.GetId()], 0)
+	} else {
+		item.LeftCount = 0
+	}
+	switch item.GetResetTimingType() {
+	case penum.ResetTimingType_ResetTimingType_Daily,
+		penum.ResetTimingType_ResetTimingType_Weekly,
+		penum.ResetTimingType_ResetTimingType_Monthly:
+		item.NextResetTime = purchase.ResetTimes[item.GetId()]
+	default:
+		item.NextResetTime = 0
+	}
+}
+
+func resetShopPurchaseCountIfNeeded(purchase *umodel.UserShopPurchase, item *papi.ShopItem, now time.Time) {
+	next := shopNextResetTime(now, item.GetResetTimingType())
+	if next == 0 {
+		delete(purchase.ResetTimes, item.GetId())
+		return
+	}
+	if purchase.ResetTimes[item.GetId()] != next {
+		purchase.PurchaseCounts[item.GetId()] = 0
+		purchase.ResetTimes[item.GetId()] = next
+	}
+}
+
+func shopNextResetTime(now time.Time, timing penum.ResetTimingType) int64 {
+	switch timing {
+	case penum.ResetTimingType_ResetTimingType_Daily:
+		return viber.NextJSTDayStart(now).UnixMilli()
+	case penum.ResetTimingType_ResetTimingType_Weekly:
+		return viber.NextJSTWeekStart(now).UnixMilli()
+	case penum.ResetTimingType_ResetTimingType_Monthly:
+		return viber.NextJSTMonthStart(now).UnixMilli()
+	default:
+		return 0
+	}
+}
+
+func findShopConsumption(
+	ctx context.Context,
+	consumptionID string,
+	rewards []*pmaster.RewardResource,
+) (*pmaster.Consumption, error) {
+	if consumptionID == "" {
+		return nil, nil
+	}
+	consumption, err := opmaster.FindConsumption(ctx, consumptionID)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, status.Errorf(codes.FailedPrecondition, "consumption %q is missing from master data", consumptionID)
+		}
+		return nil, err
+	}
+	if len(consumption.GetResources()) == 0 {
+		return nil, status.Errorf(codes.FailedPrecondition, "consumption %q has no resources", consumptionID)
+	}
+	for _, resource := range consumption.GetResources() {
+		if resource == nil || resource.GetAmount() <= 0 {
+			return nil, status.Errorf(codes.FailedPrecondition, "consumption %q contains an invalid resource", consumptionID)
+		}
+		if len(resource.GetSubResourceIds()) != 0 || len(resource.GetResourceIds()) > 1 {
+			return nil, status.Errorf(codes.Unimplemented, "consumption %q uses an unsupported resource selector", consumptionID)
+		}
+		if resource.GetResourceType() == penum.ResourceType_ResourceType_Item && len(resource.GetResourceIds()) != 1 {
+			return nil, status.Errorf(codes.FailedPrecondition, "consumption %q does not identify an item", consumptionID)
+		}
+		if err := viber.ValidateExchangeResources(resource.GetResourceType(), rewards); err != nil {
+			return nil, fmt.Errorf("invalid shop consumption %q: %w", consumptionID, err)
+		}
+	}
+	return consumption, nil
+}
+
+func appendUniqueString(values []string, value string) []string {
+	for _, existing := range values {
+		if existing == value {
+			return values
+		}
+	}
+	return append(values, value)
 }

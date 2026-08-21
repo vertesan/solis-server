@@ -109,5 +109,14 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterDivisionServer(server, &ss.DivisionServer{})
 	papi.RegisterExchangeServer(server, &ss.ExchangeServer{})
 	papi.RegisterShopServer(server, &ss.ShopServer{})
+	papi.RegisterGiftServer(server, &ss.GiftServer{})
+	papi.RegisterLoginBonusServer(server, &ss.LoginBonusServer{})
+	papi.RegisterCostumeServer(server, &ss.CostumeServer{})
+	papi.RegisterDiaryServer(server, &ss.DiaryServer{})
+	papi.RegisterMessageServer(server, &ss.MessageServer{})
+	papi.RegisterTelephoneServer(server, &ss.TelephoneServer{})
+	papi.RegisterMarketServer(server, &ss.MarketServer{})
+	papi.RegisterExcursionServer(server, &ss.ExcursionServer{})
+	papi.RegisterGachaServer(server, &ss.GachaServer{})
 	return server, nil
 }

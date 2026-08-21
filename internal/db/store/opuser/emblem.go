@@ -18,6 +18,14 @@ func FindAllUserEmblems(ctx context.Context, suid string) ([]*ptransaction.UserE
 	)
 }
 
+func FindUserEmblem(ctx context.Context, suid, emblemID string) (*ptransaction.UserEmblem, error) {
+	return ucommon.FindOne[ptransaction.UserEmblem](
+		ctx,
+		uname.UserEmblem,
+		bson.M{"SUID": suid, "emblemId": emblemID},
+	)
+}
+
 func UpsertUserEmblem(ctx context.Context, suid string, emblem *ptransaction.UserEmblem) error {
 	return ucommon.UpsertOne(
 		ctx,

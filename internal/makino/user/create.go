@@ -25,7 +25,6 @@ import (
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 
 	"github.com/google/uuid"
-	"google.golang.org/protobuf/proto"
 )
 
 func CreateUser(ctx context.Context, publicUserId string, suid string, password string) error {
@@ -340,7 +339,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		if err := opuser.UpsertManyUserNotifications(ctx, suid, []*ptransaction.UserNotification{
 			{NotificationType: penum.NotificationType_NotificationType_Activity, Valid: false, StartTime: 0},
 			{NotificationType: penum.NotificationType_NotificationType_LoginBonus, Valid: true, StartTime: 0},
-			{NotificationType: penum.NotificationType_NotificationType_Gift, Valid: true, StartTime: 0},
+			{NotificationType: penum.NotificationType_NotificationType_Gift, Valid: false, StartTime: 0},
 		}); err != nil {
 			return nil, err
 		}
@@ -408,23 +407,6 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			}); err != nil {
 				return nil, err
 			}
-		}
-
-		// UserGachaInfo
-		userInitialGachaInfos := consts.GetUserInitialGachaInfos()
-		gachaInfos := make([]*papi.GachaInfo, 0, len(userInitialGachaInfos))
-		for _, info := range userInitialGachaInfos {
-			cloned := proto.Clone(info).(*papi.GachaInfo)
-			for _, btn := range cloned.Buttons {
-				btn.DrawTime = milliNow
-			}
-			for _, exc := range cloned.Exchanges {
-				exc.ExchangedTime = milliNow
-			}
-			gachaInfos = append(gachaInfos, cloned)
-		}
-		if err := opuser.UpsertManyUserGachaInfos(ctx, suid, gachaInfos); err != nil {
-			return nil, err
 		}
 
 		// UserFanEventInfo
@@ -496,6 +478,16 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			SUID:           suid,
 			PurchaseCounts: map[string]int32{},
 			ResetTimes:     map[string]int64{},
+		}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserShopPurchase(ctx, &umodel.UserShopPurchase{
+			SUID:                     suid,
+			PurchaseCounts:           map[string]int32{},
+			ResetTimes:               map[string]int64{},
+			PurchasedItemIds:         []string{},
+			LoginBonusProgress:       map[string]int32{},
+			LoginBonusLastGrantTimes: map[string]int64{},
 		}); err != nil {
 			return nil, err
 		}
@@ -640,6 +632,22 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			SUID:                suid,
 			CurrentMainAreaId:   consts.GetUserInitialCurrentMainAreaId(),
 			CurrentTowerQuestId: consts.GetUserInitialCurrentTowerQuestId(),
+		}); err != nil {
+			return nil, err
+		}
+
+		// UserDiaryState
+		if err := opuser.UpsertUserDiaryState(ctx, &umodel.UserDiaryState{SUID: suid}); err != nil {
+			return nil, err
+		}
+
+		// UserMarketState and UserExcursionState are mutable per-user runtime state.
+		if err := opuser.UpsertUserMarketState(ctx, &umodel.UserMarketState{SUID: suid}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserExcursionState(ctx, &umodel.UserExcursionState{
+			SUID:            suid,
+			OfferedPlaceIds: []string{},
 		}); err != nil {
 			return nil, err
 		}

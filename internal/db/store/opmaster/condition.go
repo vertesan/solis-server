@@ -6,6 +6,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/master/mmodel"
 	"github.com/vertesan/solis-server/internal/db/model/master/mname"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster/internal/mcommon"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -14,6 +15,12 @@ import (
 func FindCondition(ctx context.Context, id string) (*pmaster.Condition, error) {
 	return mcommon.FindOne[mmodel.Condition, pmaster.Condition](
 		ctx, mname.Condition, bson.M{"Id": id},
+	)
+}
+
+func FindFunctionLock(ctx context.Context, lockType penum.FunctionLockType) (*pmaster.FunctionLock, error) {
+	return mcommon.FindOne[mmodel.FunctionLock, pmaster.FunctionLock](
+		ctx, mname.FunctionLock, bson.M{"Type": int64(lockType)},
 	)
 }
 

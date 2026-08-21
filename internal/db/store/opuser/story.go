@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserStory(ctx context.Context, suid string, storyId string) (*ptransaction.UserStory, error) {
+	return ucommon.FindOne[ptransaction.UserStory](
+		ctx,
+		uname.UserStory,
+		bson.M{"SUID": suid, "storyId": storyId},
+	)
+}
+
 func FindAllUserStories(ctx context.Context, suid string) ([]*ptransaction.UserStory, error) {
 	return ucommon.FindAll[ptransaction.UserStory](
 		ctx,

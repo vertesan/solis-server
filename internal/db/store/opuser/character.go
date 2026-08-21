@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserCharacter(ctx context.Context, suid string, characterId string) (*ptransaction.UserCharacter, error) {
+	return ucommon.FindOne[ptransaction.UserCharacter](
+		ctx,
+		uname.UserCharacter,
+		bson.M{"SUID": suid, "characterId": characterId},
+	)
+}
+
 func FindAllUserCharacters(ctx context.Context, suid string) ([]*ptransaction.UserCharacter, error) {
 	return ucommon.FindAll[ptransaction.UserCharacter](
 		ctx,

@@ -15,3 +15,9 @@ func FindAllEventStories(ctx context.Context) ([]*pmaster.EventStory, error) {
 		ctx, mname.EventStory, bson.M{},
 	)
 }
+
+func FindEventStory(ctx context.Context, id string) (*pmaster.EventStory, error) {
+	return mcommon.FindOne[mmodel.EventStory, pmaster.EventStory](
+		ctx, mname.EventStory, bson.M{"Id": id},
+	)
+}

@@ -28,13 +28,16 @@ const (
 var supportedCommerceConditionFields = map[string]struct{}{
 	"satisfyCondition":    {},
 	"notSatisfyCondition": {},
+	"startHours":          {},
 	"managerLevel":        {},
 	"clearArea":           {},
 	"obtainCard":          {},
 	"obtainCostume":       {},
 	"cardRarity":          {},
 	"term":                {},
+	"gameStartTerm":       {},
 	"itemAmount":          {},
+	"purchaseShop":        {},
 }
 
 type CommerceConditionEvaluator struct {
@@ -46,17 +49,19 @@ type CommerceConditionEvaluator struct {
 	results    map[string]commerceConditionState
 	evaluating map[string]struct{}
 
-	user           *ptransaction.User
-	userLoaded     bool
-	cards          map[string]*ptransaction.UserCard
-	cardsLoaded    bool
-	costumes       map[string]struct{}
-	costumesLoaded bool
-	areas          map[string]*ptransaction.UserArea
-	areasLoaded    bool
-	masterAreas    map[string]*pmaster.Area
-	items          map[string]int64
-	itemsLoaded    bool
+	user                *ptransaction.User
+	userLoaded          bool
+	cards               map[string]*ptransaction.UserCard
+	cardsLoaded         bool
+	costumes            map[string]struct{}
+	costumesLoaded      bool
+	areas               map[string]*ptransaction.UserArea
+	areasLoaded         bool
+	masterAreas         map[string]*pmaster.Area
+	items               map[string]int64
+	itemsLoaded         bool
+	purchasedShopItems  map[string]struct{}
+	shopPurchasesLoaded bool
 }
 
 func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) *CommerceConditionEvaluator {
@@ -183,6 +188,24 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			merge(commerceConditionIndeterminate)
 		}
 	}
+	if value := setting.GetStartHours(); value != nil {
+		hasKnownField = true
+		if value.GetHoursLte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		user, err := e.loadUser()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		gameStartTime := user.GetGameStartTime()
+		duration := int64(value.GetHoursLte()) * time.Hour.Milliseconds()
+		if gameStartTime <= 0 || duration <= 0 || gameStartTime > math.MaxInt64-duration {
+			return commerceConditionIndeterminate, nil
+		}
+		if e.now > gameStartTime+duration {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
 	if value := setting.GetTerm(); value != nil {
 		hasKnownField = true
 		if value.GetNowAfter() <= 0 && value.GetNowBefore() <= 0 {
@@ -190,6 +213,24 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 		}
 		if value.GetNowAfter() > 0 && e.now < value.GetNowAfter() ||
 			value.GetNowBefore() > 0 && e.now > value.GetNowBefore() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetGameStartTerm(); value != nil {
+		hasKnownField = true
+		if value.GetGameStartDatetimeAfter() <= 0 && value.GetGameStartDatetimeBefore() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		user, err := e.loadUser()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		gameStartTime := user.GetGameStartTime()
+		if gameStartTime <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		if value.GetGameStartDatetimeAfter() > 0 && gameStartTime < value.GetGameStartDatetimeAfter() ||
+			value.GetGameStartDatetimeBefore() > 0 && gameStartTime > value.GetGameStartDatetimeBefore() {
 			merge(commerceConditionUnsatisfied)
 		}
 	}
@@ -269,6 +310,19 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			return commerceConditionIndeterminate, err
 		}
 		if items[value.GetItemId()] < value.GetAmountGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetPurchaseShop(); value != nil {
+		hasKnownField = true
+		if value.GetShopItemId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		purchasedItems, err := e.loadPurchasedShopItems()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if _, ok := purchasedItems[value.GetShopItemId()]; !ok {
 			merge(commerceConditionUnsatisfied)
 		}
 	}
@@ -453,6 +507,25 @@ func (e *CommerceConditionEvaluator) loadItems() (map[string]int64, error) {
 	return e.items, nil
 }
 
+func (e *CommerceConditionEvaluator) loadPurchasedShopItems() (map[string]struct{}, error) {
+	if !e.shopPurchasesLoaded {
+		purchase, err := opuser.FindUserShopPurchase(e.ctx, e.suid)
+		if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, err
+		}
+		e.purchasedShopItems = make(map[string]struct{})
+		if purchase != nil {
+			for _, itemID := range purchase.PurchasedItemIds {
+				if itemID != "" {
+					e.purchasedShopItems[itemID] = struct{}{}
+				}
+			}
+		}
+		e.shopPurchasesLoaded = true
+	}
+	return e.purchasedShopItems, nil
+}
+
 func FilterHomeCommerceIDs(
 	ctx context.Context,
 	suid string,
@@ -500,6 +573,13 @@ func FilterHomeCommerceIDs(
 			return nil, nil, nil, nil, nil, nil, err
 		}
 		if !visible {
+			continue
+		}
+		hasContent, err := ShopCatalogHasVisibleContent(evaluator, shop)
+		if err != nil {
+			return nil, nil, nil, nil, nil, nil, err
+		}
+		if !hasContent {
 			continue
 		}
 		if _, ok := shopSet[shop.ShopId]; ok {

@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserHair(ctx context.Context, suid string, hairId string) (*ptransaction.UserHair, error) {
+	return ucommon.FindOne[ptransaction.UserHair](
+		ctx,
+		uname.UserHair,
+		bson.M{"SUID": suid, "hairId": hairId},
+	)
+}
+
 func FindAllUserHairs(ctx context.Context, suid string) ([]*ptransaction.UserHair, error) {
 	return ucommon.FindAll[ptransaction.UserHair](
 		ctx,
@@ -34,6 +42,14 @@ func UpsertManyUserHairs(ctx context.Context, suid string, hairs []*ptransaction
 	return ucommon.ForEachAtomically(ctx, hairs, func(ctx context.Context, hair *ptransaction.UserHair) error {
 		return UpsertUserHair(ctx, suid, hair)
 	})
+}
+
+func DeleteUserHair(ctx context.Context, suid string, hairId string) error {
+	return ucommon.Delete(
+		ctx,
+		uname.UserHair,
+		bson.M{"SUID": suid, "hairId": hairId},
+	)
 }
 
 func DeleteAllUserHairs(ctx context.Context, suid string) error {

@@ -121,8 +121,12 @@ func testCardProgression(t *testing.T) {
 	if got := userItemAmount(t, "item-card_limit_break"); got != beforeLimitItem-expectedLimitCost {
 		t.Fatalf("Card.LimitBreak cost mismatch: got %d, want %d", got, beforeLimitItem-expectedLimitCost)
 	}
-	if limitResponse.GetCommonResponse().GetUpdatedData().GetCards()[0].GetRarity() != targetRarity {
+	limitCard := limitResponse.GetCommonResponse().GetUpdatedData().GetCards()[0]
+	if limitCard.GetRarity() != targetRarity {
 		t.Fatalf("Card.LimitBreak returned wrong post-image: %v", limitResponse)
+	}
+	if limitCard.GetDisplayType() != card.GetDisplayType() {
+		t.Fatalf("Card.LimitBreak changed user-selected display type: before=%v after=%v", card.GetDisplayType(), limitCard.GetDisplayType())
 	}
 }
 

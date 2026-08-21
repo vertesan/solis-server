@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserExtraStoryPartInfo(ctx context.Context, suid string, id string) (*papi.ExtraStoryPartInfo, error) {
+	return ucommon.FindOne[papi.ExtraStoryPartInfo](
+		ctx,
+		uname.UserExtraStoryPartInfo,
+		bson.M{"SUID": suid, "id": id},
+	)
+}
+
 func FindAllUserExtraStoryPartInfos(ctx context.Context, suid string) ([]*papi.ExtraStoryPartInfo, error) {
 	return ucommon.FindAll[papi.ExtraStoryPartInfo](
 		ctx,

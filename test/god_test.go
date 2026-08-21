@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
@@ -54,6 +55,7 @@ func TestUserGod(t *testing.T) {
 	first := callUserGod(t, &admin.UserGodRequest{PublicUserId: testConfig.TestUserPublicId})
 
 	ctx := context.Background()
+	assertGodGrantedNoGachaTickets(t, ctx)
 	lovesBeforeSecondCall, err := opuser.FindAllUserLoves(ctx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
@@ -66,6 +68,30 @@ func TestUserGod(t *testing.T) {
 	loveToPreserve.IsReadingStory = true
 	loveToPreserve.UnlockedLoveStoryEndIDs = append(loveToPreserve.UnlockedLoveStoryEndIDs, "test-preserved-love-story-end")
 	if err := opuser.UpsertUserLove(ctx, testConfig.TestUserSuid, loveToPreserve); err != nil {
+		t.Fatal(err)
+	}
+	ticketItems, err := opmaster.FindAllItems(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ticketItemIds := make([]string, 0, 2)
+	for _, item := range ticketItems {
+		if item.GetType() == penum.ItemType_ItemType_GachaTicket {
+			ticketItemIds = append(ticketItemIds, item.GetId())
+			if len(ticketItemIds) == 2 {
+				break
+			}
+		}
+	}
+	if len(ticketItemIds) < 2 {
+		t.Fatal("master data contains fewer than two gacha ticket items")
+	}
+	legitimateTicketExpiration := time.Now().Add(24 * time.Hour).UnixMilli()
+	if err := opuser.UpsertManyUserItems(ctx, testConfig.TestUserSuid, []*ptransaction.UserItem{
+		{ItemId: ticketItemIds[0], Amount: makinouser.GodMinimumResourceAmount},
+		{ItemId: ticketItemIds[1], Amount: 1},
+		{ItemId: ticketItemIds[1], Amount: makinouser.GodMinimumResourceAmount, ExpiredTime: legitimateTicketExpiration},
+	}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -95,6 +121,30 @@ func TestUserGod(t *testing.T) {
 	}
 	if !preservedLoveFound {
 		t.Fatalf("god mode did not preserve existing love state: before=%v after=%v", loveToPreserve, lovesAfterSecondCall)
+	}
+	legacyTicketItems, err := opuser.FindUserItems(ctx, testConfig.TestUserSuid, ticketItemIds[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(legacyTicketItems) != 0 {
+		t.Fatalf("legacy god gacha ticket was not removed: %v", legacyTicketItems)
+	}
+	legitimateTicketItems, err := opuser.FindUserItems(ctx, testConfig.TestUserSuid, ticketItemIds[1])
+	if err != nil {
+		t.Fatal(err)
+	}
+	smallPermanentFound := false
+	expiringFound := false
+	for _, item := range legitimateTicketItems {
+		if item.GetExpiredTime() == 0 && item.GetAmount() == 1 {
+			smallPermanentFound = true
+		}
+		if item.GetExpiredTime() == legitimateTicketExpiration && item.GetAmount() == makinouser.GodMinimumResourceAmount {
+			expiringFound = true
+		}
+	}
+	if !smallPermanentFound || !expiringFound {
+		t.Fatalf("legitimate gacha tickets were not preserved: %v", legitimateTicketItems)
 	}
 
 	maxLevel, err := opmaster.FindMaxManagerLevel(ctx)
@@ -143,10 +193,19 @@ func TestUserGod(t *testing.T) {
 	if len(userStories) != len(masterStories) {
 		t.Fatalf("story unlock count mismatch: got %d, want %d", len(userStories), len(masterStories))
 	}
+	assertGodMainStoriesRead(t, ctx, userStories)
 
 	shopCatalog, err := opsolis.FindAllShopCatalogEntries(ctx)
 	if err != nil {
 		t.Fatal(err)
+	}
+	shopPurchase, err := opuser.FindUserShopPurchase(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	purchasedShopItems := make(map[string]struct{}, len(shopPurchase.PurchasedItemIds))
+	for _, id := range shopPurchase.PurchasedItemIds {
+		purchasedShopItems[id] = struct{}{}
 	}
 	userShops, err := opuser.FindUserShopIds(ctx, testConfig.TestUserSuid)
 	if err != nil {
@@ -165,6 +224,11 @@ func TestUserGod(t *testing.T) {
 		userShowcaseShopSet[id] = struct{}{}
 	}
 	for _, shop := range shopCatalog {
+		for _, item := range shop.Items {
+			if _, ok := purchasedShopItems[item.GetId()]; !ok {
+				t.Fatalf("shop item %q was not marked purchased by god mode", item.GetId())
+			}
+		}
 		if shop.Info == nil {
 			continue
 		}
@@ -390,6 +454,9 @@ func assertGodResourceAmounts(t *testing.T, ctx context.Context) {
 		}
 	}
 	for _, master := range masterItems {
+		if master.GetType() == penum.ItemType_ItemType_GachaTicket {
+			continue
+		}
 		if amount := permanentItemAmounts[master.GetId()]; amount < makinouser.GodMinimumResourceAmount {
 			t.Fatalf("god item %q amount = %d, want at least %d", master.GetId(), amount, makinouser.GodMinimumResourceAmount)
 		}
@@ -429,6 +496,69 @@ func assertGodResourceAmounts(t *testing.T, ctx context.Context) {
 	}
 	if balance.GetFreeBalance() < makinouser.GodMinimumBalanceAmount || balance.GetPaidBalance() < makinouser.GodMinimumBalanceAmount {
 		t.Fatalf("god balance = free:%d paid:%d, want each at least %d", balance.GetFreeBalance(), balance.GetPaidBalance(), makinouser.GodMinimumBalanceAmount)
+	}
+}
+
+func assertGodGrantedNoGachaTickets(t *testing.T, ctx context.Context) {
+	t.Helper()
+	masterItems, err := opmaster.FindAllItems(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ticketIds := make(map[string]struct{})
+	for _, item := range masterItems {
+		if item.GetType() == penum.ItemType_ItemType_GachaTicket {
+			ticketIds[item.GetId()] = struct{}{}
+		}
+	}
+	userItems, err := opuser.FindAllUserItems(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range userItems {
+		if _, isGachaTicket := ticketIds[item.GetItemId()]; isGachaTicket {
+			t.Fatalf("god mode granted gacha ticket %q with amount %d", item.GetItemId(), item.GetAmount())
+		}
+	}
+}
+
+func assertGodMainStoriesRead(
+	t *testing.T,
+	ctx context.Context,
+	userStories []*ptransaction.UserStory,
+) {
+	t.Helper()
+	parts, err := opmaster.FindAllStoryParts(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userStoryById := make(map[string]*ptransaction.UserStory, len(userStories))
+	for _, story := range userStories {
+		userStoryById[story.GetStoryId()] = story
+	}
+	mainStoryCount := 0
+	for _, part := range parts {
+		if part.GetType() != penum.StoryPartType_StoryPartType_Main {
+			continue
+		}
+		for _, chapter := range part.GetChapters() {
+			for _, episode := range chapter.GetEpisodes() {
+				if episode.GetStoryId() == "" {
+					continue
+				}
+				mainStoryCount++
+				story := userStoryById[episode.GetStoryId()]
+				if story == nil {
+					t.Fatalf("main story episode %q was not unlocked", episode.GetStoryId())
+				}
+				if story.GetStatusType() != penum.StoryStatusType_StoryStatusType_Read || story.GetIsInvalid() {
+					t.Fatalf("main story episode %q was not marked read: %v", episode.GetStoryId(), story)
+				}
+			}
+		}
+	}
+	if mainStoryCount == 0 {
+		t.Fatal("master data contains no main story episodes")
 	}
 }
 

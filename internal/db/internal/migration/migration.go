@@ -28,8 +28,18 @@ func MigrationCheck() error {
 		if err := level1Migration(); err != nil {
 			return fmt.Errorf("failed database migration level 1: %w", err)
 		}
-		migrationFlag = 1
 		zap.L().Info("database initialization completed")
+	}
+
+	// Index definitions evolve independently from one-time seed data. Ensure
+	// them on every startup so existing installations receive new user-state
+	// identity constraints without replaying destructive initialization.
+	ctx := context.Background()
+	if err := ensureUserAuthIndexes(ctx); err != nil {
+		return err
+	}
+	if err := ensureUserIndexes(ctx); err != nil {
+		return fmt.Errorf("failed to ensure user indexes: %w", err)
 	}
 
 	return nil

@@ -97,6 +97,7 @@ func getUserCollection() []collection {
 		{Name: uname.UserLessonProgress, SUIDField: suidField},
 		{Name: uname.UserExchangeBooth, SUIDField: suidField},
 		{Name: uname.UserExchangePurchase, SUIDField: suidField},
+		{Name: uname.UserShopPurchase, SUIDField: suidField},
 		{Name: uname.UserNotiStoneShopItem, SUIDField: suidField},
 		{Name: uname.UserNotiNormalShopItem, SUIDField: suidField},
 		{Name: uname.UserEventInfo, SUIDField: suidField},
@@ -112,6 +113,15 @@ func getUserCollection() []collection {
 		{Name: uname.UserUnlockedShowcaseNumber, SUIDField: suidField},
 		{Name: uname.UserPhotoExpression, SUIDField: suidField},
 		{Name: uname.UserCurrentQuestArea, SUIDField: suidField},
+		{Name: uname.UserGift, SUIDField: suidField},
+		{Name: uname.UserGiftHistory, SUIDField: suidField},
+		{Name: uname.UserLoginBonus, SUIDField: suidField},
+		{Name: uname.UserDiaryState, SUIDField: suidField},
+		{Name: uname.UserMessageProgress, SUIDField: suidField},
+		{Name: uname.UserMarketState, SUIDField: suidField},
+		{Name: uname.UserExcursionState, SUIDField: suidField},
+		{Name: uname.UserExcursionGazeReaction, SUIDField: suidField},
+		{Name: uname.UserGachaHistory, SUIDField: suidField},
 	}
 	return collections
 }

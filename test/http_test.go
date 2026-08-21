@@ -3,7 +3,6 @@ package test
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/server/http/game"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
@@ -41,25 +40,10 @@ func TestQseedGetId(t *testing.T) {
 }
 
 func TestVerifyCustomToken(t *testing.T) {
-	// remove previous test data, ignore error (not exists)
-	opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000")
-
-	// prepare mock data
-	now := time.Now()
-	milliNow := now.UnixMilli()
-	if err := opuser.InsertUserAuth(context.Background(), &umodel.UserAuth{
-		PublicUserId:  "00000000",
-		ServerUserId:  "00000000-0000-0000-0000-000000000000",
-		Password:      "password",
-		FirebaseId:    "00000000-0000-0000-0000-000000000000",
-		RefreshTokens: []string{jwto.CreateSecureRefreshToken()},
-		ValidSince:    now.Unix(),
-		CreatedAt:     milliNow,
-		LastLoginAt:   milliNow,
-		LastRefreshAt: now,
-		OnetimeToken:  "",
-	}); err != nil {
-		t.Fatalf("failed to create mock userAuth: %v", err)
+	setupTestUser(t)
+	userAuth, err := opuser.GetUserAuthByServerId(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatalf("failed to load configured test user auth: %v", err)
 	}
 
 	token, err := jwto.CreateToken(jwt.NewWithClaims(jwt.SigningMethodRS256, &jwt.MapClaims{
@@ -68,7 +52,7 @@ func TestVerifyCustomToken(t *testing.T) {
 		"exp": time.Now().Add(time.Hour).Unix(),
 		"iat": time.Now().Unix(),
 		"sub": "firebase-adminsdk-hvn46@solis-firebase.iam.gserviceaccount.com",
-		"uid": "00000000-0000-0000-0000-000000000000",
+		"uid": userAuth.FirebaseId,
 	}))
 	if err != nil {
 		t.Fatalf("failed creating token: %v", err)
@@ -93,9 +77,4 @@ func TestVerifyCustomToken(t *testing.T) {
 		t.Fatalf("get qseed error, bad status code: %d", resp.StatusCode())
 	}
 	t.Logf("resp: %v", resp)
-
-	// cleanup test mock data
-	if err := opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
-		t.Fatalf("failed to remove test userAuth: %v", err)
-	}
 }

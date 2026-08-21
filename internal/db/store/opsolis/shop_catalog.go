@@ -24,6 +24,10 @@ func FindShopCatalogEntry(ctx context.Context, shopId string) (*smodel.ShopCatal
 	return scommon.FindOne[smodel.ShopCatalogEntry](ctx, sname.ShopCatalog, bson.M{"shopId": shopId})
 }
 
+func FindShopCatalogEntryByItemId(ctx context.Context, shopItemId string) (*smodel.ShopCatalogEntry, error) {
+	return scommon.FindOne[smodel.ShopCatalogEntry](ctx, sname.ShopCatalog, bson.M{"items.id": shopItemId})
+}
+
 func UpsertShopCatalogEntry(ctx context.Context, entry *smodel.ShopCatalogEntry) error {
 	return scommon.UpsertOne(ctx, sname.ShopCatalog, bson.M{"shopId": entry.ShopId}, entry)
 }

@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/vertesan/solis-server/internal/utils/config"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -55,6 +57,7 @@ type godMasterData struct {
 	eventStories     []*pmaster.EventStory
 	extraStories     []*pmaster.ExtraStory
 	extraStoryParts  []*pmaster.ExtraStoryPart
+	excursionGazes   []*pmaster.ExcursionGazeReaction
 	hairs            []*pmaster.Hair
 	homeTalks        []*pmaster.HomeTalk
 	items            []*pmaster.Item
@@ -73,6 +76,7 @@ type godMasterData struct {
 	staffRanks       []*pmaster.StaffLevelLimitBreakRank
 	stages           []*pmaster.Stage
 	stories          []*pmaster.Story
+	storyParts       []*pmaster.StoryPart
 	telephones       []*pmaster.Telephone
 	tutorials        []*ptransaction.UserTutorial
 	userCards        []*ptransaction.UserCard
@@ -196,6 +200,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 		data.extraStoryParts, err = opmaster.FindAllExtraStoryParts(groupCtx)
 		return err
 	})
+	run("ExcursionGazeReaction", func() (err error) {
+		data.excursionGazes, err = opmaster.FindAllExcursionGazeReactions(groupCtx)
+		return err
+	})
 	run("Hair", func() (err error) {
 		data.hairs, err = opmaster.FindAllHairs(groupCtx)
 		return err
@@ -266,6 +274,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 	})
 	run("Story", func() (err error) {
 		data.stories, err = opmaster.FindAllStories(groupCtx)
+		return err
+	})
+	run("StoryPart", func() (err error) {
+		data.storyParts, err = opmaster.FindAllStoryParts(groupCtx)
 		return err
 	})
 	run("Telephone", func() (err error) {
@@ -353,6 +365,10 @@ func applyGodMasterData(
 	if err := applyGodResources(ctx, suid, data, counts); err != nil {
 		return err
 	}
+	if err := opuser.UpsertUserDiaryState(ctx, &umodel.UserDiaryState{SUID: suid, AllRead: true}); err != nil {
+		return err
+	}
+	counts[uname.UserDiaryState] = 1
 	return nil
 }
 
@@ -693,6 +709,9 @@ func applyGodMediaOwnership(
 	if err := godUpsert(ctx, uname.UserStory, suid, stories, false, counts); err != nil {
 		return err
 	}
+	if err := opuser.MarkUserStoriesReadForGod(ctx, suid, mainGodStoryIds(data.storyParts)); err != nil {
+		return err
+	}
 
 	telephones := make([]opuser.GodUpsert[*ptransaction.UserTelephone], 0, len(data.telephones))
 	for _, master := range data.telephones {
@@ -846,6 +865,25 @@ func applyGodProgress(
 	if err := godUpsert(ctx, uname.UserPhotoMusic, suid, photoMusics, true, counts); err != nil {
 		return err
 	}
+	excursionGazes := make([]opuser.GodUpsert[*ptransaction.UserExcursionGazeReaction], 0, len(data.excursionGazes))
+	for _, master := range data.excursionGazes {
+		reaction := &ptransaction.UserExcursionGazeReaction{
+			CharacterId:        master.CharacterId,
+			ExcursionPlaceId:   master.ExcursionPlaceId,
+			GazeReactionNumber: int64(master.Number),
+		}
+		excursionGazes = append(excursionGazes, opuser.GodUpsert[*ptransaction.UserExcursionGazeReaction]{
+			Key: bson.M{
+				"characterId":        reaction.CharacterId,
+				"excursionPlaceId":   reaction.ExcursionPlaceId,
+				"gazeReactionNumber": reaction.GazeReactionNumber,
+			},
+			Data: reaction,
+		})
+	}
+	if err := godUpsert(ctx, uname.UserExcursionGazeReaction, suid, excursionGazes, false, counts); err != nil {
+		return err
+	}
 	stages := make([]opuser.GodUpsert[*papi.PhotoStage], 0, len(data.stages))
 	for _, master := range data.stages {
 		stages = append(stages, godValue("stageId", master.Id, &papi.PhotoStage{StageId: master.Id, IsUnlocked: true}))
@@ -869,13 +907,21 @@ func applyGodResources(
 		return err
 	}
 	items := make([]opuser.GodUpsert[*ptransaction.UserItem], 0, len(data.items))
+	excludedItemIds := make([]string, 0)
 	for _, master := range data.items {
+		if master.GetType() == penum.ItemType_ItemType_GachaTicket {
+			excludedItemIds = append(excludedItemIds, master.GetId())
+			continue
+		}
 		value := &ptransaction.UserItem{ItemId: master.Id, Amount: GodMinimumResourceAmount}
 		items = append(items, opuser.GodUpsert[*ptransaction.UserItem]{
 			Key: bson.M{"itemId": master.Id, "expiredTime": int64(0)}, Data: value,
 		})
 	}
 	if err := godUpsert(ctx, uname.UserItem, suid, items, false, counts); err != nil {
+		return err
+	}
+	if err := opuser.DeleteGodGrantedUserItems(ctx, suid, excludedItemIds, GodMinimumResourceAmount); err != nil {
 		return err
 	}
 	recipes := make([]opuser.GodUpsert[*ptransaction.UserPhotoRecipe], 0, len(data.photoRecipes))
@@ -894,7 +940,7 @@ func applyGodResources(
 	if err := godUpsert(ctx, uname.UserPoint, suid, points, false, counts); err != nil {
 		return err
 	}
-	if err := opuser.RaiseUserResourcesForGod(ctx, suid, GodMinimumResourceAmount); err != nil {
+	if err := opuser.RaiseUserResourcesForGod(ctx, suid, GodMinimumResourceAmount, excludedItemIds); err != nil {
 		return err
 	}
 	if err := opuser.RaiseUserPointsForGod(ctx, suid, GodMinimumPointAmount); err != nil {
@@ -909,6 +955,32 @@ func applyGodResources(
 	if err != nil {
 		return err
 	}
+	shopPurchase, err := opuser.FindUserShopPurchase(ctx, suid)
+	if errors.Is(err, mongo.ErrNoDocuments) {
+		shopPurchase = &umodel.UserShopPurchase{SUID: suid}
+	} else if err != nil {
+		return err
+	}
+	if shopPurchase.PurchaseCounts == nil {
+		shopPurchase.PurchaseCounts = map[string]int32{}
+	}
+	if shopPurchase.ResetTimes == nil {
+		shopPurchase.ResetTimes = map[string]int64{}
+	}
+	purchasedItemIds := append([]string(nil), shopPurchase.PurchasedItemIds...)
+	for _, shop := range shops {
+		for _, item := range shop.Items {
+			if item != nil {
+				purchasedItemIds = append(purchasedItemIds, item.GetId())
+			}
+		}
+	}
+	shopPurchase.PurchasedItemIds = uniqueGodStrings(purchasedItemIds)
+	if err := opuser.UpsertUserShopPurchase(ctx, shopPurchase); err != nil {
+		return err
+	}
+	counts[uname.UserShopPurchase] = len(shopPurchase.PurchasedItemIds)
+
 	currentShops, err := opuser.FindUserShopIds(ctx, suid)
 	if err != nil {
 		return err
@@ -976,6 +1048,21 @@ func applyGodResources(
 	}
 	counts[uname.UserExchangeBooth] = len(boothIds)
 	return nil
+}
+
+func mainGodStoryIds(parts []*pmaster.StoryPart) []string {
+	storyIds := make([]string, 0)
+	for _, part := range parts {
+		if part.GetType() != penum.StoryPartType_StoryPartType_Main {
+			continue
+		}
+		for _, chapter := range part.GetChapters() {
+			for _, episode := range chapter.GetEpisodes() {
+				storyIds = append(storyIds, episode.GetStoryId())
+			}
+		}
+	}
+	return uniqueGodStrings(storyIds)
 }
 
 func uniqueGodStrings(values []string) []string {

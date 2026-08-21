@@ -3,7 +3,6 @@ package servers
 import (
 	"context"
 	"errors"
-	"fmt"
 	"math"
 	"time"
 
@@ -13,7 +12,6 @@ import (
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
-	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 
@@ -141,7 +139,7 @@ func (s *ExchangeServer) Execute(ctx context.Context, req *papi.ExchangeExecuteR
 		if exchangeItem.GetRequiredResourceAmount() > math.MaxInt64/int64(req.GetCount()) {
 			return nil, status.Error(codes.InvalidArgument, "exchange amount overflows")
 		}
-		rewards, err := resolveExchangeRewards(ctx, exchangeItem.GetRewardId(), req.GetCount())
+		rewards, err := viber.ResolveRewardResources(ctx, exchangeItem.GetRewardId(), req.GetCount())
 		if err != nil {
 			return nil, err
 		}
@@ -171,11 +169,11 @@ func (s *ExchangeServer) Execute(ctx context.Context, req *papi.ExchangeExecuteR
 
 		results := make([]*ptransaction.RewardResult, 0, len(rewards))
 		for _, reward := range rewards {
-			result, err := viber.GrantExchangeReward(ctx, suid, reward, updated)
+			granted, err := viber.GrantExchangeRewards(ctx, suid, reward, updated)
 			if err != nil {
 				return nil, err
 			}
-			results = append(results, result)
+			results = append(results, granted...)
 		}
 
 		purchase.PurchaseCounts[exchangeItem.Id] = int32(nextPurchaseCount)
@@ -354,53 +352,8 @@ func nextExchangeResetTime(resetTime int64, timing penum.ResetTimingType, now in
 		const period = int64(7 * 24 * time.Hour / time.Millisecond)
 		return resetTime + ((now-resetTime)/period+1)*period
 	case penum.ResetTimingType_ResetTimingType_Monthly:
-		reset := time.UnixMilli(resetTime).In(jstZone)
-		current := time.UnixMilli(now).In(jstZone)
-		months := (current.Year()-reset.Year())*12 + int(current.Month()-reset.Month())
-		next := reset.AddDate(0, months, 0)
-		if !next.After(current) {
-			next = next.AddDate(0, 1, 0)
-		}
-		return next.UnixMilli()
+		return viber.NextJSTMonthlyOccurrence(resetTime, now)
 	default:
 		return resetTime
 	}
-}
-
-func resolveExchangeRewards(ctx context.Context, rewardId string, count int32) ([]*pmaster.RewardResource, error) {
-	resources, err := viber.ParseAutoReward(rewardId)
-	if err != nil {
-		return nil, err
-	}
-	if resources == nil {
-		reward, err := findMasterExchangeReward(ctx, rewardId)
-		if err != nil {
-			return nil, err
-		}
-		resources = reward.Resources
-	}
-	resolved := make([]*pmaster.RewardResource, 0, len(resources))
-	for _, resource := range resources {
-		amount := int64(resource.Amount) * int64(count)
-		if amount <= 0 || amount > math.MaxInt32 {
-			return nil, status.Error(codes.InvalidArgument, "invalid reward amount")
-		}
-		resolved = append(resolved, &pmaster.RewardResource{
-			ResourceType: resource.ResourceType,
-			ResourceId:   resource.ResourceId,
-			Amount:       int32(amount),
-		})
-	}
-	return resolved, nil
-}
-
-func findMasterExchangeReward(ctx context.Context, rewardId string) (*pmaster.Reward, error) {
-	reward, err := viber.FindMasterReward(ctx, rewardId)
-	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, status.Error(codes.FailedPrecondition, fmt.Sprintf("reward %q is missing from master data", rewardId))
-		}
-		return nil, err
-	}
-	return reward, nil
 }

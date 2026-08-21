@@ -3,11 +3,12 @@ package card
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"time"
 )
 
 func SpawnUserCardById(ctx context.Context, cardId string) (*ptransaction.UserCard, error) {
@@ -31,15 +32,15 @@ func SpawnUserCard(ctx context.Context, card *pmaster.Card) (*ptransaction.UserC
 	if err != nil {
 		return nil, err
 	}
+	evolutionLevel, evolutionExp, err := InitialEvolutionState(ctx, card)
+	if err != nil {
+		return nil, err
+	}
 	params, err := CalcUserCardBaseAttr(ctx, card, 1, card.InitialRarity)
 	if err != nil {
 		return nil, fmt.Errorf("failed to CalcUserCardBaseAttr: %w", err)
 	}
-	displayType, err := CalcCardDisplayType(ctx, card.Id, card.InitialRarity, 0)
-	if err != nil {
-		return nil, fmt.Errorf("failed to CalcCardDisplayType: %w", err)
-	}
-	photoCount, skillIds, abilityIds, err := CalcUnlocks(ctx, 1, card)
+	photoCount, skillIds, abilityIds, err := CalcUnlocksWithEvolution(ctx, 1, evolutionLevel, card)
 	if err != nil {
 		return nil, err
 	}
@@ -52,13 +53,13 @@ func SpawnUserCard(ctx context.Context, card *pmaster.Card) (*ptransaction.UserC
 		SkillLevel2:              1,
 		SkillLevel3:              1,
 		SkillLevel4:              1,
+		EvolutionLevelTotalExp:   evolutionExp,
 		LiveAbilityLevel:         1,
 		ActivityAbilityLevel:     1,
 		ObtainedTime:             now,
 		Supported:                false,
 		LastEnhanceTime:          0,
 		RankTotalExp:             0,
-		DisplayType:              displayType,
 		Level:                    1,
 		Rarity:                   card.InitialRarity,
 		Vocal:                    params.Vocal,
@@ -70,7 +71,7 @@ func SpawnUserCard(ctx context.Context, card *pmaster.Card) (*ptransaction.UserC
 		SkillId1:                 skillIds[0],
 		SkillId2:                 skillIds[1],
 		SkillId3:                 skillIds[2],
-		SkillId4:                 card.SkillId4,
+		SkillId4:                 skillIds[3],
 		LiveAbilityId:            abilityIds[0],
 		ActivityAbilityId:        abilityIds[1],
 		PhotoEquipableCount:      photoCount,
@@ -86,14 +87,14 @@ func SpawnUserCard(ctx context.Context, card *pmaster.Card) (*ptransaction.UserC
 		BaseSkillId1:             skillIds[0],
 		BaseSkillId2:             skillIds[1],
 		BaseSkillId3:             skillIds[2],
-		BaseSkillId4:             card.SkillId4,
+		BaseSkillId4:             skillIds[3],
 		BaseLiveAbilityLevel:     1,
 		BaseActivityAbilityLevel: 1,
 		BaseLiveAbilityId:        abilityIds[0],
 		BaseActivityAbilityId:    abilityIds[1],
 		BasePhotoEquipableCount:  photoCount,
 		Rank:                     0,
-		EvolutionLevel:           0,
+		EvolutionLevel:           evolutionLevel,
 	}
 	return userCard, nil
 }

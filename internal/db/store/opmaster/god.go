@@ -140,6 +140,10 @@ func FindAllStories(ctx context.Context) ([]*pmaster.Story, error) {
 	return mcommon.FindMany[mmodel.Story, pmaster.Story](ctx, mname.Story, bson.M{})
 }
 
+func FindAllStoryParts(ctx context.Context) ([]*pmaster.StoryPart, error) {
+	return mcommon.FindMany[mmodel.StoryPart, pmaster.StoryPart](ctx, mname.StoryPart, bson.M{})
+}
+
 func FindMaxStaffLevels(ctx context.Context) ([]*pmaster.StaffLevel, error) {
 	levels, err := mcommon.FindMany[mmodel.StaffLevel, pmaster.StaffLevel](
 		ctx,

@@ -10,6 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
+func FindUserMessage(ctx context.Context, suid string, messageId string) (*ptransaction.UserMessage, error) {
+	return ucommon.FindOne[ptransaction.UserMessage](
+		ctx,
+		uname.UserMessage,
+		bson.M{"SUID": suid, "messageId": messageId},
+	)
+}
+
 func FindAllUserMessages(ctx context.Context, suid string) ([]*ptransaction.UserMessage, error) {
 	return ucommon.FindAll[ptransaction.UserMessage](
 		ctx,

@@ -10,6 +10,8 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -20,8 +22,6 @@ import (
 type HomeServer struct {
 	papi.UnimplementedHomeServer
 }
-
-var jstZone = time.FixedZone("JST", 9*60*60)
 
 func (s *HomeServer) Login(ctx context.Context, req *papi.HomeLoginRequest) (*papi.HomeLoginResponse, error) {
 	suid := viber.GetSuid(ctx).String()
@@ -45,10 +45,7 @@ func (s *HomeServer) Login(ctx context.Context, req *papi.HomeLoginRequest) (*pa
 			return nil, err
 		}
 
-		prevLogin := time.UnixMilli(user.LastLoginTime).In(jstZone)
-		nowJst := now.In(jstZone)
-		isFirstOfDay := prevLogin.Year() != nowJst.Year() ||
-			prevLogin.YearDay() != nowJst.YearDay()
+		isFirstOfDay := !viber.SameJSTDay(user.LastLoginTime, now.UnixMilli())
 
 		user.LastLoginTime = now.UnixMilli()
 		updatedData.User = user
@@ -66,10 +63,29 @@ func (s *HomeServer) Login(ctx context.Context, req *papi.HomeLoginRequest) (*pa
 				return nil, err
 			}
 			updatedData.TotalCount = totalCount
+
+			loginBonusNotification := &ptransaction.UserNotification{
+				NotificationType: penum.NotificationType_NotificationType_LoginBonus,
+				Valid:            true,
+			}
+			if err := opuser.UpsertUserNotification(ctx, suid, loginBonusNotification); err != nil {
+				return nil, err
+			}
+			updatedData.Notifications = append(updatedData.Notifications, loginBonusNotification)
+		}
+		purchasedLoginBonusShopInfos, err := viber.ApplyPurchasedLoginBonusShops(
+			ctx,
+			suid,
+			now.UnixMilli(),
+			updatedData,
+		)
+		if err != nil {
+			return nil, err
 		}
 
 		response = &papi.HomeLoginResponse{
-			CommonResponse: viber.NewCommonResponse(updatedData),
+			PurchasedLoginBonusShopInfos: purchasedLoginBonusShopInfos,
+			CommonResponse:               viber.NewCommonResponse(updatedData),
 		}
 		if balance.PaidBalance > 0 {
 			response.PaidJpy = &papi.PaidJpy{Amount: balance.PaidBalance}
@@ -86,7 +102,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.HomeEnterResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-		gachaInfos, err := opuser.FindAllUserGachaInfos(ctx, suid)
+		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, time.Now().UnixMilli())
 		if err != nil {
 			return nil, err
 		}

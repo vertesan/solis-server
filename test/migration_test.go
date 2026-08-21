@@ -1,17 +1,11 @@
 package test
 
 import (
-	"context"
 	"fmt"
 	"testing"
-	"time"
 
-	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
-	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
-	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/http/game"
-	"github.com/vertesan/solis-server/internal/utils/jwto"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3/client"
@@ -20,43 +14,7 @@ import (
 )
 
 func TestMigrateScenario(t *testing.T) {
-	// remove previous test data, ignore error (not exists)
-	opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000")
-	opuser.DeleteUser(context.Background(), "00000000-0000-0000-0000-000000000000")
-
-	// prepare mock data
-	now := time.Now()
-	milliNow := now.UnixMilli()
-	if err := opuser.InsertUserAuth(context.Background(), &umodel.UserAuth{
-		PublicUserId:  "00000000",
-		ServerUserId:  "00000000-0000-0000-0000-000000000000",
-		Password:      "password",
-		FirebaseId:    "00000000-0000-0000-0000-000000000000",
-		RefreshTokens: []string{jwto.CreateSecureRefreshToken()},
-		ValidSince:    now.Unix(),
-		CreatedAt:     milliNow,
-		LastLoginAt:   milliNow,
-		LastRefreshAt: now,
-		OnetimeToken:  "",
-	}); err != nil {
-		t.Fatalf("failed to create mock userAuth: %v", err)
-	}
-	t.Cleanup(func() {
-		if err := opuser.DeleteUserAuth(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
-			t.Errorf("failed to remove test userAuth: %v", err)
-		}
-	})
-	if err := opuser.UpsertUser(context.Background(), "00000000-0000-0000-0000-000000000000", &ptransaction.User{
-		Name:         "TestUser",
-		ManagerLevel: 1,
-	}); err != nil {
-		t.Fatalf("failed to create mock user: %v", err)
-	}
-	t.Cleanup(func() {
-		if err := opuser.DeleteUser(context.Background(), "00000000-0000-0000-0000-000000000000"); err != nil {
-			t.Errorf("failed to remove test user: %v", err)
-		}
-	})
+	setupTestUser(t)
 
 	mClient := papi.NewMigrationClient(testConfig.GrpcConn)
 
@@ -64,8 +22,8 @@ func TestMigrateScenario(t *testing.T) {
 	ctx1, cancel1 := getBasicGrpcCtx()
 	defer cancel1()
 	resp1, err := mClient.MigratePassword(ctx1, &papi.MigrationMigratePasswordRequest{
-		UserId:   "00000000",
-		Password: "password",
+		UserId:   testConfig.TestUserPublicId,
+		Password: testConfig.TestUserPass,
 	})
 	if err != nil {
 		t.Fatalf("%v", err)
