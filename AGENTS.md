@@ -38,7 +38,6 @@ solis-server/
 ├── proto/                      Protobuf source definitions (`*.proto`)
 ├── test/                       Integration test scenarios for gRPC and HTTP endpoints
 ├── .env                        Environment variables automatically loaded when the server starts
-├── agents/                     Documents created by agents
 ├── resources/                  Encrypted master databases and Unity assetbundles
 │   └── masterdata/             In-game master database converted to JSON format
 ├── scripts/                    TypeScript/JS utilities for data migration and manifest updates
