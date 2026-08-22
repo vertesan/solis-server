@@ -82,3 +82,33 @@ type UserMessageProgress struct {
 	LastMessageDetailId   string `bson:"lastMessageDetailId"`
 	LastMessageDetailTime int64  `bson:"lastMessageDetailTime"`
 }
+
+// UserActivityLessonDailyState records the JST game day for which
+// ActivityLessonProgress.DailyPromoteCount applies.  The original progress
+// protobuf contains the count but not its day, so keeping the day separately
+// prevents repeated resets before the next lesson reward is received.
+type UserActivityLessonDailyState struct {
+	SUID string `bson:"SUID"`
+	Day  string `bson:"day"`
+}
+
+// UserFanEventRanking stores a user's best score for one fan-event type.  The
+// private server deliberately exposes a self-only ranking, but the score still
+// needs to survive completed runs.
+type UserFanEventRanking struct {
+	SUID               string   `bson:"SUID"`
+	ActivityFanEventId string   `bson:"activityFanEventId"`
+	BestScore          int64    `bson:"bestScore"`
+	CharacterIds       []string `bson:"characterIds"`
+}
+
+// UserPromotionRunState stores accounting state that is not represented in
+// PromotionProgress. It lives alongside the inline protobuf fields in the
+// userPromotionRun document so repeated reward receipts cannot discard a
+// partial multi-step fan reward.
+type UserPromotionRunState struct {
+	SUID                     string `bson:"SUID"`
+	AccountingInitialized    bool   `bson:"accountingInitialized"`
+	LastSettledCompletedStep int64  `bson:"lastSettledCompletedStep"`
+	FanRewardStepRemainder   int64  `bson:"fanRewardStepRemainder"`
+}

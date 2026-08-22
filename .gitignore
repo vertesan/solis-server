@@ -34,6 +34,7 @@ docker/
 traffic/
 
 # binaries
+__debug_bin*
 /solis-server
 /solis
 

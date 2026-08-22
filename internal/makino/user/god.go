@@ -42,8 +42,10 @@ type GodResult struct {
 
 type godMasterData struct {
 	managerLevel     *pmaster.ManagerLevel
+	characterLevel   *pmaster.CharacterActivityLevel
 	cardSupport      *pmaster.CardSupportRelease
 	setting          *pmaster.Setting
+	activityCatalog  *godActivityCatalog
 	accessories      []*pmaster.Accessory
 	activityFans     []*pmaster.ActivityFanEvent
 	activityPromos   []*pmaster.ActivityPromotion
@@ -121,7 +123,11 @@ func findGodUserAuth(ctx context.Context, publicUserId, serverUserId string) (*u
 }
 
 func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
-	data := &godMasterData{}
+	activityCatalog, err := loadGodActivityCatalog()
+	if err != nil {
+		return nil, err
+	}
+	data := &godMasterData{activityCatalog: activityCatalog}
 	settingId, err := config.GetGameSettingId()
 	if err != nil {
 		return nil, err
@@ -142,6 +148,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 	})
 	run("CardSupportRelease", func() (err error) {
 		data.cardSupport, err = opmaster.FindMaxCardSupportRelease(groupCtx)
+		return err
+	})
+	run("CharacterActivityLevel", func() (err error) {
+		data.characterLevel, err = opmaster.FindMaxCharacterActivityLevel(groupCtx)
 		return err
 	})
 	run("Setting", func() (err error) {
@@ -291,6 +301,16 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 	if err := group.Wait(); err != nil {
 		return nil, err
 	}
+	if err := validateGodActivityCatalog(
+		ctx,
+		data.activityCatalog,
+		data.areas,
+		data.activityFans,
+		data.activityPromos,
+		data.activityRefresh,
+	); err != nil {
+		return nil, fmt.Errorf("failed to validate god activity catalog: %w", err)
+	}
 
 	data.userCards, err = spawnGodCards(ctx, data.cards)
 	if err != nil {
@@ -386,31 +406,45 @@ func applyGodFeatureGates(
 	for _, value := range fanInfo.FanEvents {
 		fansById[value.Id] = value
 	}
+	fanEvents := make([]*papi.FanEvent, 0, len(data.activityFans))
 	for _, master := range data.activityFans {
-		value := fansById[master.Id]
-		if value == nil {
-			value = &papi.FanEvent{Id: master.Id}
-			fanInfo.FanEvents = append(fanInfo.FanEvents, value)
+		profile := data.activityCatalog.fanEvent(master.GetId())
+		highestLevel := maxFanEventLevel(master)
+		if profile == nil || highestLevel == nil {
+			return fmt.Errorf("validated fan event %q profile is unavailable", master.GetId())
 		}
-		value.Name = master.Name
-		value.Type = master.Type
-		value.ViewConditionId = master.ViewConditionId
-		value.UnlockConditionId = master.UnlockConditionId
-		value.IsUnlocked = true
-		var highestLevel *pmaster.ActivityFanEventLevel
-		for _, level := range master.Levels {
-			if highestLevel == nil || level.Level > highestLevel.Level {
-				highestLevel = level
-			}
+		var exp int32
+		if existing := fansById[master.GetId()]; existing != nil {
+			exp = existing.GetExp()
 		}
-		if highestLevel != nil {
-			value.Level = highestLevel.Level
-			value.SubName = highestLevel.Name
-		}
-		value.NextLevelRequiredExp = 0
-		value.NextLevelUnlockConditionId = ""
-		value.IsNextLevelUnlocked = false
+		fanEvents = append(fanEvents, &papi.FanEvent{
+			Id:                         master.GetId(),
+			Name:                       master.GetName(),
+			SubName:                    highestLevel.GetName(),
+			Type:                       master.GetType(),
+			UnlockConditionId:          master.GetUnlockConditionId(),
+			IsUnlocked:                 true,
+			ActivityPerformanceId:      profile.ActivityPerformanceID,
+			Level:                      profile.Level,
+			Exp:                        exp,
+			NextLevelRequiredExp:       0,
+			RequiredStamina:            profile.RequiredStamina,
+			NextLevelUnlockConditionId: "",
+			IsNextLevelUnlocked:        false,
+			StepConsumptionStamina:     profile.StepConsumptionStamina,
+			FixedRewardId:              profile.FixedRewardID,
+			AdditionalRewardId:         "",
+			RankSRewardId:              "",
+			RankARewardId:              "",
+			RankBRewardId:              "",
+			RankCRewardId:              "",
+			RankDRewardId:              "",
+			ViewConditionId:            master.GetViewConditionId(),
+			CampaignDropRewardIds:      []string{},
+		})
 	}
+	fanInfo.FanEvents = fanEvents
+	fanInfo.CampaignEffects = []*papi.ActivityCampaignEffect{}
 	if err := opuser.UpsertUserFanEventInfo(ctx, suid, fanInfo); err != nil {
 		return err
 	}
@@ -424,30 +458,43 @@ func applyGodFeatureGates(
 	for _, value := range promotionInfo.Promotions {
 		promotionsById[value.Id] = value
 	}
+	promotions := make([]*papi.Promotion, 0, len(data.activityPromos))
 	for _, master := range data.activityPromos {
-		value := promotionsById[master.Id]
-		if value == nil {
-			value = &papi.Promotion{Id: master.Id}
-			promotionInfo.Promotions = append(promotionInfo.Promotions, value)
+		profile := data.activityCatalog.promotion(master.GetId())
+		highestLevel := maxPromotionLevel(master)
+		if profile == nil || highestLevel == nil {
+			return fmt.Errorf("validated promotion %q profile is unavailable", master.GetId())
 		}
-		value.Name = master.Name
-		value.ViewConditionId = master.ViewConditionId
-		value.UnlockConditionId = master.UnlockConditionId
-		value.IsUnlocked = true
-		var highestLevel *pmaster.ActivityPromotionLevel
-		for _, level := range master.Levels {
-			if highestLevel == nil || level.Level > highestLevel.Level {
-				highestLevel = level
-			}
+		var exp int32
+		if existing := promotionsById[master.GetId()]; existing != nil {
+			exp = existing.GetExp()
 		}
-		if highestLevel != nil {
-			value.Level = highestLevel.Level
-			value.SubName = highestLevel.Name
-		}
-		value.NextLevelRequiredExp = 0
-		value.NextLevelUnlockConditionId = ""
-		value.IsNextLevelUnlocked = false
+		promotions = append(promotions, &papi.Promotion{
+			Id:                             master.GetId(),
+			Name:                           master.GetName(),
+			SubName:                        highestLevel.GetName(),
+			UnlockConditionId:              master.GetUnlockConditionId(),
+			IsUnlocked:                     true,
+			ActivityPerformanceId:          profile.ActivityPerformanceID,
+			Level:                          profile.Level,
+			Exp:                            exp,
+			NextLevelRequiredExp:           0,
+			RequiredStamina:                profile.RequiredStamina,
+			NextLevelUnlockConditionId:     "",
+			IsNextLevelUnlocked:            false,
+			StepConsumptionStamina:         profile.StepConsumptionStamina,
+			StepRewardGold:                 profile.StepRewardGold,
+			StepRewardCardEnhanceItem:      profile.StepRewardCardEnhanceItem,
+			StepAdditionalRewardId:         "",
+			MultiStepRewardId:              profile.MultiStepRewardID,
+			MaxFanAmount:                   profile.MaxFanAmount,
+			ViewConditionId:                master.GetViewConditionId(),
+			SubGenre:                       profile.SubGenre,
+			MultiStepCampaignDropRewardIds: []string{},
+		})
 	}
+	promotionInfo.Promotions = promotions
+	promotionInfo.CampaignEffects = []*papi.ActivityCampaignEffect{}
 	if err := opuser.UpsertUserPromotionInfo(ctx, suid, promotionInfo); err != nil {
 		return err
 	}
@@ -461,44 +508,68 @@ func applyGodFeatureGates(
 	for _, value := range refreshInfo.Refreshes {
 		refreshesById[value.Id] = value
 	}
+	refreshes := make([]*papi.Refresh, 0, len(data.activityRefresh))
 	for _, master := range data.activityRefresh {
-		value := refreshesById[master.Id]
-		if value == nil {
-			value = &papi.Refresh{Id: master.Id}
-			refreshInfo.Refreshes = append(refreshInfo.Refreshes, value)
+		profile := data.activityCatalog.refresh(master.GetId())
+		if profile == nil {
+			return fmt.Errorf("validated refresh %q profile is unavailable", master.GetId())
 		}
-		value.Name = master.Name
-		value.ViewConditionId = master.ViewConditionId
-		value.UnlockConditionId = master.UnlockConditionId
-		value.IsUnlocked = true
-		levelsByNumber := make(map[int32]*papi.RefreshLevel, len(value.Levels))
-		for _, level := range value.Levels {
-			levelsByNumber[level.Level] = level
-		}
+		levels := make([]*papi.RefreshLevel, 0, len(master.GetLevels()))
 		var highestLevel int32
-		for _, masterLevel := range master.Levels {
-			if masterLevel.Level > highestLevel {
-				highestLevel = masterLevel.Level
+		for _, masterLevel := range master.GetLevels() {
+			if masterLevel.GetLevel() > highestLevel {
+				highestLevel = masterLevel.GetLevel()
 			}
-			level := levelsByNumber[masterLevel.Level]
-			if level == nil {
-				level = &papi.RefreshLevel{Level: masterLevel.Level}
-				value.Levels = append(value.Levels, level)
+			levelProfile := profile.level(masterLevel.GetLevel())
+			if levelProfile == nil {
+				return fmt.Errorf(
+					"validated refresh %q level %d profile is unavailable",
+					master.GetId(),
+					masterLevel.GetLevel(),
+				)
 			}
-			level.Name = masterLevel.Name
-			level.ViewConditionId = masterLevel.ViewConditionId
-			level.UnlockConditionId = masterLevel.UnlockConditionId
-			level.IsUnlocked = true
+			levels = append(levels, &papi.RefreshLevel{
+				Level:                 masterLevel.GetLevel(),
+				Name:                  masterLevel.GetName(),
+				RequiredGold:          levelProfile.RequiredGold,
+				UnlockConditionId:     masterLevel.GetUnlockConditionId(),
+				IsUnlocked:            true,
+				ActivityPerformanceId: levelProfile.ActivityPerformanceID,
+				RecoveryAmount:        levelProfile.RecoveryAmount,
+				ViewConditionId:       masterLevel.GetViewConditionId(),
+				SubGenre:              levelProfile.SubGenre,
+			})
 		}
-		if highestLevel > 0 {
-			value.Level = highestLevel
+		var exp int32
+		if existing := refreshesById[master.GetId()]; existing != nil {
+			exp = existing.GetExp()
 		}
-		value.NextLevelRequiredExp = 0
+		refreshes = append(refreshes, &papi.Refresh{
+			Id:                   master.GetId(),
+			Name:                 master.GetName(),
+			RequiredMinutes:      profile.RequiredMinutes,
+			UnlockConditionId:    master.GetUnlockConditionId(),
+			IsUnlocked:           true,
+			Level:                highestLevel,
+			Exp:                  exp,
+			NextLevelRequiredExp: 0,
+			Levels:               levels,
+			ViewConditionId:      master.GetViewConditionId(),
+		})
 	}
+	refreshInfo.Refreshes = refreshes
+	refreshInfo.CampaignEffects = []*papi.ActivityCampaignEffect{}
 	if err := opuser.UpsertUserRefreshInfo(ctx, suid, refreshInfo); err != nil {
 		return err
 	}
 	counts[uname.UserRefreshInfo] = len(refreshInfo.Refreshes)
+	if err := opuser.UpsertUserLessonInfo(ctx, suid, &papi.LessonInfo{
+		CampaignEffects:       []*papi.ActivityCampaignEffect{},
+		CampaignDropRewardIds: []string{},
+	}); err != nil {
+		return err
+	}
+	counts[uname.UserLessonInfo] = 1
 
 	current, err := opuser.FindUserCurrentQuestArea(ctx, suid)
 	if err != nil {
@@ -506,12 +577,15 @@ func applyGodFeatureGates(
 	}
 	mainArea, towerArea := furthestGodAreas(data.areas)
 	if mainArea != nil {
-		current.CurrentMainAreaId = mainArea.Id
+		current.CurrentMainAreaId = data.activityCatalog.Lesson.CurrentAreaID
 		lesson, err := opuser.FindUserLessonProgress(ctx, suid)
 		if err != nil {
 			return err
 		}
-		lesson.CurrentAreaId = mainArea.Id
+		lesson.CurrentAreaId = data.activityCatalog.Lesson.CurrentAreaID
+		lesson.StepRewardGold = data.activityCatalog.Lesson.StepRewardGold
+		lesson.StepRewardManagerExp = data.activityCatalog.Lesson.StepRewardManagerExp
+		lesson.StepRewardCardEnhanceItem = data.activityCatalog.Lesson.StepRewardCardEnhanceItem
 		if err := opuser.UpsertUserLessonProgress(ctx, suid, lesson); err != nil {
 			return err
 		}
@@ -578,6 +652,26 @@ func applyGodOwnership(
 	if err := godUpsert(ctx, uname.UserCharacter, suid, characters, false, counts); err != nil {
 		return err
 	}
+	ownedCharacters, err := opuser.FindAllUserCharacters(ctx, suid)
+	if err != nil {
+		return err
+	}
+	for _, value := range ownedCharacters {
+		if value.ActivityLevel < data.characterLevel.Level {
+			value.ActivityLevel = data.characterLevel.Level
+		}
+		if value.ActivityExp < int64(data.characterLevel.RequiredExp) {
+			value.ActivityExp = int64(data.characterLevel.RequiredExp)
+		}
+		if !value.InActivity && value.ActivityStamina < data.characterLevel.MaxStamina {
+			value.ActivityStamina = data.characterLevel.MaxStamina
+			value.StaminaUpdatedTime = now
+		}
+		if err := opuser.UpsertUserCharacter(ctx, suid, value); err != nil {
+			return err
+		}
+	}
+	counts[uname.UserCharacter] = len(ownedCharacters)
 
 	costumes := make([]opuser.GodUpsert[*ptransaction.UserCostume], 0, len(data.userCostumes))
 	for _, value := range data.userCostumes {

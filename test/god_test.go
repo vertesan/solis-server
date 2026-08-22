@@ -159,6 +159,7 @@ func TestUserGod(t *testing.T) {
 		t.Fatalf("manager progression is not master-derived: user=%v master=%v", userData, maxLevel)
 	}
 	assertGodResourceAmounts(t, ctx)
+	assertGodCharacterActivityProgress(t, ctx)
 
 	masterCards, err := opmaster.FindAllCards(ctx)
 	if err != nil {
@@ -266,83 +267,7 @@ func TestUserGod(t *testing.T) {
 		}
 	}
 
-	fanInfo, err := opuser.FindUserFanEventInfo(ctx, testConfig.TestUserSuid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterFans, err := opmaster.FindAllActivityFanEvents(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterFanMax := make(map[string]int32, len(masterFans))
-	for _, master := range masterFans {
-		for _, level := range master.Levels {
-			if level.Level > masterFanMax[master.Id] {
-				masterFanMax[master.Id] = level.Level
-			}
-		}
-	}
-	for _, fan := range fanInfo.FanEvents {
-		if !fan.IsUnlocked {
-			t.Fatalf("fan event %q was not unlocked by god mode", fan.Id)
-		}
-		if fan.Level != masterFanMax[fan.Id] {
-			t.Fatalf("fan event %q level = %d, want master max %d", fan.Id, fan.Level, masterFanMax[fan.Id])
-		}
-	}
-	promotionInfo, err := opuser.FindUserPromotionInfo(ctx, testConfig.TestUserSuid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterPromotions, err := opmaster.FindAllActivityPromotions(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterPromotionMax := make(map[string]int32, len(masterPromotions))
-	for _, master := range masterPromotions {
-		for _, level := range master.Levels {
-			if level.Level > masterPromotionMax[master.Id] {
-				masterPromotionMax[master.Id] = level.Level
-			}
-		}
-	}
-	for _, promotion := range promotionInfo.Promotions {
-		if !promotion.IsUnlocked {
-			t.Fatalf("promotion %q was not unlocked by god mode", promotion.Id)
-		}
-		if promotion.Level != masterPromotionMax[promotion.Id] {
-			t.Fatalf("promotion %q level = %d, want master max %d", promotion.Id, promotion.Level, masterPromotionMax[promotion.Id])
-		}
-	}
-	refreshInfo, err := opuser.FindUserRefreshInfo(ctx, testConfig.TestUserSuid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterRefreshes, err := opmaster.FindAllActivityRefreshes(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	masterRefreshMax := make(map[string]int32, len(masterRefreshes))
-	for _, master := range masterRefreshes {
-		for _, level := range master.Levels {
-			if level.Level > masterRefreshMax[master.Id] {
-				masterRefreshMax[master.Id] = level.Level
-			}
-		}
-	}
-	for _, refresh := range refreshInfo.Refreshes {
-		if !refresh.IsUnlocked {
-			t.Fatalf("refresh %q was not unlocked by god mode", refresh.Id)
-		}
-		if refresh.Level != masterRefreshMax[refresh.Id] {
-			t.Fatalf("refresh %q level = %d, want master max %d", refresh.Id, refresh.Level, masterRefreshMax[refresh.Id])
-		}
-		for _, level := range refresh.Levels {
-			if !level.IsUnlocked {
-				t.Fatalf("refresh %q level %d was not unlocked by god mode", refresh.Id, level.Level)
-			}
-		}
-	}
+	assertGodActivityCatalogs(t, ctx)
 
 	state, err := opuser.FindUserGodState(ctx, testConfig.TestUserSuid)
 	if err != nil || !state.UnlockCurrentEvents {
@@ -414,6 +339,352 @@ func TestUserGod(t *testing.T) {
 			if _, ok := showcaseSet[shop.ShopId]; !ok {
 				t.Fatalf("showcase shop %q was not unlocked by god mode", shop.ShopId)
 			}
+		}
+	}
+}
+
+func assertGodCharacterActivityProgress(t *testing.T, ctx context.Context) {
+	t.Helper()
+	maxLevel, err := opmaster.FindMaxCharacterActivityLevel(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	characters, err := opuser.FindAllUserCharacters(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(characters) == 0 {
+		t.Fatal("god mode did not create any playable characters")
+	}
+	for _, character := range characters {
+		if character.GetActivityLevel() != maxLevel.GetLevel() {
+			t.Fatalf(
+				"character %q activity level = %d, want master max %d",
+				character.GetCharacterId(),
+				character.GetActivityLevel(),
+				maxLevel.GetLevel(),
+			)
+		}
+		if character.GetActivityExp() < int64(maxLevel.GetRequiredExp()) {
+			t.Fatalf(
+				"character %q activity exp = %d, want at least %d",
+				character.GetCharacterId(),
+				character.GetActivityExp(),
+				maxLevel.GetRequiredExp(),
+			)
+		}
+		if !character.GetInActivity() && character.GetActivityStamina() < maxLevel.GetMaxStamina() {
+			t.Fatalf(
+				"character %q activity stamina = %d, want at least master max %d",
+				character.GetCharacterId(),
+				character.GetActivityStamina(),
+				maxLevel.GetMaxStamina(),
+			)
+		}
+		if character.GetStaminaUpdatedTime() <= 0 {
+			t.Fatalf("character %q has no stamina update timestamp", character.GetCharacterId())
+		}
+	}
+}
+
+func assertGodActivityCatalogs(t *testing.T, ctx context.Context) {
+	t.Helper()
+	assertGodLessonCatalog(t, ctx)
+	assertGodFanEventCatalog(t, ctx)
+	assertGodPromotionCatalog(t, ctx)
+	assertGodRefreshCatalog(t, ctx)
+}
+
+func assertGodLessonCatalog(t *testing.T, ctx context.Context) {
+	t.Helper()
+	lesson, err := opuser.FindUserLessonProgress(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if lesson.GetCurrentAreaId() != "area-main-125" || lesson.GetStepRewardGold() != 359 ||
+		lesson.GetStepRewardManagerExp() != 395 || lesson.GetStepRewardCardEnhanceItem() != 1033 {
+		t.Fatalf("god lesson catalog was not fully hydrated: %v", lesson)
+	}
+	lessonInfo, err := opuser.FindUserLessonInfo(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(lessonInfo.GetCampaignEffects()) != 0 || len(lessonInfo.GetCampaignDropRewardIds()) != 0 {
+		t.Fatalf("god lesson catalog retained beginner campaign state: %v", lessonInfo)
+	}
+}
+
+func assertGodFanEventCatalog(t *testing.T, ctx context.Context) {
+	t.Helper()
+	type profile struct {
+		level                 int32
+		activityPerformanceID string
+		requiredStamina       int32
+		stepStamina           int32
+		fixedRewardID         string
+	}
+	profiles := map[string]profile{
+		"act-fan-01": {40, "handshake-stage-6", 1800, 10, "rd-act-fan-01-lv40-view"},
+		"act-fan-02": {38, "photo-session-stage-6", 1900, 7, "rd-act-fan-02-lv38-view"},
+		"act-fan-03": {35, "sign-stage-6", 1800, 5, "rd-act-fan-03-lv35-view"},
+	}
+	info, err := opuser.FindUserFanEventInfo(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(info.GetFanEvents()) != len(profiles) {
+		t.Fatalf("god fan event count = %d, want %d", len(info.GetFanEvents()), len(profiles))
+	}
+	if len(info.GetCampaignEffects()) != 0 {
+		t.Fatalf("god fan-event catalog retained campaign effects: %v", info.GetCampaignEffects())
+	}
+	actualByID := make(map[string]*papi.FanEvent, len(info.GetFanEvents()))
+	for _, fanEvent := range info.GetFanEvents() {
+		actualByID[fanEvent.GetId()] = fanEvent
+	}
+	masters, err := opmaster.FindAllActivityFanEvents(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(masters) != len(profiles) {
+		t.Fatalf("fan event profile count = %d, master count = %d", len(profiles), len(masters))
+	}
+	for _, master := range masters {
+		configured, ok := profiles[master.GetId()]
+		if !ok {
+			t.Fatalf("fan event %q has no expected god profile", master.GetId())
+		}
+		var maxLevel int32
+		var subName string
+		for _, level := range master.GetLevels() {
+			if level.GetLevel() > maxLevel {
+				maxLevel = level.GetLevel()
+				subName = level.GetName()
+			}
+		}
+		if configured.level != maxLevel {
+			t.Fatalf("fan event %q configured level = %d, master max = %d", master.GetId(), configured.level, maxLevel)
+		}
+		actual := actualByID[master.GetId()]
+		if actual == nil {
+			t.Fatalf("god mode omitted fan event %q", master.GetId())
+		}
+		expected := &papi.FanEvent{
+			Id:                         master.GetId(),
+			Name:                       master.GetName(),
+			SubName:                    subName,
+			Type:                       master.GetType(),
+			UnlockConditionId:          master.GetUnlockConditionId(),
+			IsUnlocked:                 true,
+			ActivityPerformanceId:      configured.activityPerformanceID,
+			Level:                      configured.level,
+			Exp:                        actual.GetExp(),
+			NextLevelRequiredExp:       0,
+			RequiredStamina:            configured.requiredStamina,
+			NextLevelUnlockConditionId: "",
+			IsNextLevelUnlocked:        false,
+			StepConsumptionStamina:     configured.stepStamina,
+			FixedRewardId:              configured.fixedRewardID,
+			ViewConditionId:            master.GetViewConditionId(),
+			CampaignDropRewardIds:      []string{},
+		}
+		if !proto.Equal(actual, expected) {
+			t.Fatalf("fan event %q does not match the god catalog: got=%v want=%v", master.GetId(), actual, expected)
+		}
+	}
+}
+
+func assertGodPromotionCatalog(t *testing.T, ctx context.Context) {
+	t.Helper()
+	type profile struct {
+		level                     int32
+		activityPerformanceID     string
+		stepRewardGold            int32
+		stepRewardCardEnhanceItem int32
+		multiStepRewardID         string
+		maxFanAmount              int32
+		subGenre                  string
+	}
+	profiles := map[string]profile{
+		"act-pro-01": {65, "popup", 470, 531, "rd-act-pro-01-65", 405000, "popup"},
+		"act-pro-02": {60, "cm", 471, 534, "rd-act-pro-02-60", 405000, "cm"},
+		"act-pro-03": {60, "public-radio", 471, 534, "rd-act-pro-03-60", 405000, "public-radio"},
+	}
+	info, err := opuser.FindUserPromotionInfo(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(info.GetPromotions()) != len(profiles) {
+		t.Fatalf("god promotion count = %d, want %d", len(info.GetPromotions()), len(profiles))
+	}
+	if len(info.GetCampaignEffects()) != 0 {
+		t.Fatalf("god promotion catalog retained beginner campaign effects: %v", info.GetCampaignEffects())
+	}
+	actualByID := make(map[string]*papi.Promotion, len(info.GetPromotions()))
+	for _, promotion := range info.GetPromotions() {
+		actualByID[promotion.GetId()] = promotion
+	}
+	masters, err := opmaster.FindAllActivityPromotions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(masters) != len(profiles) {
+		t.Fatalf("promotion profile count = %d, master count = %d", len(profiles), len(masters))
+	}
+	for _, master := range masters {
+		configured, ok := profiles[master.GetId()]
+		if !ok {
+			t.Fatalf("promotion %q has no expected god profile", master.GetId())
+		}
+		var maxLevel int32
+		var subName string
+		for _, level := range master.GetLevels() {
+			if level.GetLevel() > maxLevel {
+				maxLevel = level.GetLevel()
+				subName = level.GetName()
+			}
+		}
+		if configured.level != maxLevel {
+			t.Fatalf("promotion %q configured level = %d, master max = %d", master.GetId(), configured.level, maxLevel)
+		}
+		actual := actualByID[master.GetId()]
+		if actual == nil {
+			t.Fatalf("god mode omitted promotion %q", master.GetId())
+		}
+		expected := &papi.Promotion{
+			Id:                             master.GetId(),
+			Name:                           master.GetName(),
+			SubName:                        subName,
+			UnlockConditionId:              master.GetUnlockConditionId(),
+			IsUnlocked:                     true,
+			ActivityPerformanceId:          configured.activityPerformanceID,
+			Level:                          configured.level,
+			Exp:                            actual.GetExp(),
+			NextLevelRequiredExp:           0,
+			RequiredStamina:                1,
+			NextLevelUnlockConditionId:     "",
+			IsNextLevelUnlocked:            false,
+			StepConsumptionStamina:         1,
+			StepRewardGold:                 configured.stepRewardGold,
+			StepRewardCardEnhanceItem:      configured.stepRewardCardEnhanceItem,
+			MultiStepRewardId:              configured.multiStepRewardID,
+			MaxFanAmount:                   configured.maxFanAmount,
+			ViewConditionId:                master.GetViewConditionId(),
+			SubGenre:                       configured.subGenre,
+			MultiStepCampaignDropRewardIds: []string{},
+		}
+		if !proto.Equal(actual, expected) {
+			t.Fatalf("promotion %q does not match the god catalog: got=%v want=%v", master.GetId(), actual, expected)
+		}
+	}
+}
+
+func assertGodRefreshCatalog(t *testing.T, ctx context.Context) {
+	t.Helper()
+	type levelProfile struct {
+		requiredGold          int32
+		activityPerformanceID string
+		recoveryAmount        int32
+		subGenre              string
+	}
+	type profile struct {
+		requiredMinutes int32
+		levels          map[int32]levelProfile
+	}
+	profiles := map[string]profile{
+		"act-ref-01": {
+			120,
+			map[int32]levelProfile{
+				1: {60000, "cafe", 1000, "cafe"},
+				2: {210000, "shopping", 1800, "shopping"},
+				3: {360000, "bedrock_bath", 2600, "bedrock-bath"},
+				4: {510000, "karaoke", 3400, "karaoke"},
+			},
+		},
+		"act-ref-02": {
+			480,
+			map[int32]levelProfile{
+				1: {130000, "dormitory", 2500, "dormitory"},
+				2: {360000, "theme_park", 3800, "theme-park"},
+				3: {590000, "hot_spring", 5100, "hot-spring"},
+				4: {820000, "camp", 6400, "camp"},
+			},
+		},
+	}
+	info, err := opuser.FindUserRefreshInfo(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(info.GetRefreshes()) != len(profiles) {
+		t.Fatalf("god refresh count = %d, want %d", len(info.GetRefreshes()), len(profiles))
+	}
+	if len(info.GetCampaignEffects()) != 0 {
+		t.Fatalf("god refresh catalog retained campaign effects: %v", info.GetCampaignEffects())
+	}
+	actualByID := make(map[string]*papi.Refresh, len(info.GetRefreshes()))
+	for _, refresh := range info.GetRefreshes() {
+		actualByID[refresh.GetId()] = refresh
+	}
+	masters, err := opmaster.FindAllActivityRefreshes(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(masters) != len(profiles) {
+		t.Fatalf("refresh profile count = %d, master count = %d", len(profiles), len(masters))
+	}
+	for _, master := range masters {
+		configured, ok := profiles[master.GetId()]
+		if !ok {
+			t.Fatalf("refresh %q has no expected god profile", master.GetId())
+		}
+		actual := actualByID[master.GetId()]
+		if actual == nil {
+			t.Fatalf("god mode omitted refresh %q", master.GetId())
+		}
+		if len(master.GetLevels()) != len(configured.levels) {
+			t.Fatalf(
+				"refresh %q configured level count = %d, master count = %d",
+				master.GetId(),
+				len(configured.levels),
+				len(master.GetLevels()),
+			)
+		}
+		levels := make([]*papi.RefreshLevel, 0, len(master.GetLevels()))
+		var maxLevel int32
+		for _, masterLevel := range master.GetLevels() {
+			level, ok := configured.levels[masterLevel.GetLevel()]
+			if !ok {
+				t.Fatalf("refresh %q level %d has no expected god profile", master.GetId(), masterLevel.GetLevel())
+			}
+			if masterLevel.GetLevel() > maxLevel {
+				maxLevel = masterLevel.GetLevel()
+			}
+			levels = append(levels, &papi.RefreshLevel{
+				Level:                 masterLevel.GetLevel(),
+				Name:                  masterLevel.GetName(),
+				RequiredGold:          level.requiredGold,
+				UnlockConditionId:     masterLevel.GetUnlockConditionId(),
+				IsUnlocked:            true,
+				ActivityPerformanceId: level.activityPerformanceID,
+				RecoveryAmount:        level.recoveryAmount,
+				ViewConditionId:       masterLevel.GetViewConditionId(),
+				SubGenre:              level.subGenre,
+			})
+		}
+		expected := &papi.Refresh{
+			Id:                   master.GetId(),
+			Name:                 master.GetName(),
+			RequiredMinutes:      configured.requiredMinutes,
+			UnlockConditionId:    master.GetUnlockConditionId(),
+			IsUnlocked:           true,
+			Level:                maxLevel,
+			Exp:                  actual.GetExp(),
+			NextLevelRequiredExp: 0,
+			Levels:               levels,
+			ViewConditionId:      master.GetViewConditionId(),
+		}
+		if !proto.Equal(actual, expected) {
+			t.Fatalf("refresh %q does not match the god catalog: got=%v want=%v", master.GetId(), actual, expected)
 		}
 	}
 }

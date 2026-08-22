@@ -30,6 +30,15 @@ func FindMaxCardSupportRelease(ctx context.Context) (*pmaster.CardSupportRelease
 	)
 }
 
+func FindMaxCharacterActivityLevel(ctx context.Context) (*pmaster.CharacterActivityLevel, error) {
+	return mcommon.FindOne[mmodel.CharacterActivityLevel, pmaster.CharacterActivityLevel](
+		ctx,
+		mname.CharacterActivityLevel,
+		bson.M{},
+		options.FindOne().SetSort(bson.D{{Key: "Level", Value: -1}}),
+	)
+}
+
 func FindAllAccessories(ctx context.Context) ([]*pmaster.Accessory, error) {
 	return mcommon.FindMany[mmodel.Accessory, pmaster.Accessory](ctx, mname.Accessory, bson.M{})
 }

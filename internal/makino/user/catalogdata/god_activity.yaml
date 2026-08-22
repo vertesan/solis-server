@@ -1,0 +1,109 @@
+lesson:
+  currentAreaId: area-main-125
+  stepRewardGold: 359
+  stepRewardManagerExp: 395
+  stepRewardCardEnhanceItem: 1033
+
+fanEvents:
+  - id: act-fan-01
+    level: 40
+    activityPerformanceId: handshake-stage-6
+    requiredStamina: 1800
+    stepConsumptionStamina: 10
+    fixedRewardId: rd-act-fan-01-lv40-view
+  - id: act-fan-02
+    level: 38
+    activityPerformanceId: photo-session-stage-6
+    requiredStamina: 1900
+    stepConsumptionStamina: 7
+    fixedRewardId: rd-act-fan-02-lv38-view
+  - id: act-fan-03
+    level: 35
+    activityPerformanceId: sign-stage-6
+    requiredStamina: 1800
+    stepConsumptionStamina: 5
+    fixedRewardId: rd-act-fan-03-lv35-view
+
+promotions:
+  - id: act-pro-01
+    level: 65
+    activityPerformanceId: popup
+    requiredStamina: 1
+    stepConsumptionStamina: 1
+    stepRewardGold: 470
+    stepRewardCardEnhanceItem: 531
+    multiStepRewardId: rd-act-pro-01-65
+    maxFanAmount: 405000
+    subGenre: popup
+  - id: act-pro-02
+    level: 60
+    activityPerformanceId: cm
+    requiredStamina: 1
+    stepConsumptionStamina: 1
+    stepRewardGold: 471
+    stepRewardCardEnhanceItem: 534
+    multiStepRewardId: rd-act-pro-02-60
+    maxFanAmount: 405000
+    subGenre: cm
+  - id: act-pro-03
+    level: 60
+    activityPerformanceId: public-radio
+    requiredStamina: 1
+    stepConsumptionStamina: 1
+    stepRewardGold: 471
+    stepRewardCardEnhanceItem: 534
+    multiStepRewardId: rd-act-pro-03-60
+    maxFanAmount: 405000
+    subGenre: public-radio
+
+refreshes:
+  # Levels 1-2 are the captured values with the temporary 50% gold campaign
+  # removed. Current master data also exposes levels 3-4, which were hidden in
+  # the captures; their gold and recovery values conservatively continue the
+  # level 1-to-2 increments while their IDs follow ActivityPerformance master.
+  - id: act-ref-01
+    requiredMinutes: 120
+    levels:
+      - level: 1
+        requiredGold: 60000
+        activityPerformanceId: cafe
+        recoveryAmount: 1000
+        subGenre: cafe
+      - level: 2
+        requiredGold: 210000
+        activityPerformanceId: shopping
+        recoveryAmount: 1800
+        subGenre: shopping
+      - level: 3
+        requiredGold: 360000
+        activityPerformanceId: bedrock_bath
+        recoveryAmount: 2600
+        subGenre: bedrock-bath
+      - level: 4
+        requiredGold: 510000
+        activityPerformanceId: karaoke
+        recoveryAmount: 3400
+        subGenre: karaoke
+  - id: act-ref-02
+    requiredMinutes: 480
+    levels:
+      - level: 1
+        requiredGold: 130000
+        activityPerformanceId: dormitory
+        recoveryAmount: 2500
+        subGenre: dormitory
+      - level: 2
+        requiredGold: 360000
+        activityPerformanceId: theme_park
+        recoveryAmount: 3800
+        subGenre: theme-park
+      - level: 3
+        requiredGold: 590000
+        activityPerformanceId: hot_spring
+        recoveryAmount: 5100
+        subGenre: hot-spring
+      - level: 4
+        requiredGold: 820000
+        activityPerformanceId: camp
+        recoveryAmount: 6400
+        subGenre: camp

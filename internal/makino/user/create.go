@@ -427,8 +427,17 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserLessonProgress
 		lessonProgress := consts.GetUserInitialLessonProgress()
 		lessonProgress.LastReceiveTime = milliNow
-		lessonProgress.MaxRewardTime = milliNow
+		lessonProgress.MaxRewardTime = milliNow + int64(12*time.Hour/time.Millisecond)
 		if err := opuser.UpsertUserLessonProgress(ctx, suid, lessonProgress); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserLessonInfo(ctx, suid, consts.GetUserInitialLessonInfo()); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserActivityLessonDailyState(ctx, &umodel.UserActivityLessonDailyState{
+			SUID: suid,
+			Day:  now.In(time.FixedZone("JST", 9*60*60)).Format("2006-01-02"),
+		}); err != nil {
 			return nil, err
 		}
 

@@ -37,6 +37,12 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		now := time.Now().UnixMilli()
+		for _, character := range characters {
+			if _, err := viber.ReconcileActivityCharacterStamina(ctx, suid, character, now); err != nil {
+				return nil, err
+			}
+		}
 		costumes, err := opuser.FindAllUserCostumes(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -109,7 +115,7 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
-		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, time.Now().UnixMilli())
+		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, now)
 		if err != nil {
 			return nil, err
 		}

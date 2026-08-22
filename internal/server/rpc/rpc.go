@@ -118,5 +118,6 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterMarketServer(server, &ss.MarketServer{})
 	papi.RegisterExcursionServer(server, &ss.ExcursionServer{})
 	papi.RegisterGachaServer(server, &ss.GachaServer{})
+	papi.RegisterActivityServer(server, &ss.ActivityServer{})
 	return server, nil
 }

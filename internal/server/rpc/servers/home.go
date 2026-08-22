@@ -183,7 +183,8 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.HomeEnterResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, time.Now().UnixMilli())
+		now := time.Now().UnixMilli()
+		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, now)
 		if err != nil {
 			return nil, err
 		}
@@ -199,10 +200,22 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
-		lessonProgress, err := opuser.FindUserLessonProgress(ctx, suid)
+		if err := viber.ReconcileActivityInfos(ctx, suid, now, fanEventInfo, promotionInfo, refreshInfo); err != nil {
+			return nil, err
+		}
+		refreshInfoForResponse, err := viber.ActivityRefreshInfoForResponse(refreshInfo)
 		if err != nil {
 			return nil, err
 		}
+		lessonProgress, err := viber.ReconcileActivityLessonProgress(ctx, suid, now)
+		if err != nil {
+			return nil, err
+		}
+		lessonInfo, err := viber.ReconcileActivityLessonInfo(ctx, suid, now)
+		if err != nil {
+			return nil, err
+		}
+		lessonInfo.LessonProgress = lessonProgress
 		shopIds, err := opuser.FindUserShopIds(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -307,7 +320,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			GachaInfos:              gachaInfos,
 			FanEventInfo:            fanEventInfo,
 			PromotionInfo:           promotionInfo,
-			RefreshInfo:             refreshInfo,
+			RefreshInfo:             refreshInfoForResponse,
 			LessonProgress:          lessonProgress,
 			BannerInfo:              &papi.BannerInfo{MenuBanners: menuBanners},
 			ShopIds:                 visibleShopIds,
@@ -322,7 +335,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			PhotoActivities:         photoActivities,
 			PhotoMusics:             photoMusics,
 			PhotoStages:             photoStages,
-			LessonInfo:              &papi.LessonInfo{LessonProgress: lessonProgress},
+			LessonInfo:              lessonInfo,
 			EventButtonDisplayInfos: []*papi.EventButtonDisplayInfo{}, // TODO
 			ExtraStoryPartInfos:     extraStoryPartInfos,
 			SpecialHomeActionInfos:  []*papi.SpecialHomeActionInfo{}, // TODO
