@@ -3,10 +3,12 @@ package test
 import (
 	"context"
 	"errors"
+	"math"
 	"sort"
 	"testing"
 	"time"
 
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -181,8 +183,8 @@ func TestActivityFanEventScenario(t *testing.T) {
 	promoteTestUser(t)
 
 	dbCtx := context.Background()
-	party := selectActivityParty(t)
 	fanEvent := selectFanEvent(t)
+	party := selectActivityPartyForPerformance(t, fanEvent.GetActivityPerformanceId())
 	fanInfo, err := opuser.FindUserFanEventInfo(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
@@ -196,6 +198,26 @@ func TestActivityFanEventScenario(t *testing.T) {
 	if err := opuser.UpsertUserFanEventInfo(dbCtx, testConfig.TestUserSuid, fanInfo); err != nil {
 		t.Fatal(err)
 	}
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setting, err := opmaster.FindSetting(dbCtx, settingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if setting.GetSecondsPerActivityFanEventStep() <= 0 ||
+		setting.GetSecondsPerActivityFanEventBackgroundStep() <= setting.GetSecondsPerActivityFanEventStep() ||
+		setting.GetActivityFanEventFetchStepsSize() <= 0 {
+		t.Fatalf("fan-event settings are invalid: %v", setting)
+	}
+
+	speedItemID := findActivityItem(t, penum.ItemType_ItemType_ActivityFanEventSpeedUp)
+	speedItem, err := opmaster.FindItem(dbCtx, speedItemID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	speedItemBefore := activityUserItemAmount(t, speedItemID)
 	superModeItemID := findActivityItem(t, penum.ItemType_ItemType_ActivityFanEventSuperMode)
 	superModeItem, err := opmaster.FindItem(dbCtx, superModeItemID)
 	if err != nil {
@@ -217,12 +239,32 @@ func TestActivityFanEventScenario(t *testing.T) {
 			CharacterIds:       party.characterIDs,
 			CostumeIds:         party.costumeIDs,
 			HairIds:            party.hairIDs,
+			ItemIds:            []string{speedItemID},
 		})
 	})
 	assertActivityCommonResponse(t, startResponse.GetCommonResponse())
 	progress := startResponse.GetProgress()
 	if progress == nil || progress.GetActivityFanEventId() != fanEvent.GetId() || len(progress.GetCharacters()) != 3 {
 		t.Fatalf("unexpected StartFanEvent progress: %v", progress)
+	}
+	if got, want := progress.GetSpeedRate(), 1+float64(speedItem.GetValue())/1000; got != want {
+		t.Fatalf("fan-event speedRate=%v, want %v", got, want)
+	}
+	if got := activityUserItemAmount(t, speedItemID); got != speedItemBefore-1 {
+		t.Fatalf("StartFanEvent consumed the wrong speed item amount: before=%d after=%d", speedItemBefore, got)
+	}
+	if progress.GetSpecialFanCheerPoint() != 4 {
+		t.Fatalf("base special-fan cheer point=%d, want 4", progress.GetSpecialFanCheerPoint())
+	}
+	foregroundMillis := int64(float64(setting.GetSecondsPerActivityFanEventStep()*1000) / progress.GetSpeedRate())
+	backgroundMillis := int64(float64(setting.GetSecondsPerActivityFanEventBackgroundStep()*1000) / progress.GetSpeedRate())
+	if foregroundMillis <= 0 || backgroundMillis <= foregroundMillis {
+		t.Fatalf("invalid foreground/background timing: foreground=%d background=%d", foregroundMillis, backgroundMillis)
+	}
+	for _, character := range progress.GetCharacters() {
+		if got, want := character.GetFinishTime()-progress.GetStartTime(), int64(character.GetMaxStep())*backgroundMillis; got != want {
+			t.Fatalf("background finish duration for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
 	}
 	assertActivityCharacters(t, party.characterIDs, true)
 	persisted, err := opuser.FindUserFanEventRun(dbCtx, testConfig.TestUserSuid)
@@ -232,10 +274,95 @@ func TestActivityFanEventScenario(t *testing.T) {
 	if persisted.GetActivityFanEventId() != progress.GetActivityFanEventId() {
 		t.Fatalf("fan-event run was not persisted: db=%v response=%v", persisted, progress)
 	}
+	if setting.GetActivityFanEventIntermediatePointCoefficientPermil() <= 0 {
+		t.Fatalf("fan-event offline point coefficient is invalid: %d",
+			setting.GetActivityFanEventIntermediatePointCoefficientPermil())
+	}
+	state, err := opuser.FindUserFanEventRunState(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Give Home.Enter exactly one controlled background step per idol. Keeping
+	// the sidecar planning frontier at that step prevents a random plan from
+	// changing this assertion, while the first idol's step exercises offline
+	// special-fan accounting.
+	offlineAnchor := time.Now().Add(-time.Duration(backgroundMillis+100) * time.Millisecond).UnixMilli()
+	completedBeforeHome := make(map[string]int32, len(persisted.GetCharacters()))
+	pointsBeforeHome := make(map[string]int32, len(persisted.GetCharacters()))
+	offlinePointGain := make(map[string]int32, len(persisted.GetCharacters()))
+	state.SpecialFanSteps = []umodel.UserFanEventStepReference{}
+	state.CheerEffects = []umodel.UserFanEventEffectRange{}
+	state.SuperModeEffects = []umodel.UserFanEventEffectRange{}
+	for index, character := range persisted.GetCharacters() {
+		completedBeforeHome[character.GetCharacterId()] = character.GetCompletedStep()
+		pointsBeforeHome[character.GetCharacterId()] = character.GetActivityPoint()
+		nextStep := character.GetCompletedStep() + 1
+		setFanEventPlannedThrough(state, character.GetCharacterId(), nextStep)
+		if index == 0 {
+			state.SpecialFanSteps = append(state.SpecialFanSteps, umodel.UserFanEventStepReference{
+				CharacterId: character.GetCharacterId(), Step: nextStep,
+			})
+		}
+		userCharacter, err := opuser.FindUserCharacter(dbCtx, testConfig.TestUserSuid, character.GetCharacterId())
+		if err != nil {
+			t.Fatal(err)
+		}
+		activityLevel, err := opmaster.FindCharacterActivityLevel(dbCtx, int64(max(userCharacter.GetActivityLevel(), int32(1))))
+		if err != nil {
+			t.Fatal(err)
+		}
+		basePoint := max(int64(1), int64(activityLevel.GetBaseActivityPoint())*int64(progress.GetStepActivityPointCoefficientPermil())/1000)
+		offlinePointGain[character.GetCharacterId()] = int32(max(
+			int64(1),
+			basePoint*int64(setting.GetActivityFanEventIntermediatePointCoefficientPermil())/1000,
+		))
+		remaining := character.GetMaxStep() - character.GetCompletedStep()
+		character.FinishTime = offlineAnchor + int64(remaining)*backgroundMillis
+	}
+	cheerBeforeHome := persisted.GetCurrentCheerPoint()
+	newSpecialFansBeforeHome := persisted.GetNewSpecialFansCount()
+	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
+		t.Fatal(err)
+	}
+	if err := opuser.UpsertUserFanEventRunState(dbCtx, state); err != nil {
+		t.Fatal(err)
+	}
 	home := enterActivityHome(t)
 	if home.GetFanEventInfo().GetActiveFanEvent() == nil ||
 		!activitySameStrings(home.GetFanEventInfo().GetActiveFanEvent().GetCharacterIds(), party.characterIDs) {
 		t.Fatalf("Home.Enter omitted the active fan event: %v", home.GetFanEventInfo())
+	}
+	persisted, err = opuser.FindUserFanEventRun(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, character := range persisted.GetCharacters() {
+		if got, want := character.GetCompletedStep(), completedBeforeHome[character.GetCharacterId()]+1; got != want {
+			t.Fatalf("Home.Enter background completed step for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := character.GetActivityPoint()-pointsBeforeHome[character.GetCharacterId()], offlinePointGain[character.GetCharacterId()]; got != want {
+			t.Fatalf("Home.Enter background point gain for %q=%d, want master-derived gain %d",
+				character.GetCharacterId(), got, want)
+		}
+	}
+	if got, want := persisted.GetNewSpecialFansCount(), newSpecialFansBeforeHome+1; got != want {
+		t.Fatalf("Home.Enter background new-special-fan count=%d, want %d", got, want)
+	}
+	if got, want := persisted.GetCurrentCheerPoint(), cheerBeforeHome+persisted.GetSpecialFanCheerPoint(); got != want {
+		t.Fatalf("Home.Enter background cheer point=%d, want %d", got, want)
+	}
+	if got := home.GetFanEventInfo().GetActiveFanEvent().GetCurrentCheerPoint(); got != persisted.GetCurrentCheerPoint() {
+		t.Fatalf("Home.Enter active fan-event cheer point=%d, want persisted %d", got, persisted.GetCurrentCheerPoint())
+	}
+	if len(home.GetFanEventInfo().GetFanEvents()) != 0 {
+		t.Fatalf("Home.Enter exposed selectable fan events while one is active: %v", home.GetFanEventInfo())
+	}
+	storedFanInfo, err := opuser.FindUserFanEventInfo(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(storedFanInfo.GetFanEvents()) == 0 {
+		t.Fatal("Home.Enter discarded the persisted fan-event catalog")
 	}
 
 	// A newly started event must not be settleable for repeatable fixed rewards.
@@ -292,48 +419,99 @@ func TestActivityFanEventScenario(t *testing.T) {
 		t.Fatalf("LoadFanEvent returned the wrong run: %v", loadResponse.GetProgress())
 	}
 
-	// Expose elapsed steps for Fetch/Save without sleeping.
-	persisted.StartTime = time.Now().Add(-time.Hour).UnixMilli()
-	for _, character := range persisted.GetCharacters() {
-		character.FinishTime = time.Now().Add(time.Hour).UnixMilli()
-		if character.MaxStep < 2 {
-			character.MaxStep = 2
-		}
-	}
-	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
-		t.Fatal(err)
-	}
-	steps := make([]int32, len(persisted.GetCharacters()))
-	for index, character := range persisted.GetCharacters() {
-		steps[index] = character.GetCompletedStep()
-	}
-	fetchResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityFetchFanEventStepsResponse, error) {
-		return activityClient.FetchFanEventSteps(ctx, &papi.ActivityFetchFanEventStepsRequest{Steps: steps})
-	})
-	assertActivityCommonResponse(t, fetchResponse.GetCommonResponse())
-	if len(fetchResponse.GetCharacterSteps()) != len(party.characterIDs) {
-		t.Fatalf("FetchFanEventSteps returned %d character entries, want %d", len(fetchResponse.GetCharacterSteps()), len(party.characterIDs))
-	}
-	assertFanEventIssuedSteps(t, persisted, steps, fetchResponse.GetCharacterSteps(), 0)
-
-	characterResults := fanEventResults(t, persisted, 1000, 0)
-	saveResponse := activityCall(t, func(ctx context.Context) (*papi.ActivitySaveFanEventResponse, error) {
-		return activityClient.SaveFanEvent(ctx, &papi.ActivitySaveFanEventRequest{CharacterResults: characterResults})
-	})
-	assertActivityCommonResponse(t, saveResponse.GetCommonResponse())
 	persisted, err = opuser.FindUserFanEventRun(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
+	state, err = opuser.FindUserFanEventRunState(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Seed one sparse, inclusive plan. Fetch is otherwise intentionally random,
+	// so controlling the persisted plan keeps this integration scenario stable.
+	steps := make([]int32, len(persisted.GetCharacters()))
+	lastSteps := make([]int32, len(persisted.GetCharacters()))
+	state.SpecialFanSteps = []umodel.UserFanEventStepReference{}
+	state.CheerEffects = []umodel.UserFanEventEffectRange{}
+	state.SuperModeEffects = []umodel.UserFanEventEffectRange{}
+	for index, character := range persisted.GetCharacters() {
+		steps[index] = character.GetCompletedStep() + 1
+		lastSteps[index] = steps[index] + setting.GetActivityFanEventFetchStepsSize()
+		if lastSteps[index] >= character.GetMaxStep() {
+			t.Fatalf("fan-event run for %q is too short for a fetch window: %v", character.GetCharacterId(), character)
+		}
+		setFanEventPlannedThrough(state, character.GetCharacterId(), lastSteps[index])
+	}
+	state.SpecialFanSteps = append(state.SpecialFanSteps,
+		umodel.UserFanEventStepReference{CharacterId: persisted.GetCharacters()[0].GetCharacterId(), Step: steps[0]},
+		umodel.UserFanEventStepReference{CharacterId: persisted.GetCharacters()[0].GetCharacterId(), Step: lastSteps[0]},
+	)
+	if err := opuser.UpsertUserFanEventRunState(dbCtx, state); err != nil {
+		t.Fatal(err)
+	}
+	firstFetch := fetchFanEventSteps(t, activityClient, steps)
+	secondFetch := fetchFanEventSteps(t, activityClient, steps)
+	if !proto.Equal(firstFetch, secondFetch) {
+		t.Fatalf("overlapping FetchFanEventSteps changed its persisted plan: first=%v second=%v", firstFetch, secondFetch)
+	}
+	assertSparseFanEventPlan(t, persisted, steps, lastSteps, firstFetch.GetCharacterSteps())
+
+	// Make two foreground steps available without waiting. FinishTime is the
+	// authoritative anchor used by the server's foreground clock.
+	saveAnchor := time.Now().Add(-3 * time.Duration(foregroundMillis) * time.Millisecond).UnixMilli()
+	finishBeforeSave := make(map[string]int64, len(persisted.GetCharacters()))
+	staminaBeforeSave := make(map[string]int32, len(persisted.GetCharacters()))
+	pointsBeforeSave := make(map[string]int32, len(persisted.GetCharacters()))
 	for _, character := range persisted.GetCharacters() {
-		if character.GetCompletedStep() == 0 || character.GetActivityPoint() == 0 {
-			t.Fatalf("SaveFanEvent did not persist character progress: %v", character)
+		remaining := character.GetMaxStep() - character.GetCompletedStep()
+		character.FinishTime = saveAnchor + int64(remaining)*backgroundMillis
+		finishBeforeSave[character.GetCharacterId()] = character.GetFinishTime()
+		staminaBeforeSave[character.GetCharacterId()] = character.GetActivityStamina()
+		pointsBeforeSave[character.GetCharacterId()] = character.GetActivityPoint()
+	}
+	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
+		t.Fatal(err)
+	}
+	cheerBeforeSave := persisted.GetCurrentCheerPoint()
+	const clientPoint = int32(1_000_003) // Deliberately exceeds any server-computable single-step score.
+	saveResponse := activityCall(t, func(ctx context.Context) (*papi.ActivitySaveFanEventResponse, error) {
+		return activityClient.SaveFanEvent(ctx, &papi.ActivitySaveFanEventRequest{
+			CharacterResults: fanEventResultsWithPoint(persisted, clientPoint, 0),
+		})
+	})
+	assertActivityCommonResponse(t, saveResponse.GetCommonResponse())
+	if len(saveResponse.GetCharacterSteps()) != 0 {
+		t.Fatalf("ordinary SaveFanEvent unexpectedly returned a step plan: %v", saveResponse.GetCharacterSteps())
+	}
+	persisted, err = opuser.FindUserFanEventRun(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index, character := range persisted.GetCharacters() {
+		if got, want := character.GetActivityPoint()-pointsBeforeSave[character.GetCharacterId()], clientPoint; got != want {
+			t.Fatalf("SaveFanEvent changed client-authoritative points for %q: got=%d want=%d", character.GetCharacterId(), got, want)
+		}
+		if got, want := finishBeforeSave[character.GetCharacterId()]-character.GetFinishTime(), backgroundMillis-foregroundMillis; got != want {
+			t.Fatalf("normal foreground finish reduction for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := staminaBeforeSave[character.GetCharacterId()]-character.GetActivityStamina(), progress.GetStepConsumptionStamina(); got != want {
+			t.Fatalf("fan-event stamina consumption for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if character.GetLastSavedActivityPoint() != character.GetActivityPoint() {
+			t.Fatalf("SaveFanEvent did not update last-saved points for %q: %v", character.GetCharacterId(), character)
+		}
+		if index == 0 && persisted.GetCurrentCheerPoint() != cheerBeforeSave+persisted.GetSpecialFanCheerPoint() {
+			t.Fatalf("foreground special fan did not grant cheer: before=%d after=%d", cheerBeforeSave, persisted.GetCurrentCheerPoint())
 		}
 	}
+	if persisted.GetNewSpecialFansCount() != 0 {
+		t.Fatalf("foreground special fan was reported as unrealized: %v", persisted)
+	}
 
+	cheerBeforeFever := persisted.GetCurrentCheerPoint()
 	activationResponse := activityCall(t, func(ctx context.Context) (*papi.ActivitySaveFanEventResponse, error) {
 		return activityClient.SaveFanEvent(ctx, &papi.ActivitySaveFanEventRequest{
-			CharacterResults: fanEventResults(t, persisted, 1000, 0),
+			CharacterResults: fanEventEmptyResults(persisted),
 			UseItemId:        superModeItemID,
 		})
 	})
@@ -348,17 +526,47 @@ func TestActivityFanEventScenario(t *testing.T) {
 	if !persisted.GetUsedSuperModeItem() {
 		t.Fatal("SaveFanEvent did not persist super mode")
 	}
-	activationCursors := fanEventCursors(persisted)
-	assertFanEventIssuedSteps(t, persisted, activationCursors, activationResponse.GetCharacterSteps(), superModeItem.GetValue())
+	requiredCheerPoint := setting.GetActivityFanEventRequiredCheerPoint()
+	if requiredCheerPoint <= 0 ||
+		persisted.GetCurrentCheerPoint() != cheerBeforeFever+requiredCheerPoint {
+		t.Fatalf("fever drink did not grant one unmodified gauge: before=%d after=%d required=%d",
+			cheerBeforeFever, persisted.GetCurrentCheerPoint(), setting.GetActivityFanEventRequiredCheerPoint())
+	}
+	if persisted.GetNewSpecialFansCount() != 0 {
+		t.Fatalf("fever drink created a special fan: %v", persisted)
+	}
+	state, err = opuser.FindUserFanEventRunState(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assertFanEventSuperModeRanges(t, persisted, state, 25)
+	for _, character := range persisted.GetCharacters() {
+		assertFanEventItemEffectAt(t, activationResponse.GetCharacterSteps(), character.GetCharacterId(),
+			character.GetCompletedStep()+1, penum.ItemType_ItemType_ActivityFanEventSuperMode, true)
+	}
 
+	// A Save acknowledges previously loaded special fans. Executing cheer must
+	// consume only the gauge and must not manufacture a new special fan.
+	persisted.NewSpecialFansCount = 7
+	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
+		t.Fatal(err)
+	}
 	finishTimesBeforeReduction := make(map[string]int64, len(persisted.GetCharacters()))
+	pointsBeforeFeverSave := make(map[string]int32, len(persisted.GetCharacters()))
 	for _, character := range persisted.GetCharacters() {
 		finishTimesBeforeReduction[character.GetCharacterId()] = character.GetFinishTime()
+		pointsBeforeFeverSave[character.GetCharacterId()] = character.GetActivityPoint()
 	}
-	reduction := min(int64(1000), int64(superModeItem.GetValue()))
+	reduction := min(int64(1000), foregroundMillis/2)
+	if reduction <= 0 {
+		t.Fatalf("invalid fever reduction for foreground duration %d", foregroundMillis)
+	}
+	cheerBeforeExecution := persisted.GetCurrentCheerPoint()
+	const feverClientPoint = int32(1_500_007)
 	superResponse := activityCall(t, func(ctx context.Context) (*papi.ActivitySaveFanEventResponse, error) {
 		return activityClient.SaveFanEvent(ctx, &papi.ActivitySaveFanEventRequest{
-			CharacterResults: fanEventResults(t, persisted, int64(1000)+int64(superModeItem.GetValue()), reduction),
+			CharacterResults: fanEventResultsWithPoint(persisted, feverClientPoint, reduction),
+			ExecCheer:        true,
 		})
 	})
 	assertActivityCommonResponse(t, superResponse.GetCommonResponse())
@@ -367,24 +575,172 @@ func TestActivityFanEventScenario(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, character := range persisted.GetCharacters() {
-		if got := finishTimesBeforeReduction[character.GetCharacterId()] - character.GetFinishTime(); got != reduction {
-			t.Fatalf("super-mode reduction for %q=%d, want %d", character.GetCharacterId(), got, reduction)
+		if got, want := finishTimesBeforeReduction[character.GetCharacterId()]-character.GetFinishTime(),
+			backgroundMillis-foregroundMillis+reduction; got != want {
+			t.Fatalf("fever foreground finish reduction for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := character.GetActivityPoint()-pointsBeforeFeverSave[character.GetCharacterId()], feverClientPoint; got != want {
+			t.Fatalf("fever Save changed client-authoritative points for %q: got=%d want=%d", character.GetCharacterId(), got, want)
 		}
 		if character.GetLastSavedActivityPoint() != character.GetActivityPoint() {
 			t.Fatalf("SaveFanEvent did not update last-saved point for %q: %v", character.GetCharacterId(), character)
 		}
 	}
-	assertFanEventIssuedSteps(t, persisted, fanEventCursors(persisted), superResponse.GetCharacterSteps(), superModeItem.GetValue())
+	if persisted.GetCurrentCheerPoint() != cheerBeforeExecution-requiredCheerPoint || persisted.GetNewSpecialFansCount() != 0 {
+		t.Fatalf("cheer changed the wrong gauges: before=%d progress=%v", cheerBeforeExecution, persisted)
+	}
+	state, err = opuser.FindUserFanEventRunState(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(state.CheerEffects) != 1 {
+		t.Fatalf("executing cheer created %d effects, want 1: %v", len(state.CheerEffects), state.CheerEffects)
+	}
+	cheerEffect := state.CheerEffects[0]
+	if cheerEffect.EndStep-cheerEffect.StartStep+1 != 20 || cheerEffect.SupportCharacterId == "" ||
+		!activityContainsString(party.characterIDs, cheerEffect.TargetCharacterId) {
+		t.Fatalf("invalid 20-step cheer effect: %v", cheerEffect)
+	}
+	cheerStartFetch := fetchFanEventSteps(t, activityClient, fanEventUniformCursors(persisted, cheerEffect.StartStep))
+	assertFanEventCheerAt(t, cheerStartFetch.GetCharacterSteps(), cheerEffect.TargetCharacterId, cheerEffect.StartStep, true)
 
-	for _, character := range persisted.GetCharacters() {
-		character.CompletedStep = character.GetMaxStep()
-		character.FinishTime = time.Now().Add(-time.Minute).UnixMilli()
+	// Reproduce the first gameplay Save after drinking the fever item. The
+	// client can finish a large batch because tap reductions shorten each
+	// five-second step; validating only the nominal step count rejects it.
+	feverBatchCounts := []int32{11, 10, 9}
+	if len(persisted.GetCharacters()) != len(feverBatchCounts) {
+		t.Fatalf("fan-event fever batch has %d characters, want %d", len(persisted.GetCharacters()), len(feverBatchCounts))
+	}
+	feverBatchReduction := foregroundMillis * 4 / 5
+	if feverBatchReduction <= 0 || feverBatchReduction >= foregroundMillis {
+		t.Fatalf("invalid fever batch reduction %d for foreground duration %d", feverBatchReduction, foregroundMillis)
+	}
+	feverBatchElapsed := int64(feverBatchCounts[0])*(foregroundMillis-feverBatchReduction) + foregroundMillis
+	feverBatchAnchor := time.Now().Add(-time.Duration(feverBatchElapsed) * time.Millisecond).UnixMilli()
+	feverBatchResults := make([]*papi.FanEventCharacterResult, 0, len(feverBatchCounts))
+	stepsBeforeFeverBatch := make(map[string]int32, len(feverBatchCounts))
+	staminaBeforeFeverBatch := make(map[string]int32, len(feverBatchCounts))
+	pointsBeforeFeverBatch := make(map[string]int32, len(feverBatchCounts))
+	finishBeforeFeverBatch := make(map[string]int64, len(feverBatchCounts))
+	state.SpecialFanSteps = nil
+	for index, character := range persisted.GetCharacters() {
+		count := feverBatchCounts[index]
+		if int64(count)*foregroundMillis <= feverBatchElapsed ||
+			int64(count)*(foregroundMillis-feverBatchReduction) > feverBatchElapsed {
+			t.Fatalf("fever regression timing does not distinguish nominal and effective duration: count=%d elapsed=%d", count, feverBatchElapsed)
+		}
+		effect := fanEventSuperModeRange(state, character.GetCharacterId())
+		lastStep := character.GetCompletedStep() + count
+		if effect == nil || lastStep > effect.EndStep {
+			t.Fatalf("fever batch extends beyond the issued effect for %q: last=%d effect=%v", character.GetCharacterId(), lastStep, effect)
+		}
+		remaining := character.GetMaxStep() - character.GetCompletedStep()
+		character.FinishTime = feverBatchAnchor + int64(remaining)*backgroundMillis
+		stepsBeforeFeverBatch[character.GetCharacterId()] = character.GetCompletedStep()
+		staminaBeforeFeverBatch[character.GetCharacterId()] = character.GetActivityStamina()
+		pointsBeforeFeverBatch[character.GetCharacterId()] = character.GetActivityPoint()
+		finishBeforeFeverBatch[character.GetCharacterId()] = character.GetFinishTime()
+		stepResults := make([]*papi.FanEventStepResult, 0, count)
+		for step := character.GetCompletedStep() + 1; step <= lastStep; step++ {
+			stepResults = append(stepResults, &papi.FanEventStepResult{
+				Step:                  step,
+				ActivityPoint:         1,
+				ReductionMilliSeconds: feverBatchReduction,
+			})
+		}
+		feverBatchResults = append(feverBatchResults, &papi.FanEventCharacterResult{
+			CharacterId: character.GetCharacterId(),
+			StepResults: stepResults,
+		})
+		setFanEventPlannedThrough(state, character.GetCharacterId(), lastStep)
 	}
 	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
 		t.Fatal(err)
 	}
+	if err := opuser.UpsertUserFanEventRunState(dbCtx, state); err != nil {
+		t.Fatal(err)
+	}
+	feverBatchResponse := activityCall(t, func(ctx context.Context) (*papi.ActivitySaveFanEventResponse, error) {
+		return activityClient.SaveFanEvent(ctx, &papi.ActivitySaveFanEventRequest{CharacterResults: feverBatchResults})
+	})
+	assertActivityCommonResponse(t, feverBatchResponse.GetCommonResponse())
+	persisted, err = opuser.FindUserFanEventRun(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for index, character := range persisted.GetCharacters() {
+		count := feverBatchCounts[index]
+		if got, want := character.GetCompletedStep(), stepsBeforeFeverBatch[character.GetCharacterId()]+count; got != want {
+			t.Fatalf("fever batch completed step for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := character.GetActivityPoint(), pointsBeforeFeverBatch[character.GetCharacterId()]+count; got != want {
+			t.Fatalf("fever batch points for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := character.GetActivityStamina(), max(int32(0), staminaBeforeFeverBatch[character.GetCharacterId()]-count*progress.GetStepConsumptionStamina()); got != want {
+			t.Fatalf("fever batch stamina for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if got, want := finishBeforeFeverBatch[character.GetCharacterId()]-character.GetFinishTime(),
+			int64(count)*(backgroundMillis-foregroundMillis+feverBatchReduction); got != want {
+			t.Fatalf("fever batch finish reduction for %q=%d, want %d", character.GetCharacterId(), got, want)
+		}
+		if character.GetLastSavedActivityPoint() != character.GetActivityPoint() {
+			t.Fatalf("fever batch did not update last-saved point for %q: %v", character.GetCharacterId(), character)
+		}
+	}
+
+	// Both finite effects must include their final step and disappear on the
+	// following step. These calls also exercise the inclusive Fetch cursor.
+	superEndCursors := make([]int32, len(persisted.GetCharacters()))
+	superAfterCursors := make([]int32, len(persisted.GetCharacters()))
+	for index, character := range persisted.GetCharacters() {
+		effect := fanEventSuperModeRange(state, character.GetCharacterId())
+		if effect == nil {
+			t.Fatalf("missing fever range for %q: %v", character.GetCharacterId(), state.SuperModeEffects)
+		}
+		superEndCursors[index] = effect.EndStep
+		superAfterCursors[index] = effect.EndStep + 1
+	}
+	superEndFetch := fetchFanEventSteps(t, activityClient, superEndCursors)
+	superAfterFetch := fetchFanEventSteps(t, activityClient, superAfterCursors)
+	for index, character := range persisted.GetCharacters() {
+		assertFanEventItemEffectAt(t, superEndFetch.GetCharacterSteps(), character.GetCharacterId(), superEndCursors[index],
+			penum.ItemType_ItemType_ActivityFanEventSuperMode, true)
+		assertFanEventItemEffectAt(t, superAfterFetch.GetCharacterSteps(), character.GetCharacterId(), superAfterCursors[index],
+			penum.ItemType_ItemType_ActivityFanEventSuperMode, false)
+	}
+	cheerEndFetch := fetchFanEventSteps(t, activityClient, fanEventUniformCursors(persisted, cheerEffect.EndStep))
+	cheerAfterFetch := fetchFanEventSteps(t, activityClient, fanEventUniformCursors(persisted, cheerEffect.EndStep+1))
+	assertFanEventCheerAt(t, cheerEndFetch.GetCharacterSteps(), cheerEffect.TargetCharacterId, cheerEffect.EndStep, true)
+	assertFanEventCheerAt(t, cheerAfterFetch.GetCharacterSteps(), cheerEffect.TargetCharacterId, cheerEffect.EndStep+1, false)
+
 	finishInfo, err := opuser.FindUserFanEventInfo(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
+		t.Fatal(err)
+	}
+	finishFanEvent := fanEventByID(finishInfo, fanEvent.GetId())
+	if finishFanEvent == nil {
+		t.Fatalf("active fan event disappeared from the persisted catalog: %v", finishInfo)
+	}
+	eventExpBefore := finishFanEvent.GetExp()
+	userBeforeFinish, err := opuser.FindUser(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	charactersBeforeFinish := make(map[string]*ptransaction.UserCharacter, len(persisted.GetCharacters()))
+	for _, active := range persisted.GetCharacters() {
+		character, err := opuser.FindUserCharacter(dbCtx, testConfig.TestUserSuid, active.GetCharacterId())
+		if err != nil {
+			t.Fatal(err)
+		}
+		charactersBeforeFinish[active.GetCharacterId()] = proto.Clone(character).(*ptransaction.UserCharacter)
+	}
+	var totalCompletedSteps int64
+	for _, character := range persisted.GetCharacters() {
+		character.CompletedStep = character.GetMaxStep()
+		character.FinishTime = time.Now().Add(-time.Minute).UnixMilli()
+		totalCompletedSteps += int64(character.GetMaxStep())
+	}
+	if err := opuser.UpsertUserFanEventRun(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
 		t.Fatal(err)
 	}
 	if finishInfo.GetActiveFanEvent() != nil {
@@ -401,6 +757,80 @@ func TestActivityFanEventScenario(t *testing.T) {
 	if finishResponse.GetActivityPoint() <= 0 || len(finishResponse.GetRewards()) == 0 {
 		t.Fatalf("FinishFanEvent returned no earned result: %v", finishResponse)
 	}
+	var managerExpReward int64
+	var hasCardEnhanceReward, hasCardSkillReward bool
+	recipeRewardCount := 0
+	for _, reward := range finishResponse.GetRewards() {
+		switch {
+		case reward.GetResourceType() == penum.ResourceType_ResourceType_ManagerExp:
+			managerExpReward += reward.GetAmount()
+		case reward.GetResourceType() == penum.ResourceType_ResourceType_Item && reward.GetResourceId() == "item-card_enhance":
+			hasCardEnhanceReward = reward.GetAmount() > 0
+		case reward.GetResourceType() == penum.ResourceType_ResourceType_Item && reward.GetResourceId() == "item-card_skill":
+			hasCardSkillReward = reward.GetAmount() > 0
+		case reward.GetResourceType() == penum.ResourceType_ResourceType_PhotoRecipe:
+			recipeRewardCount++
+		}
+	}
+	if managerExpReward <= 0 || !hasCardEnhanceReward || !hasCardSkillReward {
+		t.Fatalf("FinishFanEvent omitted backend-calculated rewards: %v", finishResponse.GetRewards())
+	}
+	// A normal run has one recipe draw attempt. The four recipes in the
+	// "-view" reward are eligibility templates, never four literal grants.
+	if recipeRewardCount > 1 {
+		t.Fatalf("FinishFanEvent granted display-only recipe templates: %v", finishResponse.GetRewards())
+	}
+	userAfterFinish, err := opuser.FindUser(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := userAfterFinish.GetManagerExp() - userBeforeFinish.GetManagerExp(); got != managerExpReward {
+		t.Fatalf("FinishFanEvent manager EXP persistence=%d, response=%d", got, managerExpReward)
+	}
+	updatedCharacters := finishResponse.GetCommonResponse().GetUpdatedData().GetCharacters()
+	if len(updatedCharacters) != len(charactersBeforeFinish) {
+		t.Fatalf("FinishFanEvent updated %d characters, want %d", len(updatedCharacters), len(charactersBeforeFinish))
+	}
+	commonActivityExpGain := int64(-1)
+	for _, character := range updatedCharacters {
+		before := charactersBeforeFinish[character.GetCharacterId()]
+		if before == nil {
+			t.Fatalf("FinishFanEvent updated an unselected character: %v", character)
+		}
+		if got, want := activityCharacterFanTotal(character), activityCharacterFanTotal(before); got != want {
+			t.Fatalf("core-fan conversion changed total fans for %q: before=%d after=%d",
+				character.GetCharacterId(), want, got)
+		}
+		if character.GetLightFanAmount() > before.GetLightFanAmount() || character.GetHeavyFanAmount() < before.GetHeavyFanAmount() {
+			t.Fatalf("core-fan tiers did not mature for %q: before=%v after=%v",
+				character.GetCharacterId(), before, character)
+		}
+		expGain := character.GetActivityExp() - before.GetActivityExp()
+		if expGain <= 0 {
+			t.Fatalf("FinishFanEvent did not award work EXP to %q", character.GetCharacterId())
+		}
+		if commonActivityExpGain < 0 {
+			commonActivityExpGain = expGain
+		} else if expGain != commonActivityExpGain {
+			t.Fatalf("fan-event work EXP is not the common event award: got=%d want=%d", expGain, commonActivityExpGain)
+		}
+		wantAudience := int64(character.GetLightFanAmount())*int64(setting.GetLiveLightFanAmountWeightPermil())/1000 +
+			int64(character.GetMiddleFanAmount())*int64(setting.GetLiveMiddleFanAmountWeightPermil())/1000 +
+			int64(character.GetHeavyFanAmount())*int64(setting.GetLiveHeavyFanAmountWeightPermil())/1000
+		if int64(character.GetAudienceCandidateAmount()) != wantAudience {
+			t.Fatalf("audience candidate amount for %q=%d, want %d",
+				character.GetCharacterId(), character.GetAudienceCandidateAmount(), wantAudience)
+		}
+	}
+	wantEventExp := int64(eventExpBefore) + totalCompletedSteps*3
+	if wantEventExp > math.MaxInt32 {
+		wantEventExp = math.MaxInt32
+	}
+	levelProgress := finishResponse.GetActivityLevelProgress()
+	if levelProgress.GetBefore().GetExp() != eventExpBefore || levelProgress.GetAfter().GetExp() != int32(wantEventExp) {
+		t.Fatalf("fan-event EXP was not three per completed idol step: before=%d steps=%d progress=%v",
+			eventExpBefore, totalCompletedSteps, levelProgress)
+	}
 	assertActivityRunDeleted(t, activityRunMissingFinder(opuser.FindUserFanEventRun))
 	assertActivityCharacters(t, party.characterIDs, false)
 	info, err := opuser.FindUserFanEventInfo(dbCtx, testConfig.TestUserSuid)
@@ -409,6 +839,9 @@ func TestActivityFanEventScenario(t *testing.T) {
 	}
 	if info.GetActiveFanEvent() != nil {
 		t.Fatalf("FinishFanEvent left an active Home summary: %v", info.GetActiveFanEvent())
+	}
+	if finished := fanEventByID(info, fanEvent.GetId()); finished == nil || finished.GetExp() != int32(wantEventExp) {
+		t.Fatalf("FinishFanEvent did not persist three-per-step EXP: %v", info)
 	}
 	totalAfter, err := opuser.FindUserTotalCount(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
@@ -443,8 +876,8 @@ func TestActivityPromotionScenario(t *testing.T) {
 	promoteTestUser(t)
 
 	dbCtx := context.Background()
-	party := selectActivityParty(t)
 	promotion := selectPromotion(t)
+	party := selectActivityPartyForPerformance(t, promotion.GetActivityPerformanceId())
 	promotionInfo, err := opuser.FindUserPromotionInfo(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
@@ -505,6 +938,16 @@ func TestActivityPromotionScenario(t *testing.T) {
 	if home.GetPromotionInfo().GetActivePromotion() == nil ||
 		!activitySameStrings(home.GetPromotionInfo().GetActivePromotion().GetCharacterIds(), party.characterIDs) {
 		t.Fatalf("Home.Enter omitted the active promotion: %v", home.GetPromotionInfo())
+	}
+	if len(home.GetPromotionInfo().GetPromotions()) != 0 {
+		t.Fatalf("Home.Enter exposed selectable promotions while one is active: %v", home.GetPromotionInfo())
+	}
+	storedPromotionInfo, err := opuser.FindUserPromotionInfo(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(storedPromotionInfo.GetPromotions()) == 0 {
+		t.Fatal("Home.Enter discarded the persisted promotion catalog")
 	}
 
 	loadResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityLoadPromotionResponse, error) {
@@ -680,8 +1123,8 @@ func TestActivityRefreshScenario(t *testing.T) {
 	promoteTestUser(t)
 
 	dbCtx := context.Background()
-	party := selectActivityParty(t)
 	selection := selectRefresh(t)
+	party := selectActivityPartyForPerformance(t, selection.level.GetActivityPerformanceId())
 	refreshInfo, err := opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
@@ -790,6 +1233,16 @@ func TestActivityRefreshScenario(t *testing.T) {
 		!activitySameStrings(home.GetRefreshInfo().GetActiveRefresh().GetCharacterIds(), party.characterIDs) {
 		t.Fatalf("Home.Enter omitted the active refresh: %v", home.GetRefreshInfo())
 	}
+	if len(home.GetRefreshInfo().GetRefreshes()) != 0 {
+		t.Fatalf("Home.Enter exposed selectable refreshes while one is active: %v", home.GetRefreshInfo())
+	}
+	storedRefreshInfo, err := opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(storedRefreshInfo.GetRefreshes()) == 0 {
+		t.Fatal("Home.Enter discarded the persisted refresh catalog")
+	}
 
 	loadResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityLoadRefreshResponse, error) {
 		return activityClient.LoadRefresh(ctx, &papi.Empty{})
@@ -871,13 +1324,13 @@ func TestActivityRefreshScenario(t *testing.T) {
 	}
 }
 
-func TestActivityRefreshCancellationScenario(t *testing.T) {
+func TestActivityRefreshEarlyFinishRejectedScenario(t *testing.T) {
 	setupTestUser(t)
 	promoteTestUser(t)
 
 	dbCtx := context.Background()
-	party := selectActivityParty(t)
 	selection := selectRefresh(t)
+	party := selectActivityPartyForPerformance(t, selection.level.GetActivityPerformanceId())
 	refreshInfo, err := opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
@@ -903,11 +1356,6 @@ func TestActivityRefreshCancellationScenario(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	totalBefore, err := opuser.FindUserTotalCount(dbCtx, testConfig.TestUserSuid)
-	if err != nil {
-		t.Fatal(err)
-	}
-	refreshExpBefore := selection.refresh.GetExp()
 	activityClient := papi.NewActivityClient(testConfig.GrpcConn)
 	startResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityStartRefreshResponse, error) {
 		return activityClient.StartRefresh(ctx, &papi.ActivityStartRefreshRequest{
@@ -921,53 +1369,65 @@ func TestActivityRefreshCancellationScenario(t *testing.T) {
 	if startResponse.GetProgress() == nil || startResponse.GetProgress().GetFinishTime() <= time.Now().UnixMilli() {
 		t.Fatalf("StartRefresh did not create a future run: %v", startResponse.GetProgress())
 	}
-	staminaBeforeCancel := make(map[string]int32, len(party.characterIDs))
-	for _, character := range assertActivityCharacters(t, party.characterIDs, true) {
-		staminaBeforeCancel[character.GetCharacterId()] = character.GetActivityStamina()
-	}
-
-	finishCalledAt := time.Now().UnixMilli()
-	finishResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityFinishRefreshResponse, error) {
-		return activityClient.FinishRefresh(ctx, &papi.Empty{})
-	})
-	assertActivityCommonResponse(t, finishResponse.GetCommonResponse())
-	if finishResponse.GetCommonResponse().GetUpdatedData().GetTotalCount() != nil {
-		t.Fatalf("cancelled refresh unexpectedly updated total count: %v", finishResponse.GetCommonResponse().GetUpdatedData().GetTotalCount())
-	}
-	levelProgress := finishResponse.GetActivityLevelProgress()
-	if levelProgress.GetBefore().GetExp() != levelProgress.GetAfter().GetExp() ||
-		levelProgress.GetBefore().GetLevel() != levelProgress.GetAfter().GetLevel() {
-		t.Fatalf("cancelled refresh unexpectedly granted activity progress: %v", levelProgress)
-	}
-	assertActivityRunDeleted(t, activityRunMissingFinder(opuser.FindUserRefreshRun))
-	for _, character := range assertActivityCharacters(t, party.characterIDs, false) {
-		if character.GetActivityStamina() != staminaBeforeCancel[character.GetCharacterId()] {
-			t.Fatalf("cancelled refresh recovered stamina for %s: before=%d after=%d",
-				character.GetCharacterId(), staminaBeforeCancel[character.GetCharacterId()], character.GetActivityStamina())
-		}
-		if character.GetStaminaUpdatedTime() < finishCalledAt {
-			t.Fatalf("cancelled refresh did not timestamp character %s", character.GetCharacterId())
-		}
-	}
-	refreshInfo, err = opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
+	runBefore, err := opuser.FindUserRefreshRun(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if refreshInfo.GetActiveRefresh() != nil {
-		t.Fatalf("cancelled refresh left an active summary: %v", refreshInfo.GetActiveRefresh())
+	infoBefore, err := opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
 	}
-	for _, refresh := range refreshInfo.GetRefreshes() {
-		if refresh.GetId() == selection.refresh.GetId() && refresh.GetExp() != refreshExpBefore {
-			t.Fatalf("cancelled refresh changed exp: before=%d after=%d", refreshExpBefore, refresh.GetExp())
+	charactersBefore := make(map[string]*ptransaction.UserCharacter, len(party.characterIDs))
+	for _, character := range assertActivityCharacters(t, party.characterIDs, true) {
+		charactersBefore[character.GetCharacterId()] = proto.Clone(character).(*ptransaction.UserCharacter)
+	}
+	totalBefore, err := opuser.FindUserTotalCount(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	goldBefore := activityUserGoldAmount(t)
+
+	finishCtx, finishCancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, finishErr := activityClient.FinishRefresh(finishCtx, &papi.Empty{})
+	finishCancel()
+	if status.Code(finishErr) != codes.FailedPrecondition {
+		t.Fatalf("FinishRefresh before completion error=%v, want FailedPrecondition", finishErr)
+	}
+	runAfter, err := opuser.FindUserRefreshRun(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !proto.Equal(runBefore, runAfter) {
+		t.Fatalf("rejected FinishRefresh mutated the run: before=%v after=%v", runBefore, runAfter)
+	}
+	infoAfter, err := opuser.FindUserRefreshInfo(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !proto.Equal(infoBefore, infoAfter) {
+		t.Fatalf("rejected FinishRefresh mutated refresh info: before=%v after=%v", infoBefore, infoAfter)
+	}
+	for characterID, before := range charactersBefore {
+		after, err := opuser.FindUserCharacter(dbCtx, testConfig.TestUserSuid, characterID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !proto.Equal(before, after) {
+			t.Fatalf("rejected FinishRefresh mutated character %s: before=%v after=%v", characterID, before, after)
 		}
 	}
 	totalAfter, err := opuser.FindUserTotalCount(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if totalAfter.GetActivityRefreshCount() != totalBefore.GetActivityRefreshCount() {
-		t.Fatalf("cancelled refresh changed total count: before=%d after=%d",
-			totalBefore.GetActivityRefreshCount(), totalAfter.GetActivityRefreshCount())
+	if !proto.Equal(totalBefore, totalAfter) {
+		t.Fatalf("rejected FinishRefresh mutated total count: before=%v after=%v", totalBefore, totalAfter)
+	}
+	if goldAfter := activityUserGoldAmount(t); goldAfter != goldBefore {
+		t.Fatalf("rejected FinishRefresh changed gold: before=%d after=%d", goldBefore, goldAfter)
 	}
 }
 
@@ -1136,33 +1596,94 @@ func selectFanEvent(t *testing.T) *papi.FanEvent {
 	return nil
 }
 
-func fanEventResults(
-	t *testing.T,
+func selectActivityPartyForPerformance(t *testing.T, activityPerformanceID string) activityParty {
+	t.Helper()
+	party := selectActivityParty(t)
+	performance, err := opmaster.FindActivityPerformance(context.Background(), activityPerformanceID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	allowedTypes := append([]string(nil), performance.GetCostumeTypeIds()...)
+	if len(allowedTypes) == 0 && performance.GetForceCostumeTypeId() != "" {
+		allowedTypes = []string{performance.GetForceCostumeTypeId()}
+	}
+	if len(allowedTypes) == 0 {
+		return party
+	}
+
+	ownedCostumes, err := opuser.FindAllUserCostumes(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ownedHairs, err := opuser.FindAllUserHairs(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ownedCostumeIDs := make(map[string]struct{}, len(ownedCostumes))
+	for _, costume := range ownedCostumes {
+		ownedCostumeIDs[costume.GetCostumeId()] = struct{}{}
+	}
+	ownedHairIDs := make(map[string]struct{}, len(ownedHairs))
+	for _, hair := range ownedHairs {
+		ownedHairIDs[hair.GetHairId()] = struct{}{}
+	}
+	masterCostumes, err := opmaster.FindAllCostumes(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	sort.Slice(masterCostumes, func(i, j int) bool { return masterCostumes[i].GetId() < masterCostumes[j].GetId() })
+	for index, characterID := range party.characterIDs {
+		current, err := opmaster.FindCostume(context.Background(), party.costumeIDs[index])
+		if err != nil {
+			t.Fatal(err)
+		}
+		if activityContainsString(allowedTypes, current.GetCostumeTypeId()) {
+			continue
+		}
+		var found bool
+		for _, costume := range masterCostumes {
+			if costume.GetCharacterId() != characterID || costume.GetIsUserUnavailable() ||
+				!activityContainsString(allowedTypes, costume.GetCostumeTypeId()) {
+				continue
+			}
+			if _, ok := ownedCostumeIDs[costume.GetId()]; !ok {
+				continue
+			}
+			if _, ok := ownedHairIDs[costume.GetDefaultHairId()]; !ok {
+				continue
+			}
+			hair, err := opmaster.FindHair(context.Background(), costume.GetDefaultHairId())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if activityContainsString(hair.GetNotWearableCostumeIds(), costume.GetId()) ||
+				(len(hair.GetWearableCostumeIds()) > 0 && !activityContainsString(hair.GetWearableCostumeIds(), costume.GetId())) {
+				continue
+			}
+			party.costumeIDs[index] = costume.GetId()
+			party.hairIDs[index] = costume.GetDefaultHairId()
+			found = true
+			break
+		}
+		if !found {
+			t.Fatalf("configured test user has no %v costume for fan-event character %q", allowedTypes, characterID)
+		}
+	}
+	return party
+}
+
+func fanEventResultsWithPoint(
 	progress *papi.FanEventProgress,
-	pointMultiplierPermil int64,
+	activityPoint int32,
 	reductionMilliSeconds int64,
 ) []*papi.FanEventCharacterResult {
-	t.Helper()
 	results := make([]*papi.FanEventCharacterResult, 0, len(progress.GetCharacters()))
 	for _, activeCharacter := range progress.GetCharacters() {
-		userCharacter, err := opuser.FindUserCharacter(context.Background(), testConfig.TestUserSuid, activeCharacter.GetCharacterId())
-		if err != nil {
-			t.Fatal(err)
-		}
-		activityLevel, err := opmaster.FindCharacterActivityLevel(context.Background(), int64(userCharacter.GetActivityLevel()))
-		if err != nil {
-			t.Fatal(err)
-		}
-		point := int64(activityLevel.GetBaseActivityPoint()) * int64(progress.GetStepActivityPointCoefficientPermil()) / 1000
-		point = point * pointMultiplierPermil / 1000
-		if point < 1 {
-			point = 1
-		}
 		results = append(results, &papi.FanEventCharacterResult{
 			CharacterId: activeCharacter.GetCharacterId(),
 			StepResults: []*papi.FanEventStepResult{{
 				Step:                  activeCharacter.GetCompletedStep() + 1,
-				ActivityPoint:         int32(point),
+				ActivityPoint:         activityPoint,
 				ReductionMilliSeconds: reductionMilliSeconds,
 			}},
 		})
@@ -1170,52 +1691,200 @@ func fanEventResults(
 	return results
 }
 
-func fanEventCursors(progress *papi.FanEventProgress) []int32 {
-	cursors := make([]int32, 0, len(progress.GetCharacters()))
+func fanEventEmptyResults(progress *papi.FanEventProgress) []*papi.FanEventCharacterResult {
+	results := make([]*papi.FanEventCharacterResult, 0, len(progress.GetCharacters()))
 	for _, character := range progress.GetCharacters() {
-		cursors = append(cursors, character.GetCompletedStep())
+		results = append(results, &papi.FanEventCharacterResult{CharacterId: character.GetCharacterId()})
 	}
-	return cursors
+	return results
 }
 
-func assertFanEventIssuedSteps(
+func setFanEventPlannedThrough(state *umodel.UserFanEventRunState, characterID string, step int32) {
+	for index := range state.PlannedThrough {
+		if state.PlannedThrough[index].CharacterId == characterID {
+			state.PlannedThrough[index].Step = step
+			return
+		}
+	}
+	state.PlannedThrough = append(state.PlannedThrough, umodel.UserFanEventPlannedCursor{CharacterId: characterID, Step: step})
+}
+
+func fetchFanEventSteps(
+	t *testing.T,
+	client papi.ActivityClient,
+	cursors []int32,
+) *papi.ActivityFetchFanEventStepsResponse {
+	t.Helper()
+	response := activityCall(t, func(ctx context.Context) (*papi.ActivityFetchFanEventStepsResponse, error) {
+		return client.FetchFanEventSteps(ctx, &papi.ActivityFetchFanEventStepsRequest{Steps: cursors})
+	})
+	assertActivityCommonResponse(t, response.GetCommonResponse())
+	return response
+}
+
+func assertSparseFanEventPlan(
 	t *testing.T,
 	progress *papi.FanEventProgress,
-	cursors []int32,
+	firstSteps, lastSteps []int32,
 	characterSteps []*papi.FanEventCharacterSteps,
-	superEffectValue int32,
 ) {
 	t.Helper()
 	if len(characterSteps) != len(progress.GetCharacters()) {
 		t.Fatalf("issued fan-event character steps=%d, want %d", len(characterSteps), len(progress.GetCharacters()))
 	}
 	for index, activeCharacter := range progress.GetCharacters() {
-		issued := characterSteps[index]
-		if issued.GetCharacterId() != activeCharacter.GetCharacterId() {
-			t.Fatalf("issued fan-event character=%q, want %q", issued.GetCharacterId(), activeCharacter.GetCharacterId())
+		issued := fanEventCharacterSteps(characterSteps, activeCharacter.GetCharacterId())
+		if issued == nil {
+			t.Fatalf("FetchFanEventSteps omitted character %q: %v", activeCharacter.GetCharacterId(), characterSteps)
 		}
-		if cursors[index] < activeCharacter.GetMaxStep() && len(issued.GetSteps()) == 0 {
-			t.Fatalf("fan-event character %q received no upcoming step data", issued.GetCharacterId())
+		wantCount := 0
+		if index == 0 {
+			wantCount = 2
 		}
-		for stepIndex, step := range issued.GetSteps() {
-			wantStep := cursors[index] + int32(stepIndex) + 1
-			if step.GetStep() != wantStep {
-				t.Fatalf("issued fan-event step=%d, want %d", step.GetStep(), wantStep)
+		if len(issued.GetSteps()) != wantCount {
+			t.Fatalf("sparse plan for %q contains %d steps, want %d: %v",
+				activeCharacter.GetCharacterId(), len(issued.GetSteps()), wantCount, issued)
+		}
+		for _, step := range issued.GetSteps() {
+			if step.GetStep() < firstSteps[index] || step.GetStep() > lastSteps[index] {
+				t.Fatalf("issued step %d is outside inclusive window [%d,%d]", step.GetStep(), firstSteps[index], lastSteps[index])
 			}
-			var foundSuperEffect bool
-			for _, effect := range step.GetItemEffects() {
-				if effect.GetType() == penum.ItemType_ItemType_ActivityFanEventSuperMode {
-					foundSuperEffect = true
-					if effect.GetValue() != superEffectValue {
-						t.Fatalf("super-mode effect value=%d, want %d", effect.GetValue(), superEffectValue)
-					}
-				}
+			if len(step.GetHappenings()) == 0 && len(step.GetItemEffects()) == 0 {
+				t.Fatalf("FetchFanEventSteps returned an empty sparse step: %v", step)
 			}
-			if foundSuperEffect != (superEffectValue > 0) {
-				t.Fatalf("issued super-mode effect=%v, want %v: %v", foundSuperEffect, superEffectValue > 0, step)
+			if !fanEventStepHasHappening(step, penum.ActivityFanEventHappeningType_ActivityFanEventHappeningType_SpecialFan) {
+				t.Fatalf("seeded special fan was omitted: %v", step)
+			}
+		}
+		if index == 0 && (issued.GetSteps()[0].GetStep() != firstSteps[index] ||
+			issued.GetSteps()[len(issued.GetSteps())-1].GetStep() != lastSteps[index]) {
+			t.Fatalf("FetchFanEventSteps did not include both cursor boundaries: %v", issued)
+		}
+	}
+}
+
+func assertFanEventSuperModeRanges(
+	t *testing.T,
+	progress *papi.FanEventProgress,
+	state *umodel.UserFanEventRunState,
+	duration int32,
+) {
+	t.Helper()
+	if len(state.SuperModeEffects) != len(progress.GetCharacters()) {
+		t.Fatalf("fever ranges=%d, want %d: %v", len(state.SuperModeEffects), len(progress.GetCharacters()), state.SuperModeEffects)
+	}
+	for _, character := range progress.GetCharacters() {
+		effect := fanEventSuperModeRange(state, character.GetCharacterId())
+		if effect == nil || effect.StartStep != character.GetCompletedStep()+1 || effect.EndStep-effect.StartStep+1 != duration {
+			t.Fatalf("invalid %d-step fever range for %q: %v", duration, character.GetCharacterId(), effect)
+		}
+	}
+}
+
+func fanEventSuperModeRange(state *umodel.UserFanEventRunState, characterID string) *umodel.UserFanEventEffectRange {
+	for index := range state.SuperModeEffects {
+		if state.SuperModeEffects[index].TargetCharacterId == characterID {
+			return &state.SuperModeEffects[index]
+		}
+	}
+	return nil
+}
+
+func assertFanEventItemEffectAt(
+	t *testing.T,
+	characterSteps []*papi.FanEventCharacterSteps,
+	characterID string,
+	stepNumber int32,
+	itemType penum.ItemType,
+	want bool,
+) {
+	t.Helper()
+	step := fanEventIssuedStep(characterSteps, characterID, stepNumber)
+	got := false
+	if step != nil {
+		for _, effect := range step.GetItemEffects() {
+			if effect.GetType() == itemType {
+				got = true
+				break
 			}
 		}
 	}
+	if got != want {
+		t.Fatalf("fan-event item effect type=%v at %s/%d: got=%v want=%v steps=%v",
+			itemType, characterID, stepNumber, got, want, characterSteps)
+	}
+}
+
+func assertFanEventCheerAt(
+	t *testing.T,
+	characterSteps []*papi.FanEventCharacterSteps,
+	characterID string,
+	stepNumber int32,
+	want bool,
+) {
+	t.Helper()
+	step := fanEventIssuedStep(characterSteps, characterID, stepNumber)
+	got := step != nil && fanEventStepHasHappening(step, penum.ActivityFanEventHappeningType_ActivityFanEventHappeningType_Cheer)
+	if got != want {
+		t.Fatalf("fan-event cheer at %s/%d: got=%v want=%v steps=%v", characterID, stepNumber, got, want, characterSteps)
+	}
+}
+
+func fanEventIssuedStep(characterSteps []*papi.FanEventCharacterSteps, characterID string, stepNumber int32) *papi.FanEventStep {
+	issued := fanEventCharacterSteps(characterSteps, characterID)
+	if issued == nil {
+		return nil
+	}
+	for _, step := range issued.GetSteps() {
+		if step.GetStep() == stepNumber {
+			return step
+		}
+	}
+	return nil
+}
+
+func fanEventCharacterSteps(characterSteps []*papi.FanEventCharacterSteps, characterID string) *papi.FanEventCharacterSteps {
+	for _, issued := range characterSteps {
+		if issued.GetCharacterId() == characterID {
+			return issued
+		}
+	}
+	return nil
+}
+
+func fanEventStepHasHappening(step *papi.FanEventStep, happeningType penum.ActivityFanEventHappeningType) bool {
+	for _, happening := range step.GetHappenings() {
+		if happening.GetType() == happeningType {
+			return true
+		}
+	}
+	return false
+}
+
+func fanEventUniformCursors(progress *papi.FanEventProgress, cursor int32) []int32 {
+	cursors := make([]int32, len(progress.GetCharacters()))
+	for index := range cursors {
+		cursors[index] = cursor
+	}
+	return cursors
+}
+
+func fanEventByID(info *papi.FanEventInfo, id string) *papi.FanEvent {
+	for _, fanEvent := range info.GetFanEvents() {
+		if fanEvent.GetId() == id {
+			return fanEvent
+		}
+	}
+	return nil
+}
+
+func activityContainsString(values []string, value string) bool {
+	for _, candidate := range values {
+		if candidate == value {
+			return true
+		}
+	}
+	return false
 }
 
 func selectPromotion(t *testing.T) *papi.Promotion {

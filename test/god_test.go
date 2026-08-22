@@ -597,8 +597,8 @@ func assertGodRefreshCatalog(t *testing.T, ctx context.Context) {
 			map[int32]levelProfile{
 				1: {60000, "cafe", 1000, "cafe"},
 				2: {210000, "shopping", 1800, "shopping"},
-				3: {360000, "bedrock_bath", 2600, "bedrock-bath"},
-				4: {510000, "karaoke", 3400, "karaoke"},
+				3: {510000, "bedrock_bath", 2500, "bedrock-bath"},
+				4: {1280000, "karaoke", 3200, "karaoke"},
 			},
 		},
 		"act-ref-02": {
@@ -606,8 +606,8 @@ func assertGodRefreshCatalog(t *testing.T, ctx context.Context) {
 			map[int32]levelProfile{
 				1: {130000, "dormitory", 2500, "dormitory"},
 				2: {360000, "theme_park", 3800, "theme-park"},
-				3: {590000, "hot_spring", 5100, "hot-spring"},
-				4: {820000, "camp", 6400, "camp"},
+				3: {810000, "hot_spring", 5000, "hot-spring"},
+				4: {1770000, "camp", 6900, "camp"},
 			},
 		},
 	}

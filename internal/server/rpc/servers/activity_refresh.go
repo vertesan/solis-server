@@ -51,7 +51,7 @@ func (s *ActivityServer) StartRefresh(ctx context.Context, req *papi.ActivitySta
 			return nil, viber.FailedPreconditionf("refresh level %d is not unlocked", req.GetActivityRefreshLevel())
 		}
 		characters, lineup, err := viber.ValidateActivityLineup(
-			ctx, suid, req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
+			ctx, suid, level.GetActivityPerformanceId(), req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
 		)
 		if err != nil {
 			return nil, err
@@ -215,43 +215,40 @@ func (s *ActivityServer) FinishRefresh(ctx context.Context, _ *papi.Empty) (*pap
 			return nil, activityRunError("refresh", err)
 		}
 		now := time.Now().UnixMilli()
-		completed := now >= progress.GetFinishTime()
-		overflowCoefficient := int32(0)
-		if completed {
-			settingID, err := config.GetGameSettingId()
-			if err != nil {
-				return nil, err
-			}
-			setting, err := opmaster.FindSetting(ctx, settingID)
-			if err != nil {
-				return nil, err
-			}
-			overflowCoefficient = setting.GetActivityRefreshOverflowLimitCoefficientPermil()
+		if now < progress.GetFinishTime() {
+			return nil, status.Error(codes.FailedPrecondition, "refresh is not complete")
 		}
+		settingID, err := config.GetGameSettingId()
+		if err != nil {
+			return nil, err
+		}
+		setting, err := opmaster.FindSetting(ctx, settingID)
+		if err != nil {
+			return nil, err
+		}
+		overflowCoefficient := setting.GetActivityRefreshOverflowLimitCoefficientPermil()
 		characters := make([]*ptransaction.UserCharacter, 0, len(progress.GetCharacters()))
 		for _, selected := range progress.GetCharacters() {
 			character, err := opuser.FindUserCharacter(ctx, suid, selected.GetCharacterId())
 			if err != nil {
 				return nil, err
 			}
-			if completed {
-				level, err := opmaster.FindCharacterActivityLevel(ctx, int64(character.GetActivityLevel()))
-				if err != nil {
-					return nil, err
-				}
-				limit := int64(level.GetMaxStamina())
-				if overflowCoefficient > 0 {
-					limit = limit * int64(overflowCoefficient) / 1000
-				}
-				if limit < int64(level.GetMaxStamina()) {
-					limit = int64(level.GetMaxStamina())
-				}
-				recovered := int64(character.GetActivityStamina()) + int64(progress.GetRecoveryAmount())
-				if recovered > limit {
-					recovered = limit
-				}
-				character.ActivityStamina = promotionInt32(recovered)
+			level, err := opmaster.FindCharacterActivityLevel(ctx, int64(character.GetActivityLevel()))
+			if err != nil {
+				return nil, err
 			}
+			limit := int64(level.GetMaxStamina())
+			if overflowCoefficient > 0 {
+				limit = limit * int64(overflowCoefficient) / 1000
+			}
+			if limit < int64(level.GetMaxStamina()) {
+				limit = int64(level.GetMaxStamina())
+			}
+			recovered := int64(character.GetActivityStamina()) + int64(progress.GetRecoveryAmount())
+			if recovered > limit {
+				recovered = limit
+			}
+			character.ActivityStamina = promotionInt32(recovered)
 			character.StaminaUpdatedTime = now
 			character.InActivity = false
 			if err := opuser.UpsertUserCharacter(ctx, suid, character); err != nil {
@@ -275,21 +272,18 @@ func (s *ActivityServer) FinishRefresh(ctx context.Context, _ *papi.Empty) (*pap
 			Exp:   refresh.GetExp(),
 			Level: refresh.GetLevel(),
 		}
-		var totalCount *ptransaction.UserTotalCount
-		if completed {
-			refresh.Exp = promotionInt32(int64(refresh.GetExp()) + 1)
-			after.Exp = refresh.GetExp()
-			totalCount, err = opuser.FindUserTotalCount(ctx, suid)
-			if err != nil {
-				return nil, err
-			}
-			if totalCount.GetActivityRefreshCount() == math.MaxInt64 {
-				return nil, status.Error(codes.FailedPrecondition, "activity refresh count overflows")
-			}
-			totalCount.ActivityRefreshCount++
-			if err := opuser.UpsertUserTotalCount(ctx, suid, totalCount); err != nil {
-				return nil, err
-			}
+		refresh.Exp = promotionInt32(int64(refresh.GetExp()) + 1)
+		after.Exp = refresh.GetExp()
+		totalCount, err := opuser.FindUserTotalCount(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		if totalCount.GetActivityRefreshCount() == math.MaxInt64 {
+			return nil, status.Error(codes.FailedPrecondition, "activity refresh count overflows")
+		}
+		totalCount.ActivityRefreshCount++
+		if err := opuser.UpsertUserTotalCount(ctx, suid, totalCount); err != nil {
+			return nil, err
 		}
 		info.ActiveRefresh = nil
 		if err := opuser.UpsertUserRefreshInfo(ctx, suid, info); err != nil {
@@ -298,16 +292,16 @@ func (s *ActivityServer) FinishRefresh(ctx context.Context, _ *papi.Empty) (*pap
 		if err := opuser.DeleteUserRefreshRun(ctx, suid); err != nil {
 			return nil, err
 		}
-		maxLevel := refresh.GetLevel()
+		maxLevel := int32(0)
 		for _, level := range refresh.GetLevels() {
-			if level.GetLevel() > maxLevel {
+			if level.GetIsUnlocked() && level.GetLevel() > maxLevel {
 				maxLevel = level.GetLevel()
 			}
 		}
-		updated := &papi.UpdatedData{Characters: characters}
-		if totalCount != nil {
-			updated.TotalCount = totalCount
+		if maxLevel == 0 {
+			maxLevel = refresh.GetLevel()
 		}
+		updated := &papi.UpdatedData{Characters: characters, TotalCount: totalCount}
 		response = &papi.ActivityFinishRefreshResponse{
 			ActivityLevelProgress: &papi.ActivityLevelProgress{
 				MaxActivityLevel: maxLevel,

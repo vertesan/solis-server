@@ -20,7 +20,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 const fanEventSuperModeItemID = "item-act_super_mode"
@@ -60,7 +59,7 @@ func (s *ActivityServer) StartFanEvent(ctx context.Context, req *papi.ActivitySt
 			return nil, err
 		}
 		characters, lineup, err := viber.ValidateActivityLineup(
-			ctx, suid, req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
+			ctx, suid, fanEvent.GetActivityPerformanceId(), req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
 		)
 		if err != nil {
 			return nil, err
@@ -73,14 +72,15 @@ func (s *ActivityServer) StartFanEvent(ctx context.Context, req *papi.ActivitySt
 		if err != nil {
 			return nil, err
 		}
-		stepSeconds := setting.GetSecondsPerActivityFanEventStep()
+		stepSeconds := setting.GetSecondsPerActivityFanEventBackgroundStep()
 		stepStamina := fanEvent.GetStepConsumptionStamina()
 		if stepSeconds <= 0 || stepStamina <= 0 {
 			return nil, status.Error(codes.FailedPrecondition, "fan event timing is invalid")
 		}
 		updated := &papi.UpdatedData{}
 		speedRate := 1.0
-		specialCheerPoint := int32(1)
+		specialCheerPoint := viber.FanEventBaseSpecialFanCheerPoint
+		rewardCoefficientPermyriads := viber.FanEventBaseRewardPermyriads
 		usedTypes := make(map[penum.ItemType]struct{}, len(req.GetItemIds()))
 		for _, itemID := range req.GetItemIds() {
 			item, err := opmaster.FindItem(ctx, itemID)
@@ -110,12 +110,25 @@ func (s *ActivityServer) StartFanEvent(ctx context.Context, req *papi.ActivitySt
 				speedRate += float64(item.GetValue()) / 1000
 			}
 			if item.GetType() == penum.ItemType_ItemType_ActivityFanEventCheerPointUp && item.GetValue() > 0 {
-				specialCheerPoint += item.GetValue()
+				specialCheerPoint = int32(min(
+					int64(math.MaxInt32),
+					int64(specialCheerPoint)*int64(1000+item.GetValue())/1000,
+				))
+			}
+			if item.GetType() == penum.ItemType_ItemType_ActivityFanEventRewardUp && item.GetValue() > 0 {
+				rewardCoefficientPermyriads = int32(min(
+					int64(math.MaxInt32),
+					int64(rewardCoefficientPermyriads)+int64(item.GetValue()),
+				))
 			}
 		}
-		coefficient := setting.GetActivityFanEventIntermediatePointCoefficientPermil()
-		if coefficient <= 0 {
-			coefficient = 1000
+		coefficient := int32(1000)
+		balanceProfile, err := viber.FindFanEventBalanceProfile(fanEvent.GetId(), fanEvent.GetLevel())
+		if err != nil {
+			return nil, err
+		}
+		if balanceProfile != nil {
+			coefficient = balanceProfile.ActivityPointCoefficientPermil
 		}
 		progressCharacters := make([]*papi.FanEventCharacterInfo, 0, len(characters))
 		var maximumScore int64
@@ -171,14 +184,24 @@ func (s *ActivityServer) StartFanEvent(ctx context.Context, req *papi.ActivitySt
 			StartTime:                          now,
 			StepConsumptionStamina:             stepStamina,
 			StepActivityPointCoefficientPermil: coefficient,
-			RankPatterns:                       fanEventRankPatterns(maximumScore),
+			RankPatterns:                       nil,
 			ActivityPerformanceId:              fanEvent.GetActivityPerformanceId(),
 			MaleNpcSpineId:                     "female-00",
 			FemaleNpcSpineId:                   "male-00",
 			SpecialFanCheerPoint:               specialCheerPoint,
 			SpeedRate:                          speedRate,
 		}
+		rankAThreshold := maximumScore
+		if balanceProfile != nil {
+			rankAThreshold = balanceProfile.RankAThresholdPoint
+		}
+		progress.RankPatterns = fanEventRankPatterns(rankAThreshold)
 		if err := opuser.UpsertUserFanEventRun(ctx, suid, progress); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserFanEventRunState(
+			ctx, viber.NewFanEventRunState(suid, progress, rewardCoefficientPermyriads),
+		); err != nil {
 			return nil, err
 		}
 		info.ActiveFanEvent = &papi.ActiveFanEvent{
@@ -211,10 +234,17 @@ func (s *ActivityServer) LoadFanEvent(ctx context.Context, _ *papi.Empty) (*papi
 			}
 			return nil, err
 		}
-		if _, err := reconcileFanEventProgress(ctx, suid, progress, time.Now().UnixMilli()); err != nil {
+		state, err := viber.FindFanEventRunState(ctx, suid, progress)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := viber.ReconcileFanEventProgress(ctx, suid, progress, state, time.Now().UnixMilli()); err != nil {
 			return nil, err
 		}
 		if err := opuser.UpsertUserFanEventRun(ctx, suid, progress); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserFanEventRunState(ctx, state); err != nil {
 			return nil, err
 		}
 		if err := syncActiveFanEvent(ctx, suid, progress); err != nil {
@@ -231,24 +261,39 @@ func (s *ActivityServer) LoadFanEvent(ctx context.Context, _ *papi.Empty) (*papi
 
 func (s *ActivityServer) FetchFanEventSteps(ctx context.Context, req *papi.ActivityFetchFanEventStepsRequest) (*papi.ActivityFetchFanEventStepsResponse, error) {
 	suid := viber.GetSuid(ctx).String()
-	progress, err := opuser.FindUserFanEventRun(ctx, suid)
-	if err != nil {
-		if errors.Is(err, mongo.ErrNoDocuments) {
-			return nil, status.Error(codes.FailedPrecondition, "no fan event is active")
+	var response *papi.ActivityFetchFanEventStepsResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		progress, err := opuser.FindUserFanEventRun(ctx, suid)
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return nil, status.Error(codes.FailedPrecondition, "no fan event is active")
+			}
+			return nil, err
 		}
-		return nil, err
-	}
-	if len(req.GetSteps()) != len(progress.GetCharacters()) {
-		return nil, status.Error(codes.InvalidArgument, "one step cursor is required per character")
-	}
-	characterSteps, err := issueFanEventSteps(ctx, progress, req.GetSteps())
+		if len(req.GetSteps()) != len(progress.GetCharacters()) {
+			return nil, status.Error(codes.InvalidArgument, "one step cursor is required per character")
+		}
+		state, err := viber.FindFanEventRunState(ctx, suid, progress)
+		if err != nil {
+			return nil, err
+		}
+		characterSteps, err := viber.IssueFanEventSteps(ctx, progress, state, req.GetSteps())
+		if err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserFanEventRunState(ctx, state); err != nil {
+			return nil, err
+		}
+		response = &papi.ActivityFetchFanEventStepsResponse{
+			CharacterSteps: characterSteps,
+			CommonResponse: viber.NewCommonResponse(nil),
+		}
+		return nil, nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	return &papi.ActivityFetchFanEventStepsResponse{
-		CharacterSteps: characterSteps,
-		CommonResponse: viber.NewCommonResponse(nil),
-	}, nil
+	return response, nil
 }
 
 func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySaveFanEventRequest) (*papi.ActivitySaveFanEventResponse, error) {
@@ -265,17 +310,13 @@ func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySav
 		if len(req.GetCharacterResults()) != len(progress.GetCharacters()) {
 			return nil, status.Error(codes.InvalidArgument, "one result is required per fan event character")
 		}
-		updated := &papi.UpdatedData{}
-		superModeWasActive := progress.GetUsedSuperModeItem()
-		superEffectValue := int32(0)
-		if superModeWasActive {
-			superEffectValue, err = fanEventSuperModeEffectValue(ctx)
-			if err != nil {
-				return nil, err
-			}
+		state, err := viber.FindFanEventRunState(ctx, suid, progress)
+		if err != nil {
+			return nil, err
 		}
+		updated := &papi.UpdatedData{}
 		if req.GetUseItemId() != "" {
-			if superModeWasActive {
+			if progress.GetUsedSuperModeItem() {
 				return nil, status.Error(codes.FailedPrecondition, "super mode item was already used")
 			}
 			if req.GetUseItemId() != fanEventSuperModeItemID {
@@ -294,9 +335,7 @@ func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySav
 				}
 				return nil, err
 			}
-			progress.UsedSuperModeItem = true
 		}
-		superMultiplier := int64(1000) + int64(superEffectValue)
 		resultByID := make(map[string]*papi.FanEventCharacterResult, len(req.GetCharacterResults()))
 		for _, result := range req.GetCharacterResults() {
 			if result == nil || result.GetCharacterId() == "" {
@@ -316,50 +355,94 @@ func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySav
 		if err != nil {
 			return nil, err
 		}
-		stepMillis := int64(float64(setting.GetSecondsPerActivityFanEventStep()*1000) / max(progress.GetSpeedRate(), 1))
-		if stepMillis <= 0 {
-			return nil, status.Error(codes.FailedPrecondition, "fan event step duration is invalid")
+		foregroundMillis, backgroundMillis, err := viber.FanEventStepDurations(ctx, progress)
+		if err != nil {
+			return nil, err
+		}
+		// Loading a progress snapshot presents all accumulated special fans to
+		// the client. Any subsequent Save acknowledges that displayed batch.
+		progress.NewSpecialFansCount = 0
+		latestFinishBefore := int64(0)
+		for _, character := range progress.GetCharacters() {
+			latestFinishBefore = max(latestFinishBefore, character.GetFinishTime())
 		}
 		for _, character := range progress.GetCharacters() {
 			result, ok := resultByID[character.GetCharacterId()]
 			if !ok {
 				return nil, status.Error(codes.InvalidArgument, "fan event character result does not match active lineup")
 			}
-			userCharacter, err := opuser.FindUserCharacter(ctx, suid, character.GetCharacterId())
-			if err != nil {
-				return nil, err
-			}
-			basePoint, err := fanEventBasePoint(ctx, userCharacter, progress.GetStepActivityPointCoefficientPermil())
-			if err != nil {
-				return nil, err
-			}
-			allowedStep := fanEventAllowedStep(progress, character, now, stepMillis)
+			availableMillis := viber.FanEventForegroundElapsedMillis(character, now, backgroundMillis)
 			beforeStep := character.GetCompletedStep()
 			var reduction int64
-			for _, stepResult := range result.GetStepResults() {
-				if stepResult.GetStep() != character.GetCompletedStep()+1 || stepResult.GetStep() > allowedStep {
-					return nil, status.Error(codes.InvalidArgument, "fan event steps must be sequential and elapsed")
+			var requiredMillis int64
+			if results := result.GetStepResults(); len(results) > 0 {
+				if err := viber.EnsureFanEventPlan(
+					state, progress, character.GetCharacterId(), results[len(results)-1].GetStep(),
+				); err != nil {
+					return nil, err
 				}
-				maxPoint := int64(basePoint) * superMultiplier / 1000
-				if stepResult.GetActivityPoint() <= 0 || int64(stepResult.GetActivityPoint()) > maxPoint {
+			}
+			for _, stepResult := range result.GetStepResults() {
+				if stepResult.GetStep() != character.GetCompletedStep()+1 || stepResult.GetStep() > character.GetMaxStep() {
+					return nil, status.Error(codes.InvalidArgument, "fan event steps must be sequential and within the activity")
+				}
+				// Tap timing, fever and cheer composition are calculated by the
+				// official client. The server owns step integrity, not point magnitude.
+				if stepResult.GetActivityPoint() < 0 || int64(character.GetActivityPoint())+int64(stepResult.GetActivityPoint()) > math.MaxInt32 {
 					return nil, status.Error(codes.InvalidArgument, "fan event activity point is invalid")
 				}
 				maxReduction := int64(0)
-				if superModeWasActive {
-					maxReduction = min(stepMillis, int64(superEffectValue))
+				if viber.FanEventStepHasSuperMode(state, character.GetCharacterId(), stepResult.GetStep()) {
+					maxReduction = foregroundMillis
 				}
 				if stepResult.GetReductionMilliSeconds() < 0 || stepResult.GetReductionMilliSeconds() > maxReduction {
 					return nil, status.Error(codes.InvalidArgument, "fan event time reduction is invalid")
 				}
+				// During fever the client can shorten each foreground step through
+				// tap timing. Spend the effective duration here instead of checking
+				// the whole batch against nominal five-second steps up front.
+				stepMillis := foregroundMillis - stepResult.GetReductionMilliSeconds()
+				if stepMillis > availableMillis-requiredMillis {
+					return nil, status.Error(codes.InvalidArgument, "fan event steps have not elapsed")
+				}
+				requiredMillis += stepMillis
 				character.CompletedStep++
 				character.ActivityPoint += stepResult.GetActivityPoint()
 				reduction += stepResult.GetReductionMilliSeconds()
+				if viber.FanEventStepHasSpecialFan(state, character.GetCharacterId(), stepResult.GetStep()) {
+					if int64(progress.GetCurrentCheerPoint())+int64(progress.GetSpecialFanCheerPoint()) > math.MaxInt32 {
+						return nil, status.Error(codes.FailedPrecondition, "fan event cheer point overflows")
+					}
+					progress.CurrentCheerPoint += progress.GetSpecialFanCheerPoint()
+				}
 			}
 			delta := character.GetCompletedStep() - beforeStep
 			character.ActivityStamina = max(int32(0), character.GetActivityStamina()-delta*progress.GetStepConsumptionStamina())
-			character.FinishTime = max(progress.GetStartTime(), character.GetFinishTime()-reduction)
+			finishReduction := int64(delta)*(backgroundMillis-foregroundMillis) + reduction
+			character.FinishTime = max(progress.GetStartTime(), character.GetFinishTime()-finishReduction)
 			character.LastSavedActivityPoint = character.GetActivityPoint()
-			progress.CurrentCheerPoint += (character.GetCompletedStep()/10 - beforeStep/10) * progress.GetSpecialFanCheerPoint()
+		}
+		latestFinish := int64(0)
+		for _, character := range progress.GetCharacters() {
+			latestFinish = max(latestFinish, character.GetFinishTime())
+		}
+		if latestFinish < latestFinishBefore {
+			updated.Notifications = append(updated.Notifications, &ptransaction.UserNotification{
+				NotificationType: penum.NotificationType_NotificationType_Activity,
+				Valid:            true,
+				StartTime:        latestFinish,
+			})
+		}
+		if req.GetUseItemId() != "" {
+			progress.UsedSuperModeItem = true
+			required := setting.GetActivityFanEventRequiredCheerPoint()
+			if required <= 0 || int64(progress.GetCurrentCheerPoint())+int64(required) > math.MaxInt32 {
+				return nil, status.Error(codes.FailedPrecondition, "fan event cheer point is invalid")
+			}
+			// Fever grants one full gauge directly. Cheer-point-up items do not
+			// modify this grant.
+			progress.CurrentCheerPoint += required
+			viber.AddFanEventSuperMode(state, progress)
 		}
 		if req.GetExecCheer() {
 			required := setting.GetActivityFanEventRequiredCheerPoint()
@@ -367,9 +450,14 @@ func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySav
 				return nil, status.Error(codes.FailedPrecondition, "fan event cheer point is insufficient")
 			}
 			progress.CurrentCheerPoint -= required
-			progress.NewSpecialFansCount++
+			if err := viber.AddFanEventCheer(ctx, suid, state, progress); err != nil {
+				return nil, err
+			}
 		}
 		if err := opuser.UpsertUserFanEventRun(ctx, suid, progress); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserFanEventRunState(ctx, state); err != nil {
 			return nil, err
 		}
 		if err := syncActiveFanEvent(ctx, suid, progress); err != nil {
@@ -394,13 +482,19 @@ func (s *ActivityServer) SaveFanEvent(ctx context.Context, req *papi.ActivitySav
 		if err := updateFanEventRanking(ctx, suid, progress); err != nil {
 			return nil, err
 		}
-		stepCursors := make([]int32, 0, len(progress.GetCharacters()))
-		for _, character := range progress.GetCharacters() {
-			stepCursors = append(stepCursors, character.GetCompletedStep())
-		}
-		issuedSteps, err := issueFanEventSteps(ctx, progress, stepCursors)
-		if err != nil {
-			return nil, err
+		var issuedSteps []*papi.FanEventCharacterSteps
+		if req.GetUseItemId() != "" || req.GetExecCheer() {
+			stepCursors := make([]int32, 0, len(progress.GetCharacters()))
+			for _, character := range progress.GetCharacters() {
+				stepCursors = append(stepCursors, min(character.GetMaxStep(), character.GetCompletedStep()+1))
+			}
+			issuedSteps, err = viber.IssueFanEventSteps(ctx, progress, state, stepCursors)
+			if err != nil {
+				return nil, err
+			}
+			if err := opuser.UpsertUserFanEventRunState(ctx, state); err != nil {
+				return nil, err
+			}
 		}
 		response = &papi.ActivitySaveFanEventResponse{
 			CharacterSteps: issuedSteps,
@@ -426,7 +520,11 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 			return nil, err
 		}
 		now := time.Now().UnixMilli()
-		if _, err := reconcileFanEventProgress(ctx, suid, progress, now); err != nil {
+		state, err := viber.FindFanEventRunState(ctx, suid, progress)
+		if err != nil {
+			return nil, err
+		}
+		if _, err := viber.ReconcileFanEventProgress(ctx, suid, progress, state, now); err != nil {
 			return nil, err
 		}
 		for _, character := range progress.GetCharacters() {
@@ -445,22 +543,26 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 		score := fanEventScore(progress)
 		rankType, rankPlus := fanEventRank(progress.GetRankPatterns(), score)
 		updated := &papi.UpdatedData{}
-		rewardIDs := []string{fanEvent.GetFixedRewardId(), fanEventRankRewardID(fanEvent, rankType)}
-		rewards := make([]*ptransaction.Reward, 0)
-		for _, rewardID := range rewardIDs {
-			if rewardID == "" {
-				continue
-			}
-			resolved, err := viber.ActivityRewardFromMaster(ctx, rewardID)
-			if err != nil {
+		rewards, err := viber.ResolveFanEventRewards(
+			ctx, progress, fanEvent, rankType, state.RewardCoefficientPermyriads,
+		)
+		if err != nil {
+			return nil, err
+		}
+		for _, reward := range rewards {
+			if err := viber.GrantActivityReward(ctx, suid, reward, updated); err != nil {
 				return nil, err
 			}
-			for _, reward := range resolved {
-				if err := viber.GrantActivityReward(ctx, suid, reward, updated); err != nil {
-					return nil, err
-				}
-				rewards = mergeActivityReward(rewards, reward)
-			}
+		}
+		balanceProfile, err := viber.FindFanEventBalanceProfile(fanEvent.GetId(), fanEvent.GetLevel())
+		if err != nil {
+			return nil, err
+		}
+		coreFanCoefficient, err := viber.FanEventCoreFanConversionMillionths(
+			balanceProfile, fanEventRankKey(rankType),
+		)
+		if err != nil {
+			return nil, err
 		}
 		selected := make([]*papi.ActivityCharacterInfo, 0, len(progress.GetCharacters()))
 		for _, activityCharacter := range progress.GetCharacters() {
@@ -478,13 +580,23 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 			)
 			character.StaminaUpdatedTime = now
 			character.InActivity = false
-			if character.GetActivityExp() <= math.MaxInt64-int64(activityCharacter.GetCompletedStep()) {
-				character.ActivityExp += int64(activityCharacter.GetCompletedStep())
+			characterActivityExp := int64(activityCharacter.GetCompletedStep())
+			if balanceProfile != nil {
+				characterActivityExp = balanceProfile.CharacterActivityExp
 			}
+			if characterActivityExp > 0 && character.GetActivityExp() > math.MaxInt64-characterActivityExp {
+				return nil, status.Error(codes.FailedPrecondition, "character activity exp overflows")
+			}
+			character.ActivityExp += characterActivityExp
 			if err := advanceCharacterActivityLevel(ctx, character); err != nil {
 				return nil, err
 			}
-			applyFanEventFanConversion(character, progress.GetActivityFanEventType(), progress.GetNewSpecialFansCount())
+			if err := applyFanEventFanConversion(character, coreFanCoefficient); err != nil {
+				return nil, err
+			}
+			if err := viber.RecalculateAudienceCandidateAmount(ctx, character); err != nil {
+				return nil, err
+			}
 			if err := opuser.UpsertUserCharacter(ctx, suid, character); err != nil {
 				return nil, err
 			}
@@ -495,10 +607,14 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 				HairId:      activityCharacter.GetHairId(),
 			})
 		}
-		before := &papi.ActivityLevelInfo{Exp: fanEvent.GetExp(), Level: fanEvent.GetLevel()}
+		before := &papi.ActivityLevelInfo{
+			Exp:             fanEvent.GetExp(),
+			Level:           fanEvent.GetLevel(),
+			NextLevelLocked: fanEventNextLevelLocked(fanEvent, fanEvent.GetExp()),
+		}
 		expGain := int32(min(
 			int64(math.MaxInt32),
-			int64(totalFanEventSteps(progress))*fanEventExperienceMultiplier(progress.GetActivityFanEventId()),
+			int64(totalFanEventSteps(progress))*3,
 		))
 		fanEvent.Exp = int32(min(int64(math.MaxInt32), int64(fanEvent.GetExp())+int64(expGain)))
 		if err := replaceUserFanEvent(info, fanEvent); err != nil {
@@ -538,22 +654,11 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 		if err := updateFanEventRanking(ctx, suid, progress); err != nil {
 			return nil, err
 		}
-		_, masterLevel, err := findFanEventMaster(ctx, fanEvent.GetId(), fanEvent.GetLevel())
+		maxLevel, err := viber.MaxUnlockedFanEventLevel(ctx, suid, fanEvent.GetId(), now, fanEvent.GetLevel())
 		if err != nil {
 			return nil, err
 		}
-		maxLevel := masterLevel.GetLevel()
-		masters, err := opmaster.FindAllActivityFanEvents(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, master := range masters {
-			if master.GetId() == fanEvent.GetId() {
-				for _, level := range master.GetLevels() {
-					maxLevel = max(maxLevel, level.GetLevel())
-				}
-			}
-		}
+		nextLevelLocked := fanEventNextLevelLocked(fanEvent, fanEvent.GetExp())
 		response = &papi.ActivityFinishFanEventResponse{
 			ActivityPoint: int32(min(int64(math.MaxInt32), score)),
 			RankType:      rankType,
@@ -563,7 +668,7 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 			ActivityLevelProgress: &papi.ActivityLevelProgress{
 				MaxActivityLevel: maxLevel,
 				Before:           before,
-				After:            &papi.ActivityLevelInfo{Exp: fanEvent.GetExp(), Level: fanEvent.GetLevel()},
+				After:            &papi.ActivityLevelInfo{Exp: fanEvent.GetExp(), Level: fanEvent.GetLevel(), NextLevelLocked: nextLevelLocked},
 			},
 			Characters:          selected,
 			CampaignEffects:     []*papi.ActivityCampaignEffect{},
@@ -707,136 +812,12 @@ func fanEventRankPatterns(maximumScore int64) []*papi.FanEventRankPattern {
 	return patterns
 }
 
-func reconcileFanEventProgress(ctx context.Context, suid string, progress *papi.FanEventProgress, now int64) (bool, error) {
-	settingID, err := config.GetGameSettingId()
-	if err != nil {
-		return false, err
-	}
-	setting, err := opmaster.FindSetting(ctx, settingID)
-	if err != nil {
-		return false, err
-	}
-	stepMillis := int64(float64(setting.GetSecondsPerActivityFanEventStep()*1000) / max(progress.GetSpeedRate(), 1))
-	if stepMillis <= 0 {
-		return false, status.Error(codes.FailedPrecondition, "fan event step duration is invalid")
-	}
-	changed := false
-	for _, activityCharacter := range progress.GetCharacters() {
-		allowed := fanEventAllowedStep(progress, activityCharacter, now, stepMillis)
-		if allowed <= activityCharacter.GetCompletedStep() {
-			continue
-		}
-		userCharacter, err := opuser.FindUserCharacter(ctx, suid, activityCharacter.GetCharacterId())
-		if err != nil {
-			return false, err
-		}
-		basePoint, err := fanEventBasePoint(ctx, userCharacter, progress.GetStepActivityPointCoefficientPermil())
-		if err != nil {
-			return false, err
-		}
-		delta := allowed - activityCharacter.GetCompletedStep()
-		beforeStep := activityCharacter.GetCompletedStep()
-		activityCharacter.CompletedStep = allowed
-		activityCharacter.ActivityStamina = max(int32(0), activityCharacter.GetActivityStamina()-delta*progress.GetStepConsumptionStamina())
-		activityCharacter.ActivityPoint = int32(min(int64(math.MaxInt32), int64(activityCharacter.GetActivityPoint())+int64(delta)*int64(basePoint)))
-		progress.CurrentCheerPoint += (allowed/10 - beforeStep/10) * progress.GetSpecialFanCheerPoint()
-		changed = true
-	}
-	return changed, nil
-}
-
-func fanEventAllowedStep(progress *papi.FanEventProgress, character *papi.FanEventCharacterInfo, now, stepMillis int64) int32 {
-	originalFinishTime := progress.GetStartTime() + int64(character.GetMaxStep())*stepMillis
-	timeReduction := max(int64(0), originalFinishTime-character.GetFinishTime())
-	elapsed := max(int64(0), now-progress.GetStartTime())
-	return int32(min(int64(character.GetMaxStep()), (elapsed+timeReduction)/stepMillis))
-}
-
-func fanEventSuperModeEffectValue(ctx context.Context) (int32, error) {
-	item, err := opmaster.FindItem(ctx, fanEventSuperModeItemID)
-	if err != nil {
-		return 0, err
-	}
-	if item.GetType() != penum.ItemType_ItemType_ActivityFanEventSuperMode || item.GetValue() <= 0 {
-		return 0, status.Error(codes.FailedPrecondition, "fan event super mode item master is invalid")
-	}
-	return item.GetValue(), nil
-}
-
-func issueFanEventSteps(
-	ctx context.Context,
-	progress *papi.FanEventProgress,
-	cursors []int32,
-) ([]*papi.FanEventCharacterSteps, error) {
-	if len(cursors) != len(progress.GetCharacters()) {
-		return nil, status.Error(codes.InvalidArgument, "one step cursor is required per character")
-	}
-	settingID, err := config.GetGameSettingId()
-	if err != nil {
-		return nil, err
-	}
-	setting, err := opmaster.FindSetting(ctx, settingID)
-	if err != nil {
-		return nil, err
-	}
-	fetchSize := setting.GetActivityFanEventFetchStepsSize()
-	if fetchSize <= 0 {
-		return nil, status.Error(codes.FailedPrecondition, "fan event fetch size is invalid")
-	}
-	superEffectValue := int32(0)
-	if progress.GetUsedSuperModeItem() {
-		superEffectValue, err = fanEventSuperModeEffectValue(ctx)
-		if err != nil {
-			return nil, err
-		}
-	}
-	characterSteps := make([]*papi.FanEventCharacterSteps, 0, len(progress.GetCharacters()))
-	for index, character := range progress.GetCharacters() {
-		cursor := cursors[index]
-		if cursor < 0 || cursor > character.GetMaxStep() {
-			return nil, status.Error(codes.InvalidArgument, "fan event step cursor is out of range")
-		}
-		lastStep := min(character.GetMaxStep(), cursor+fetchSize)
-		steps := make([]*papi.FanEventStep, 0, max(int32(0), lastStep-cursor))
-		for step := cursor + 1; step <= lastStep; step++ {
-			issued := &papi.FanEventStep{
-				Step:        step,
-				Happenings:  []*papi.FanEventHappening{},
-				ItemEffects: []*papi.FanEventItemEffect{},
-			}
-			if superEffectValue > 0 {
-				issued.ItemEffects = append(issued.ItemEffects, &papi.FanEventItemEffect{
-					Type:  penum.ItemType_ItemType_ActivityFanEventSuperMode,
-					Value: superEffectValue,
-				})
-			}
-			steps = append(steps, issued)
-		}
-		characterSteps = append(characterSteps, &papi.FanEventCharacterSteps{
-			CharacterId: character.GetCharacterId(),
-			Steps:       steps,
-		})
-	}
-	return characterSteps, nil
-}
-
 func syncActiveFanEvent(ctx context.Context, suid string, progress *papi.FanEventProgress) error {
 	info, err := opuser.FindUserFanEventInfo(ctx, suid)
 	if err != nil {
 		return err
 	}
-	finish := int64(0)
-	ids := make([]string, 0, len(progress.GetCharacters()))
-	for _, character := range progress.GetCharacters() {
-		finish = max(finish, character.GetFinishTime())
-		ids = append(ids, character.GetCharacterId())
-	}
-	info.ActiveFanEvent = &papi.ActiveFanEvent{
-		CharacterIds: ids,
-		Name:         progress.GetActivityFanEventName(), SubName: progress.GetActivityFanEventSubName(),
-		Level: progress.GetActivityFanEventLevel(), FinishTime: finish,
-		CurrentCheerPoint: progress.GetCurrentCheerPoint(),
-	}
+	viber.SyncActiveFanEventInfo(info, progress)
 	return opuser.UpsertUserFanEventInfo(ctx, suid, info)
 }
 
@@ -856,40 +837,31 @@ func totalFanEventSteps(progress *papi.FanEventProgress) int32 {
 	return int32(min(int64(math.MaxInt32), total))
 }
 
-func fanEventExperienceMultiplier(activityFanEventID string) int64 {
-	switch activityFanEventID {
-	case "act-fan-02":
-		return 2
-	case "act-fan-03":
-		return 3
-	default:
-		return 1
-	}
-}
-
 func applyFanEventFanConversion(
 	character *ptransaction.UserCharacter,
-	fanEventType penum.ActivityFanEventType,
-	newSpecialFans int32,
-) {
-	if character == nil || newSpecialFans <= 0 || fanEventType == penum.ActivityFanEventType_ActivityFanEventType_Handshake {
-		return
+	coefficientMillionths int32,
+) error {
+	if character == nil || coefficientMillionths <= 0 {
+		return nil
 	}
-	converted := min(character.GetLightFanAmount(), newSpecialFans)
-	if converted <= 0 {
-		return
+	coefficient := int64(coefficientMillionths)
+	// Core-fan growth is a maturation chain, not newly-created fans: a share
+	// of light fans become middle fans while the same share of the existing
+	// middle fans become heavy fans. Total fan count therefore stays constant.
+	lightToMiddle := (int64(character.GetLightFanAmount())*coefficient + 500000) / 1000000
+	middleToHeavy := (int64(character.GetMiddleFanAmount())*coefficient + 500000) / 1000000
+	lightToMiddle = min(lightToMiddle, int64(character.GetLightFanAmount()))
+	middleToHeavy = min(middleToHeavy, int64(character.GetMiddleFanAmount()))
+	light := int64(character.GetLightFanAmount()) - lightToMiddle
+	middle := int64(character.GetMiddleFanAmount()) + lightToMiddle - middleToHeavy
+	heavy := int64(character.GetHeavyFanAmount()) + middleToHeavy
+	if light < 0 || middle < 0 || heavy < 0 || light > math.MaxInt32 || middle > math.MaxInt32 || heavy > math.MaxInt32 {
+		return status.Error(codes.FailedPrecondition, "core-fan conversion overflows")
 	}
-	coreFans := converted * 2 / 3
-	otherFans := converted - coreFans
-	character.LightFanAmount -= converted
-	switch fanEventType {
-	case penum.ActivityFanEventType_ActivityFanEventType_Sign:
-		character.MiddleFanAmount += coreFans
-		character.HeavyFanAmount += otherFans
-	case penum.ActivityFanEventType_ActivityFanEventType_PhotoSession:
-		character.HeavyFanAmount += coreFans
-		character.MiddleFanAmount += otherFans
-	}
+	character.LightFanAmount = int32(light)
+	character.MiddleFanAmount = int32(middle)
+	character.HeavyFanAmount = int32(heavy)
+	return nil
 }
 
 func fanEventRank(patterns []*papi.FanEventRankPattern, score int64) (penum.ResultRankType, int32) {
@@ -901,29 +873,26 @@ func fanEventRank(patterns []*papi.FanEventRankPattern, score int64) (penum.Resu
 	return penum.ResultRankType_ResultRankType_D, 0
 }
 
-func fanEventRankRewardID(fanEvent *papi.FanEvent, rank penum.ResultRankType) string {
+func fanEventRankKey(rank penum.ResultRankType) string {
 	switch rank {
-	case penum.ResultRankType_ResultRankType_Splus, penum.ResultRankType_ResultRankType_S:
-		return fanEvent.GetRankSRewardId()
-	case penum.ResultRankType_ResultRankType_A:
-		return fanEvent.GetRankARewardId()
-	case penum.ResultRankType_ResultRankType_B:
-		return fanEvent.GetRankBRewardId()
 	case penum.ResultRankType_ResultRankType_C:
-		return fanEvent.GetRankCRewardId()
+		return "C"
+	case penum.ResultRankType_ResultRankType_B:
+		return "B"
+	case penum.ResultRankType_ResultRankType_A:
+		return "A"
+	case penum.ResultRankType_ResultRankType_S:
+		return "S"
+	case penum.ResultRankType_ResultRankType_Splus:
+		return "Splus"
 	default:
-		return fanEvent.GetRankDRewardId()
+		return "D"
 	}
 }
 
-func mergeActivityReward(rewards []*ptransaction.Reward, reward *ptransaction.Reward) []*ptransaction.Reward {
-	for _, current := range rewards {
-		if current.GetResourceType() == reward.GetResourceType() && current.GetResourceId() == reward.GetResourceId() {
-			current.Amount += reward.GetAmount()
-			return rewards
-		}
-	}
-	return append(rewards, proto.Clone(reward).(*ptransaction.Reward))
+func fanEventNextLevelLocked(fanEvent *papi.FanEvent, exp int32) bool {
+	return fanEvent != nil && fanEvent.GetNextLevelRequiredExp() > 0 &&
+		exp >= fanEvent.GetNextLevelRequiredExp() && !fanEvent.GetIsNextLevelUnlocked()
 }
 
 func advanceCharacterActivityLevel(ctx context.Context, character *ptransaction.UserCharacter) error {

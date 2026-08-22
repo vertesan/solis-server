@@ -4,6 +4,7 @@ import (
 	"context"
 	"math"
 
+	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 
@@ -11,6 +12,56 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
+
+func MaxUnlockedFanEventLevel(ctx context.Context, suid, fanEventID string, now int64, fallback int32) (int32, error) {
+	masters, err := opmaster.FindAllActivityFanEvents(ctx)
+	if err != nil {
+		return 0, err
+	}
+	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	maxLevel := fallback
+	for _, master := range masters {
+		if master.GetId() != fanEventID {
+			continue
+		}
+		for _, level := range master.GetLevels() {
+			unlocked, err := evaluator.Satisfied(level.GetUnlockConditionId())
+			if err != nil {
+				return 0, err
+			}
+			if unlocked {
+				maxLevel = max(maxLevel, level.GetLevel())
+			}
+		}
+		break
+	}
+	return maxLevel, nil
+}
+
+func MaxUnlockedPromotionLevel(ctx context.Context, suid, promotionID string, now int64, fallback int32) (int32, error) {
+	masters, err := opmaster.FindAllActivityPromotions(ctx)
+	if err != nil {
+		return 0, err
+	}
+	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	maxLevel := fallback
+	for _, master := range masters {
+		if master.GetId() != promotionID {
+			continue
+		}
+		for _, level := range master.GetLevels() {
+			unlocked, err := evaluator.Satisfied(level.GetUnlockConditionId())
+			if err != nil {
+				return 0, err
+			}
+			if unlocked {
+				maxLevel = max(maxLevel, level.GetLevel())
+			}
+		}
+		break
+	}
+	return maxLevel, nil
+}
 
 // ReconcileActivityInfos applies permanent condition-based unlocks and drops
 // expired campaign effects before activity catalogs are exposed from Home.
@@ -52,6 +103,33 @@ func ReconcileRefreshInfo(ctx context.Context, suid string, now int64, info *pap
 	return reconcileRefreshInfo(ctx, suid, now, NewCommerceConditionEvaluator(ctx, suid, now), info)
 }
 
+// ActivityFanEventInfoForResponse clones the persisted catalog and hides its
+// selectable entries while a fan event is active, matching the client-facing
+// shape without discarding the user's stored progression.
+func ActivityFanEventInfoForResponse(info *papi.FanEventInfo) *papi.FanEventInfo {
+	if info == nil {
+		return nil
+	}
+	projected := proto.Clone(info).(*papi.FanEventInfo)
+	if projected.GetActiveFanEvent() != nil {
+		projected.FanEvents = []*papi.FanEvent{}
+	}
+	return projected
+}
+
+// ActivityPromotionInfoForResponse is the promotion equivalent of
+// ActivityFanEventInfoForResponse.
+func ActivityPromotionInfoForResponse(info *papi.PromotionInfo) *papi.PromotionInfo {
+	if info == nil {
+		return nil
+	}
+	projected := proto.Clone(info).(*papi.PromotionInfo)
+	if projected.GetActivePromotion() != nil {
+		projected.Promotions = []*papi.Promotion{}
+	}
+	return projected
+}
+
 // ActivityRefreshInfoForResponse clones a persisted base-price catalog and
 // projects current campaign discounts into the copy returned to the client.
 // Persisting only base prices prevents repeated Home calls from compounding a
@@ -61,6 +139,10 @@ func ActivityRefreshInfoForResponse(info *papi.RefreshInfo) (*papi.RefreshInfo, 
 		return nil, nil
 	}
 	projected := proto.Clone(info).(*papi.RefreshInfo)
+	if projected.GetActiveRefresh() != nil {
+		projected.Refreshes = []*papi.Refresh{}
+		return projected, nil
+	}
 	for _, refresh := range projected.GetRefreshes() {
 		for _, level := range refresh.GetLevels() {
 			cost, err := ActivityRefreshGoldCost(level.GetRequiredGold(), projected.GetCampaignEffects())

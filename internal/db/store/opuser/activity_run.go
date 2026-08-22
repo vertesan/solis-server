@@ -21,6 +21,14 @@ func UpsertUserFanEventRun(ctx context.Context, suid string, progress *papi.FanE
 	})
 }
 
+func FindUserFanEventRunState(ctx context.Context, suid string) (*umodel.UserFanEventRunState, error) {
+	return ucommon.FindOne[umodel.UserFanEventRunState](ctx, uname.UserFanEventRun, bson.M{"SUID": suid})
+}
+
+func UpsertUserFanEventRunState(ctx context.Context, state *umodel.UserFanEventRunState) error {
+	return ucommon.UpsertOne(ctx, uname.UserFanEventRun, bson.M{"SUID": state.SUID}, state)
+}
+
 func DeleteUserFanEventRun(ctx context.Context, suid string) error {
 	return ucommon.Delete(ctx, uname.UserFanEventRun, bson.M{"SUID": suid})
 }

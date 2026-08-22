@@ -82,11 +82,20 @@ func ActivityCampaignBonusAmount(
 func ValidateActivityLineup(
 	ctx context.Context,
 	suid string,
+	activityPerformanceID string,
 	characterIDs, costumeIDs, hairIDs []string,
 	now int64,
 ) ([]*ptransaction.UserCharacter, []*papi.ActivityCharacterInfo, error) {
 	if len(characterIDs) != activityLineupSize || len(costumeIDs) != activityLineupSize || len(hairIDs) != activityLineupSize {
 		return nil, nil, status.Errorf(codes.InvalidArgument, "activity lineup must contain exactly %d characters", activityLineupSize)
+	}
+	performance, err := opmaster.FindActivityPerformance(ctx, activityPerformanceID)
+	if err != nil {
+		return nil, nil, err
+	}
+	allowedCostumeTypes := performance.GetCostumeTypeIds()
+	if len(allowedCostumeTypes) == 0 && performance.GetForceCostumeTypeId() != "" {
+		allowedCostumeTypes = []string{performance.GetForceCostumeTypeId()}
 	}
 	seen := make(map[string]struct{}, activityLineupSize)
 	characters := make([]*ptransaction.UserCharacter, 0, activityLineupSize)
@@ -134,6 +143,9 @@ func ValidateActivityLineup(
 		}
 		if costume.GetCharacterId() != characterID || hair.GetCharacterId() != characterID {
 			return nil, nil, status.Error(codes.InvalidArgument, "costume or hair belongs to another character")
+		}
+		if len(allowedCostumeTypes) > 0 && !slices.Contains(allowedCostumeTypes, costume.GetCostumeTypeId()) {
+			return nil, nil, status.Error(codes.InvalidArgument, "costume type is unavailable for this activity")
 		}
 		if slices.Contains(hair.GetNotWearableCostumeIds(), costumeIDs[index]) ||
 			(len(hair.GetWearableCostumeIds()) > 0 && !slices.Contains(hair.GetWearableCostumeIds(), costumeIDs[index])) {
@@ -329,6 +341,31 @@ func GrantActivityReward(
 		Amount:       int32(reward.GetAmount()),
 	}, updated)
 	return err
+}
+
+// RecalculateAudienceCandidateAmount keeps the live audience projection in
+// sync after an activity changes the three fan tiers. The official service
+// floors each weighted tier independently before summing them.
+func RecalculateAudienceCandidateAmount(ctx context.Context, character *ptransaction.UserCharacter) error {
+	if character == nil {
+		return status.Error(codes.FailedPrecondition, "activity character is missing")
+	}
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		return err
+	}
+	setting, err := opmaster.FindSetting(ctx, settingID)
+	if err != nil {
+		return err
+	}
+	amount := int64(character.GetLightFanAmount())*int64(setting.GetLiveLightFanAmountWeightPermil())/1000 +
+		int64(character.GetMiddleFanAmount())*int64(setting.GetLiveMiddleFanAmountWeightPermil())/1000 +
+		int64(character.GetHeavyFanAmount())*int64(setting.GetLiveHeavyFanAmountWeightPermil())/1000
+	if amount < 0 || amount > math.MaxInt32 {
+		return status.Error(codes.FailedPrecondition, "activity audience candidate amount is invalid")
+	}
+	character.AudienceCandidateAmount = int32(amount)
+	return nil
 }
 
 func AddManagerExp(

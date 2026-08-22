@@ -48,7 +48,7 @@ func (s *ActivityServer) StartPromotion(ctx context.Context, req *papi.ActivityS
 			return nil, viber.FailedPreconditionf("promotion %q is not unlocked", req.GetActivityPromotionId())
 		}
 		characters, lineup, err := viber.ValidateActivityLineup(
-			ctx, suid, req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
+			ctx, suid, promotion.GetActivityPerformanceId(), req.GetCharacterIds(), req.GetCostumeIds(), req.GetHairIds(), now,
 		)
 		if err != nil {
 			return nil, err
@@ -401,27 +401,26 @@ func settlePromotionRewards(
 	if promotion == nil {
 		return nil, status.Error(codes.FailedPrecondition, "active promotion definition is missing")
 	}
-	maxLevel, err := promotionMaxLevel(ctx, promotion.GetId(), promotion.GetLevel())
+	finishedAt := time.Now().UnixMilli()
+	maxLevel, err := viber.MaxUnlockedPromotionLevel(ctx, suid, promotion.GetId(), finishedAt, promotion.GetLevel())
 	if err != nil {
 		return nil, err
 	}
-	nextLevelLocked := promotion.GetLevel() < maxLevel && !promotion.GetIsNextLevelUnlocked()
 	before := &papi.ActivityLevelInfo{
 		Exp:             promotion.GetExp(),
 		Level:           promotion.GetLevel(),
-		NextLevelLocked: nextLevelLocked,
+		NextLevelLocked: promotionNextLevelLocked(promotion, promotion.GetExp()),
 	}
 	activityExpGain := pendingSteps * int64(progress.GetStepRewardActivityExp())
 	promotion.Exp = promotionInt32(int64(promotion.GetExp()) + activityExpGain)
 	after := &papi.ActivityLevelInfo{
 		Exp:             promotion.GetExp(),
 		Level:           promotion.GetLevel(),
-		NextLevelLocked: nextLevelLocked,
+		NextLevelLocked: promotionNextLevelLocked(promotion, promotion.GetExp()),
 	}
 	if err := opuser.UpsertUserPromotionInfo(ctx, suid, info); err != nil {
 		return nil, err
 	}
-	finishedAt := time.Now().UnixMilli()
 	fanRewardSteps := runState.FanRewardStepRemainder + pendingSteps
 	fanGain := fanRewardSteps / 20
 	runState.FanRewardStepRemainder = fanRewardSteps % 20
@@ -440,6 +439,9 @@ func settlePromotionRewards(
 		}
 		character.ActivityExp += characterExpGain
 		if err := addPromotionFans(character, promotion.GetMaxFanAmount(), fanGain); err != nil {
+			return nil, err
+		}
+		if err := viber.RecalculateAudienceCandidateAmount(ctx, character); err != nil {
 			return nil, err
 		}
 		if finish {
@@ -527,6 +529,11 @@ func settlePromotionRewards(
 		},
 		updated: updated,
 	}, nil
+}
+
+func promotionNextLevelLocked(promotion *papi.Promotion, exp int32) bool {
+	return promotion != nil && promotion.GetNextLevelRequiredExp() > 0 &&
+		exp >= promotion.GetNextLevelRequiredExp() && !promotion.GetIsNextLevelUnlocked()
 }
 
 func advancePromotion(ctx context.Context, suid string, progress *papi.PromotionProgress, now int64) ([]*ptransaction.UserCharacter, error) {
@@ -770,26 +777,6 @@ func activityPromotionByID(info *papi.PromotionInfo, id string) *papi.Promotion 
 		}
 	}
 	return nil
-}
-
-func promotionMaxLevel(ctx context.Context, id string, fallback int32) (int32, error) {
-	masters, err := opmaster.FindAllActivityPromotions(ctx)
-	if err != nil {
-		return 0, err
-	}
-	maxLevel := fallback
-	for _, master := range masters {
-		if master.GetId() != id {
-			continue
-		}
-		for _, level := range master.GetLevels() {
-			if level.GetLevel() > maxLevel {
-				maxLevel = level.GetLevel()
-			}
-		}
-		break
-	}
-	return maxLevel, nil
 }
 
 func promotionStepExperience(gold int32) (manager, activity, character int32) {

@@ -102,6 +102,37 @@ type UserFanEventRanking struct {
 	CharacterIds       []string `bson:"characterIds"`
 }
 
+// UserFanEventRunState stores the random step plan and finite effects that do
+// not have fields in FanEventProgress. It is embedded in the same MongoDB
+// document as the protobuf run, so overlapping Fetch calls return a stable
+// plan and Load can settle the same happenings while the client is offline.
+type UserFanEventRunState struct {
+	SUID                        string                      `bson:"SUID"`
+	Initialized                 bool                        `bson:"fanEventStateInitialized"`
+	RewardCoefficientPermyriads int32                       `bson:"fanEventRewardCoefficientPermyriads"`
+	PlannedThrough              []UserFanEventPlannedCursor `bson:"fanEventPlannedThrough"`
+	SpecialFanSteps             []UserFanEventStepReference `bson:"fanEventSpecialFanSteps"`
+	CheerEffects                []UserFanEventEffectRange   `bson:"fanEventCheerEffects"`
+	SuperModeEffects            []UserFanEventEffectRange   `bson:"fanEventSuperModeEffects"`
+}
+
+type UserFanEventPlannedCursor struct {
+	CharacterId string `bson:"characterId"`
+	Step        int32  `bson:"step"`
+}
+
+type UserFanEventStepReference struct {
+	CharacterId string `bson:"characterId"`
+	Step        int32  `bson:"step"`
+}
+
+type UserFanEventEffectRange struct {
+	TargetCharacterId  string `bson:"targetCharacterId"`
+	SupportCharacterId string `bson:"supportCharacterId,omitempty"`
+	StartStep          int32  `bson:"startStep"`
+	EndStep            int32  `bson:"endStep"`
+}
+
 // UserPromotionRunState stores accounting state that is not represented in
 // PromotionProgress. It lives alongside the inline protobuf fields in the
 // userPromotionRun document so repeated reward receipts cannot discard a

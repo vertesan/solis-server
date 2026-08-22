@@ -203,6 +203,11 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err := viber.ReconcileActivityInfos(ctx, suid, now, fanEventInfo, promotionInfo, refreshInfo); err != nil {
 			return nil, err
 		}
+		if err := viber.ReconcileActiveFanEventForHome(ctx, suid, now, fanEventInfo); err != nil {
+			return nil, err
+		}
+		fanEventInfoForResponse := viber.ActivityFanEventInfoForResponse(fanEventInfo)
+		promotionInfoForResponse := viber.ActivityPromotionInfoForResponse(promotionInfo)
 		refreshInfoForResponse, err := viber.ActivityRefreshInfoForResponse(refreshInfo)
 		if err != nil {
 			return nil, err
@@ -318,8 +323,8 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 
 		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
-			FanEventInfo:            fanEventInfo,
-			PromotionInfo:           promotionInfo,
+			FanEventInfo:            fanEventInfoForResponse,
+			PromotionInfo:           promotionInfoForResponse,
 			RefreshInfo:             refreshInfoForResponse,
 			LessonProgress:          lessonProgress,
 			BannerInfo:              &papi.BannerInfo{MenuBanners: menuBanners},

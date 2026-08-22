@@ -57,10 +57,7 @@ promotions:
     subGenre: public-radio
 
 refreshes:
-  # Levels 1-2 are the captured values with the temporary 50% gold campaign
-  # removed. Current master data also exposes levels 3-4, which were hidden in
-  # the captures; their gold and recovery values conservatively continue the
-  # level 1-to-2 increments while their IDs follow ActivityPerformance master.
+  # Gold costs are the undiscounted values captured from the official server.
   - id: act-ref-01
     requiredMinutes: 120
     levels:
@@ -75,14 +72,14 @@ refreshes:
         recoveryAmount: 1800
         subGenre: shopping
       - level: 3
-        requiredGold: 360000
+        requiredGold: 510000
         activityPerformanceId: bedrock_bath
-        recoveryAmount: 2600
+        recoveryAmount: 2500
         subGenre: bedrock-bath
       - level: 4
-        requiredGold: 510000
+        requiredGold: 1280000
         activityPerformanceId: karaoke
-        recoveryAmount: 3400
+        recoveryAmount: 3200
         subGenre: karaoke
   - id: act-ref-02
     requiredMinutes: 480
@@ -98,12 +95,12 @@ refreshes:
         recoveryAmount: 3800
         subGenre: theme-park
       - level: 3
-        requiredGold: 590000
+        requiredGold: 810000
         activityPerformanceId: hot_spring
-        recoveryAmount: 5100
+        recoveryAmount: 5000
         subGenre: hot-spring
       - level: 4
-        requiredGold: 820000
+        requiredGold: 1770000
         activityPerformanceId: camp
-        recoveryAmount: 6400
+        recoveryAmount: 6900
         subGenre: camp

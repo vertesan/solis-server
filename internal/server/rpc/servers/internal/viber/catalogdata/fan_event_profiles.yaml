@@ -1,0 +1,63 @@
+profiles:
+  # Official veteran-account captures. These values are server-side balance
+  # data and are not present in the shipped master database.
+  - id: act-fan-01
+    level: 40
+    activityPointCoefficientPermil: 17600
+    rankAThresholdPoint: 4080000
+    characterActivityExp: 283140
+    coreFanConversionMillionths:
+      Splus: 234
+  - id: act-fan-03
+    level: 35
+    activityPointCoefficientPermil: 22000
+    rankAThresholdPoint: 15320000
+    characterActivityExp: 269100
+    coreFanConversionMillionths:
+      A: 182
+
+# Core-fan conversion is backend balance data absent from the shipped master
+# database. A and S+1 match the official captures; uncaptured ranks are
+# explicit monotonic fallbacks until more traffic is available.
+coreFanConversionMillionths:
+  D: 45
+  C: 90
+  B: 135
+  A: 182
+  S: 210
+  Splus: 234
+
+reward:
+  # Rank-scaled fixed channels are exact for A and S+ from round-four/five.
+  # The other monotonic coefficients are isolated here until more captures
+  # provide their backend-only values.
+  recipeDropChancePermyriads: 5000
+  rankCoefficientsPermyriads:
+    D: 10000
+    C: 11000
+    B: 12000
+    A: 14400
+    S: 17000
+    Splus: 18900
+  # Manager EXP is also backend-only. A and S+ are exact max-level captures;
+  # lower ranks are explicit, adjustable approximations.
+  managerExp:
+    D: 180000
+    C: 210000
+    B: 235000
+    A: 254299
+    S: 260000
+    Splus: 267567
+
+rewardProfiles:
+  # Zero-valued master Reward entries are dynamic amount placeholders.
+  # These bases reproduce the captured max-level results after rank scaling.
+  - id: act-fan-01
+    level: 40
+    dynamicByRank:
+      default: {cardEnhance: 1003590, cardSkill: 987}
+      Splus: {cardEnhance: 975522, cardSkill: 991}
+  - id: act-fan-03
+    level: 35
+    dynamicByRank:
+      default: {cardEnhance: 653031, cardSkill: 1211}
