@@ -96,6 +96,69 @@ func TestActivityLessonScenario(t *testing.T) {
 		t.Fatalf("Home.Enter returned stale lesson progress: home=%v lessonInfo=%v db=%v",
 			home.GetLessonProgress(), home.GetLessonInfo().GetLessonProgress(), persisted)
 	}
+
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setting, err := opmaster.FindSetting(dbCtx, settingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if setting.GetActivityLessonPromoteLimitCount() <= 0 {
+		t.Fatalf("invalid lesson promotion limit: %d", setting.GetActivityLessonPromoteLimitCount())
+	}
+	persisted.DailyPromoteCount = setting.GetActivityLessonPromoteLimitCount()
+	if err := opuser.UpsertUserLessonProgress(dbCtx, testConfig.TestUserSuid, persisted); err != nil {
+		t.Fatal(err)
+	}
+	lessonItemID := findActivityItem(t, penum.ItemType_ItemType_ActivityLessonPromote)
+	lessonItemBefore := activityUserItemAmount(t, lessonItemID)
+	if lessonItemBefore < 2 {
+		t.Fatalf("configured test user owns %d lesson promotion items, want at least 2", lessonItemBefore)
+	}
+	for attempt := 1; attempt <= 2; attempt++ {
+		itemResponse := activityCall(t, func(ctx context.Context) (*papi.ActivityPromoteLessonResponse, error) {
+			return activityClient.PromoteLesson(ctx, &papi.ActivityPromoteLessonRequest{UseItemId: lessonItemID})
+		})
+		assertActivityCommonResponse(t, itemResponse.GetCommonResponse())
+		if got := itemResponse.GetProgress().GetDailyPromoteCount(); got != setting.GetActivityLessonPromoteLimitCount() {
+			t.Fatalf("item lesson promotion %d changed daily count to %d, want %d",
+				attempt, got, setting.GetActivityLessonPromoteLimitCount())
+		}
+	}
+	if got, want := activityUserItemAmount(t, lessonItemID), lessonItemBefore-2; got != want {
+		t.Fatalf("item lesson promotions left item amount %d, want %d", got, want)
+	}
+	balanceBeforeRejectedDia, err := opuser.FindUserBalance(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	diaCtx, diaCancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, diaErr := activityClient.PromoteLesson(diaCtx, &papi.ActivityPromoteLessonRequest{})
+	diaCancel()
+	if status.Code(diaErr) != codes.ResourceExhausted {
+		t.Fatalf("dia lesson promotion at daily limit returned %v, want ResourceExhausted", diaErr)
+	}
+	balanceAfterRejectedDia, err := opuser.FindUserBalance(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !proto.Equal(balanceBeforeRejectedDia, balanceAfterRejectedDia) {
+		t.Fatalf("rejected dia lesson promotion changed balance: before=%v after=%v",
+			balanceBeforeRejectedDia, balanceAfterRejectedDia)
+	}
+	persisted, err = opuser.FindUserLessonProgress(dbCtx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if persisted.GetDailyPromoteCount() != setting.GetActivityLessonPromoteLimitCount() {
+		t.Fatalf("lesson promotion daily count=%d, want %d after item and rejected dia promotions",
+			persisted.GetDailyPromoteCount(), setting.GetActivityLessonPromoteLimitCount())
+	}
 }
 
 func TestActivityBeginnerCampaignScenario(t *testing.T) {

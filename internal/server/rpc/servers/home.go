@@ -112,8 +112,32 @@ func (s *HomeServer) SetCharacterPosition(
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.HomeSetCharacterPositionResponse
 	err = transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		var randomCharacterIDs []string
+		for _, position := range positions {
+			if !position.GetIsCharacterRandom() {
+				continue
+			}
+			characters, err := opuser.FindAllUserCharacters(ctx, suid)
+			if err != nil {
+				return nil, err
+			}
+			for _, character := range characters {
+				if character.GetCharacterId() != "" {
+					randomCharacterIDs = append(randomCharacterIDs, character.GetCharacterId())
+				}
+			}
+			break
+		}
 		for _, position := range positions {
 			if position.GetIsCharacterRandom() {
+				if len(randomCharacterIDs) == 0 {
+					return nil, status.Error(codes.FailedPrecondition, "no owned character is available for a random home position")
+				}
+				index, err := viber.CryptoRandomIndex(len(randomCharacterIDs))
+				if err != nil {
+					return nil, err
+				}
+				position.CharacterId = randomCharacterIDs[index]
 				continue
 			}
 			if _, err := opuser.FindUserCharacter(ctx, suid, position.GetCharacterId()); err != nil {

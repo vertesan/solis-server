@@ -98,7 +98,8 @@ func (s *ActivityServer) PromoteLesson(ctx context.Context, req *papi.ActivityPr
 		if err != nil {
 			return nil, err
 		}
-		if progress.GetDailyPromoteCount() >= setting.GetActivityLessonPromoteLimitCount() {
+		isItemPromotion := !req.GetIsFree() && req.GetUseItemId() != ""
+		if !isItemPromotion && progress.GetDailyPromoteCount() >= setting.GetActivityLessonPromoteLimitCount() {
 			return nil, status.Error(codes.ResourceExhausted, "daily lesson promotion limit reached")
 		}
 		updated := &papi.UpdatedData{}
@@ -146,7 +147,9 @@ func (s *ActivityServer) PromoteLesson(ctx context.Context, req *papi.ActivityPr
 		if err != nil {
 			return nil, err
 		}
-		progress.DailyPromoteCount++
+		if !isItemPromotion {
+			progress.DailyPromoteCount++
+		}
 		if err := advanceLessonReceiveAnchor(progress, now, stepSeconds); err != nil {
 			return nil, err
 		}
