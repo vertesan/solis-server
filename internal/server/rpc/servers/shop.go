@@ -194,6 +194,22 @@ func (s *ShopServer) Purchase(ctx context.Context, req *papi.ShopPurchaseRequest
 		if err != nil {
 			return nil, err
 		}
+		if productId := entry.OriginalProductIds[item.GetId()]; productId != "" {
+			product, err := opmaster.FindStoreProduct(ctx, productId)
+			if err != nil {
+				if errors.Is(err, mongo.ErrNoDocuments) {
+					return nil, status.Errorf(codes.FailedPrecondition, "store product %q is missing from master data", productId)
+				}
+				return nil, err
+			}
+			if product.GetStoneAmount() <= 0 {
+				return nil, status.Errorf(codes.FailedPrecondition, "store product %q has an invalid dia amount", productId)
+			}
+			rewards = append(rewards, &pmaster.RewardResource{
+				ResourceType: penum.ResourceType_ResourceType_PaidStone,
+				Amount:       product.GetStoneAmount(),
+			})
+		}
 		if err := viber.ValidateExchangeRewardResources(rewards); err != nil {
 			return nil, err
 		}

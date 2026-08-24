@@ -102,6 +102,12 @@ func commerceShopEntries() ([]*smodel.ShopCatalogEntry, error) {
 	for _, entry := range entries {
 		for _, item := range entry.Items {
 			if item != nil {
+				if entry.ShopId == "shop_top_shop" && item.GetProductId() != "" {
+					if entry.OriginalProductIds == nil {
+						entry.OriginalProductIds = make(map[string]string)
+					}
+					entry.OriginalProductIds[item.GetId()] = item.GetProductId()
+				}
 				normalizeCommerceShopItem(item)
 			}
 		}

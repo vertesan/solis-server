@@ -41,4 +41,7 @@ type ShopCatalogEntry struct {
 	Info                  *papi.ShopInfo              `bson:"info"`
 	Items                 []*papi.ShopItem            `bson:"items"`
 	LoginBonusPackageItem *papi.LoginBonusPackageItem `bson:"loginBonusPackageItem,omitempty"`
+	// OriginalProductIds keeps the StoreProduct link for IAP bundles converted
+	// to free Shop.Purchase items. It is server-only and never enters the API payload.
+	OriginalProductIds map[string]string `bson:"originalProductIds,omitempty"`
 }

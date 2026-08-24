@@ -524,6 +524,10 @@ func resolveCatalogRewards(ctx context.Context, rewardID string) ([]*pmaster.Rew
 		resourceType = penum.ResourceType_ResourceType_Item
 	case "photo_all_in_one":
 		resourceType = penum.ResourceType_ResourceType_PhotoAllInOne
+	case "stone":
+		resourceType = penum.ResourceType_ResourceType_Stone
+	case "paid_stone":
+		resourceType = penum.ResourceType_ResourceType_PaidStone
 	default:
 		return nil, fmt.Errorf("unsupported automatic reward type %q", parts[1])
 	}

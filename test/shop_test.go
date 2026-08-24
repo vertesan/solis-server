@@ -85,8 +85,9 @@ func TestShopScenario(t *testing.T) {
 	verifyFreeLoginPackages(t, homeClient, client, listedByID)
 
 	verifyUnlimitedPremiumTicketPurchase(t, client)
-	verifyFreeDiaPurchase(t, client)
+	verifyFreeDiaPurchase(t, client, listedByID["shop_top_dia"])
 	promoteTestUser(t)
+	verifyNormalBundleDiaPurchase(t, client)
 	verifyInGameCurrencyPurchase(t, client)
 }
 
@@ -369,11 +370,25 @@ func verifyUnlimitedPremiumTicketPurchase(t *testing.T, client papi.ShopClient) 
 	}
 }
 
-func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient) {
+func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient, info *papi.ShopInfo) {
 	t.Helper()
+	if info == nil || info.GetType() != penum.ShopType_ShopType_NormalShop {
+		t.Fatalf("dia shop does not use the direct-purchase shop route: %v", info)
+	}
 	items := listShopItems(t, client, "shop_top_dia").GetShopItems()
 	if len(items) == 0 {
 		t.Fatal("dia shop returned no items")
+	}
+	for _, item := range items {
+		if !item.GetUnlocked() || item.GetProductId() != "" || item.GetConsumptionId() != "" || item.GetRewardId() == "" {
+			t.Fatalf("dia item cannot use the direct Shop.Purchase route: %v", item)
+		}
+		resources, err := resolveCatalogRewards(context.Background(), item.GetRewardId())
+		if err != nil || len(resources) != 1 ||
+			resources[0].GetResourceType() != penum.ResourceType_ResourceType_PaidStone ||
+			resources[0].GetResourceId() != "" || resources[0].GetAmount() <= 0 {
+			t.Fatalf("dia item has an invalid free paid-dia reward: item=%v rewards=%v err=%v", item, resources, err)
+		}
 	}
 	item := items[0]
 	before, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
@@ -401,6 +416,132 @@ func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient) {
 	}
 	if granted <= 0 || int64(after.GetPaidBalance()) != int64(before.GetPaidBalance())+granted {
 		t.Fatalf("free dia purchase balance mismatch: before=%v after=%v rewards=%v", before, after, response.GetRewards())
+	}
+	updated := response.GetCommonResponse().GetUpdatedData().GetBalance()
+	if updated == nil || updated.GetFreeBalance() != after.GetFreeBalance() || updated.GetPaidBalance() != after.GetPaidBalance() {
+		t.Fatalf("free dia purchase omitted the balance post-image: %v", response)
+	}
+}
+
+func verifyNormalBundleDiaPurchase(t *testing.T, client papi.ShopClient) {
+	t.Helper()
+	entry, err := opsolis.FindShopCatalogEntry(context.Background(), "shop_top_shop")
+	if err != nil {
+		t.Fatal(err)
+	}
+	visibleItems := listShopItems(t, client, entry.ShopId).GetShopItems()
+	definitions := make(map[string]*papi.ShopItem, len(entry.Items))
+	for _, definition := range entry.Items {
+		definitions[definition.GetId()] = definition
+	}
+	if len(entry.OriginalProductIds) == 0 {
+		t.Fatal("normal shop has no preserved StoreProduct mappings")
+	}
+	products := make(map[string]*pmaster.StoreProduct, len(entry.OriginalProductIds))
+	bundleRewards := make(map[string]*pmaster.Reward, len(entry.OriginalProductIds))
+	for itemID, productID := range entry.OriginalProductIds {
+		definition := definitions[itemID]
+		if definition == nil || definition.GetRewardId() == "" || definition.GetProductId() != "" {
+			t.Fatalf("normal bundle mapping %q has an invalid catalog item: %v", itemID, definition)
+		}
+		product, err := opmaster.FindStoreProduct(context.Background(), productID)
+		if err != nil || product.GetStoneAmount() <= 0 {
+			t.Fatalf("normal bundle mapping %q has an invalid StoreProduct %q: product=%v err=%v", itemID, productID, product, err)
+		}
+		reward, err := opmaster.FindReward(context.Background(), definition.GetRewardId())
+		if err != nil || len(reward.GetResources()) == 0 {
+			t.Fatalf("normal bundle mapping %q has an invalid reward %q: reward=%v err=%v", itemID, definition.GetRewardId(), reward, err)
+		}
+		products[itemID] = product
+		bundleRewards[itemID] = reward
+	}
+
+	var item *papi.ShopItem
+	var product *pmaster.StoreProduct
+	var reward *pmaster.Reward
+	for _, candidate := range visibleItems {
+		candidateProduct := products[candidate.GetId()]
+		candidateReward := bundleRewards[candidate.GetId()]
+		if candidateProduct == nil || candidateReward == nil {
+			continue
+		}
+		allItems := true
+		for _, resource := range candidateReward.GetResources() {
+			if resource.GetResourceType() != penum.ResourceType_ResourceType_Item ||
+				resource.GetResourceId() == "" || resource.GetAmount() <= 0 {
+				allItems = false
+				break
+			}
+		}
+		if allItems {
+			item, product, reward = candidate, candidateProduct, candidateReward
+			break
+		}
+	}
+	if item == nil {
+		t.Fatal("normal shop has no visible bundle backed by StoreProduct with item rewards")
+	}
+
+	expectedItems := make(map[string]int64)
+	beforeItems := make(map[string]int64)
+	for _, resource := range reward.GetResources() {
+		expectedItems[resource.GetResourceId()] += int64(resource.GetAmount())
+	}
+	for itemID := range expectedItems {
+		beforeItems[itemID] = userItemAmount(t, itemID)
+	}
+	beforeBalance, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	ctx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	response, err := client.Purchase(ctx, &papi.ShopPurchaseRequest{ShopItemId: item.GetId()})
+	cancel()
+	if err != nil {
+		t.Fatalf("normal bundle purchase failed: %v", err)
+	}
+	afterBalance, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if afterBalance.GetFreeBalance() != beforeBalance.GetFreeBalance() ||
+		int64(afterBalance.GetPaidBalance()) != int64(beforeBalance.GetPaidBalance())+int64(product.GetStoneAmount()) {
+		t.Fatalf("normal bundle dia mismatch: before=%v after=%v product=%v", beforeBalance, afterBalance, product)
+	}
+
+	grantedItems := make(map[string]int64)
+	var grantedDia int64
+	for _, result := range response.GetRewards() {
+		switch result.GetResourceType() {
+		case penum.ResourceType_ResourceType_Item:
+			grantedItems[result.GetResourceId()] += result.GetAmountI64()
+		case penum.ResourceType_ResourceType_PaidStone:
+			grantedDia += result.GetAmountI64()
+		}
+	}
+	if grantedDia != int64(product.GetStoneAmount()) {
+		t.Fatalf("normal bundle response granted %d paid dia, want %d: %v", grantedDia, product.GetStoneAmount(), response)
+	}
+	for itemID, amount := range expectedItems {
+		want := beforeItems[itemID] + amount
+		if got := userItemAmount(t, itemID); got != want {
+			t.Fatalf("normal bundle item %q amount is %d, want %d", itemID, got, want)
+		}
+		if grantedItems[itemID] != amount {
+			t.Fatalf("normal bundle response granted %d of %q, want %d: %v", grantedItems[itemID], itemID, amount, response)
+		}
+		if !containsUpdatedShopItem(response.GetCommonResponse().GetUpdatedData().GetItems(), itemID, want) {
+			t.Fatalf("normal bundle response omitted item %q post-image: %v", itemID, response)
+		}
+	}
+	updatedBalance := response.GetCommonResponse().GetUpdatedData().GetBalance()
+	if updatedBalance == nil || updatedBalance.GetFreeBalance() != afterBalance.GetFreeBalance() ||
+		updatedBalance.GetPaidBalance() != afterBalance.GetPaidBalance() {
+		t.Fatalf("normal bundle response omitted the balance post-image: %v", response)
 	}
 }
 
