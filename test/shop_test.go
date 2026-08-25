@@ -13,6 +13,8 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 func TestShopScenario(t *testing.T) {
@@ -85,7 +87,7 @@ func TestShopScenario(t *testing.T) {
 	verifyFreeLoginPackages(t, homeClient, client, listedByID)
 
 	verifyUnlimitedPremiumTicketPurchase(t, client)
-	verifyFreeDiaPurchase(t, client, listedByID["shop_top_dia"])
+	verifyDiaShopFallback(t, client, listedByID["shop_top_dia"])
 	promoteTestUser(t)
 	verifyNormalBundleDiaPurchase(t, client)
 	verifyInGameCurrencyPurchase(t, client)
@@ -370,28 +372,68 @@ func verifyUnlimitedPremiumTicketPurchase(t *testing.T, client papi.ShopClient) 
 	}
 }
 
-func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient, info *papi.ShopInfo) {
+func verifyDiaShopFallback(t *testing.T, client papi.ShopClient, info *papi.ShopInfo) {
 	t.Helper()
-	if info == nil || info.GetType() != penum.ShopType_ShopType_NormalShop {
-		t.Fatalf("dia shop does not use the direct-purchase shop route: %v", info)
+	if info == nil || info.GetType() != penum.ShopType_ShopType_DefaultStoneShop {
+		t.Fatalf("dia shop does not use the original store-purchase route: %v", info)
 	}
-	items := listShopItems(t, client, "shop_top_dia").GetShopItems()
-	if len(items) == 0 {
+	diaItems := listShopItems(t, client, "shop_top_dia").GetShopItems()
+	if len(diaItems) == 0 {
 		t.Fatal("dia shop returned no items")
 	}
-	for _, item := range items {
-		if !item.GetUnlocked() || item.GetProductId() != "" || item.GetConsumptionId() != "" || item.GetRewardId() == "" {
-			t.Fatalf("dia item cannot use the direct Shop.Purchase route: %v", item)
+
+	expectedCopies := []struct {
+		id       string
+		sourceID string
+		amount   int64
+	}{
+		{id: "shop_item_normal-stone-120", sourceID: "shop_item_stone-120", amount: 160},
+		{id: "shop_item_normal-stone-490", sourceID: "shop_item_stone-490", amount: 480},
+		{id: "shop_item_normal-stone-980", sourceID: "shop_item_stone-980", amount: 800},
+		{id: "shop_item_normal-stone-1960", sourceID: "shop_item_stone-1960", amount: 1900},
+		{id: "shop_item_normal-stone-2940", sourceID: "shop_item_stone-2940", amount: 2900},
+		{id: "shop_item_normal-stone-4900", sourceID: "shop_item_stone-4900", amount: 4900},
+		{id: "shop_item_normal-stone-10000", sourceID: "shop_item_stone-10000", amount: 10000},
+	}
+	normalItems := listShopItems(t, client, "shop_top_shop").GetShopItems()
+	if len(normalItems) < len(expectedCopies) {
+		t.Fatalf("normal shop returned %d items, need at least %d paid-dia copies", len(normalItems), len(expectedCopies))
+	}
+	diaByID := make(map[string]*papi.ShopItem, len(diaItems))
+	for _, item := range diaItems {
+		diaByID[item.GetId()] = item
+	}
+	normalEntry, err := opsolis.FindShopCatalogEntry(context.Background(), "shop_top_shop")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, expected := range expectedCopies {
+		item := normalItems[i]
+		if item.GetId() != expected.id || item.GetOrder() != int32(i+1) {
+			t.Fatalf("normal shop paid-dia item %d is %v, want id=%q order=%d", i, item, expected.id, i+1)
+		}
+		source := diaByID[expected.sourceID]
+		if source == nil {
+			t.Fatalf("dia shop is missing source item %q", expected.sourceID)
+		}
+		if item.GetId() == source.GetId() || item.GetName() != source.GetName() ||
+			item.GetDescription() != source.GetDescription() || item.GetColorCode() != source.GetColorCode() ||
+			item.GetBackgroundColorCode() != source.GetBackgroundColorCode() ||
+			item.GetThumbnailAssetId() != source.GetThumbnailAssetId() || item.GetRewardId() != source.GetRewardId() {
+			t.Fatalf("normal shop item is not a faithful, uniquely identified copy: source=%v copy=%v", source, item)
+		}
+		if normalEntry.OriginalProductIds[item.GetId()] != "" {
+			t.Fatalf("normal paid-dia copy %q retained a product mapping and would grant dia twice", item.GetId())
 		}
 		resources, err := resolveCatalogRewards(context.Background(), item.GetRewardId())
 		if err != nil || len(resources) != 1 ||
 			resources[0].GetResourceType() != penum.ResourceType_ResourceType_PaidStone ||
-			resources[0].GetResourceId() != "" || resources[0].GetAmount() <= 0 {
-			t.Fatalf("dia item has an invalid free paid-dia reward: item=%v rewards=%v err=%v", item, resources, err)
+			resources[0].GetResourceId() != "" || int64(resources[0].GetAmount()) != expected.amount {
+			t.Fatalf("normal paid-dia copy has an invalid reward: item=%v rewards=%v err=%v", item, resources, err)
 		}
 	}
-	item := items[0]
-	before, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
+
+	beforeRejectedPurchase, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -399,10 +441,30 @@ func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient, info *papi.Shop
 	if err != nil {
 		t.Fatal(err)
 	}
+	_, err = client.Purchase(ctx, &papi.ShopPurchaseRequest{ShopItemId: diaItems[0].GetId()})
+	cancel()
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("default dia shop Shop.Purchase error is %v, want FailedPrecondition", err)
+	}
+	afterRejectedPurchase, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if afterRejectedPurchase.GetFreeBalance() != beforeRejectedPurchase.GetFreeBalance() ||
+		afterRejectedPurchase.GetPaidBalance() != beforeRejectedPurchase.GetPaidBalance() {
+		t.Fatalf("rejected default dia shop purchase changed balance: before=%v after=%v", beforeRejectedPurchase, afterRejectedPurchase)
+	}
+
+	item := normalItems[0]
+	before := afterRejectedPurchase
+	ctx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
 	response, err := client.Purchase(ctx, &papi.ShopPurchaseRequest{ShopItemId: item.GetId()})
 	cancel()
 	if err != nil {
-		t.Fatalf("free dia purchase failed: %v", err)
+		t.Fatalf("normal shop paid-dia purchase failed: %v", err)
 	}
 	after, err := opuser.FindUserBalance(context.Background(), testConfig.TestUserSuid)
 	if err != nil {
@@ -414,12 +476,14 @@ func verifyFreeDiaPurchase(t *testing.T, client papi.ShopClient, info *papi.Shop
 			granted += reward.GetAmountI64()
 		}
 	}
-	if granted <= 0 || int64(after.GetPaidBalance()) != int64(before.GetPaidBalance())+granted {
-		t.Fatalf("free dia purchase balance mismatch: before=%v after=%v rewards=%v", before, after, response.GetRewards())
+	if granted != expectedCopies[0].amount ||
+		int64(after.GetPaidBalance()) != int64(before.GetPaidBalance())+expectedCopies[0].amount ||
+		after.GetFreeBalance() != before.GetFreeBalance() {
+		t.Fatalf("normal shop paid-dia purchase balance mismatch: before=%v after=%v rewards=%v", before, after, response.GetRewards())
 	}
 	updated := response.GetCommonResponse().GetUpdatedData().GetBalance()
 	if updated == nil || updated.GetFreeBalance() != after.GetFreeBalance() || updated.GetPaidBalance() != after.GetPaidBalance() {
-		t.Fatalf("free dia purchase omitted the balance post-image: %v", response)
+		t.Fatalf("normal shop paid-dia purchase omitted the balance post-image: %v", response)
 	}
 }
 

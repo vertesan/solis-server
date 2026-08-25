@@ -169,6 +169,9 @@ func (s *ShopServer) Purchase(ctx context.Context, req *papi.ShopPurchaseRequest
 		if !visible || !item.GetUnlocked() {
 			return nil, status.Error(codes.PermissionDenied, "shop item is locked")
 		}
+		if entry.Info.GetType() == penum.ShopType_ShopType_DefaultStoneShop {
+			return nil, status.Error(codes.FailedPrecondition, "dia shop requires the unsupported purchase transaction API")
+		}
 		if item.GetProductId() != "" {
 			return nil, status.Error(codes.FailedPrecondition, "real-money shop item requires the purchase transaction API")
 		}

@@ -1,4 +1,130 @@
 shopItems:
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-120
+    leftCount: 0
+    name: ブルーダイヤ×160
+    nextResetTime: "0"
+    order: 1
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;160
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-120
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-490
+    leftCount: 0
+    name: ブルーダイヤ×480
+    nextResetTime: "0"
+    order: 2
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;480
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-490
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-980
+    leftCount: 0
+    name: ブルーダイヤ×800
+    nextResetTime: "0"
+    order: 3
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;800
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-980
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-1960
+    leftCount: 0
+    name: ブルーダイヤ×1900
+    nextResetTime: "0"
+    order: 4
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;1900
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-1960
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-2940
+    leftCount: 0
+    name: ブルーダイヤ×2900
+    nextResetTime: "0"
+    order: 5
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;2900
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-2940
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-4900
+    leftCount: 0
+    name: ブルーダイヤ×4900
+    nextResetTime: "0"
+    order: 6
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;4900
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-4900
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
+  - backgroundColorCode: FD5858
+    colorCode: FD9090
+    consumptionId: ""
+    description: ブルーダイヤを獲得できます
+    id: shop_item_normal-stone-10000
+    leftCount: 0
+    name: ブルーダイヤ×10000
+    nextResetTime: "0"
+    order: 7
+    productId: ""
+    purchaseLimit: 0
+    pushSegment: ""
+    resetTimingType: 4
+    rewardId: rd_auto;paid_stone;;10000
+    thumbnailAssetId: img_shop_item_thumb_blue-dia-10000
+    unlockConditionId: ""
+    unlocked: true
+    viewConditionId: ""
   - backgroundColorCode: FD9125
     colorCode: FEC440
     consumptionId: ""
@@ -7,7 +133,7 @@ shopItems:
     leftCount: 1
     name: ガチャ補助券×10
     nextResetTime: "1787324400000"
-    order: 1
+    order: 8
     productId: ""
     purchaseLimit: 1
     pushSegment: ""
