@@ -11,6 +11,8 @@ import (
 )
 
 func TestDownloadRawMasterDatabase(t *testing.T) {
+	setupTestUser(t)
+
 	// if err := db.Connect(); err != nil {
 	// 	t.Fatalf("failed connecting db: %v", err)
 	// }

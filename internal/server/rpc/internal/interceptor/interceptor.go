@@ -4,14 +4,20 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/google/uuid"
+	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"go.uber.org/zap"
 
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -19,6 +25,8 @@ import (
 )
 
 type AuthTokenKey struct{}
+
+var jstLocation = time.FixedZone("JST", 9*60*60)
 
 var (
 	errMissingMetadata      = status.Errorf(codes.InvalidArgument, "missing metadata")
@@ -62,43 +70,118 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 			return nil, err
 		}
 
-		// check x-app-request-id
-		requestId := md.Get("x-app-request-id")
-		if len(requestId) > 0 {
-			logger = logger.With(zap.String("request_id", requestId[0]))
-			// TODO: dedulplicate request by checking request id to ensure idempotency
-		}
-
-		// send metadata back
-		header := metadata.New(map[string]string{
-			"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
-			"cache-control": "no-store",
-		})
-		if err := grpc.SendHeader(ctx, header); err != nil {
-			logger.Error("failed sending header", zap.Error(err))
-			return nil, err
+		requestIds := md.Get("x-app-request-id")
+		if len(requestIds) > 0 {
+			logger = logger.With(zap.String("request_id", requestIds[0]))
 		}
 
 		// embed uuid into context
-		if _, ok := noNeedTokenSet[info.FullMethod]; !ok {
-			suid, err := getSuid(ctx)
+		_, tokenExempt := noNeedTokenSet[info.FullMethod]
+		var suid *uuid.UUID
+		if !tokenExempt {
+			suid, err = getSuid(ctx)
 			if err != nil {
 				logger.Error("failed to get suid", zap.Error(err))
 				return nil, err
 			}
 			logger = logger.With(zap.String("suid", suid.String()))
 			ctx = context.WithValue(ctx, AuthTokenKey{}, suid)
+
+			reloginRequired, err := requiresDailyRelogin(ctx, suid.String(), time.Now())
+			if err != nil {
+				logger.Error("failed checking daily login", zap.Error(err))
+				if status.Code(err) != codes.Unknown {
+					return nil, err
+				}
+				return nil, errInternal
+			}
+			if reloginRequired {
+				header := responseHeader()
+				header.Set("x-error-action", "title")
+				// grpc-go base64-encodes raw values whose key ends in -bin. The
+				// resulting HTTP/2 value is the value specified by the client.
+				header.Set("x-error-message-bin", "日付が変わりました")
+				header.Set("x-error-code", "1003")
+				if err := grpc.SendHeader(ctx, header); err != nil {
+					logger.Error("failed sending daily relogin header", zap.Error(err))
+					return nil, err
+				}
+				return &papi.Empty{}, nil
+			}
 		}
 		// thread logger to context
 		ctx = mcontext.WithLogger(ctx, logger)
 
+		// send metadata back
+		if err := grpc.SendHeader(ctx, responseHeader()); err != nil {
+			logger.Error("failed sending header", zap.Error(err))
+			return nil, err
+		}
+
+		var requestId string
+		if len(requestIds) > 0 {
+			if tokenExempt {
+				return nil, status.Error(codes.InvalidArgument, "x-app-request-id requires authentication")
+			}
+			requestId, err = parseAppRequestId(requestIds)
+			if err != nil {
+				return nil, err
+			}
+		}
+
 		// invoke handler
-		m, err := handler(ctx, req)
+		var m any
+		if requestId == "" {
+			m, err = handler(ctx, req)
+		} else {
+			err = transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+				if err := opuser.ReserveAppRequest(ctx, suid.String(), requestId, info.FullMethod); err != nil {
+					return nil, err
+				}
+				m, err = handler(ctx, req)
+				return nil, err
+			})
+			if errors.Is(err, opuser.ErrDuplicateAppRequest) {
+				logger.Warn("rejected duplicate app request")
+				return nil, status.Error(codes.AlreadyExists, "duplicate x-app-request-id")
+			}
+		}
 		if err != nil {
 			logger.Error("RPC failed with error", zap.Error(err))
 		}
 		return m, abstractErrorMsg(err)
 	}
+}
+
+func responseHeader() metadata.MD {
+	return metadata.New(map[string]string{
+		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
+		"cache-control": "no-store",
+	})
+}
+
+func requiresDailyRelogin(ctx context.Context, suid string, now time.Time) (bool, error) {
+	userAuth, err := opuser.GetUserAuthByServerId(ctx, suid)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return false, errInvalidToken
+		}
+		return false, err
+	}
+	lastLogin := time.UnixMilli(userAuth.LastLoginAt).In(jstLocation)
+	current := now.In(jstLocation)
+	return lastLogin.Year() != current.Year() || lastLogin.YearDay() != current.YearDay(), nil
+}
+
+func parseAppRequestId(values []string) (string, error) {
+	if len(values) != 1 || values[0] == "" {
+		return "", status.Error(codes.InvalidArgument, "invalid x-app-request-id")
+	}
+	requestId, err := strconv.ParseUint(values[0], 10, 64)
+	if err != nil {
+		return "", status.Error(codes.InvalidArgument, "invalid x-app-request-id")
+	}
+	return strconv.FormatUint(requestId, 10), nil
 }
 
 func abstractErrorMsg(err error) error {

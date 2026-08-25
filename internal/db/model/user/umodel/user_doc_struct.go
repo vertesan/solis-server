@@ -90,6 +90,17 @@ type UserMessageProgress struct {
 	LastMessageDetailTime int64  `bson:"lastMessageDetailTime"`
 }
 
+// UserAppRequest is a durable reservation for a client-generated request ID.
+// Key is unique through MongoDB's built-in _id index, making concurrent
+// reservations atomic without relying on process-local state.
+type UserAppRequest struct {
+	Key        string `bson:"_id"`
+	SUID       string `bson:"SUID"`
+	RequestId  string `bson:"requestId"`
+	Method     string `bson:"method"`
+	ReceivedAt int64  `bson:"receivedAt"`
+}
+
 // UserActivityLessonDailyState records the JST game day for which
 // ActivityLessonProgress.DailyPromoteCount applies.  The original progress
 // protobuf contains the count but not its day, so keeping the day separately

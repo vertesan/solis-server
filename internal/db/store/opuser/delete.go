@@ -128,6 +128,7 @@ func getUserCollection() []collection {
 		{Name: uname.UserExcursionState, SUIDField: suidField},
 		{Name: uname.UserExcursionGazeReaction, SUIDField: suidField},
 		{Name: uname.UserGachaHistory, SUIDField: suidField},
+		{Name: uname.UserAppRequest, SUIDField: suidField},
 	}
 	return collections
 }
