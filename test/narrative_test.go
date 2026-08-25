@@ -5,6 +5,7 @@ import (
 	"errors"
 	"regexp"
 	"slices"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -38,6 +39,7 @@ func TestCostumeScenario(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	obtainedTime := userCostume.ObtainedTime
 	userCostume.Checked, userHair.Checked = true, true
 	if err := opuser.UpsertUserCostume(ctx, testConfig.TestUserSuid, userCostume); err != nil {
 		t.Fatal(err)
@@ -66,12 +68,30 @@ func TestCostumeScenario(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = client.CheckBulk(grpcCtx, &papi.CostumeCheckBulkRequest{CostumeIds: []string{costume.Id}, HairIds: []string{hair.Id}})
+	checkResponse, err := client.CheckCostume(grpcCtx, &papi.CostumeCheckRequest{CostumeId: costume.Id})
 	cancel()
 	if err != nil {
-		t.Fatalf("Costume.CheckBulk failed: %v", err)
+		t.Fatalf("Costume.CheckCostume failed: %v", err)
+	}
+	checkedCostumes := checkResponse.GetCommonResponse().GetUpdatedData().GetCostumes()
+	if len(checkedCostumes) != 1 || checkedCostumes[0].GetCostumeId() != costume.Id ||
+		!checkedCostumes[0].GetChecked() || checkedCostumes[0].GetObtainedTime() != obtainedTime {
+		t.Fatalf("Costume.CheckCostume returned the wrong costume post-image: %v", checkResponse)
 	}
 	assertWardrobeChecked(t, costume.Id, hair.Id, true, true)
+
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	repeatCheck, err := client.CheckCostume(grpcCtx, &papi.CostumeCheckRequest{CostumeId: costume.Id})
+	cancel()
+	if err != nil {
+		t.Fatalf("repeated Costume.CheckCostume failed: %v", err)
+	}
+	if repeatCheck.GetCommonResponse() == nil || len(repeatCheck.GetCommonResponse().GetUpdatedData().GetCostumes()) != 0 {
+		t.Fatalf("repeated Costume.CheckCostume returned a redundant update: %v", repeatCheck)
+	}
 
 	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
@@ -90,6 +110,17 @@ func TestCostumeScenario(t *testing.T) {
 		t.Fatalf("favorite wardrobe was not persisted: %v", character)
 	}
 	assertWardrobeChecked(t, costume.Id, hair.Id, true, false)
+
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.CheckBulk(grpcCtx, &papi.CostumeCheckBulkRequest{CostumeIds: []string{costume.Id}, HairIds: []string{hair.Id}})
+	cancel()
+	if err != nil {
+		t.Fatalf("Costume.CheckBulk failed: %v", err)
+	}
+	assertWardrobeChecked(t, costume.Id, hair.Id, true, true)
 }
 
 func TestStoryScenario(t *testing.T) {
@@ -146,7 +177,33 @@ func TestStoryScenario(t *testing.T) {
 	}
 	assertStoryRead(t, eventStoryId)
 
-	extraId, extraEpisode, extraStoryId := findUnlockedExtraEpisode(t, readStoryId, eventStoryId)
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	extraList, err := client.ListExtra(grpcCtx, &papi.Empty{})
+	cancel()
+	if err != nil {
+		t.Fatalf("Story.ListExtra failed: %v", err)
+	}
+	if extraList.GetCommonResponse() == nil {
+		t.Fatalf("Story.ListExtra returned no CommonResponse: %v", extraList)
+	}
+	storedExtraInfos, err := opuser.FindAllUserExtraStoryPartInfos(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	sortExtraStoryPartInfos(storedExtraInfos)
+	if len(extraList.GetInfos()) != len(storedExtraInfos) {
+		t.Fatalf("Story.ListExtra returned %d parts, want %d", len(extraList.GetInfos()), len(storedExtraInfos))
+	}
+	for index := range storedExtraInfos {
+		if !proto.Equal(extraList.GetInfos()[index], storedExtraInfos[index]) {
+			t.Fatalf("Story.ListExtra part %d differs from persisted state: got=%v want=%v", index, extraList.GetInfos()[index], storedExtraInfos[index])
+		}
+	}
+
+	extraId, extraEpisode, extraStoryId := findUnlockedExtraEpisode(t, extraList.GetInfos(), readStoryId, eventStoryId)
 	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
 		t.Fatal(err)
@@ -518,13 +575,9 @@ func findUnlockedEventEpisode(t *testing.T, infos []*papi.EventStoryInfo, exclud
 	return "", 0, ""
 }
 
-func findUnlockedExtraEpisode(t *testing.T, excluded ...string) (string, int32, string) {
+func findUnlockedExtraEpisode(t *testing.T, parts []*papi.ExtraStoryPartInfo, excluded ...string) (string, int32, string) {
 	t.Helper()
 	ctx := context.Background()
-	parts, err := opuser.FindAllUserExtraStoryPartInfos(ctx, testConfig.TestUserSuid)
-	if err != nil {
-		t.Fatal(err)
-	}
 	for _, part := range parts {
 		if !part.Unlocked {
 			continue
@@ -551,6 +604,18 @@ func findUnlockedExtraEpisode(t *testing.T, excluded ...string) (string, int32, 
 	}
 	t.Fatal("no unlocked extra story episode exists")
 	return "", 0, ""
+}
+
+func sortExtraStoryPartInfos(infos []*papi.ExtraStoryPartInfo) {
+	sort.Slice(infos, func(i, j int) bool { return infos[i].GetId() < infos[j].GetId() })
+	for _, info := range infos {
+		sort.Slice(info.Stories, func(i, j int) bool { return info.Stories[i].GetId() < info.Stories[j].GetId() })
+		for _, story := range info.Stories {
+			sort.Slice(story.Episodes, func(i, j int) bool {
+				return story.Episodes[i].GetEpisode() < story.Episodes[j].GetEpisode()
+			})
+		}
+	}
 }
 
 func findCompanyEnjoyStory(t *testing.T, excluded ...string) (string, int32, string) {

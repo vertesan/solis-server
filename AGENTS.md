@@ -94,4 +94,4 @@ Sugaring a logger is perfectly acceptable, our program is not that performance c
 
 - NEVER try to read the full contents of files in the `proto/` directory, each file in that directory is supposed to be super huge which will DEFINITELY exceed your context window
 - NEVER read the `data` field of any documents in the `master` database, this field contains raw protobuf binary data and may be very large
-- NEVER try to read the full contents of files in the `resources/masterdata` directory, some of the files in that directory is very large. Instead, use `jq`, `rg` or other methods to read only the parts of the file that you need.
+- NEVER try to read the full contents of files in the `resources/masterdata/` directory, some of the files in that directory is very large. Instead, use `jq`, `rg` or other methods to read only the parts of the file that you need.
