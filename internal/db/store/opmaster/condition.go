@@ -10,11 +10,21 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
+	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
 func FindCondition(ctx context.Context, id string) (*pmaster.Condition, error) {
 	return mcommon.FindOne[mmodel.Condition, pmaster.Condition](
 		ctx, mname.Condition, bson.M{"Id": id},
+	)
+}
+
+func FindAllConditions(ctx context.Context) ([]*pmaster.Condition, error) {
+	return mcommon.FindMany[mmodel.Condition, pmaster.Condition](
+		ctx,
+		mname.Condition,
+		bson.M{},
+		options.Find().SetSort(bson.D{{Key: "_id", Value: 1}}),
 	)
 }
 

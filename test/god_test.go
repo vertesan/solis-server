@@ -4,15 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"testing"
 	"time"
 
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	makinouser "github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/http/admin"
 
@@ -70,6 +74,64 @@ func TestUserGod(t *testing.T) {
 	if err := opuser.UpsertUserLove(ctx, testConfig.TestUserSuid, loveToPreserve); err != nil {
 		t.Fatal(err)
 	}
+	masterMessagesForHistory, err := opmaster.FindAllMessages(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var messageHistoryToPreserve *ptransaction.UserMessage
+	var progressToPreserve *umodel.UserMessageProgress
+	for _, master := range masterMessagesForHistory {
+		firstSelections, firstTerminal, err := messagepath.FirstPath(master)
+		if err != nil {
+			t.Fatal(err)
+		}
+		alternateSelections, ok := findAlternateMessagePath(master, firstTerminal.GetMessageDetailId(), firstSelections)
+		if !ok {
+			continue
+		}
+		alternateTerminal, err := messagepath.ExistingHistoryPath(master, alternateSelections)
+		if err != nil {
+			t.Fatal(err)
+		}
+		arrivedTime := time.Now().Add(-2 * time.Minute).UnixMilli()
+		finishedTime := time.Now().Add(-time.Minute).UnixMilli()
+		messageHistoryToPreserve = &ptransaction.UserMessage{
+			MessageId:              master.GetId(),
+			MessageStatusType:      penum.MessageStatusType_MessageStatusType_Finished,
+			ArrivedTime:            arrivedTime,
+			SelectMessageDetailIds: alternateSelections,
+		}
+		progressToPreserve = &umodel.UserMessageProgress{
+			SUID:                  testConfig.TestUserSuid,
+			MessageId:             master.GetId(),
+			LastMessageDetailId:   alternateTerminal.GetMessageDetailId(),
+			LastMessageDetailTime: finishedTime,
+		}
+		if err := opuser.UpsertUserMessage(ctx, testConfig.TestUserSuid, messageHistoryToPreserve); err != nil {
+			t.Fatal(err)
+		}
+		if err := opuser.UpsertUserMessageProgress(ctx, progressToPreserve); err != nil {
+			t.Fatal(err)
+		}
+		break
+	}
+	if messageHistoryToPreserve == nil {
+		t.Fatal("master data contains no alternate message path to test god history preservation")
+	}
+	telephonesBeforeSecondCall, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(telephonesBeforeSecondCall) == 0 {
+		t.Fatal("god mode did not create telephone history")
+	}
+	telephoneToComplete := proto.Clone(telephonesBeforeSecondCall[0]).(*ptransaction.UserTelephone)
+	telephoneToComplete.TelephoneStatusType = penum.TelephoneStatusType_TelephoneStatusType_Scheduled
+	telephoneToComplete.UnlockedTime = time.Now().Add(-time.Minute).UnixMilli()
+	telephoneToComplete.ScheduledTime = time.Now().Add(time.Hour).UnixMilli()
+	if err := opuser.UpsertUserTelephone(ctx, testConfig.TestUserSuid, telephoneToComplete); err != nil {
+		t.Fatal(err)
+	}
 	ticketItems, err := opmaster.FindAllItems(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -95,7 +157,9 @@ func TestUserGod(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	secondGodStarted := time.Now().UnixMilli()
 	second := callUserGod(t, &admin.UserGodRequest{ServerUserId: testConfig.TestUserSuid})
+	secondGodFinished := time.Now().UnixMilli()
 	if !first.Ok || !second.Ok || first.ServerUserId != testConfig.TestUserSuid || second.ServerUserId != testConfig.TestUserSuid {
 		t.Fatalf("unexpected admin user god responses: first=%v second=%v", first, second)
 	}
@@ -121,6 +185,19 @@ func TestUserGod(t *testing.T) {
 	}
 	if !preservedLoveFound {
 		t.Fatalf("god mode did not preserve existing love state: before=%v after=%v", loveToPreserve, lovesAfterSecondCall)
+	}
+	preservedMessage, err := opuser.FindUserMessage(ctx, testConfig.TestUserSuid, messageHistoryToPreserve.GetMessageId())
+	if err != nil || !proto.Equal(preservedMessage, messageHistoryToPreserve) {
+		t.Fatalf("god mode changed valid message history: before=%v after=%v err=%v", messageHistoryToPreserve, preservedMessage, err)
+	}
+	preservedProgress, err := opuser.FindUserMessageProgress(ctx, testConfig.TestUserSuid, progressToPreserve.MessageId)
+	if err != nil || *preservedProgress != *progressToPreserve {
+		t.Fatalf("god mode changed valid message progress: before=%v after=%v err=%v", progressToPreserve, preservedProgress, err)
+	}
+	completedTelephone, err := opuser.FindUserTelephone(ctx, testConfig.TestUserSuid, telephoneToComplete.GetTelephoneId())
+	if err != nil || completedTelephone.GetTelephoneStatusType() != penum.TelephoneStatusType_TelephoneStatusType_Finished ||
+		completedTelephone.GetScheduledTime() < secondGodStarted || completedTelephone.GetScheduledTime() > secondGodFinished {
+		t.Fatalf("god mode retained an impossible telephone schedule: telephone=%v err=%v", completedTelephone, err)
 	}
 	legacyTicketItems, err := opuser.FindUserItems(ctx, testConfig.TestUserSuid, ticketItemIds[0])
 	if err != nil {
@@ -195,6 +272,7 @@ func TestUserGod(t *testing.T) {
 		t.Fatalf("story unlock count mismatch: got %d, want %d", len(userStories), len(masterStories))
 	}
 	assertGodMainStoriesRead(t, ctx, userStories)
+	assertGodNarrativeAll(t, ctx)
 
 	shopCatalog, err := opsolis.FindAllShopCatalogEntries(ctx)
 	if err != nil {
@@ -273,6 +351,9 @@ func TestUserGod(t *testing.T) {
 	if err != nil || !state.UnlockCurrentEvents {
 		t.Fatalf("god event marker not enabled: state=%v err=%v", state, err)
 	}
+	if state.MessageFeature != umodel.GodMessageFeatureAll {
+		t.Fatalf("default god message feature = %q, want all", state.MessageFeature)
+	}
 	if _, err := opuser.FindUserEventInfo(ctx, testConfig.TestUserSuid); !errors.Is(err, mongo.ErrNoDocuments) {
 		t.Fatalf("legacy per-user event snapshot still exists: %v", err)
 	}
@@ -340,6 +421,231 @@ func TestUserGod(t *testing.T) {
 				t.Fatalf("showcase shop %q was not unlocked by god mode", shop.ShopId)
 			}
 		}
+	}
+}
+
+func TestUserGodMessageNone(t *testing.T) {
+	setupTestUser(t)
+	ctx := context.Background()
+	beforeMessages, err := opuser.FindAllUserMessages(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforeSchedules, err := opuser.FindAllUserMessageSchedules(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforeProgresses, err := opuser.FindAllUserMessageProgresses(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforeTelephones, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	callUserGod(t, &admin.UserGodRequest{
+		ServerUserId: testConfig.TestUserSuid,
+		Feature:      admin.GodFeature{Message: umodel.GodMessageFeatureNone},
+	})
+	homeClient := papi.NewHomeClient(testConfig.GrpcConn)
+	grpcCtx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	home, err := homeClient.Enter(grpcCtx, &papi.HomeEnterRequest{})
+	cancel()
+	if err != nil {
+		t.Fatalf("Home.Enter after god message none failed: %v", err)
+	}
+	if len(home.GetCommonResponse().GetUpdatedData().GetMessages()) != 0 ||
+		len(home.GetCommonResponse().GetUpdatedData().GetMessageSchedules()) != 0 ||
+		len(home.GetCommonResponse().GetUpdatedData().GetTelephones()) != 0 {
+		t.Fatalf("god message none unlocked narrative data: %v", home.GetCommonResponse().GetUpdatedData())
+	}
+	assertSameUserMessages(t, beforeMessages, mustUserMessages(t, ctx))
+	assertSameUserMessageSchedules(t, beforeSchedules, mustUserMessageSchedules(t, ctx))
+	afterProgresses, err := opuser.FindAllUserMessageProgresses(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(afterProgresses) != len(beforeProgresses) {
+		t.Fatalf("god message none changed progress count: before=%d after=%d", len(beforeProgresses), len(afterProgresses))
+	}
+	afterTelephones, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(afterTelephones) != len(beforeTelephones) {
+		t.Fatalf("god message none changed telephone count: before=%d after=%d", len(beforeTelephones), len(afterTelephones))
+	}
+	state, err := opuser.FindUserGodState(ctx, testConfig.TestUserSuid)
+	if err != nil || state.MessageFeature != umodel.GodMessageFeatureNone {
+		t.Fatalf("god message none policy was not persisted: state=%v err=%v", state, err)
+	}
+}
+
+func TestUserGodMessageEnjoy(t *testing.T) {
+	setupTestUser(t)
+	callUserGod(t, &admin.UserGodRequest{
+		ServerUserId: testConfig.TestUserSuid,
+		Feature:      admin.GodFeature{Message: umodel.GodMessageFeatureEnjoy},
+	})
+	beforeHome := time.Now().UnixMilli()
+	homeClient := papi.NewHomeClient(testConfig.GrpcConn)
+	grpcCtx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = homeClient.Enter(grpcCtx, &papi.HomeEnterRequest{})
+	cancel()
+	if err != nil {
+		t.Fatalf("Home.Enter after god message enjoy failed: %v", err)
+	}
+	afterHome := time.Now().UnixMilli()
+
+	ctx := context.Background()
+	masterMessages, err := opmaster.FindAllMessages(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	messageMasterByID := make(map[string]*pmaster.Message, len(masterMessages))
+	expectedMessageCount := 0
+	for _, master := range masterMessages {
+		messageMasterByID[master.GetId()] = master
+		if master.GetUnlockConditionId() == "" {
+			expectedMessageCount++
+		}
+	}
+	if tutorial := messageMasterByID["message-skr-tutorial-001"]; tutorial != nil && tutorial.GetUnlockConditionId() != "" {
+		expectedMessageCount++
+	}
+	userMessages := mustUserMessages(t, ctx)
+	if len(userMessages) != expectedMessageCount {
+		t.Fatalf("god enjoy message count = %d, want %d unconditional messages", len(userMessages), expectedMessageCount)
+	}
+	schedules := mustUserMessageSchedules(t, ctx)
+	scheduleByID := make(map[string]*ptransaction.UserMessageSchedule, len(schedules))
+	for _, schedule := range schedules {
+		scheduleByID[schedule.GetMessageId()] = schedule
+	}
+	activeByGroup := make(map[string]int)
+	for _, message := range userMessages {
+		master := messageMasterByID[message.GetMessageId()]
+		schedule := scheduleByID[message.GetMessageId()]
+		if message.GetMessageId() == "message-skr-tutorial-001" {
+			if master == nil || schedule == nil ||
+				message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received ||
+				message.GetArrivedTime() <= 0 || schedule.GetScheduledTime() != message.GetArrivedTime() ||
+				len(message.GetSelectMessageDetailIds()) != 0 {
+				t.Fatalf("god enjoy changed the initial tutorial conversation: message=%v schedule=%v", message, schedule)
+			}
+			activeByGroup[master.GetMessageGroupId()]++
+			continue
+		}
+		if master == nil || master.GetUnlockConditionId() != "" {
+			t.Fatalf("god enjoy unlocked conditioned/unknown message: %v master=%v", message, master)
+		}
+		if message.GetMessageStatusType() == penum.MessageStatusType_MessageStatusType_Finished {
+			t.Fatalf("god enjoy marked message read: %v", message)
+		}
+		if schedule == nil {
+			t.Fatalf("god enjoy message has no schedule state: %v", message)
+		}
+		switch message.GetMessageStatusType() {
+		case penum.MessageStatusType_MessageStatusType_Unlocked:
+			if schedule.GetScheduledTime() != 0 {
+				t.Fatalf("queued god enjoy message has a due time: message=%v schedule=%v", message, schedule)
+			}
+		case penum.MessageStatusType_MessageStatusType_Scheduled:
+			activeByGroup[master.GetMessageGroupId()]++
+			if message.GetArrivedTime() != 0 || schedule.GetScheduledTime() < beforeHome ||
+				schedule.GetScheduledTime() > afterHome+12*time.Hour.Milliseconds() {
+				t.Fatalf("god enjoy message delay is outside 0..12h: message=%v schedule=%v", message, schedule)
+			}
+		case penum.MessageStatusType_MessageStatusType_Received:
+			activeByGroup[master.GetMessageGroupId()]++
+			if schedule.GetScheduledTime() != message.GetArrivedTime() || message.GetArrivedTime() < beforeHome ||
+				message.GetArrivedTime() > afterHome {
+				t.Fatalf("immediate god enjoy message has invalid arrival: message=%v schedule=%v", message, schedule)
+			}
+		default:
+			t.Fatalf("god enjoy message has invalid status: %v", message)
+		}
+	}
+	for groupID, count := range activeByGroup {
+		if count > 1 {
+			t.Fatalf("god enjoy scheduled %d messages for group %q", count, groupID)
+		}
+	}
+
+	embeddedTelephoneIDs := make(map[string]struct{})
+	for _, master := range masterMessages {
+		for _, detail := range master.GetDetails() {
+			if detail.GetTelephoneId() != "" {
+				embeddedTelephoneIDs[detail.GetTelephoneId()] = struct{}{}
+			}
+		}
+	}
+	masterTelephones, err := opmaster.FindAllTelephones(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	telephoneMasterByID := make(map[string]*pmaster.Telephone, len(masterTelephones))
+	expectedTelephoneCount := 0
+	for _, master := range masterTelephones {
+		telephoneMasterByID[master.GetId()] = master
+		_, embedded := embeddedTelephoneIDs[master.GetId()]
+		if master.GetUnlockConditionId() == "" && !embedded {
+			expectedTelephoneCount++
+		}
+	}
+	userTelephones, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(userTelephones) != expectedTelephoneCount {
+		t.Fatalf("god enjoy telephone count = %d, want %d standalone unconditional calls", len(userTelephones), expectedTelephoneCount)
+	}
+	for _, telephone := range userTelephones {
+		master := telephoneMasterByID[telephone.GetTelephoneId()]
+		_, embedded := embeddedTelephoneIDs[telephone.GetTelephoneId()]
+		if master == nil || master.GetUnlockConditionId() != "" || embedded {
+			t.Fatalf("god enjoy unlocked an invalid standalone telephone: telephone=%v master=%v", telephone, master)
+		}
+		if telephone.GetTelephoneStatusType() == penum.TelephoneStatusType_TelephoneStatusType_Scheduled {
+			if telephone.GetScheduledTime() < beforeHome || telephone.GetScheduledTime() > afterHome+18*time.Hour.Milliseconds() {
+				t.Fatalf("god enjoy telephone delay is outside 0..18h: %v", telephone)
+			}
+		} else if telephone.GetTelephoneStatusType() != penum.TelephoneStatusType_TelephoneStatusType_Received ||
+			telephone.GetScheduledTime() < beforeHome || telephone.GetScheduledTime() > afterHome {
+			t.Fatalf("god enjoy telephone has invalid state: %v", telephone)
+		}
+	}
+	state, err := opuser.FindUserGodState(ctx, testConfig.TestUserSuid)
+	if err != nil || state.MessageFeature != umodel.GodMessageFeatureEnjoy {
+		t.Fatalf("god message enjoy policy was not persisted: state=%v err=%v", state, err)
+	}
+}
+
+func TestUserGodRejectsInvalidMessageFeature(t *testing.T) {
+	setupTestUser(t)
+	response, err := testConfig.HttpClient.Post(
+		fmt.Sprintf("%s/admin/user/god", testConfig.HttpUrl),
+		client.Config{Header: getAdminAuthHeader(), Body: &admin.UserGodRequest{
+			ServerUserId: testConfig.TestUserSuid,
+			Feature:      admin.GodFeature{Message: "invalid"},
+		}},
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if response.StatusCode() != 400 {
+		t.Fatalf("invalid god message feature returned status %d: %s", response.StatusCode(), response.Body())
+	}
+	state, err := opuser.FindUserGodState(context.Background(), testConfig.TestUserSuid)
+	if err != nil || state.MessageFeature != "" {
+		t.Fatalf("invalid god message feature mutated policy: state=%v err=%v", state, err)
 	}
 }
 
@@ -830,6 +1136,182 @@ func assertGodMainStoriesRead(
 	}
 	if mainStoryCount == 0 {
 		t.Fatal("master data contains no main story episodes")
+	}
+}
+
+func assertGodNarrativeAll(t *testing.T, ctx context.Context) {
+	t.Helper()
+	masterMessages, err := opmaster.FindAllMessages(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userMessages, err := opuser.FindAllUserMessages(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(userMessages) != len(masterMessages) {
+		t.Fatalf("god message count = %d, want %d", len(userMessages), len(masterMessages))
+	}
+	userMessageByID := make(map[string]*ptransaction.UserMessage, len(userMessages))
+	for _, message := range userMessages {
+		userMessageByID[message.GetMessageId()] = message
+	}
+	tutorial := userMessageByID["message-skr-tutorial-001"]
+	if tutorial == nil || !slices.Equal(tutorial.GetSelectMessageDetailIds(), []string{"2"}) {
+		t.Fatalf("god tutorial history selections = %v, want [2]", tutorial)
+	}
+	progresses, err := opuser.FindAllUserMessageProgresses(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	progressByMessageID := make(map[string]*umodel.UserMessageProgress, len(progresses))
+	for _, progress := range progresses {
+		progressByMessageID[progress.MessageId] = progress
+	}
+	for _, master := range masterMessages {
+		message := userMessageByID[master.GetId()]
+		if message == nil || message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Finished ||
+			message.GetArrivedTime() <= 0 {
+			t.Fatalf("god message %q has invalid history: %v", master.GetId(), message)
+		}
+		if _, err := messagepath.ExistingHistoryPath(master, message.GetSelectMessageDetailIds()); err != nil {
+			t.Fatalf("god message %q has no complete selected path: message=%v err=%v", master.GetId(), message, err)
+		}
+		progress := progressByMessageID[master.GetId()]
+		if progress == nil || !isTestMessageTerminal(master, progress.LastMessageDetailId) ||
+			progress.LastMessageDetailTime < message.GetArrivedTime() {
+			t.Fatalf("god message %q has invalid progress: %v", master.GetId(), progress)
+		}
+	}
+	schedules, err := opuser.FindAllUserMessageSchedules(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(schedules) != 0 {
+		t.Fatalf("god all left stale message schedules: %v", schedules)
+	}
+
+	masterTelephones, err := opmaster.FindAllTelephones(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userTelephones, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(userTelephones) != len(masterTelephones) {
+		t.Fatalf("god telephone count = %d, want %d", len(userTelephones), len(masterTelephones))
+	}
+	for _, telephone := range userTelephones {
+		if telephone.GetTelephoneStatusType() != penum.TelephoneStatusType_TelephoneStatusType_Finished ||
+			telephone.GetUnlockedTime() <= 0 || telephone.GetScheduledTime() <= 0 {
+			t.Fatalf("god telephone is not finished: %v", telephone)
+		}
+	}
+
+	conditions, err := opmaster.FindAllConditions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	conditionByID := make(map[string]*pmaster.Condition, len(conditions))
+	for _, condition := range conditions {
+		conditionByID[condition.GetId()] = condition
+	}
+	storyIDs := make(map[string]struct{})
+	for _, master := range masterMessages {
+		collectTestMessageStoryPrerequisites(master.GetUnlockConditionId(), conditionByID, storyIDs, make(map[string]struct{}))
+	}
+	for storyID := range storyIDs {
+		story, err := opuser.FindUserStory(ctx, testConfig.TestUserSuid, storyID)
+		if err != nil || story.GetStatusType() != penum.StoryStatusType_StoryStatusType_Read || story.GetIsInvalid() {
+			t.Fatalf("god message story prerequisite %q is not read: story=%v err=%v", storyID, story, err)
+		}
+	}
+}
+
+func isTestMessageTerminal(master *pmaster.Message, detailID string) bool {
+	for _, detail := range master.GetDetails() {
+		if detail.GetMessageDetailId() == detailID {
+			return len(detail.GetNextMessageDetailIds()) == 0
+		}
+	}
+	return false
+}
+
+func mustUserMessages(t *testing.T, ctx context.Context) []*ptransaction.UserMessage {
+	t.Helper()
+	messages, err := opuser.FindAllUserMessages(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return messages
+}
+
+func mustUserMessageSchedules(t *testing.T, ctx context.Context) []*ptransaction.UserMessageSchedule {
+	t.Helper()
+	schedules, err := opuser.FindAllUserMessageSchedules(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return schedules
+}
+
+func assertSameUserMessages(t *testing.T, before, after []*ptransaction.UserMessage) {
+	t.Helper()
+	beforeByID := make(map[string]*ptransaction.UserMessage, len(before))
+	for _, message := range before {
+		beforeByID[message.GetMessageId()] = message
+	}
+	if len(beforeByID) != len(after) {
+		t.Fatalf("user message count changed: before=%d after=%d", len(beforeByID), len(after))
+	}
+	for _, message := range after {
+		if !proto.Equal(beforeByID[message.GetMessageId()], message) {
+			t.Fatalf("user message changed: before=%v after=%v", beforeByID[message.GetMessageId()], message)
+		}
+	}
+}
+
+func assertSameUserMessageSchedules(t *testing.T, before, after []*ptransaction.UserMessageSchedule) {
+	t.Helper()
+	beforeByID := make(map[string]*ptransaction.UserMessageSchedule, len(before))
+	for _, schedule := range before {
+		beforeByID[schedule.GetMessageId()] = schedule
+	}
+	if len(beforeByID) != len(after) {
+		t.Fatalf("user message schedule count changed: before=%d after=%d", len(beforeByID), len(after))
+	}
+	for _, schedule := range after {
+		if !proto.Equal(beforeByID[schedule.GetMessageId()], schedule) {
+			t.Fatalf("user message schedule changed: before=%v after=%v", beforeByID[schedule.GetMessageId()], schedule)
+		}
+	}
+}
+
+func collectTestMessageStoryPrerequisites(
+	conditionID string,
+	conditions map[string]*pmaster.Condition,
+	storyIDs map[string]struct{},
+	visited map[string]struct{},
+) {
+	if conditionID == "" {
+		return
+	}
+	if _, seen := visited[conditionID]; seen {
+		return
+	}
+	visited[conditionID] = struct{}{}
+	condition := conditions[conditionID]
+	if condition == nil {
+		return
+	}
+	for _, setting := range condition.GetSettings() {
+		if storyID := setting.GetReadStory().GetStoryId(); storyID != "" {
+			storyIDs[storyID] = struct{}{}
+		}
+		if dependencyID := setting.GetSatisfyCondition().GetConditionId(); dependencyID != "" {
+			collectTestMessageStoryPrerequisites(dependencyID, conditions, storyIDs, visited)
+		}
 	}
 }
 

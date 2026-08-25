@@ -208,6 +208,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 	var response *papi.HomeEnterResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 		now := time.Now().UnixMilli()
+		updatedData := &papi.UpdatedData{}
 		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, now)
 		if err != nil {
 			return nil, err
@@ -344,6 +345,9 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		}); err != nil {
 			return nil, err
 		}
+		if err := viber.ReconcileNarrativeSchedules(ctx, suid, now, updatedData); err != nil {
+			return nil, err
+		}
 
 		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
@@ -372,7 +376,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			ShowcaseToyShopIds:      visibleShowcaseShopIds,
 			UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
 			PhotoExpressions:        photoExpressions,
-			CommonResponse:          viber.NewCommonResponse(nil),
+			CommonResponse:          viber.NewCommonResponse(updatedData),
 		}
 		return response, nil
 	})

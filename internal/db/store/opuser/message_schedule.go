@@ -43,3 +43,11 @@ func DeleteUserMessageSchedule(ctx context.Context, suid string, messageId strin
 		bson.M{"SUID": suid, "messageId": messageId},
 	)
 }
+
+func DeleteAllUserMessageSchedules(ctx context.Context, suid string) error {
+	return ucommon.Delete(
+		ctx,
+		uname.UserMessageSchedule,
+		bson.M{"SUID": suid},
+	)
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"sort"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -236,6 +237,9 @@ func readUserStory(
 	updated.Stories = append(updated.Stories, story)
 	rewards, err := grantStoryReward(ctx, suid, master, updated)
 	if err != nil {
+		return nil, nil, err
+	}
+	if err := viber.ReconcileNarrativeSchedulesAfterStory(ctx, suid, time.Now().UnixMilli(), storyId, updated); err != nil {
 		return nil, nil, err
 	}
 	return rewards, updated, nil

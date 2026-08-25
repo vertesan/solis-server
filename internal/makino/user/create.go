@@ -278,9 +278,15 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		// UserMessage
 		if err := opuser.UpsertUserMessage(ctx, suid, &ptransaction.UserMessage{
 			MessageId:              "message-skr-tutorial-001",
-			MessageStatusType:      penum.MessageStatusType_MessageStatusType_Finished,
+			MessageStatusType:      penum.MessageStatusType_MessageStatusType_Received,
 			ArrivedTime:            milliNow,
 			SelectMessageDetailIds: []string{},
+		}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserMessageSchedule(ctx, suid, &ptransaction.UserMessageSchedule{
+			MessageId:     "message-skr-tutorial-001",
+			ScheduledTime: milliNow,
 		}); err != nil {
 			return nil, err
 		}

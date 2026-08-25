@@ -83,6 +83,63 @@ func (s *MessageServer) Timeline(ctx context.Context, req *papi.MessageTimelineR
 	}, nil
 }
 
+func (s *MessageServer) Receive(ctx context.Context, req *papi.MessageReceiveRequest) (*papi.MessageReceiveResponse, error) {
+	if len(req.GetMessageIds()) == 0 {
+		return nil, viber.InvalidArgumentf("at least one messageId is required")
+	}
+	suid := viber.GetSuid(ctx).String()
+	var response *papi.MessageReceiveResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		now := time.Now().UnixMilli()
+		updated := &papi.UpdatedData{}
+		seen := make(map[string]struct{}, len(req.GetMessageIds()))
+		for _, messageID := range req.GetMessageIds() {
+			if messageID == "" {
+				return nil, viber.InvalidArgumentf("messageId must not be empty")
+			}
+			if _, duplicate := seen[messageID]; duplicate {
+				continue
+			}
+			seen[messageID] = struct{}{}
+			if _, err := opmaster.FindMessage(ctx, messageID); err != nil {
+				return nil, err
+			}
+			message, err := opuser.FindUserMessage(ctx, suid, messageID)
+			if err != nil {
+				return nil, err
+			}
+			switch message.GetMessageStatusType() {
+			case penum.MessageStatusType_MessageStatusType_Received,
+				penum.MessageStatusType_MessageStatusType_Finished:
+				continue
+			case penum.MessageStatusType_MessageStatusType_Scheduled:
+			default:
+				return nil, status.Errorf(codes.FailedPrecondition, "message %q is not scheduled", messageID)
+			}
+			schedule, err := opuser.FindUserMessageSchedule(ctx, suid, messageID)
+			if err != nil {
+				return nil, err
+			}
+			if schedule.GetScheduledTime() <= 0 || schedule.GetScheduledTime() > now {
+				return nil, status.Errorf(codes.FailedPrecondition, "message %q has not arrived", messageID)
+			}
+			message.MessageStatusType = penum.MessageStatusType_MessageStatusType_Received
+			message.ArrivedTime = schedule.GetScheduledTime()
+			if err := opuser.UpsertUserMessage(ctx, suid, message); err != nil {
+				return nil, err
+			}
+			updated.Messages = append(updated.Messages, message)
+			updated.MessageSchedules = append(updated.MessageSchedules, schedule)
+		}
+		response = &papi.MessageReceiveResponse{CommonResponse: viber.NewCommonResponse(updated)}
+		return nil, nil
+	})
+	if err != nil {
+		return nil, viber.GameplayError(err)
+	}
+	return response, nil
+}
+
 func (s *MessageServer) Save(ctx context.Context, req *papi.MessageSaveRequest) (*papi.MessageSaveResponse, error) {
 	if req.GetMessageGroupId() == "" || req.GetTimelineId() <= 0 || req.GetMessageDetailId() == "" {
 		return nil, viber.InvalidArgumentf("messageGroupId, a positive timelineId, and messageDetailId are required")
@@ -100,8 +157,14 @@ func (s *MessageServer) Save(ctx context.Context, req *papi.MessageSaveRequest) 
 		if userMessage.GetMessageStatusType() == penum.MessageStatusType_MessageStatusType_Finished {
 			return nil, status.Error(codes.FailedPrecondition, "finished message progress cannot be changed")
 		}
-		_, selections, err := resolveMessagePath(master, req.SelectMessageDetailIds, req.MessageDetailId)
+		if userMessage.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received {
+			return nil, status.Error(codes.FailedPrecondition, "message has not been received")
+		}
+		path, selections, err := resolveMessageDetails(master, req.SelectMessageDetailIds, req.MessageDetailId)
 		if err != nil {
+			return nil, err
+		}
+		if err := validateMessageProgressExtension(master, info, userMessage, path); err != nil {
 			return nil, err
 		}
 		userMessage.MessageStatusType = penum.MessageStatusType_MessageStatusType_Received
@@ -130,21 +193,26 @@ func (s *MessageServer) Finish(ctx context.Context, req *papi.MessageFinishReque
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.MessageFinishResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		finishedTime := time.Now().UnixMilli()
 		state, err := loadMessageTimelineState(ctx, suid)
 		if err != nil {
 			return nil, err
 		}
-		_, userMessage, master := findTimelineMessage(state, req.MessageGroupId, req.TimelineId)
+		info, userMessage, master := findTimelineMessage(state, req.MessageGroupId, req.TimelineId)
 		if userMessage == nil {
 			return nil, status.Error(codes.NotFound, "message timeline was not found")
 		}
-		terminal, selections, err := resolveMessagePath(master, req.SelectMessageDetailIds, "")
+		path, selections, err := resolveMessageDetails(master, req.SelectMessageDetailIds, "")
 		if err != nil {
 			return nil, err
 		}
+		terminal := path[len(path)-1]
 		if userMessage.GetMessageStatusType() == penum.MessageStatusType_MessageStatusType_Finished {
 			response = &papi.MessageFinishResponse{CommonResponse: viber.NewCommonResponse(nil)}
 			return nil, nil
+		}
+		if err := validateMessageProgressExtension(master, info, userMessage, path); err != nil {
+			return nil, err
 		}
 		updated := &papi.UpdatedData{}
 		isReliabilityUp := false
@@ -186,9 +254,39 @@ func (s *MessageServer) Finish(ctx context.Context, req *papi.MessageFinishReque
 			isReliabilityUp = true
 		}
 
+		for _, detail := range path {
+			telephoneID := detail.GetTelephoneId()
+			if telephoneID == "" {
+				continue
+			}
+			if _, err := opmaster.FindTelephone(ctx, telephoneID); err != nil {
+				return nil, err
+			}
+			telephone, err := opuser.FindUserTelephone(ctx, suid, telephoneID)
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				telephone = &ptransaction.UserTelephone{TelephoneId: telephoneID}
+			} else if err != nil {
+				return nil, err
+			}
+			if telephone.GetTelephoneStatusType() == penum.TelephoneStatusType_TelephoneStatusType_Finished {
+				continue
+			}
+			if telephone.UnlockedTime == 0 {
+				telephone.UnlockedTime = finishedTime
+			}
+			if telephone.ScheduledTime == 0 {
+				telephone.ScheduledTime = telephone.UnlockedTime
+			}
+			telephone.TelephoneStatusType = penum.TelephoneStatusType_TelephoneStatusType_Finished
+			if err := opuser.UpsertUserTelephone(ctx, suid, telephone); err != nil {
+				return nil, err
+			}
+			updated.Telephones = append(updated.Telephones, telephone)
+		}
+
 		if err := opuser.UpsertUserMessageProgress(ctx, &umodel.UserMessageProgress{
 			SUID: suid, MessageId: userMessage.MessageId,
-			LastMessageDetailId: terminal.GetMessageDetailId(), LastMessageDetailTime: time.Now().UnixMilli(),
+			LastMessageDetailId: terminal.GetMessageDetailId(), LastMessageDetailTime: finishedTime,
 		}); err != nil {
 			return nil, err
 		}
@@ -199,8 +297,15 @@ func (s *MessageServer) Finish(ctx context.Context, req *papi.MessageFinishReque
 			if err := opuser.DeleteUserMessageSchedule(ctx, suid, userMessage.MessageId); err != nil {
 				return nil, err
 			}
-			common.DeletedData.MessageSchedules = append(common.DeletedData.MessageSchedules, schedule)
+			common.DeletedData.MessageSchedules = append(common.DeletedData.MessageSchedules, &ptransaction.UserMessageSchedule{
+				MessageId: schedule.GetMessageId(),
+			})
 		} else if !errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, err
+		}
+		if err := viber.ReconcileNarrativeSchedulesAfterMessage(
+			ctx, suid, finishedTime, userMessage.GetMessageId(), updated,
+		); err != nil {
 			return nil, err
 		}
 		response = &papi.MessageFinishResponse{IsReliabilityUp: isReliabilityUp, CommonResponse: common}
@@ -250,6 +355,7 @@ func (s *MessageServer) SaveHistory(ctx context.Context, req *papi.MessageSaveHi
 }
 
 func loadMessageTimelineState(ctx context.Context, suid string) (*messageTimelineState, error) {
+	now := time.Now().UnixMilli()
 	userMessages, err := opuser.FindAllUserMessages(ctx, suid)
 	if err != nil {
 		return nil, err
@@ -279,7 +385,8 @@ func loadMessageTimelineState(ctx context.Context, suid string) (*messageTimelin
 	usedTimelineIds := make(map[int64]struct{}, len(userMessages))
 	for _, message := range userMessages {
 		master := masters[message.MessageId]
-		if master == nil || message.MessageStatusType < penum.MessageStatusType_MessageStatusType_Received {
+		if master == nil || message.MessageStatusType < penum.MessageStatusType_MessageStatusType_Received ||
+			message.GetArrivedTime() > now {
 			continue
 		}
 		state.usersById[message.MessageId] = message
@@ -342,6 +449,18 @@ func resolveMessagePath(
 	selectionIds []string,
 	stopId string,
 ) (*pmaster.MessageDetail, []string, error) {
+	path, selections, err := resolveMessageDetails(master, selectionIds, stopId)
+	if err != nil {
+		return nil, nil, err
+	}
+	return path[len(path)-1], selections, nil
+}
+
+func resolveMessageDetails(
+	master *pmaster.Message,
+	selectionIds []string,
+	stopId string,
+) ([]*pmaster.MessageDetail, []string, error) {
 	if master == nil || len(master.GetDetails()) == 0 {
 		return nil, nil, status.Error(codes.FailedPrecondition, "message has no detail graph")
 	}
@@ -389,6 +508,7 @@ func resolveMessagePath(
 	}
 
 	current := root
+	path := make([]*pmaster.MessageDetail, 0, len(details))
 	visited := make(map[string]struct{}, len(details))
 	usedSelections := make(map[string]struct{}, len(selected))
 	pathSelections := make([]string, 0, len(selected))
@@ -397,11 +517,12 @@ func resolveMessagePath(
 			return nil, nil, status.Error(codes.FailedPrecondition, "message detail graph contains a cycle")
 		}
 		visited[current.GetMessageDetailId()] = struct{}{}
+		path = append(path, current)
 		if stopId != "" && current.GetMessageDetailId() == stopId {
 			if len(usedSelections) != len(selected) {
 				return nil, nil, viber.InvalidArgumentf("message selections do not reach detail %q", stopId)
 			}
-			return current, pathSelections, nil
+			return path, pathSelections, nil
 		}
 
 		nextIds := current.GetNextMessageDetailIds()
@@ -412,7 +533,7 @@ func resolveMessagePath(
 			if len(usedSelections) != len(selected) {
 				return nil, nil, viber.InvalidArgumentf("message selections do not form one complete path")
 			}
-			return current, pathSelections, nil
+			return path, pathSelections, nil
 		}
 
 		nextId := nextIds[0]
@@ -433,9 +554,46 @@ func resolveMessagePath(
 			}
 			usedSelections[nextId] = struct{}{}
 			pathSelections = append(pathSelections, nextId)
+		} else if next := details[nextId]; next.GetChoiceText() != "" {
+			if _, ok := selected[nextId]; !ok {
+				return nil, nil, viber.InvalidArgumentf("message detail %q requires its selected choice", current.GetMessageDetailId())
+			}
+			usedSelections[nextId] = struct{}{}
+			pathSelections = append(pathSelections, nextId)
 		}
 		current = details[nextId]
 	}
+}
+
+func validateMessageProgressExtension(
+	master *pmaster.Message,
+	info *papi.TimelineInfo,
+	message *ptransaction.UserMessage,
+	newPath []*pmaster.MessageDetail,
+) error {
+	if info.GetLastMessageDetailId() == "" {
+		if len(message.GetSelectMessageDetailIds()) != 0 {
+			return status.Error(codes.FailedPrecondition, "message selections exist without saved progress")
+		}
+		return nil
+	}
+	savedPath, _, err := resolveMessageDetails(
+		master,
+		message.GetSelectMessageDetailIds(),
+		info.GetLastMessageDetailId(),
+	)
+	if err != nil {
+		return status.Errorf(codes.FailedPrecondition, "saved message progress is invalid: %v", err)
+	}
+	if len(newPath) < len(savedPath) {
+		return status.Error(codes.FailedPrecondition, "message progress cannot be rewound")
+	}
+	for index, detail := range savedPath {
+		if newPath[index].GetMessageDetailId() != detail.GetMessageDetailId() {
+			return status.Error(codes.FailedPrecondition, "message progress cannot switch paths")
+		}
+	}
+	return nil
 }
 
 func terminalMessageDetailId(master *pmaster.Message) string {

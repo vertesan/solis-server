@@ -52,7 +52,14 @@ type UserShopPurchase struct {
 type UserGodState struct {
 	SUID                string `bson:"SUID"`
 	UnlockCurrentEvents bool   `bson:"unlockCurrentEvents"`
+	MessageFeature      string `bson:"messageFeature,omitempty"`
 }
+
+const (
+	GodMessageFeatureNone  = "none"
+	GodMessageFeatureAll   = "all"
+	GodMessageFeatureEnjoy = "enjoy"
+)
 
 type UserShowcaseToyShopId struct {
 	SUID    string   `bson:"SUID"`

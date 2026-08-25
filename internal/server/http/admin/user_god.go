@@ -3,6 +3,7 @@ package admin
 import (
 	"errors"
 
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/utils/mcontext"
 
@@ -13,8 +14,13 @@ import (
 )
 
 type UserGodRequest struct {
-	PublicUserId string `json:"publicUserId,omitempty"`
-	ServerUserId string `json:"serverUserId,omitempty"`
+	PublicUserId string     `json:"publicUserId,omitempty"`
+	ServerUserId string     `json:"serverUserId,omitempty"`
+	Feature      GodFeature `json:"feature,omitempty"`
+}
+
+type GodFeature struct {
+	Message string `json:"message,omitempty"`
 }
 
 type UserGodResponse struct {
@@ -31,8 +37,18 @@ var GodUser fiber.Handler = func(c fiber.Ctx) error {
 	if (request.PublicUserId == "") == (request.ServerUserId == "") {
 		return fiber.NewError(fiber.StatusBadRequest, "exactly one of publicUserId or serverUserId is required")
 	}
+	if request.Feature.Message == "" {
+		request.Feature.Message = umodel.GodMessageFeatureAll
+	}
+	switch request.Feature.Message {
+	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
+	default:
+		return fiber.NewError(fiber.StatusBadRequest, "feature.message must be one of none, all, or enjoy")
+	}
 
-	result, err := user.GodUser(c, request.PublicUserId, request.ServerUserId)
+	result, err := user.GodUser(c, request.PublicUserId, request.ServerUserId, user.GodFeature{
+		Message: request.Feature.Message,
+	})
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(fiber.StatusBadRequest, "user not found")

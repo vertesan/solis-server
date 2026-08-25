@@ -14,10 +14,12 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
+	"github.com/vertesan/solis-server/internal/server/http/admin"
 
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
@@ -237,11 +239,98 @@ func TestDiaryScenario(t *testing.T) {
 	testDiaryReadFlow(t)
 }
 
+func TestInitialMessageScenario(t *testing.T) {
+	setupTestUser(t)
+	userClient := papi.NewUserClient(testConfig.GrpcConn)
+	grpcCtx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	userData, err := userClient.Get(grpcCtx, &papi.Empty{})
+	cancel()
+	if err != nil {
+		t.Fatalf("User.Get for the initial message failed: %v", err)
+	}
+	const tutorialMessageID = "message-skr-tutorial-001"
+	tutorial := findUserMessageByID(userData.GetMessages(), tutorialMessageID)
+	var tutorialSchedule *ptransaction.UserMessageSchedule
+	for _, schedule := range userData.GetMessageSchedules() {
+		if schedule.GetMessageId() == tutorialMessageID {
+			tutorialSchedule = schedule
+			break
+		}
+	}
+	if tutorial == nil || tutorialSchedule == nil ||
+		tutorial.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received ||
+		tutorial.GetArrivedTime() <= 0 || tutorialSchedule.GetScheduledTime() != tutorial.GetArrivedTime() ||
+		len(tutorial.GetSelectMessageDetailIds()) != 0 {
+		t.Fatalf("fresh tutorial message state is invalid: message=%v schedule=%v", tutorial, tutorialSchedule)
+	}
+
+	master, err := opmaster.FindMessage(context.Background(), tutorialMessageID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	messageClient := papi.NewMessageClient(testConfig.GrpcConn)
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	timeline, err := messageClient.Timeline(grpcCtx, &papi.MessageTimelineRequest{
+		MessageGroupId: master.GetMessageGroupId(),
+	})
+	cancel()
+	if err != nil {
+		t.Fatalf("Message.Timeline for the initial message failed: %v", err)
+	}
+	info := findTimelineInfo(t, timeline.GetInfos(), tutorialMessageID)
+	if info.GetFinished() || info.GetLastMessageDetailId() != "" || info.GetLastMessageDetailTime() != 0 ||
+		len(info.GetSelectMessageDetailIds()) != 0 {
+		t.Fatalf("fresh tutorial timeline is not unread: %v", info)
+	}
+	selections, terminal, err := messagepath.FirstPath(master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !slices.Equal(selections, []string{"2"}) {
+		t.Fatalf("tutorial first selection = %v, want [2]", selections)
+	}
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	finish, err := messageClient.Finish(grpcCtx, &papi.MessageFinishRequest{
+		MessageGroupId:         master.GetMessageGroupId(),
+		TimelineId:             info.GetTimelineId(),
+		SelectMessageDetailIds: selections,
+	})
+	cancel()
+	if err != nil {
+		t.Fatalf("Message.Finish for the initial message failed: %v", err)
+	}
+	finished := findUserMessageByID(finish.GetCommonResponse().GetUpdatedData().GetMessages(), tutorialMessageID)
+	if finished == nil || finished.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Finished ||
+		!slices.Equal(finished.GetSelectMessageDetailIds(), selections) {
+		t.Fatalf("initial message did not finish with its required choice: %v", finish)
+	}
+	progress, err := opuser.FindUserMessageProgress(context.Background(), testConfig.TestUserSuid, tutorialMessageID)
+	if err != nil || progress.LastMessageDetailId != terminal.GetMessageDetailId() || progress.LastMessageDetailTime <= 0 {
+		t.Fatalf("initial message progress was not persisted: progress=%v err=%v", progress, err)
+	}
+	if _, err := opuser.FindUserMessageSchedule(context.Background(), testConfig.TestUserSuid, tutorialMessageID); !errors.Is(err, mongo.ErrNoDocuments) {
+		t.Fatalf("initial message schedule was not deleted: %v", err)
+	}
+}
+
 func TestMessageScenario(t *testing.T) {
 	setupTestUser(t)
 	promoteTestUser(t)
 	ctx := context.Background()
 	master, terminal, selections, firstDetail := findReliabilityMessage(t)
+	alternateSelections, ok := findAlternateMessagePath(master, terminal.GetMessageDetailId(), selections)
+	if !ok {
+		t.Fatal("selected reliability message has no alternate path")
+	}
 	rewardCharacterID := terminal.GetCharacterId()
 	if rewardCharacterID == "" {
 		rewardCharacterID = master.GetCharacterId()
@@ -250,16 +339,28 @@ func TestMessageScenario(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	message.MessageStatusType = penum.MessageStatusType_MessageStatusType_Received
+	message.MessageStatusType = penum.MessageStatusType_MessageStatusType_Scheduled
 	message.SelectMessageDetailIds = []string{}
-	message.ArrivedTime = time.Now().UnixMilli()
+	message.ArrivedTime = 0
 	if err := opuser.UpsertUserMessage(ctx, testConfig.TestUserSuid, message); err != nil {
 		t.Fatal(err)
 	}
-	if err := opuser.UpsertUserMessageSchedule(ctx, testConfig.TestUserSuid, &ptransaction.UserMessageSchedule{
-		MessageId: master.Id, ScheduledTime: 0,
-	}); err != nil {
+	if err := opuser.DeleteUserMessageProgress(ctx, testConfig.TestUserSuid, master.Id); err != nil {
 		t.Fatal(err)
+	}
+	futureSchedule := &ptransaction.UserMessageSchedule{
+		MessageId: master.Id, ScheduledTime: time.Now().Add(time.Minute).UnixMilli(),
+	}
+	if err := opuser.UpsertUserMessageSchedule(ctx, testConfig.TestUserSuid, futureSchedule); err != nil {
+		t.Fatal(err)
+	}
+	for _, telephoneID := range selectedMessageTelephoneIDs(master, selections) {
+		if err := opuser.UpsertUserTelephone(ctx, testConfig.TestUserSuid, &ptransaction.UserTelephone{
+			TelephoneId:         telephoneID,
+			TelephoneStatusType: penum.TelephoneStatusType_TelephoneStatusType_Unlocked,
+		}); err != nil {
+			t.Fatal(err)
+		}
 	}
 	character, err := opuser.FindUserCharacter(ctx, testConfig.TestUserSuid, rewardCharacterID)
 	if err != nil {
@@ -269,6 +370,41 @@ func TestMessageScenario(t *testing.T) {
 
 	client := papi.NewMessageClient(testConfig.GrpcConn)
 	grpcCtx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Receive(grpcCtx, &papi.MessageReceiveRequest{MessageIds: []string{master.Id}})
+	cancel()
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("early Message.Receive returned %v, want FailedPrecondition", err)
+	}
+	dueTime := time.Now().UnixMilli()
+	if err := opuser.UpsertUserMessageSchedule(ctx, testConfig.TestUserSuid, &ptransaction.UserMessageSchedule{
+		MessageId: master.Id, ScheduledTime: dueTime,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	receive, err := client.Receive(grpcCtx, &papi.MessageReceiveRequest{MessageIds: []string{master.Id}})
+	cancel()
+	if err != nil {
+		t.Fatalf("Message.Receive failed: %v", err)
+	}
+	if len(receive.GetCommonResponse().GetUpdatedData().GetMessages()) != 1 ||
+		receive.GetCommonResponse().GetUpdatedData().GetMessages()[0].GetArrivedTime() != dueTime ||
+		len(receive.GetCommonResponse().GetUpdatedData().GetMessageSchedules()) != 1 {
+		t.Fatalf("Message.Receive returned the wrong post-image: %v", receive)
+	}
+	message, err = opuser.FindUserMessage(ctx, testConfig.TestUserSuid, master.Id)
+	if err != nil || message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received ||
+		message.GetArrivedTime() != dueTime {
+		t.Fatalf("Message.Receive was not persisted: message=%v err=%v", message, err)
+	}
+
+	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -323,6 +459,41 @@ func TestMessageScenario(t *testing.T) {
 	if status.Code(err) != codes.FailedPrecondition {
 		t.Fatalf("unfinished Message.SaveHistory returned %v, want FailedPrecondition", err)
 	}
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Save(grpcCtx, &papi.MessageSaveRequest{
+		MessageGroupId:         master.MessageGroupId,
+		TimelineId:             info.TimelineId,
+		MessageDetailId:        terminal.GetMessageDetailId(),
+		SelectMessageDetailIds: selections,
+	})
+	cancel()
+	if err != nil {
+		t.Fatalf("Message.Save did not advance along the existing path: %v", err)
+	}
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Finish(grpcCtx, &papi.MessageFinishRequest{
+		MessageGroupId:         master.MessageGroupId,
+		TimelineId:             info.TimelineId,
+		SelectMessageDetailIds: alternateSelections,
+	})
+	cancel()
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Fatalf("Message.Finish switched away from saved progress: err=%v", err)
+	}
+	message, err = opuser.FindUserMessage(ctx, testConfig.TestUserSuid, master.Id)
+	if err != nil || message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received {
+		t.Fatalf("conflicting Message.Finish changed message state: message=%v err=%v", message, err)
+	}
+	character, err = opuser.FindUserCharacter(ctx, testConfig.TestUserSuid, rewardCharacterID)
+	if err != nil || character.GetReliability() != reliabilityBefore {
+		t.Fatalf("conflicting Message.Finish granted reliability: character=%v err=%v", character, err)
+	}
 
 	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
@@ -368,6 +539,17 @@ func TestMessageScenario(t *testing.T) {
 	if _, err := opuser.FindUserMessageSchedule(ctx, testConfig.TestUserSuid, master.Id); !errors.Is(err, mongo.ErrNoDocuments) {
 		t.Fatalf("Message.Finish did not remove its schedule: %v", err)
 	}
+	for _, telephoneID := range selectedMessageTelephoneIDs(master, selections) {
+		telephone, err := opuser.FindUserTelephone(ctx, testConfig.TestUserSuid, telephoneID)
+		if err != nil || telephone.GetTelephoneStatusType() != penum.TelephoneStatusType_TelephoneStatusType_Finished ||
+			telephone.GetUnlockedTime() <= 0 || telephone.GetScheduledTime() != telephone.GetUnlockedTime() {
+			t.Fatalf("Message.Finish did not persist embedded telephone %q: telephone=%v err=%v", telephoneID, telephone, err)
+		}
+		updatedTelephone := findUserTelephoneByID(finish.GetCommonResponse().GetUpdatedData().GetTelephones(), telephoneID)
+		if updatedTelephone == nil || !proto.Equal(updatedTelephone, telephone) {
+			t.Fatalf("Message.Finish embedded telephone post-image %q = %v, want %v", telephoneID, updatedTelephone, telephone)
+		}
+	}
 	finishedMessage := proto.Clone(message).(*ptransaction.UserMessage)
 	finishedCharacter := proto.Clone(character).(*ptransaction.UserCharacter)
 	finishedProgress := *progress
@@ -385,18 +567,13 @@ func TestMessageScenario(t *testing.T) {
 		t.Fatalf("finished Message.Save returned %v, want FailedPrecondition", err)
 	}
 
-	repeatSelections := selections
-	if alternate, ok := findAlternateMessagePath(master, terminal.GetMessageDetailId(), selections); ok {
-		repeatSelections = alternate
-	}
-
 	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
 		t.Fatal(err)
 	}
 	repeat, err := client.Finish(grpcCtx, &papi.MessageFinishRequest{
 		MessageGroupId: master.MessageGroupId, TimelineId: info.TimelineId,
-		SelectMessageDetailIds: repeatSelections,
+		SelectMessageDetailIds: alternateSelections,
 	})
 	cancel()
 	if err != nil {
@@ -445,6 +622,121 @@ func TestTelephoneScenario(t *testing.T) {
 	setupTestUser(t)
 	promoteTestUser(t)
 	testTelephoneHistory(t)
+}
+
+func TestMessageDependencySchedulingScenario(t *testing.T) {
+	setupTestUser(t)
+	callUserGod(t, &admin.UserGodRequest{
+		ServerUserId: testConfig.TestUserSuid,
+		Feature:      admin.GodFeature{Message: umodel.GodMessageFeatureNone},
+	})
+	ctx := context.Background()
+	if err := opuser.DeleteUserGodState(ctx, testConfig.TestUserSuid); err != nil {
+		t.Fatal(err)
+	}
+	source, dependent, storyID := findMessageDependencyChain(t)
+
+	storyClient := papi.NewStoryClient(testConfig.GrpcConn)
+	beforeRead := time.Now().UnixMilli()
+	grpcCtx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	read, err := storyClient.Read(grpcCtx, &papi.StoryReadRequest{StoryId: storyID})
+	cancel()
+	if err != nil {
+		t.Fatalf("Story.Read did not unlock source message: %v", err)
+	}
+	afterRead := time.Now().UnixMilli()
+	if findUserMessageByID(read.GetCommonResponse().GetUpdatedData().GetMessages(), source.GetId()) == nil {
+		t.Fatalf("Story.Read response omitted unlocked message %q: %v", source.GetId(), read)
+	}
+	message, err := opuser.FindUserMessage(ctx, testConfig.TestUserSuid, source.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	schedule, err := opuser.FindUserMessageSchedule(ctx, testConfig.TestUserSuid, source.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if schedule.GetScheduledTime() < beforeRead || schedule.GetScheduledTime() > afterRead+time.Hour.Milliseconds() {
+		t.Fatalf("story message delay is outside 0..1h: message=%v schedule=%v", message, schedule)
+	}
+	messageClient := papi.NewMessageClient(testConfig.GrpcConn)
+	if message.GetMessageStatusType() == penum.MessageStatusType_MessageStatusType_Scheduled {
+		schedule.ScheduledTime = time.Now().UnixMilli()
+		if err := opuser.UpsertUserMessageSchedule(ctx, testConfig.TestUserSuid, schedule); err != nil {
+			t.Fatal(err)
+		}
+		grpcCtx, cancel, err = getFullGrpcCtx()
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = messageClient.Receive(grpcCtx, &papi.MessageReceiveRequest{MessageIds: []string{source.GetId()}})
+		cancel()
+		if err != nil {
+			t.Fatalf("Message.Receive for story message failed: %v", err)
+		}
+	} else if message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received {
+		t.Fatalf("Story.Read source message is not active: %v", message)
+	}
+
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	timeline, err := messageClient.Timeline(grpcCtx, &papi.MessageTimelineRequest{MessageGroupId: source.GetMessageGroupId()})
+	cancel()
+	if err != nil {
+		t.Fatal(err)
+	}
+	info := findTimelineInfo(t, timeline.GetInfos(), source.GetId())
+	selections, _, err := messagepath.FirstPath(source)
+	if err != nil {
+		t.Fatal(err)
+	}
+	beforeFinish := time.Now().UnixMilli()
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	finish, err := messageClient.Finish(grpcCtx, &papi.MessageFinishRequest{
+		MessageGroupId:         source.GetMessageGroupId(),
+		TimelineId:             info.GetTimelineId(),
+		SelectMessageDetailIds: selections,
+	})
+	cancel()
+	if err != nil {
+		t.Fatalf("Message.Finish did not advance dependency queue: %v", err)
+	}
+	afterFinish := time.Now().UnixMilli()
+	if findUserMessageByID(finish.GetCommonResponse().GetUpdatedData().GetMessages(), dependent.GetId()) == nil {
+		t.Fatalf("Message.Finish response omitted dependent message %q: %v", dependent.GetId(), finish)
+	}
+	dependentMessage, err := opuser.FindUserMessage(ctx, testConfig.TestUserSuid, dependent.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	dependentSchedule, err := opuser.FindUserMessageSchedule(ctx, testConfig.TestUserSuid, dependent.GetId())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if dependentSchedule.GetScheduledTime() < beforeFinish ||
+		dependentSchedule.GetScheduledTime() > afterFinish+12*time.Hour.Milliseconds() {
+		t.Fatalf("dependent message delay is outside 0..12h: message=%v schedule=%v", dependentMessage, dependentSchedule)
+	}
+	switch dependentMessage.GetMessageStatusType() {
+	case penum.MessageStatusType_MessageStatusType_Scheduled:
+		if dependentMessage.GetArrivedTime() != 0 {
+			t.Fatalf("future dependent message already has an arrival: %v", dependentMessage)
+		}
+	case penum.MessageStatusType_MessageStatusType_Received:
+		if dependentMessage.GetArrivedTime() != dependentSchedule.GetScheduledTime() {
+			t.Fatalf("immediate dependent message arrival differs from schedule: message=%v schedule=%v", dependentMessage, dependentSchedule)
+		}
+	default:
+		t.Fatalf("dependent message has invalid status: %v", dependentMessage)
+	}
 }
 
 func findWearableCostumePair(t *testing.T) (*pmaster.Costume, *pmaster.Hair) {
@@ -708,6 +1000,12 @@ func findReliabilityMessage(t *testing.T) (*pmaster.Message, *pmaster.MessageDet
 		if _, err := opuser.FindUserCharacter(context.Background(), testConfig.TestUserSuid, characterID); err != nil {
 			continue
 		}
+		if _, ok := findAlternateMessagePath(master, terminal.GetMessageDetailId(), selections); !ok {
+			continue
+		}
+		if len(selectedMessageTelephoneIDs(master, selections)) > 0 {
+			return master, terminal, selections, first
+		}
 		if terminal.GetCharacterId() != "" && terminal.GetCharacterId() != master.GetCharacterId() {
 			return master, terminal, selections, first
 		}
@@ -721,6 +1019,88 @@ func findReliabilityMessage(t *testing.T) (*pmaster.Message, *pmaster.MessageDet
 	}
 	t.Fatal("no message with a positive-reliability terminal path exists")
 	return nil, nil, nil, nil
+}
+
+func findMessageDependencyChain(t *testing.T) (*pmaster.Message, *pmaster.Message, string) {
+	t.Helper()
+	ctx := context.Background()
+	masters, err := opmaster.FindAllMessages(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	masterByID := make(map[string]*pmaster.Message, len(masters))
+	for _, master := range masters {
+		masterByID[master.GetId()] = master
+	}
+	activeGroups := make(map[string]struct{})
+	userMessages, err := opuser.FindAllUserMessages(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, message := range userMessages {
+		if message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Scheduled &&
+			message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Received {
+			continue
+		}
+		if master := masterByID[message.GetMessageId()]; master != nil {
+			activeGroups[master.GetMessageGroupId()] = struct{}{}
+		}
+	}
+	conditions, err := opmaster.FindAllConditions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	conditionByID := make(map[string]*pmaster.Condition, len(conditions))
+	for _, condition := range conditions {
+		conditionByID[condition.GetId()] = condition
+	}
+	for _, dependent := range masters {
+		condition := conditionByID[dependent.GetUnlockConditionId()]
+		if condition == nil {
+			continue
+		}
+		sourceID := ""
+		for _, setting := range condition.GetSettings() {
+			if setting.GetFinishedMessage().GetMessageId() != "" {
+				sourceID = setting.GetFinishedMessage().GetMessageId()
+				break
+			}
+		}
+		source := masterByID[sourceID]
+		if source == nil || source.GetMessageGroupId() != dependent.GetMessageGroupId() {
+			continue
+		}
+		if _, active := activeGroups[source.GetMessageGroupId()]; active {
+			continue
+		}
+		sourceCondition := conditionByID[source.GetUnlockConditionId()]
+		if sourceCondition == nil {
+			continue
+		}
+		storyID := ""
+		for _, setting := range sourceCondition.GetSettings() {
+			if setting.GetReadStory().GetStoryId() != "" {
+				storyID = setting.GetReadStory().GetStoryId()
+				break
+			}
+		}
+		if storyID == "" {
+			continue
+		}
+		story, err := opuser.FindUserStory(ctx, testConfig.TestUserSuid, storyID)
+		if err != nil || story.GetStatusType() != penum.StoryStatusType_StoryStatusType_Unread || story.GetIsInvalid() {
+			continue
+		}
+		if _, err := opuser.FindUserMessage(ctx, testConfig.TestUserSuid, source.GetId()); !errors.Is(err, mongo.ErrNoDocuments) {
+			continue
+		}
+		if _, err := opuser.FindUserMessage(ctx, testConfig.TestUserSuid, dependent.GetId()); !errors.Is(err, mongo.ErrNoDocuments) {
+			continue
+		}
+		return source, dependent, storyID
+	}
+	t.Fatal("no unread-story to finished-message dependency chain exists")
+	return nil, nil, ""
 }
 
 func findPositiveReliabilityPath(master *pmaster.Message) (*pmaster.MessageDetail, []string, *pmaster.MessageDetail) {
@@ -791,7 +1171,7 @@ func findPositiveReliabilityPath(master *pmaster.Message) (*pmaster.MessageDetai
 		for index := len(state.detail.NextMessageDetailIds) - 1; index >= 0; index-- {
 			next := details[state.detail.NextMessageDetailIds[index]]
 			selections := append([]string(nil), state.selections...)
-			if len(state.detail.NextMessageDetailIds) > 1 {
+			if next.GetChoiceText() != "" {
 				selections = append(selections, next.MessageDetailId)
 			}
 			stack = append(stack, pathState{detail: next, selections: selections, visited: visited})
@@ -878,7 +1258,7 @@ func findAlternateMessagePath(master *pmaster.Message, usedTerminalID string, us
 		for index := len(nextIDs) - 1; index >= 0; index-- {
 			next := details[nextIDs[index]]
 			selections := append([]string(nil), state.selections...)
-			if len(nextIDs) > 1 {
+			if next.GetChoiceText() != "" {
 				selections = append(selections, next.GetMessageDetailId())
 			}
 			stack = append(stack, pathState{detail: next, selections: selections, visited: visited})
@@ -894,6 +1274,75 @@ func findUserCharacterByID(characters []*ptransaction.UserCharacter, characterID
 		}
 	}
 	return nil
+}
+
+func findUserMessageByID(messages []*ptransaction.UserMessage, messageID string) *ptransaction.UserMessage {
+	for _, message := range messages {
+		if message.GetMessageId() == messageID {
+			return message
+		}
+	}
+	return nil
+}
+
+func findUserTelephoneByID(telephones []*ptransaction.UserTelephone, telephoneID string) *ptransaction.UserTelephone {
+	for _, telephone := range telephones {
+		if telephone.GetTelephoneId() == telephoneID {
+			return telephone
+		}
+	}
+	return nil
+}
+
+func selectedMessageTelephoneIDs(master *pmaster.Message, selections []string) []string {
+	details := make(map[string]*pmaster.MessageDetail, len(master.GetDetails()))
+	indegree := make(map[string]int, len(master.GetDetails()))
+	for _, detail := range master.GetDetails() {
+		details[detail.GetMessageDetailId()] = detail
+		indegree[detail.GetMessageDetailId()] = 0
+	}
+	for _, detail := range master.GetDetails() {
+		for _, nextID := range detail.GetNextMessageDetailIds() {
+			indegree[nextID]++
+		}
+	}
+	var current *pmaster.MessageDetail
+	for id, degree := range indegree {
+		if degree == 0 {
+			current = details[id]
+			break
+		}
+	}
+	selected := make(map[string]struct{}, len(selections))
+	for _, selection := range selections {
+		selected[selection] = struct{}{}
+	}
+	result := make([]string, 0)
+	visited := make(map[string]struct{}, len(details))
+	for current != nil {
+		if _, duplicate := visited[current.GetMessageDetailId()]; duplicate {
+			break
+		}
+		visited[current.GetMessageDetailId()] = struct{}{}
+		if current.GetTelephoneId() != "" {
+			result = append(result, current.GetTelephoneId())
+		}
+		nextIDs := current.GetNextMessageDetailIds()
+		if len(nextIDs) == 0 {
+			break
+		}
+		nextID := nextIDs[0]
+		if len(nextIDs) > 1 {
+			for _, candidateID := range nextIDs {
+				if _, ok := selected[candidateID]; ok {
+					nextID = candidateID
+					break
+				}
+			}
+		}
+		current = details[nextID]
+	}
+	return result
 }
 
 func hasMessageGroup(infos []*papi.MessageGroupInfo, id string) bool {
@@ -918,19 +1367,68 @@ func findTimelineInfo(t *testing.T, infos []*papi.TimelineInfo, messageId string
 
 func testTelephoneHistory(t *testing.T) {
 	t.Helper()
-	telephones, err := opuser.FindAllUserTelephones(context.Background(), testConfig.TestUserSuid)
+	ctx := context.Background()
+	telephones, err := opuser.FindAllUserTelephones(ctx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
 	for _, telephone := range telephones {
-		if telephone.TelephoneStatusType != penum.TelephoneStatusType_TelephoneStatusType_Finished {
+		if _, err := opmaster.FindTelephone(ctx, telephone.TelephoneId); err != nil {
 			continue
 		}
-		if _, err := opmaster.FindTelephone(context.Background(), telephone.TelephoneId); err != nil {
-			continue
+		telephone.TelephoneStatusType = penum.TelephoneStatusType_TelephoneStatusType_Scheduled
+		telephone.UnlockedTime = time.Now().Add(-time.Minute).UnixMilli()
+		telephone.ScheduledTime = time.Now().Add(time.Minute).UnixMilli()
+		if err := opuser.UpsertUserTelephone(ctx, testConfig.TestUserSuid, telephone); err != nil {
+			t.Fatal(err)
 		}
 		client := papi.NewTelephoneClient(testConfig.GrpcConn)
 		grpcCtx, cancel, err := getFullGrpcCtx()
+		if err != nil {
+			t.Fatal(err)
+		}
+		_, err = client.Receive(grpcCtx, &papi.TelephoneReceiveRequest{TelephoneIds: []string{telephone.TelephoneId}})
+		cancel()
+		if status.Code(err) != codes.FailedPrecondition {
+			t.Fatalf("early Telephone.Receive returned %v, want FailedPrecondition", err)
+		}
+		telephone.ScheduledTime = time.Now().Add(-time.Minute).UnixMilli()
+		if err := opuser.UpsertUserTelephone(ctx, testConfig.TestUserSuid, telephone); err != nil {
+			t.Fatal(err)
+		}
+		grpcCtx, cancel, err = getFullGrpcCtx()
+		if err != nil {
+			t.Fatal(err)
+		}
+		receive, err := client.Receive(grpcCtx, &papi.TelephoneReceiveRequest{TelephoneIds: []string{telephone.TelephoneId}})
+		cancel()
+		if err != nil {
+			t.Fatalf("Telephone.Receive failed: %v", err)
+		}
+		if len(receive.GetCommonResponse().GetUpdatedData().GetTelephones()) != 1 ||
+			receive.GetCommonResponse().GetUpdatedData().GetTelephones()[0].GetTelephoneStatusType() !=
+				penum.TelephoneStatusType_TelephoneStatusType_Received {
+			t.Fatalf("Telephone.Receive returned the wrong post-image: %v", receive)
+		}
+		grpcCtx, cancel, err = getFullGrpcCtx()
+		if err != nil {
+			t.Fatal(err)
+		}
+		finish, err := client.Finishes(grpcCtx, &papi.TelephoneFinishesRequest{TelephoneIds: []string{telephone.TelephoneId}})
+		cancel()
+		if err != nil {
+			t.Fatalf("Telephone.Finishes failed: %v", err)
+		}
+		if finish.GetIsReliabilityUp() || len(finish.GetCommonResponse().GetUpdatedData().GetTelephones()) != 1 ||
+			finish.GetCommonResponse().GetUpdatedData().GetTelephones()[0].GetTelephoneStatusType() !=
+				penum.TelephoneStatusType_TelephoneStatusType_Finished {
+			t.Fatalf("Telephone.Finishes returned the wrong post-image: %v", finish)
+		}
+		stored, err := opuser.FindUserTelephone(ctx, testConfig.TestUserSuid, telephone.TelephoneId)
+		if err != nil || stored.GetTelephoneStatusType() != penum.TelephoneStatusType_TelephoneStatusType_Finished {
+			t.Fatalf("Telephone.Finishes was not persisted: telephone=%v err=%v", stored, err)
+		}
+		grpcCtx, cancel, err = getFullGrpcCtx()
 		if err != nil {
 			t.Fatal(err)
 		}

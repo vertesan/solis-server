@@ -38,6 +38,11 @@ var supportedCommerceConditionFields = map[string]struct{}{
 	"gameStartTerm":       {},
 	"itemAmount":          {},
 	"purchaseShop":        {},
+	"readStory":           {},
+	"finishedMessage":     {},
+	"reliability":         {},
+	"obtainCharacter":     {},
+	"obtainEmblem":        {},
 }
 
 type CommerceConditionEvaluator struct {
@@ -62,6 +67,14 @@ type CommerceConditionEvaluator struct {
 	itemsLoaded         bool
 	purchasedShopItems  map[string]struct{}
 	shopPurchasesLoaded bool
+	stories             map[string]*ptransaction.UserStory
+	storiesLoaded       bool
+	messages            map[string]*ptransaction.UserMessage
+	messagesLoaded      bool
+	characters          map[string]*ptransaction.UserCharacter
+	charactersLoaded    bool
+	emblems             map[string]struct{}
+	emblemsLoaded       bool
 }
 
 func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) *CommerceConditionEvaluator {
@@ -73,6 +86,14 @@ func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) 
 		results:     make(map[string]commerceConditionState),
 		evaluating:  make(map[string]struct{}),
 		masterAreas: make(map[string]*pmaster.Area),
+	}
+}
+
+func (e *CommerceConditionEvaluator) primeConditions(conditions []*pmaster.Condition) {
+	for _, condition := range conditions {
+		if condition.GetId() != "" {
+			e.conditions[condition.GetId()] = condition
+		}
 	}
 }
 
@@ -326,6 +347,74 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			merge(commerceConditionUnsatisfied)
 		}
 	}
+	if value := setting.GetReadStory(); value != nil {
+		hasKnownField = true
+		if value.GetStoryId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		stories, err := e.loadStories()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		story := stories[value.GetStoryId()]
+		if story == nil || story.GetStatusType() != penum.StoryStatusType_StoryStatusType_Read {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetFinishedMessage(); value != nil {
+		hasKnownField = true
+		if value.GetMessageId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		messages, err := e.loadMessages()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		message := messages[value.GetMessageId()]
+		if message == nil || message.GetMessageStatusType() != penum.MessageStatusType_MessageStatusType_Finished {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetReliability(); value != nil {
+		hasKnownField = true
+		if value.GetCharacterId() == "" || value.GetReliabilityGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		characters, err := e.loadCharacters()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		character := characters[value.GetCharacterId()]
+		if character == nil || character.GetReliability() < value.GetReliabilityGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetObtainCharacter(); value != nil {
+		hasKnownField = true
+		if value.GetCharacterId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		characters, err := e.loadCharacters()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if _, ok := characters[value.GetCharacterId()]; !ok {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetObtainEmblem(); value != nil {
+		hasKnownField = true
+		if value.GetEmblemId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		emblems, err := e.loadEmblems()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if _, ok := emblems[value.GetEmblemId()]; !ok {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
 
 	setting.ProtoReflect().Range(func(field protoreflect.FieldDescriptor, _ protoreflect.Value) bool {
 		if _, ok := supportedCommerceConditionFields[field.JSONName()]; !ok {
@@ -524,6 +613,66 @@ func (e *CommerceConditionEvaluator) loadPurchasedShopItems() (map[string]struct
 		e.shopPurchasesLoaded = true
 	}
 	return e.purchasedShopItems, nil
+}
+
+func (e *CommerceConditionEvaluator) loadStories() (map[string]*ptransaction.UserStory, error) {
+	if !e.storiesLoaded {
+		values, err := opuser.FindAllUserStories(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.stories = make(map[string]*ptransaction.UserStory, len(values))
+		for _, value := range values {
+			e.stories[value.GetStoryId()] = value
+		}
+		e.storiesLoaded = true
+	}
+	return e.stories, nil
+}
+
+func (e *CommerceConditionEvaluator) loadMessages() (map[string]*ptransaction.UserMessage, error) {
+	if !e.messagesLoaded {
+		values, err := opuser.FindAllUserMessages(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.messages = make(map[string]*ptransaction.UserMessage, len(values))
+		for _, value := range values {
+			e.messages[value.GetMessageId()] = value
+		}
+		e.messagesLoaded = true
+	}
+	return e.messages, nil
+}
+
+func (e *CommerceConditionEvaluator) loadCharacters() (map[string]*ptransaction.UserCharacter, error) {
+	if !e.charactersLoaded {
+		values, err := opuser.FindAllUserCharacters(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.characters = make(map[string]*ptransaction.UserCharacter, len(values))
+		for _, value := range values {
+			e.characters[value.GetCharacterId()] = value
+		}
+		e.charactersLoaded = true
+	}
+	return e.characters, nil
+}
+
+func (e *CommerceConditionEvaluator) loadEmblems() (map[string]struct{}, error) {
+	if !e.emblemsLoaded {
+		values, err := opuser.FindAllUserEmblems(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.emblems = make(map[string]struct{}, len(values))
+		for _, value := range values {
+			e.emblems[value.GetEmblemId()] = struct{}{}
+		}
+		e.emblemsLoaded = true
+	}
+	return e.emblems, nil
 }
 
 func FilterHomeCommerceIDs(

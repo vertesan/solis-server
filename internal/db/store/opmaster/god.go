@@ -96,7 +96,12 @@ func FindAllItems(ctx context.Context) ([]*pmaster.Item, error) {
 }
 
 func FindAllMessages(ctx context.Context) ([]*pmaster.Message, error) {
-	return mcommon.FindMany[mmodel.Message, pmaster.Message](ctx, mname.Message, bson.M{})
+	return mcommon.FindMany[mmodel.Message, pmaster.Message](
+		ctx,
+		mname.Message,
+		bson.M{},
+		options.Find().SetSort(bson.D{{Key: "_id", Value: 1}}),
+	)
 }
 
 func FindMaxLoveLevels(ctx context.Context) ([]*pmaster.LoveLevel, error) {
@@ -220,7 +225,12 @@ func FindAllShowcaseToys(ctx context.Context) ([]*pmaster.ShowcaseToy, error) {
 }
 
 func FindAllTelephones(ctx context.Context) ([]*pmaster.Telephone, error) {
-	return mcommon.FindMany[mmodel.Telephone, pmaster.Telephone](ctx, mname.Telephone, bson.M{})
+	return mcommon.FindMany[mmodel.Telephone, pmaster.Telephone](
+		ctx,
+		mname.Telephone,
+		bson.M{},
+		options.Find().SetSort(bson.D{{Key: "_id", Value: 1}}),
+	)
 }
 
 func FindAllExtraStoryParts(ctx context.Context) ([]*pmaster.ExtraStoryPart, error) {

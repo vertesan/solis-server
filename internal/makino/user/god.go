@@ -12,6 +12,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	"github.com/vertesan/solis-server/internal/makino/user/card"
 	"github.com/vertesan/solis-server/internal/makino/user/character"
 	"github.com/vertesan/solis-server/internal/makino/user/costume"
@@ -40,6 +41,10 @@ type GodResult struct {
 	Collections  map[string]int
 }
 
+type GodFeature struct {
+	Message string `json:"message,omitempty"`
+}
+
 type godMasterData struct {
 	managerLevel     *pmaster.ManagerLevel
 	characterLevel   *pmaster.CharacterActivityLevel
@@ -53,6 +58,7 @@ type godMasterData struct {
 	areas            []*pmaster.Area
 	cards            []*pmaster.Card
 	characters       []*pmaster.Character
+	conditions       []*pmaster.Condition
 	costumes         []*pmaster.Costume
 	decorations      []*pmaster.Decoration
 	emblems          []*pmaster.Emblem
@@ -86,9 +92,17 @@ type godMasterData struct {
 	userCostumes     []*ptransaction.UserCostume
 }
 
-func GodUser(ctx context.Context, publicUserId, serverUserId string) (*GodResult, error) {
+func GodUser(ctx context.Context, publicUserId, serverUserId string, feature GodFeature) (*GodResult, error) {
 	if (publicUserId == "") == (serverUserId == "") {
 		return nil, fmt.Errorf("exactly one of publicUserId or serverUserId is required")
+	}
+	if feature.Message == "" {
+		feature.Message = umodel.GodMessageFeatureAll
+	}
+	switch feature.Message {
+	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
+	default:
+		return nil, fmt.Errorf("unsupported message feature %q", feature.Message)
 	}
 
 	auth, err := findGodUserAuth(ctx, publicUserId, serverUserId)
@@ -105,7 +119,7 @@ func GodUser(ctx context.Context, publicUserId, serverUserId string) (*GodResult
 		if _, err := opuser.FindUser(ctx, auth.ServerUserId); err != nil {
 			return nil, err
 		}
-		if err := applyGodMasterData(ctx, auth.ServerUserId, masters, result.Collections); err != nil {
+		if err := applyGodMasterData(ctx, auth.ServerUserId, masters, feature, result.Collections); err != nil {
 			return nil, err
 		}
 		return nil, nil
@@ -184,6 +198,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 	})
 	run("Character", func() (err error) {
 		data.characters, err = opmaster.FindAllCharacters(groupCtx)
+		return err
+	})
+	run("Condition", func() (err error) {
+		data.conditions, err = opmaster.FindAllConditions(groupCtx)
 		return err
 	})
 	run("Costume", func() (err error) {
@@ -356,6 +374,7 @@ func applyGodMasterData(
 	ctx context.Context,
 	suid string,
 	data *godMasterData,
+	feature GodFeature,
 	counts map[string]int,
 ) error {
 	now := time.Now().UnixMilli()
@@ -373,13 +392,13 @@ func applyGodMasterData(
 	}
 	counts[uname.User] = 1
 
-	if err := applyGodOwnership(ctx, suid, data, now, counts); err != nil {
+	if err := applyGodOwnership(ctx, suid, data, now, feature, counts); err != nil {
 		return err
 	}
 	if err := applyGodProgress(ctx, suid, data, now, counts); err != nil {
 		return err
 	}
-	if err := applyGodFeatureGates(ctx, suid, data, counts); err != nil {
+	if err := applyGodFeatureGates(ctx, suid, data, feature, counts); err != nil {
 		return err
 	}
 	if err := applyGodResources(ctx, suid, data, counts); err != nil {
@@ -396,6 +415,7 @@ func applyGodFeatureGates(
 	ctx context.Context,
 	suid string,
 	data *godMasterData,
+	feature GodFeature,
 	counts map[string]int,
 ) error {
 	fanInfo, err := opuser.FindUserFanEventInfo(ctx, suid)
@@ -602,6 +622,7 @@ func applyGodFeatureGates(
 	if err := opuser.UpsertUserGodState(ctx, &umodel.UserGodState{
 		SUID:                suid,
 		UnlockCurrentEvents: true,
+		MessageFeature:      feature.Message,
 	}); err != nil {
 		return err
 	}
@@ -635,6 +656,7 @@ func applyGodOwnership(
 	suid string,
 	data *godMasterData,
 	now int64,
+	feature GodFeature,
 	counts map[string]int,
 ) error {
 	cards := make([]opuser.GodUpsert[*ptransaction.UserCard], 0, len(data.userCards))
@@ -705,7 +727,7 @@ func applyGodOwnership(
 		return err
 	}
 
-	return applyGodMediaOwnership(ctx, suid, data, now, counts)
+	return applyGodMediaOwnership(ctx, suid, data, now, feature, counts)
 }
 
 func applyGodMediaOwnership(
@@ -713,6 +735,7 @@ func applyGodMediaOwnership(
 	suid string,
 	data *godMasterData,
 	now int64,
+	feature GodFeature,
 	counts map[string]int,
 ) error {
 	musics := make([]opuser.GodUpsert[*ptransaction.UserMusic], 0, len(data.musics))
@@ -806,26 +829,7 @@ func applyGodMediaOwnership(
 	if err := opuser.MarkUserStoriesReadForGod(ctx, suid, mainGodStoryIds(data.storyParts)); err != nil {
 		return err
 	}
-
-	telephones := make([]opuser.GodUpsert[*ptransaction.UserTelephone], 0, len(data.telephones))
-	for _, master := range data.telephones {
-		telephones = append(telephones, godValue("telephoneId", master.Id, &ptransaction.UserTelephone{
-			TelephoneId: master.Id, UnlockedTime: now,
-			TelephoneStatusType: penum.TelephoneStatusType_TelephoneStatusType_Finished,
-		}))
-	}
-	if err := godUpsert(ctx, uname.UserTelephone, suid, telephones, false, counts); err != nil {
-		return err
-	}
-
-	messages := make([]opuser.GodUpsert[*ptransaction.UserMessage], 0, len(data.messages))
-	for _, master := range data.messages {
-		messages = append(messages, godValue("messageId", master.Id, &ptransaction.UserMessage{
-			MessageId: master.Id, MessageStatusType: penum.MessageStatusType_MessageStatusType_Finished,
-			ArrivedTime: now, SelectMessageDetailIds: []string{},
-		}))
-	}
-	if err := godUpsert(ctx, uname.UserMessage, suid, messages, false, counts); err != nil {
+	if err := applyGodNarrative(ctx, suid, data, now, feature.Message, counts); err != nil {
 		return err
 	}
 
@@ -842,6 +846,216 @@ func applyGodMediaOwnership(
 		showcaseToys = append(showcaseToys, godValue("showcaseToyId", master.Id, &ptransaction.UserShowcaseToy{ShowcaseToyId: master.Id, Amount: 1}))
 	}
 	return godUpsert(ctx, uname.UserShowcaseToy, suid, showcaseToys, false, counts)
+}
+
+func applyGodNarrative(
+	ctx context.Context,
+	suid string,
+	data *godMasterData,
+	now int64,
+	messageFeature string,
+	counts map[string]int,
+) error {
+	if messageFeature == umodel.GodMessageFeatureNone {
+		return nil
+	}
+
+	embeddedTelephoneIDs := make(map[string]struct{})
+	for _, master := range data.messages {
+		for _, detail := range master.GetDetails() {
+			if detail.GetTelephoneId() != "" {
+				embeddedTelephoneIDs[detail.GetTelephoneId()] = struct{}{}
+			}
+		}
+	}
+
+	if messageFeature == umodel.GodMessageFeatureEnjoy {
+		messages := make([]opuser.GodUpsert[*ptransaction.UserMessage], 0)
+		for _, master := range data.messages {
+			if master.GetUnlockConditionId() != "" {
+				continue
+			}
+			messages = append(messages, godValue("messageId", master.GetId(), &ptransaction.UserMessage{
+				MessageId:         master.GetId(),
+				MessageStatusType: penum.MessageStatusType_MessageStatusType_Unlocked,
+			}))
+		}
+		if err := godUpsert(ctx, uname.UserMessage, suid, messages, false, counts); err != nil {
+			return err
+		}
+		telephones := make([]opuser.GodUpsert[*ptransaction.UserTelephone], 0)
+		for _, master := range data.telephones {
+			if master.GetUnlockConditionId() != "" {
+				continue
+			}
+			if _, embedded := embeddedTelephoneIDs[master.GetId()]; embedded {
+				continue
+			}
+			telephones = append(telephones, godValue("telephoneId", master.GetId(), &ptransaction.UserTelephone{
+				TelephoneId:         master.GetId(),
+				UnlockedTime:        now,
+				TelephoneStatusType: penum.TelephoneStatusType_TelephoneStatusType_Unlocked,
+			}))
+		}
+		return godUpsert(ctx, uname.UserTelephone, suid, telephones, false, counts)
+	}
+
+	existingMessages, err := opuser.FindAllUserMessages(ctx, suid)
+	if err != nil {
+		return err
+	}
+	existingMessagesByID := make(map[string]*ptransaction.UserMessage, len(existingMessages))
+	for _, message := range existingMessages {
+		existingMessagesByID[message.GetMessageId()] = message
+	}
+	existingProgresses, err := opuser.FindAllUserMessageProgresses(ctx, suid)
+	if err != nil {
+		return err
+	}
+	existingProgressesByID := make(map[string]*umodel.UserMessageProgress, len(existingProgresses))
+	for _, progress := range existingProgresses {
+		existingProgressesByID[progress.MessageId] = progress
+	}
+	messages := make([]opuser.GodUpsert[*ptransaction.UserMessage], 0, len(data.messages))
+	progresses := make([]*umodel.UserMessageProgress, 0, len(data.messages))
+	for _, master := range data.messages {
+		selections, terminal, err := messagepath.FirstPath(master)
+		if err != nil {
+			return fmt.Errorf("failed to resolve god message %q: %w", master.GetId(), err)
+		}
+		arrivedTime, finishedTime := now, now
+		existing := existingMessagesByID[master.GetId()]
+		if existing != nil && existing.GetArrivedTime() > 0 && existing.GetArrivedTime() <= now {
+			arrivedTime = existing.GetArrivedTime()
+		}
+		if existing != nil && existing.GetMessageStatusType() == penum.MessageStatusType_MessageStatusType_Finished {
+			existingTerminal, historyErr := messagepath.ExistingHistoryPath(master, existing.GetSelectMessageDetailIds())
+			if historyErr == nil {
+				selections = append([]string(nil), existing.GetSelectMessageDetailIds()...)
+				terminal = existingTerminal
+				if progress := existingProgressesByID[master.GetId()]; progress != nil &&
+					isGodMessageTerminal(master, progress.LastMessageDetailId) &&
+					progress.LastMessageDetailTime >= arrivedTime && progress.LastMessageDetailTime <= now {
+					terminal = findGodMessageDetail(master, progress.LastMessageDetailId)
+					finishedTime = progress.LastMessageDetailTime
+				}
+			}
+		}
+		message := &ptransaction.UserMessage{
+			MessageId:              master.GetId(),
+			MessageStatusType:      penum.MessageStatusType_MessageStatusType_Finished,
+			ArrivedTime:            arrivedTime,
+			SelectMessageDetailIds: selections,
+		}
+		messages = append(messages, godValue("messageId", master.GetId(), message))
+		progresses = append(progresses, &umodel.UserMessageProgress{
+			SUID:                  suid,
+			MessageId:             master.GetId(),
+			LastMessageDetailId:   terminal.GetMessageDetailId(),
+			LastMessageDetailTime: finishedTime,
+		})
+	}
+	if err := godUpsert(ctx, uname.UserMessage, suid, messages, true, counts); err != nil {
+		return err
+	}
+	if err := opuser.UpsertManyUserMessageProgresses(ctx, progresses); err != nil {
+		return err
+	}
+	counts[uname.UserMessageProgress] = len(progresses)
+	if err := opuser.DeleteAllUserMessageSchedules(ctx, suid); err != nil {
+		return err
+	}
+	counts[uname.UserMessageSchedule] = 0
+
+	existingTelephones, err := opuser.FindAllUserTelephones(ctx, suid)
+	if err != nil {
+		return err
+	}
+	existingTelephonesByID := make(map[string]*ptransaction.UserTelephone, len(existingTelephones))
+	for _, telephone := range existingTelephones {
+		existingTelephonesByID[telephone.GetTelephoneId()] = telephone
+	}
+	telephones := make([]opuser.GodUpsert[*ptransaction.UserTelephone], 0, len(data.telephones))
+	for _, master := range data.telephones {
+		unlockedTime := now
+		scheduledTime := now
+		if existing := existingTelephonesByID[master.GetId()]; existing != nil {
+			if existing.GetUnlockedTime() > 0 && existing.GetUnlockedTime() <= now {
+				unlockedTime = existing.GetUnlockedTime()
+			}
+			if existing.GetScheduledTime() >= unlockedTime && existing.GetScheduledTime() <= now {
+				scheduledTime = existing.GetScheduledTime()
+			}
+		}
+		telephone := &ptransaction.UserTelephone{
+			TelephoneId:         master.GetId(),
+			UnlockedTime:        unlockedTime,
+			ScheduledTime:       scheduledTime,
+			TelephoneStatusType: penum.TelephoneStatusType_TelephoneStatusType_Finished,
+		}
+		telephones = append(telephones, godValue("telephoneId", master.GetId(), telephone))
+	}
+	if err := godUpsert(ctx, uname.UserTelephone, suid, telephones, true, counts); err != nil {
+		return err
+	}
+
+	conditionByID := make(map[string]*pmaster.Condition, len(data.conditions))
+	for _, condition := range data.conditions {
+		conditionByID[condition.GetId()] = condition
+	}
+	storyIDs := make(map[string]struct{})
+	for _, master := range data.messages {
+		collectGodMessageStoryPrerequisites(master.GetUnlockConditionId(), conditionByID, storyIDs, make(map[string]struct{}))
+	}
+	readStoryIDs := make([]string, 0, len(storyIDs))
+	for storyID := range storyIDs {
+		readStoryIDs = append(readStoryIDs, storyID)
+	}
+	if err := opuser.MarkUserStoriesReadForGod(ctx, suid, readStoryIDs); err != nil {
+		return err
+	}
+	return nil
+}
+
+func findGodMessageDetail(master *pmaster.Message, detailID string) *pmaster.MessageDetail {
+	for _, detail := range master.GetDetails() {
+		if detail.GetMessageDetailId() == detailID {
+			return detail
+		}
+	}
+	return nil
+}
+
+func isGodMessageTerminal(master *pmaster.Message, detailID string) bool {
+	detail := findGodMessageDetail(master, detailID)
+	return detail != nil && len(detail.GetNextMessageDetailIds()) == 0
+}
+
+func collectGodMessageStoryPrerequisites(
+	conditionID string,
+	conditions map[string]*pmaster.Condition,
+	storyIDs map[string]struct{},
+	visited map[string]struct{},
+) {
+	if conditionID == "" {
+		return
+	}
+	if _, seen := visited[conditionID]; seen {
+		return
+	}
+	visited[conditionID] = struct{}{}
+	condition := conditions[conditionID]
+	if condition == nil {
+		return
+	}
+	for _, setting := range condition.GetSettings() {
+		if readStory := setting.GetReadStory(); readStory.GetStoryId() != "" {
+			storyIDs[readStory.GetStoryId()] = struct{}{}
+		}
+		if dependency := setting.GetSatisfyCondition(); dependency.GetConditionId() != "" {
+			collectGodMessageStoryPrerequisites(dependency.GetConditionId(), conditions, storyIDs, visited)
+		}
+	}
 }
 
 func applyGodProgress(

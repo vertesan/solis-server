@@ -26,3 +26,7 @@ func UpsertUserGodState(ctx context.Context, state *umodel.UserGodState) error {
 		state,
 	)
 }
+
+func DeleteUserGodState(ctx context.Context, suid string) error {
+	return ucommon.Delete(ctx, uname.UserGodState, bson.M{"SUID": suid})
+}
