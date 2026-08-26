@@ -112,6 +112,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterGiftServer(server, &ss.GiftServer{})
 	papi.RegisterLoginBonusServer(server, &ss.LoginBonusServer{})
 	papi.RegisterCostumeServer(server, &ss.CostumeServer{})
+	papi.RegisterHairServer(server, &ss.HairServer{})
 	papi.RegisterDiaryServer(server, &ss.DiaryServer{})
 	papi.RegisterMessageServer(server, &ss.MessageServer{})
 	papi.RegisterTelephoneServer(server, &ss.TelephoneServer{})
