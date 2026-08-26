@@ -97,13 +97,13 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 			}
 			if reloginRequired {
 				header := responseHeader()
-				header.Set("x-error-action", "title")
-				// grpc-go base64-encodes raw values whose key ends in -bin. The
-				// resulting HTTP/2 value is the value specified by the client.
-				header.Set("x-error-message-bin", "日付が変わりました")
-				header.Set("x-error-code", "1003")
-				if err := grpc.SendHeader(ctx, header); err != nil {
-					logger.Error("failed sending daily relogin header", zap.Error(err))
+				if err := grpc.SetHeader(ctx, header); err != nil {
+					logger.Error("failed setting response header", zap.Error(err))
+					return nil, err
+				}
+				header = titleActionHeader("日付が変わりました")
+				if err := grpc.SetHeader(ctx, header); err != nil {
+					logger.Error("failed setting daily relogin header", zap.Error(err))
 					return nil, err
 				}
 				return &papi.Empty{}, nil
@@ -112,9 +112,10 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 		// thread logger to context
 		ctx = mcontext.WithLogger(ctx, logger)
 
-		// send metadata back
-		if err := grpc.SendHeader(ctx, responseHeader()); err != nil {
-			logger.Error("failed sending header", zap.Error(err))
+		// set metadata (header)
+		header := responseHeader()
+		if err := grpc.SetHeader(ctx, header); err != nil {
+			logger.Error("failed setting response header", zap.Error(err))
 			return nil, err
 		}
 
@@ -149,6 +150,17 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 		if err != nil {
 			logger.Error("RPC failed with error", zap.Error(err))
 		}
+		// check if invoked API is not implemented
+		code := status.Code(err)
+		if code == codes.Unimplemented {
+			header = titleActionHeader("未実装の機能です")
+			if err := grpc.SetHeader(ctx, header); err != nil {
+				logger.Error("failed setting unimplemented header", zap.Error(err))
+				return nil, err
+			}
+			return &papi.Empty{}, nil
+		}
+
 		return m, abstractErrorMsg(err)
 	}
 }
@@ -157,6 +169,16 @@ func responseHeader() metadata.MD {
 	return metadata.New(map[string]string{
 		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),
 		"cache-control": "no-store",
+	})
+}
+
+func titleActionHeader(message string) metadata.MD {
+	// grpc-go base64-encodes raw values whose key ends in -bin. The
+	// resulting HTTP/2 value is the value specified by the client.
+	return metadata.New(map[string]string{
+		"x-error-action":      "title",
+		"x-error-message-bin": message,
+		"x-error-code":        "1003",
 	})
 }
 
