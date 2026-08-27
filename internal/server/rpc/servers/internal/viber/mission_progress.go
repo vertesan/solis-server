@@ -187,7 +187,7 @@ func addMissionProgress(
 	}
 	mission.LastUpdateTime = now
 
-	if oldStatus == penum.MissionStatusType_MissionStatusType_Clear && mission.Progress >= maxThreshold {
+	if oldStatus == penum.MissionStatusType_MissionStatusType_Clear && mission.Progress >= mission.CurrentThreshold {
 		mission.StatusType = penum.MissionStatusType_MissionStatusType_NotReceived
 	}
 	return oldStatus == penum.MissionStatusType_MissionStatusType_Progress && mission.Progress >= mission.CurrentThreshold, true, nil

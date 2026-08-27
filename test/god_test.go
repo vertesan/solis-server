@@ -237,6 +237,7 @@ func TestUserGod(t *testing.T) {
 	}
 	assertGodResourceAmounts(t, ctx)
 	assertGodCharacterActivityProgress(t, ctx)
+	assertGodCompanyProgress(t, ctx)
 
 	masterCards, err := opmaster.FindAllCards(ctx)
 	if err != nil {
@@ -377,6 +378,10 @@ func TestUserGod(t *testing.T) {
 		t.Fatalf("home events are not based on the current global rotation: got=%v want=%v", homeResponse.EventInfo, expectedEventInfo)
 	}
 	assertHomeEventsUnlocked(t, homeResponse.EventInfo.ProtoReflect())
+	if homeResponse.GetCompanyInfo().GetIsReceivableRewards() ||
+		homeResponse.GetCompanyInfo().GetIsReceivableEnjoyRewards() {
+		t.Fatalf("god Company rewards were not marked received: %v", homeResponse.GetCompanyInfo())
+	}
 
 	areas, err := opmaster.FindAllAreas(ctx)
 	if err != nil {
@@ -421,6 +426,90 @@ func TestUserGod(t *testing.T) {
 				t.Fatalf("showcase shop %q was not unlocked by god mode", shop.ShopId)
 			}
 		}
+	}
+}
+
+func assertGodCompanyProgress(t *testing.T, ctx context.Context) {
+	t.Helper()
+	levels, err := opmaster.FindAllCompanyEnjoyCharacterLevels(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var maxCharacterPoint int64
+	for _, level := range levels {
+		maxCharacterPoint = max(maxCharacterPoint, level.GetRequiredPoint())
+	}
+	masterCharacters, err := opmaster.FindAllCharacters(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	masterByID := make(map[string]*pmaster.Character, len(masterCharacters))
+	for _, character := range masterCharacters {
+		masterByID[character.GetId()] = character
+	}
+	characters, err := opuser.FindAllUserCharacters(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var normalCount, normalPointTotal int64
+	for _, character := range characters {
+		master := masterByID[character.GetCharacterId()]
+		if master != nil && master.GetType() == penum.CharacterType_CharacterType_Normal {
+			normalCount++
+			normalPointTotal += character.GetCompanyEnjoyPoint()
+			if character.GetCompanyEnjoyPoint() < maxCharacterPoint {
+				t.Fatalf("god Company character point is below the master maximum: %v", character)
+			}
+		}
+		if len(character.GetCompanyBonusParameterInfos()) != 6 {
+			t.Fatalf("god Company character bonus vector is incomplete: %v", character)
+		}
+	}
+	if normalCount == 0 {
+		t.Fatal("god Company data contains no normal characters")
+	}
+	wantInheritedPoint := normalPointTotal / normalCount
+	for _, character := range characters {
+		master := masterByID[character.GetCharacterId()]
+		if master != nil && master.GetType() != penum.CharacterType_CharacterType_Normal &&
+			character.GetCompanyEnjoyPoint() != wantInheritedPoint {
+			t.Fatalf("special Company character point = %d, want normal-idol average %d: %v",
+				character.GetCompanyEnjoyPoint(), wantInheritedPoint, character)
+		}
+	}
+
+	company, err := opuser.FindUserCompany(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if company.GetEnjoyPoint() != normalPointTotal || !company.GetIsAlreadyTransitioned() {
+		t.Fatalf("god Company aggregate is inconsistent with character data: %v", company)
+	}
+	trustLevels, err := opmaster.FindAllCompanyTrustLevels(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, level := range trustLevels {
+		if company.GetTrustPoint() < level.GetRequiredPoint() {
+			t.Fatalf("god Company trust point %d is below master level %d", company.GetTrustPoint(), level.GetLevelKey())
+		}
+	}
+	grades, err := opmaster.FindAllCompanyGrades(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	companyPoint := company.GetEnjoyPoint() + company.GetTrustPoint() + company.GetSalaryPoint()
+	for _, grade := range grades {
+		if companyPoint < grade.GetRequiredPoint() {
+			t.Fatalf("god Company point %d is below master grade %q", companyPoint, grade.GetId())
+		}
+	}
+	state, err := opuser.FindUserCompanyRewardState(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(state.ReceivedGradeIds) != len(grades) || len(state.ReceivedTrustLevelKeys) != len(trustLevels) {
+		t.Fatalf("god Company reward claims are incomplete: %v", state)
 	}
 }
 

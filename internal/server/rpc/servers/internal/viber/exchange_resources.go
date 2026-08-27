@@ -103,6 +103,7 @@ var autoRewardResourceTypes = map[string]penum.ResourceType{
 	"showcase_toy":                         penum.ResourceType_ResourceType_ShowcaseToy,
 	"photo_pose":                           penum.ResourceType_ResourceType_PhotoPose,
 	"photo_all_in_one":                     penum.ResourceType_ResourceType_PhotoAllInOne,
+	"company_point":                        penum.ResourceType_ResourceType_CompanyPoint,
 }
 
 func ValidateExchangeResources(costType penum.ResourceType, rewards []*pmaster.RewardResource) error {
@@ -150,6 +151,7 @@ func isSupportedExchangeReward(resourceType penum.ResourceType) bool {
 		penum.ResourceType_ResourceType_Emblem,
 		penum.ResourceType_ResourceType_Decoration,
 		penum.ResourceType_ResourceType_Hair,
+		penum.ResourceType_ResourceType_CompanyPoint,
 		penum.ResourceType_ResourceType_ShowcaseToy,
 		penum.ResourceType_ResourceType_PhotoPose,
 		penum.ResourceType_ResourceType_PhotoAllInOne:
@@ -357,6 +359,8 @@ func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.Rewar
 		return grantExchangeDecoration(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Hair:
 		return grantExchangeHair(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_CompanyPoint:
+		return GrantCompanyPoint(ctx, suid, reward.GetResourceId(), amount, updated)
 	default:
 		pointType, ok := exchangePointType(reward.GetResourceType())
 		if !ok {

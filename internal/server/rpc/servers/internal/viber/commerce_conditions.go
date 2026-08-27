@@ -26,23 +26,36 @@ const (
 )
 
 var supportedCommerceConditionFields = map[string]struct{}{
-	"satisfyCondition":    {},
-	"notSatisfyCondition": {},
-	"startHours":          {},
-	"managerLevel":        {},
-	"clearArea":           {},
-	"obtainCard":          {},
-	"obtainCostume":       {},
-	"cardRarity":          {},
-	"term":                {},
-	"gameStartTerm":       {},
-	"itemAmount":          {},
-	"purchaseShop":        {},
-	"readStory":           {},
-	"finishedMessage":     {},
-	"reliability":         {},
-	"obtainCharacter":     {},
-	"obtainEmblem":        {},
+	"satisfyCondition":              {},
+	"notSatisfyCondition":           {},
+	"startHours":                    {},
+	"managerLevel":                  {},
+	"deckMaxOverallValue":           {},
+	"clearQuest":                    {},
+	"clearMission":                  {},
+	"companyGradeGte":               {},
+	"companyPointGte":               {},
+	"companyEnjoyLevelGte":          {},
+	"companyEnjoyPointGte":          {},
+	"companyEnjoyCharacterLevelGte": {},
+	"companyTrustLevelGte":          {},
+	"companyTrustPointGte":          {},
+	"companySalaryPointGte":         {},
+	"companyEnjoyCharacterPointGte": {},
+	"clearArea":                     {},
+	"obtainCard":                    {},
+	"obtainCostume":                 {},
+	"cardRarity":                    {},
+	"term":                          {},
+	"gameStartTerm":                 {},
+	"itemAmount":                    {},
+	"purchaseShop":                  {},
+	"readStory":                     {},
+	"finishedMessage":               {},
+	"reliability":                   {},
+	"obtainCharacter":               {},
+	"obtainEmblem":                  {},
+	"staffTrainTotalCount":          {},
 }
 
 type CommerceConditionEvaluator struct {
@@ -54,27 +67,38 @@ type CommerceConditionEvaluator struct {
 	results    map[string]commerceConditionState
 	evaluating map[string]struct{}
 
-	user                *ptransaction.User
-	userLoaded          bool
-	cards               map[string]*ptransaction.UserCard
-	cardsLoaded         bool
-	costumes            map[string]struct{}
-	costumesLoaded      bool
-	areas               map[string]*ptransaction.UserArea
-	areasLoaded         bool
-	masterAreas         map[string]*pmaster.Area
-	items               map[string]int64
-	itemsLoaded         bool
-	purchasedShopItems  map[string]struct{}
-	shopPurchasesLoaded bool
-	stories             map[string]*ptransaction.UserStory
-	storiesLoaded       bool
-	messages            map[string]*ptransaction.UserMessage
-	messagesLoaded      bool
-	characters          map[string]*ptransaction.UserCharacter
-	charactersLoaded    bool
-	emblems             map[string]struct{}
-	emblemsLoaded       bool
+	user                   *ptransaction.User
+	userLoaded             bool
+	cards                  map[string]*ptransaction.UserCard
+	cardsLoaded            bool
+	costumes               map[string]struct{}
+	costumesLoaded         bool
+	areas                  map[string]*ptransaction.UserArea
+	areasLoaded            bool
+	masterAreas            map[string]*pmaster.Area
+	items                  map[string]int64
+	itemsLoaded            bool
+	purchasedShopItems     map[string]struct{}
+	shopPurchasesLoaded    bool
+	stories                map[string]*ptransaction.UserStory
+	storiesLoaded          bool
+	messages               map[string]*ptransaction.UserMessage
+	messagesLoaded         bool
+	characters             map[string]*ptransaction.UserCharacter
+	charactersLoaded       bool
+	emblems                map[string]struct{}
+	emblemsLoaded          bool
+	quests                 map[string]*ptransaction.UserQuest
+	questsLoaded           bool
+	missions               map[string]*ptransaction.UserMission
+	missionsLoaded         bool
+	totalCount             *ptransaction.UserTotalCount
+	totalCountLoaded       bool
+	company                *ptransaction.UserCompany
+	companyLoaded          bool
+	companyEnjoyLevels     []*pmaster.CompanyEnjoyLevel
+	companyTrustLevels     []*pmaster.CompanyTrustLevel
+	companyCharacterLevels []*pmaster.CompanyEnjoyCharacterLevel
 }
 
 func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) *CommerceConditionEvaluator {
@@ -269,6 +293,194 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			merge(commerceConditionUnsatisfied)
 		}
 	}
+	if value := setting.GetDeckMaxOverallValue(); value != nil {
+		hasKnownField = true
+		if value.GetValueGte() <= 0 && value.GetValueLte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		user, err := e.loadUser()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if value.GetValueGte() > 0 && user.GetDeckMaxOverallValue() < int64(value.GetValueGte()) ||
+			value.GetValueLte() > 0 && user.GetDeckMaxOverallValue() > int64(value.GetValueLte()) {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetClearQuest(); value != nil {
+		hasKnownField = true
+		if value.GetQuestId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		quests, err := e.loadQuests()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		quest := quests[value.GetQuestId()]
+		if quest == nil || quest.GetLastClearedTime() <= 0 {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetClearMission(); value != nil {
+		hasKnownField = true
+		if value.GetMissionId() == "" || value.GetThreshold() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		missions, err := e.loadMissions()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		mission := missions[value.GetMissionId()]
+		if mission == nil || mission.GetProgress() < value.GetThreshold() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyGradeGte(); value != nil {
+		hasKnownField = true
+		if value.GetCompanyGradeId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		grade, err := opmaster.FindCompanyGrade(e.ctx, value.GetCompanyGradeId())
+		if err != nil {
+			if errors.Is(err, mongo.ErrNoDocuments) {
+				return commerceConditionIndeterminate, nil
+			}
+			return commerceConditionIndeterminate, err
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		total, err := companyPointTotal(company)
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if total < grade.GetRequiredPoint() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetPointGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		total, err := companyPointTotal(company)
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if total < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyEnjoyLevelGte(); value != nil {
+		hasKnownField = true
+		if value.GetLevelGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		levels, err := e.loadCompanyEnjoyLevels()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if companyEnjoyLevelAtPoint(levels, company.GetEnjoyPoint()) < value.GetLevelGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyEnjoyPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetPointGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if company.GetEnjoyPoint() < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyEnjoyCharacterLevelGte(); value != nil {
+		hasKnownField = true
+		if value.GetCharacterId() == "" || value.GetLevelGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		characters, err := e.loadCharacters()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		levels, err := e.loadCompanyCharacterLevels()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		character := characters[value.GetCharacterId()]
+		if character == nil || companyCharacterLevelAtPoint(levels, character.GetCompanyEnjoyPoint()) < value.GetLevelGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyTrustLevelGte(); value != nil {
+		hasKnownField = true
+		if value.GetLevelGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		levels, err := e.loadCompanyTrustLevels()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if companyTrustLevelAtPoint(levels, company.GetTrustPoint()) < value.GetLevelGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyTrustPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetPointGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if company.GetTrustPoint() < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanySalaryPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetPointGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		company, err := e.loadCompany()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if company.GetSalaryPoint() < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetCompanyEnjoyCharacterPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetCharacterId() == "" || value.GetPointGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		characters, err := e.loadCharacters()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		character := characters[value.GetCharacterId()]
+		if character == nil || character.GetCompanyEnjoyPoint() < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
 	if value := setting.GetClearArea(); value != nil {
 		hasKnownField = true
 		if value.GetAreaId() == "" {
@@ -412,6 +624,19 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			return commerceConditionIndeterminate, err
 		}
 		if _, ok := emblems[value.GetEmblemId()]; !ok {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetStaffTrainTotalCount(); value != nil {
+		hasKnownField = true
+		if value.GetCountGte() <= 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		totalCount, err := e.loadTotalCount()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if totalCount.GetStaffTrainCount() < int64(value.GetCountGte()) {
 			merge(commerceConditionUnsatisfied)
 		}
 	}
@@ -673,6 +898,123 @@ func (e *CommerceConditionEvaluator) loadEmblems() (map[string]struct{}, error) 
 		e.emblemsLoaded = true
 	}
 	return e.emblems, nil
+}
+
+func (e *CommerceConditionEvaluator) loadQuests() (map[string]*ptransaction.UserQuest, error) {
+	if !e.questsLoaded {
+		values, err := opuser.FindAllUserQuests(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.quests = make(map[string]*ptransaction.UserQuest, len(values))
+		for _, value := range values {
+			e.quests[value.GetQuestId()] = value
+		}
+		e.questsLoaded = true
+	}
+	return e.quests, nil
+}
+
+func (e *CommerceConditionEvaluator) loadMissions() (map[string]*ptransaction.UserMission, error) {
+	if !e.missionsLoaded {
+		values, err := opuser.FindAllUserMissions(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.missions = make(map[string]*ptransaction.UserMission, len(values))
+		for _, value := range values {
+			e.missions[value.GetMissionId()] = value
+		}
+		e.missionsLoaded = true
+	}
+	return e.missions, nil
+}
+
+func (e *CommerceConditionEvaluator) loadTotalCount() (*ptransaction.UserTotalCount, error) {
+	if !e.totalCountLoaded {
+		var err error
+		e.totalCount, err = opuser.FindUserTotalCount(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.totalCountLoaded = true
+	}
+	return e.totalCount, nil
+}
+
+func (e *CommerceConditionEvaluator) loadCompany() (*ptransaction.UserCompany, error) {
+	if !e.companyLoaded {
+		var err error
+		e.company, err = opuser.FindUserCompany(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.companyLoaded = true
+	}
+	return e.company, nil
+}
+
+func (e *CommerceConditionEvaluator) loadCompanyEnjoyLevels() ([]*pmaster.CompanyEnjoyLevel, error) {
+	if e.companyEnjoyLevels == nil {
+		var err error
+		e.companyEnjoyLevels, err = opmaster.FindAllCompanyEnjoyLevels(e.ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return e.companyEnjoyLevels, nil
+}
+
+func (e *CommerceConditionEvaluator) loadCompanyTrustLevels() ([]*pmaster.CompanyTrustLevel, error) {
+	if e.companyTrustLevels == nil {
+		var err error
+		e.companyTrustLevels, err = opmaster.FindAllCompanyTrustLevels(e.ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return e.companyTrustLevels, nil
+}
+
+func (e *CommerceConditionEvaluator) loadCompanyCharacterLevels() ([]*pmaster.CompanyEnjoyCharacterLevel, error) {
+	if e.companyCharacterLevels == nil {
+		var err error
+		e.companyCharacterLevels, err = opmaster.FindAllCompanyEnjoyCharacterLevels(e.ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return e.companyCharacterLevels, nil
+}
+
+func companyEnjoyLevelAtPoint(levels []*pmaster.CompanyEnjoyLevel, point int64) int32 {
+	var result int32
+	for _, level := range levels {
+		if level.GetRequiredPoint() <= point && level.GetLevelKey() > result {
+			result = level.GetLevelKey()
+		}
+	}
+	return result
+}
+
+func companyTrustLevelAtPoint(levels []*pmaster.CompanyTrustLevel, point int64) int32 {
+	var result int32
+	for _, level := range levels {
+		if level.GetRequiredPoint() <= point && level.GetLevelKey() > result {
+			result = level.GetLevelKey()
+		}
+	}
+	return result
+}
+
+func companyCharacterLevelAtPoint(levels []*pmaster.CompanyEnjoyCharacterLevel, point int64) int32 {
+	var result int32
+	for _, level := range levels {
+		if level.GetRequiredPoint() <= point && level.GetLevelKey() > result {
+			result = level.GetLevelKey()
+		}
+	}
+	return result
 }
 
 func FilterHomeCommerceIDs(

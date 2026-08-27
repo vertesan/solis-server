@@ -394,7 +394,17 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		// UserCompany
-		if err := opuser.UpsertUserCompany(ctx, suid, &ptransaction.UserCompany{}); err != nil {
+		if err := opuser.UpsertUserCompany(ctx, suid, &ptransaction.UserCompany{
+			IsAlreadyTransitioned: true,
+		}); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUserCompanyRewardState(ctx, &umodel.UserCompanyRewardState{
+			SUID:                            suid,
+			ReceivedGradeIds:                []string{},
+			ReceivedTrustLevelKeys:          []int32{},
+			ReceivedEnjoyCharacterLevelKeys: map[string][]int32{},
+		}); err != nil {
 			return nil, err
 		}
 

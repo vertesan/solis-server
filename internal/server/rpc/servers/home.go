@@ -348,6 +348,10 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err := viber.ReconcileNarrativeSchedules(ctx, suid, now, updatedData); err != nil {
 			return nil, err
 		}
+		companyInfo, err := viber.BuildCompanyHomeInfo(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
 
 		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
@@ -376,6 +380,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			ShowcaseToyShopIds:      visibleShowcaseShopIds,
 			UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
 			PhotoExpressions:        photoExpressions,
+			CompanyInfo:             companyInfo,
 			CommonResponse:          viber.NewCommonResponse(updatedData),
 		}
 		return response, nil

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
@@ -58,6 +59,10 @@ type godMasterData struct {
 	areas            []*pmaster.Area
 	cards            []*pmaster.Card
 	characters       []*pmaster.Character
+	companyGrades    []*pmaster.CompanyGrade
+	companyLevels    []*pmaster.CompanyEnjoyCharacterLevel
+	companySettings  []*pmaster.CompanyEnjoyCharacterLevelSetting
+	companyTrust     []*pmaster.CompanyTrustLevel
 	conditions       []*pmaster.Condition
 	costumes         []*pmaster.Costume
 	decorations      []*pmaster.Decoration
@@ -72,6 +77,7 @@ type godMasterData struct {
 	loveHomeActions  []*pmaster.LoveHomeAction
 	loveLevels       []*pmaster.LoveLevel
 	messages         []*pmaster.Message
+	missions         []*pmaster.Mission
 	musics           []*pmaster.Music
 	photoActivities  []*pmaster.PhotoActivity
 	photoExpressions []*pmaster.PhotoExpression
@@ -200,6 +206,22 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 		data.characters, err = opmaster.FindAllCharacters(groupCtx)
 		return err
 	})
+	run("CompanyGrade", func() (err error) {
+		data.companyGrades, err = opmaster.FindAllCompanyGrades(groupCtx)
+		return err
+	})
+	run("CompanyEnjoyCharacterLevel", func() (err error) {
+		data.companyLevels, err = opmaster.FindAllCompanyEnjoyCharacterLevels(groupCtx)
+		return err
+	})
+	run("CompanyEnjoyCharacterLevelSetting", func() (err error) {
+		data.companySettings, err = opmaster.FindAllCompanyEnjoyCharacterLevelSettings(groupCtx)
+		return err
+	})
+	run("CompanyTrustLevel", func() (err error) {
+		data.companyTrust, err = opmaster.FindAllCompanyTrustLevels(groupCtx)
+		return err
+	})
 	run("Condition", func() (err error) {
 		data.conditions, err = opmaster.FindAllConditions(groupCtx)
 		return err
@@ -250,6 +272,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 	})
 	run("Message", func() (err error) {
 		data.messages, err = opmaster.FindAllMessages(groupCtx)
+		return err
+	})
+	run("Mission", func() (err error) {
+		data.missions, err = opmaster.FindAllMissions(groupCtx)
 		return err
 	})
 	run("LoveLevel", func() (err error) {
@@ -396,6 +422,9 @@ func applyGodMasterData(
 		return err
 	}
 	if err := applyGodProgress(ctx, suid, data, now, counts); err != nil {
+		return err
+	}
+	if err := applyGodCompany(ctx, suid, data, now, counts); err != nil {
 		return err
 	}
 	if err := applyGodFeatureGates(ctx, suid, data, feature, counts); err != nil {
@@ -1056,6 +1085,221 @@ func collectGodMessageStoryPrerequisites(
 			collectGodMessageStoryPrerequisites(dependency.GetConditionId(), conditions, storyIDs, visited)
 		}
 	}
+}
+
+func applyGodCompany(
+	ctx context.Context,
+	suid string,
+	data *godMasterData,
+	now int64,
+	counts map[string]int,
+) error {
+	var maxCharacterPoint int64
+	for _, level := range data.companyLevels {
+		if level.GetRequiredPoint() > maxCharacterPoint {
+			maxCharacterPoint = level.GetRequiredPoint()
+		}
+	}
+	if maxCharacterPoint <= 0 {
+		return fmt.Errorf("CompanyEnjoyCharacterLevel has no positive point threshold")
+	}
+
+	masterCharacters := make(map[string]*pmaster.Character, len(data.characters))
+	for _, master := range data.characters {
+		masterCharacters[master.GetId()] = master
+	}
+	characters, err := opuser.FindAllUserCharacters(ctx, suid)
+	if err != nil {
+		return err
+	}
+	var normalCount int64
+	var totalEnjoyPoint int64
+	for _, value := range characters {
+		master := masterCharacters[value.GetCharacterId()]
+		if master == nil || master.GetType() != penum.CharacterType_CharacterType_Normal {
+			continue
+		}
+		if value.GetCompanyEnjoyPoint() < maxCharacterPoint {
+			value.CompanyEnjoyPoint = maxCharacterPoint
+		}
+		if value.GetCompanyEnjoyPoint() > math.MaxInt64-totalEnjoyPoint {
+			return fmt.Errorf("god company enjoy point total overflows")
+		}
+		totalEnjoyPoint += value.GetCompanyEnjoyPoint()
+		normalCount++
+	}
+	if normalCount == 0 {
+		return fmt.Errorf("god user owns no normal company character")
+	}
+	averageEnjoyPoint := totalEnjoyPoint / normalCount
+	for _, value := range characters {
+		master := masterCharacters[value.GetCharacterId()]
+		if master == nil {
+			continue
+		}
+		if master.GetType() == penum.CharacterType_CharacterType_Normal {
+			if value.GetCompanyEnjoyPoint() < maxCharacterPoint {
+				value.CompanyEnjoyPoint = maxCharacterPoint
+			}
+		} else {
+			// Memories and collaboration idols inherit the joined normal-idol
+			// average and do not contribute back to the company enjoy total.
+			value.CompanyEnjoyPoint = averageEnjoyPoint
+		}
+		bonuses, err := godCompanyCharacterBonuses(data.companyLevels, value.GetCompanyEnjoyPoint())
+		if err != nil {
+			return fmt.Errorf("failed to derive Company bonuses for %q: %w", value.GetCharacterId(), err)
+		}
+		value.CompanyBonusParameterInfos = bonuses
+		if err := opuser.UpsertUserCharacter(ctx, suid, value); err != nil {
+			return err
+		}
+	}
+	counts[uname.UserCharacter] = len(characters)
+
+	company, err := opuser.FindUserCompany(ctx, suid)
+	if err != nil {
+		return err
+	}
+	company.EnjoyPoint = totalEnjoyPoint
+	for _, level := range data.companyTrust {
+		if level.GetRequiredPoint() > company.GetTrustPoint() {
+			company.TrustPoint = level.GetRequiredPoint()
+		}
+	}
+	var maxGradePoint int64
+	for _, grade := range data.companyGrades {
+		if grade.GetRequiredPoint() > maxGradePoint {
+			maxGradePoint = grade.GetRequiredPoint()
+		}
+	}
+	if company.GetEnjoyPoint() > math.MaxInt64-company.GetTrustPoint() {
+		return fmt.Errorf("god company point total overflows")
+	}
+	nonSalaryPoint := company.GetEnjoyPoint() + company.GetTrustPoint()
+	if nonSalaryPoint < maxGradePoint && company.GetSalaryPoint() < maxGradePoint-nonSalaryPoint {
+		company.SalaryPoint = maxGradePoint - nonSalaryPoint
+	}
+	company.IsAlreadyTransitioned = true
+	if err := opuser.UpsertUserCompany(ctx, suid, company); err != nil {
+		return err
+	}
+	counts[uname.UserCompany] = 1
+
+	rewardState := &umodel.UserCompanyRewardState{
+		SUID:                            suid,
+		ReceivedGradeIds:                make([]string, 0, len(data.companyGrades)),
+		ReceivedTrustLevelKeys:          make([]int32, 0, len(data.companyTrust)),
+		ReceivedEnjoyCharacterLevelKeys: make(map[string][]int32),
+	}
+	for _, grade := range data.companyGrades {
+		if grade.GetId() != "" {
+			rewardState.ReceivedGradeIds = append(rewardState.ReceivedGradeIds, grade.GetId())
+		}
+	}
+	for _, level := range data.companyTrust {
+		if level.GetLevelKey() > 0 {
+			rewardState.ReceivedTrustLevelKeys = append(rewardState.ReceivedTrustLevelKeys, level.GetLevelKey())
+		}
+	}
+	for _, setting := range data.companySettings {
+		if setting.GetCharacterId() == "" || setting.GetLevelKey() <= 0 {
+			continue
+		}
+		rewardState.ReceivedEnjoyCharacterLevelKeys[setting.GetCharacterId()] = append(
+			rewardState.ReceivedEnjoyCharacterLevelKeys[setting.GetCharacterId()],
+			setting.GetLevelKey(),
+		)
+	}
+	if err := opuser.UpsertUserCompanyRewardState(ctx, rewardState); err != nil {
+		return err
+	}
+	counts[uname.UserCompanyRewardState] = 1
+
+	conditionByID := make(map[string]*pmaster.Condition, len(data.conditions))
+	for _, condition := range data.conditions {
+		conditionByID[condition.GetId()] = condition
+	}
+	companyMissions := make([]opuser.GodUpsert[*ptransaction.UserMission], 0)
+	for _, master := range data.missions {
+		if master.GetCompanyTrustMissionCategoryType() == penum.CompanyTrustMissionCategoryType_CompanyTrustMissionCategoryType_Unknown &&
+			master.GetCompanyEnjoyCharacterMissionCategoryType() == penum.CompanyEnjoyCharacterMissionCategoryType_CompanyEnjoyCharacterMissionCategoryType_Unknown &&
+			master.GetCompanyEnjoyCharacterId() == "" {
+			continue
+		}
+		if !godCompanyConditionInTerm(conditionByID[master.GetViewConditionId()], master.GetViewConditionId(), now) {
+			continue
+		}
+		var threshold int64
+		for _, progress := range master.GetProgresses() {
+			if progress.GetThreshold() > threshold {
+				threshold = progress.GetThreshold()
+			}
+		}
+		if threshold <= 0 {
+			continue
+		}
+		companyMissions = append(companyMissions, godValue("missionId", master.GetId(), &ptransaction.UserMission{
+			MissionId:        master.GetId(),
+			CurrentThreshold: threshold,
+			Progress:         threshold,
+			StatusType:       penum.MissionStatusType_MissionStatusType_Received,
+			LastUpdateTime:   now,
+		}))
+	}
+	return godUpsert(ctx, uname.UserMission, suid, companyMissions, true, counts)
+}
+
+func godCompanyConditionInTerm(condition *pmaster.Condition, conditionID string, now int64) bool {
+	if conditionID == "" {
+		return true
+	}
+	if condition == nil {
+		return false
+	}
+	for _, setting := range condition.GetSettings() {
+		term := setting.GetTerm()
+		if term == nil ||
+			(term.GetNowAfter() <= 0 || now >= term.GetNowAfter()) &&
+				(term.GetNowBefore() <= 0 || now <= term.GetNowBefore()) {
+			return true
+		}
+	}
+	return false
+}
+
+func godCompanyCharacterBonuses(
+	levels []*pmaster.CompanyEnjoyCharacterLevel,
+	point int64,
+) ([]*ptransaction.CompanyBonusParameterInfo, error) {
+	parameterTypes := []penum.ParameterType{
+		penum.ParameterType_ParameterType_Dance,
+		penum.ParameterType_ParameterType_Vocal,
+		penum.ParameterType_ParameterType_Visual,
+		penum.ParameterType_ParameterType_Stamina,
+		penum.ParameterType_ParameterType_Mental,
+		penum.ParameterType_ParameterType_Technique,
+	}
+	bonuses := make(map[penum.ParameterType]int64, len(parameterTypes))
+	for _, level := range levels {
+		parameterType := level.GetBonusParameterType()
+		if level.GetRequiredPoint() > point || parameterType == penum.ParameterType_ParameterType_Unknown {
+			continue
+		}
+		increment := int64(level.GetBonusParameterUpPermil())
+		if increment < 0 || bonuses[parameterType] > math.MaxInt64-increment {
+			return nil, fmt.Errorf("bonus parameter overflows")
+		}
+		bonuses[parameterType] += increment
+	}
+	result := make([]*ptransaction.CompanyBonusParameterInfo, 0, len(parameterTypes))
+	for _, parameterType := range parameterTypes {
+		result = append(result, &ptransaction.CompanyBonusParameterInfo{
+			BonusParameterType:     parameterType,
+			BonusParameterUpPermil: bonuses[parameterType],
+		})
+	}
+	return result, nil
 }
 
 func applyGodProgress(

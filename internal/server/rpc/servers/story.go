@@ -188,6 +188,9 @@ func (s *StoryServer) ReadCharacterCompanyEnjoyStory(
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.StoryReadCharacterCompanyEnjoyStoryResponse
 	err = transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		if err := viber.EnsureUnlockedCompanyEnjoyStories(ctx, suid, req.GetCharacterId(), nil); err != nil {
+			return nil, err
+		}
 		rewards, updated, err := readUserStory(ctx, suid, storyId, false)
 		if err != nil {
 			return nil, err
