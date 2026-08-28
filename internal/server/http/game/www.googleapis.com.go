@@ -71,6 +71,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 
 	// create idToken
 	idToken := jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+		"puid":      userAuth.PublicUserId,
 		"iss":       "https://securetoken.google.com/solis-firebase",
 		"aud":       "solis-firebase",
 		"auth_time": time.Now().Unix(),

@@ -37,6 +37,8 @@ func StartHTTP(ctx context.Context, base *zap.SugaredLogger) error {
 	app.Get(`/:db/:filename<regex([a-z0-9]{64})>`, game.GetMaster).Name("climaster.game-idolypride.jp")
 	app.Get("/v2/pub/a/212/v/:someid/list/:fromv", game.GetManifest).Name("api.octo-cloud.com")
 	app.Get(`/solis-:revision<regex(\d{6})>-:type<alpha>/:object`, game.GetAsset).Name("d2ilil7yh5oi1v.cloudfront.net/solis")
+	app.Post(`/v0/b/udc-idolypride/o`, game.PostPhoto).Name("firebasestorage.googleapis.com/v0/b/udc-idolypride/o")
+	app.Get(`/v0/b/udc-idolypride/o/*`, game.GetPhoto).Name("firebasestorage.googleapis.com/v0/b/udc-idolypride/o/Photo")
 
 	// admin
 	app.Post("/admin/user/create", admin.CreateUser)
