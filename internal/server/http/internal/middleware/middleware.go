@@ -13,7 +13,7 @@ func LoggingMiddleware(base *zap.SugaredLogger) fiber.Handler {
 	return func(c fiber.Ctx) error {
 		logger := base.With(zap.String("api", c.Path()))
 		// log API invocation history
-		logger.Infof("[%s] %s", c.Method(), c.Path())
+		logger.Infof("[%s]", c.Method())
 		// if admin APIs are invoked, check authroization first
 		if strings.HasPrefix(c.Path(), "/admin/") {
 			if err := CheckAuth(c.Get("Authorization")); err != nil {
