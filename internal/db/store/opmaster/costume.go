@@ -17,6 +17,15 @@ func FindCostume(ctx context.Context, id string) (*pmaster.Costume, error) {
 	)
 }
 
+func FindCostumes(ctx context.Context, ids []string) ([]*pmaster.Costume, error) {
+	if len(ids) == 0 {
+		return []*pmaster.Costume{}, nil
+	}
+	return mcommon.FindMany[mmodel.Costume, pmaster.Costume](
+		ctx, mname.Costume, bson.M{"Id": bson.M{"$in": ids}},
+	)
+}
+
 func YieldAllCostumes(ctx context.Context) iter.Seq[*pmaster.Costume] {
 	return func(yield func(*pmaster.Costume) bool) {
 		for c := range mcommon.YieldMany[mmodel.Costume, pmaster.Costume](ctx, mname.Costume, bson.M{}) {

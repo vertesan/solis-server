@@ -123,6 +123,56 @@ func TestCostumeScenario(t *testing.T) {
 		t.Fatalf("Costume.CheckBulk failed: %v", err)
 	}
 	assertWardrobeChecked(t, costume.Id, hair.Id, true, true)
+
+	masterCostumes, err := opmaster.FindAllCostumes(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var sdCostume *pmaster.Costume
+	sdCostumeIDs := make(map[string]string)
+	for _, candidate := range masterCostumes {
+		if strings.HasPrefix(candidate.GetCostumeTypeId(), "sd-") {
+			sdCostumeIDs[candidate.GetId()] = candidate.GetCostumeTypeId()
+			if sdCostume == nil {
+				sdCostume = candidate
+			}
+		}
+	}
+	if sdCostume == nil {
+		t.Fatal("master data has no SD-only costume for User.Get visibility testing")
+	}
+	storedSDCostume := &ptransaction.UserCostume{
+		CostumeId:    sdCostume.GetId(),
+		ObtainedTime: time.Now().UnixMilli(),
+	}
+	if err := opuser.UpsertUserCostume(ctx, testConfig.TestUserSuid, storedSDCostume); err != nil {
+		t.Fatal(err)
+	}
+	grpcCtx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	userResponse, err := papi.NewUserClient(testConfig.GrpcConn).Get(grpcCtx, &papi.Empty{})
+	cancel()
+	if err != nil {
+		t.Fatalf("User.Get after wardrobe updates failed: %v", err)
+	}
+	returnedWearableCostume := false
+	for _, userCostume := range userResponse.GetCostumes() {
+		if costumeTypeID, sdOnly := sdCostumeIDs[userCostume.GetCostumeId()]; sdOnly {
+			t.Fatalf("User.Get exposed SD-only costume %q with type %q", userCostume.GetCostumeId(), costumeTypeID)
+		}
+		if userCostume.GetCostumeId() == costume.GetId() {
+			returnedWearableCostume = true
+		}
+	}
+	if !returnedWearableCostume {
+		t.Fatalf("User.Get omitted wearable costume %q while filtering SD-only costumes", costume.GetId())
+	}
+	persistedSDCostume, err := opuser.FindUserCostume(ctx, testConfig.TestUserSuid, sdCostume.GetId())
+	if err != nil || !proto.Equal(persistedSDCostume, storedSDCostume) {
+		t.Fatalf("User.Get mutated SD-only costume ownership: costume=%v err=%v", persistedSDCostume, err)
+	}
 }
 
 func TestStoryScenario(t *testing.T) {

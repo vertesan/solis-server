@@ -79,6 +79,10 @@ func TestFreshCommerceCatalogIdentity(t *testing.T) {
 	assertStringSubset(t, "Home.Enter shops", home.GetShopIds(), userShops.ShopIds)
 	assertStringSubset(t, "Home.Enter showcase shops", home.GetShowcaseToyShopIds(), userShowcaseShops.ShopIds)
 	assertStringSubset(t, "Home.Enter exchange booths", home.GetExchangeBoothIds(), userBooths.BoothIds)
+	if home.GetNotiStoneShopItem() != nil || home.GetNotiNormalShopItem() != nil {
+		t.Fatalf("Home.Enter returned disabled shop-item notifications: stone=%v normal=%v",
+			home.GetNotiStoneShopItem(), home.GetNotiNormalShopItem())
+	}
 }
 
 func TestCommerceAPIs(t *testing.T) {

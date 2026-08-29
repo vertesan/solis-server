@@ -255,14 +255,6 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
-		notiStoneShopItem, err := opuser.FindUserNotiStoneShopItem(ctx, suid)
-		if err != nil {
-			return nil, err
-		}
-		notiNormalShopItem, err := opuser.FindUserNotiNormalShopItem(ctx, suid)
-		if err != nil {
-			return nil, err
-		}
 		notiShowcaseShopItem, err := opuser.FindUserNotiShowcaseShopItem(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -383,8 +375,6 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			BannerInfo:              &papi.BannerInfo{MenuBanners: menuBanners},
 			ShopIds:                 visibleShopIds,
 			ExchangeBoothIds:        visibleExchangeBoothIds,
-			NotiStoneShopItem:       notiStoneShopItem,
-			NotiNormalShopItem:      notiNormalShopItem,
 			CurrentMainAreaId:       userCurrentQuestArea.CurrentMainAreaId,
 			EventInfo:               eventInfo,
 			HierarchyNotiInfo:       hierarchyNotiInfo,

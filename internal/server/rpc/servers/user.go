@@ -3,8 +3,10 @@ package servers
 import (
 	"context"
 	"errors"
+	"strings"
 	"time"
 
+	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -47,6 +49,27 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		costumeIDs := make([]string, 0, len(costumes))
+		for _, costume := range costumes {
+			costumeIDs = append(costumeIDs, costume.GetCostumeId())
+		}
+		masterCostumes, err := opmaster.FindCostumes(ctx, costumeIDs)
+		if err != nil {
+			return nil, err
+		}
+		sdCostumeIDs := make(map[string]struct{})
+		for _, costume := range masterCostumes {
+			if strings.HasPrefix(costume.GetCostumeTypeId(), "sd-") {
+				sdCostumeIDs[costume.GetId()] = struct{}{}
+			}
+		}
+		visibleCostumes := make([]*ptransaction.UserCostume, 0, len(costumes))
+		for _, costume := range costumes {
+			if _, sdOnly := sdCostumeIDs[costume.GetCostumeId()]; !sdOnly {
+				visibleCostumes = append(visibleCostumes, costume)
+			}
+		}
+		costumes = visibleCostumes
 		accessories, err := opuser.FindAllUserAccessories(ctx, suid)
 		if err != nil {
 			return nil, err
