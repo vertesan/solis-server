@@ -65,7 +65,8 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	}
 
 	// unary interceptor
-	interceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor(base))
+	unaryInterceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor(base))
+	unknownServiceHandler := grpc.UnknownServiceHandler(interceptor.UnknownServiceHandler(base))
 
 	// force (or not) customized codec
 	if !config.IsNoCodec() {
@@ -92,7 +93,8 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	opts = append(
 		opts,
 		grpc.ConnectionTimeout(time.Second*10),
-		interceptor,
+		unaryInterceptor,
+		unknownServiceHandler,
 	)
 	server := grpc.NewServer(opts...)
 	papi.RegisterSystemServer(server, &ss.SystemServer{})

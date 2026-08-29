@@ -165,6 +165,28 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 	}
 }
 
+func UnknownServiceHandler(base *zap.SugaredLogger) grpc.StreamHandler {
+	return func(_ any, stream grpc.ServerStream) error {
+		fullMethod, _ := grpc.MethodFromServerStream(stream)
+		logger := base.With(zap.String("api", fullMethod))
+		logger.Infof("[gRPC] %s", fullMethod)
+
+		if err := stream.RecvMsg(&papi.Empty{}); err != nil {
+			logger.Error("failed receiving unimplemented request", zap.Error(err))
+			return err
+		}
+		if err := stream.SetHeader(responseHeader()); err != nil {
+			logger.Error("failed setting response header", zap.Error(err))
+			return err
+		}
+		if err := stream.SetHeader(titleActionHeader("未実装の機能です")); err != nil {
+			logger.Error("failed setting unimplemented header", zap.Error(err))
+			return err
+		}
+		return stream.SendMsg(&papi.Empty{})
+	}
+}
+
 func responseHeader() metadata.MD {
 	return metadata.New(map[string]string{
 		"x-server-time": fmt.Sprintf("%d", utils.GetTimestamp()),

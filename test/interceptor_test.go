@@ -183,6 +183,55 @@ func TestInterceptorAppRequestIdempotency(t *testing.T) {
 	}
 }
 
+func TestInterceptorUnimplementedService(t *testing.T) {
+	setupTestUser(t)
+
+	ctx, cancel, err := getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var unregisteredHeaders metadata.MD
+	unregisteredResponse, err := papi.NewAdvertisementClient(testConfig.GrpcConn).Start(
+		ctx,
+		&papi.AdvertisementStartRequest{},
+		grpc.Header(&unregisteredHeaders),
+	)
+	cancel()
+	if err != nil {
+		t.Fatalf("unregistered service returned a gRPC error: %v", err)
+	}
+	if unregisteredResponse == nil || proto.Size(unregisteredResponse) != 0 {
+		t.Fatalf("unregistered service response was not empty: %v", unregisteredResponse)
+	}
+	assertUnimplementedTitleHeaders(t, unregisteredHeaders)
+
+	ctx, cancel, err = getFullGrpcCtx()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var registeredHeaders metadata.MD
+	registeredResponse, err := papi.NewAccessoryClient(testConfig.GrpcConn).Sell(
+		ctx,
+		&papi.AccessorySellRequest{},
+		grpc.Header(&registeredHeaders),
+	)
+	cancel()
+	if err != nil {
+		t.Fatalf("registered unimplemented method returned a gRPC error: %v", err)
+	}
+	if registeredResponse == nil || proto.Size(registeredResponse) != 0 {
+		t.Fatalf("registered unimplemented method response was not empty: %v", registeredResponse)
+	}
+	assertUnimplementedTitleHeaders(t, registeredHeaders)
+}
+
+func assertUnimplementedTitleHeaders(t *testing.T, headers metadata.MD) {
+	t.Helper()
+	assertSingleMetadataValue(t, headers, "x-error-action", "title")
+	assertSingleMetadataValue(t, headers, "x-error-message-bin", "未実装の機能です")
+	assertSingleMetadataValue(t, headers, "x-error-code", "1003")
+}
+
 func fullGrpcCtxWithToken(t *testing.T, token string) (context.Context, context.CancelFunc) {
 	t.Helper()
 	ctx, cancel := getBasicGrpcCtx()

@@ -21,6 +21,8 @@ type UserGodRequest struct {
 
 type GodFeature struct {
 	Message string `json:"message,omitempty"`
+	Fan     string `json:"fan,omitempty"`
+	Bond    string `json:"bond,omitempty"`
 }
 
 type UserGodResponse struct {
@@ -37,17 +39,24 @@ var GodUser fiber.Handler = func(c fiber.Ctx) error {
 	if (request.PublicUserId == "") == (request.ServerUserId == "") {
 		return fiber.NewError(fiber.StatusBadRequest, "exactly one of publicUserId or serverUserId is required")
 	}
-	if request.Feature.Message == "" {
-		request.Feature.Message = umodel.GodMessageFeatureAll
-	}
-	switch request.Feature.Message {
-	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
-	default:
+	var valid bool
+	request.Feature.Message, valid = normalizeGodFeature(request.Feature.Message)
+	if !valid {
 		return fiber.NewError(fiber.StatusBadRequest, "feature.message must be one of none, all, or enjoy")
+	}
+	request.Feature.Fan, valid = normalizeGodFeature(request.Feature.Fan)
+	if !valid {
+		return fiber.NewError(fiber.StatusBadRequest, "feature.fan must be one of none, all, or enjoy")
+	}
+	request.Feature.Bond, valid = normalizeGodFeature(request.Feature.Bond)
+	if !valid {
+		return fiber.NewError(fiber.StatusBadRequest, "feature.bond must be one of none, all, or enjoy")
 	}
 
 	result, err := user.GodUser(c, request.PublicUserId, request.ServerUserId, user.GodFeature{
 		Message: request.Feature.Message,
+		Fan:     request.Feature.Fan,
+		Bond:    request.Feature.Bond,
 	})
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
@@ -59,4 +68,16 @@ var GodUser fiber.Handler = func(c fiber.Ctx) error {
 	return c.JSON(&UserGodResponse{
 		Ok: true, ServerUserId: result.ServerUserId, Collections: result.Collections,
 	})
+}
+
+func normalizeGodFeature(value string) (string, bool) {
+	if value == "" {
+		return umodel.GodMessageFeatureAll, true
+	}
+	switch value {
+	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
+		return value, true
+	default:
+		return "", false
+	}
 }

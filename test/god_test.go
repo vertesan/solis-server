@@ -541,6 +541,170 @@ func assertGodCompanyProgress(t *testing.T, ctx context.Context) {
 	}
 }
 
+func TestUserGodFanBondFeatures(t *testing.T) {
+	setupTestUser(t)
+	ctx := context.Background()
+	characters, err := opuser.FindAllUserCharacters(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(characters) == 0 {
+		t.Fatal("fresh user has no character to exercise fan and bond policies")
+	}
+	characterID := characters[0].GetCharacterId()
+	seed := func(light, middle, heavy, reliability, audience int32) *ptransaction.UserCharacter {
+		t.Helper()
+		value, err := opuser.FindUserCharacter(ctx, testConfig.TestUserSuid, characterID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		value.LightFanAmount = light
+		value.MiddleFanAmount = middle
+		value.HeavyFanAmount = heavy
+		value.Reliability = reliability
+		value.AudienceCandidateAmount = audience
+		if err := opuser.UpsertUserCharacter(ctx, testConfig.TestUserSuid, value); err != nil {
+			t.Fatal(err)
+		}
+		return proto.Clone(value).(*ptransaction.UserCharacter)
+	}
+	assertPreserved := func(policy string, want *ptransaction.UserCharacter) {
+		t.Helper()
+		got, err := opuser.FindUserCharacter(ctx, testConfig.TestUserSuid, characterID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got.GetLightFanAmount() != want.GetLightFanAmount() ||
+			got.GetMiddleFanAmount() != want.GetMiddleFanAmount() ||
+			got.GetHeavyFanAmount() != want.GetHeavyFanAmount() ||
+			got.GetReliability() != want.GetReliability() ||
+			got.GetAudienceCandidateAmount() != want.GetAudienceCandidateAmount() {
+			t.Fatalf("god %s changed fan/bond progress: got=%v want=%v", policy, got, want)
+		}
+	}
+	reliabilityMissionIDs := make(map[string]struct{})
+	masterMissions, err := opmaster.FindAllMissions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, mission := range masterMissions {
+		if mission.GetMissionType() == penum.MissionType_MissionType_ReliabilityAchievement {
+			reliabilityMissionIDs[mission.GetId()] = struct{}{}
+		}
+	}
+	assertReliabilityMissions := func(wantCompleted bool) {
+		t.Helper()
+		missions, err := opuser.FindAllUserMissions(ctx, testConfig.TestUserSuid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		completed := 0
+		for _, mission := range missions {
+			if _, reliability := reliabilityMissionIDs[mission.GetMissionId()]; !reliability {
+				continue
+			}
+			completed++
+			if !wantCompleted || mission.GetStatusType() != penum.MissionStatusType_MissionStatusType_Received ||
+				mission.GetProgress() != mission.GetCurrentThreshold() {
+				t.Fatalf("unexpected god reliability mission state: %v", mission)
+			}
+		}
+		if wantCompleted && completed == 0 {
+			t.Fatal("god bond all completed no reliability missions")
+		}
+	}
+	for index, policy := range []string{umodel.GodMessageFeatureNone, umodel.GodMessageFeatureEnjoy} {
+		want := seed(int32(101+index), int32(202+index), int32(303+index), int32(404+index), int32(505+index))
+		callUserGod(t, &admin.UserGodRequest{
+			ServerUserId: testConfig.TestUserSuid,
+			Feature: admin.GodFeature{
+				Message: umodel.GodMessageFeatureNone,
+				Fan:     policy,
+				Bond:    policy,
+			},
+		})
+		assertPreserved(policy, want)
+		assertReliabilityMissions(false)
+	}
+
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setting, err := opmaster.FindSetting(ctx, settingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	higherLight := makinouser.GodMinimumLightFanAmount + 111
+	higherHeavy := makinouser.GodMinimumHeavyFanAmount + 333
+	higherReliability := makinouser.GodMinimumReliability + 444
+	seed(
+		higherLight,
+		makinouser.GodMinimumMiddleFanAmount-1,
+		higherHeavy,
+		higherReliability,
+		1,
+	)
+	callUserGod(t, &admin.UserGodRequest{
+		ServerUserId: testConfig.TestUserSuid,
+		Feature: admin.GodFeature{
+			Message: umodel.GodMessageFeatureNone,
+			Fan:     umodel.GodMessageFeatureAll,
+			Bond:    umodel.GodMessageFeatureAll,
+		},
+	})
+	assertAll := func() *ptransaction.UserCharacter {
+		t.Helper()
+		characters, err := opuser.FindAllUserCharacters(ctx, testConfig.TestUserSuid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		var selected *ptransaction.UserCharacter
+		for _, character := range characters {
+			if character.GetLightFanAmount() < makinouser.GodMinimumLightFanAmount ||
+				character.GetMiddleFanAmount() < makinouser.GodMinimumMiddleFanAmount ||
+				character.GetHeavyFanAmount() < makinouser.GodMinimumHeavyFanAmount ||
+				character.GetReliability() < makinouser.GodMinimumReliability {
+				t.Fatalf("god fan/bond minima were not applied to character: %v", character)
+			}
+			wantAudience := int64(character.GetLightFanAmount())*int64(setting.GetLiveLightFanAmountWeightPermil())/1000 +
+				int64(character.GetMiddleFanAmount())*int64(setting.GetLiveMiddleFanAmountWeightPermil())/1000 +
+				int64(character.GetHeavyFanAmount())*int64(setting.GetLiveHeavyFanAmountWeightPermil())/1000
+			if int64(character.GetAudienceCandidateAmount()) != wantAudience {
+				t.Fatalf("character %q audience = %d, want master-derived %d", character.GetCharacterId(), character.GetAudienceCandidateAmount(), wantAudience)
+			}
+			if character.GetCharacterId() == characterID {
+				selected = character
+			}
+		}
+		if selected == nil {
+			t.Fatalf("god character %q was not found", characterID)
+		}
+		return selected
+	}
+	explicitAll := assertAll()
+	if explicitAll.GetLightFanAmount() != higherLight ||
+		explicitAll.GetMiddleFanAmount() != makinouser.GodMinimumMiddleFanAmount ||
+		explicitAll.GetHeavyFanAmount() != higherHeavy ||
+		explicitAll.GetReliability() != higherReliability {
+		t.Fatalf("god fan/bond all did not preserve values above its minima: %v", explicitAll)
+	}
+	assertReliabilityMissions(true)
+
+	seed(1, 2, 3, 4, 5)
+	callUserGod(t, &admin.UserGodRequest{
+		ServerUserId: testConfig.TestUserSuid,
+		Feature:      admin.GodFeature{Message: umodel.GodMessageFeatureNone},
+	})
+	defaultAll := assertAll()
+	if defaultAll.GetLightFanAmount() != makinouser.GodMinimumLightFanAmount ||
+		defaultAll.GetMiddleFanAmount() != makinouser.GodMinimumMiddleFanAmount ||
+		defaultAll.GetHeavyFanAmount() != makinouser.GodMinimumHeavyFanAmount ||
+		defaultAll.GetReliability() != makinouser.GodMinimumReliability {
+		t.Fatalf("absent fan/bond policies did not default to all: %v", defaultAll)
+	}
+}
+
 func TestUserGodMessageNone(t *testing.T) {
 	setupTestUser(t)
 	ctx := context.Background()
@@ -745,24 +909,34 @@ func TestUserGodMessageEnjoy(t *testing.T) {
 	}
 }
 
-func TestUserGodRejectsInvalidMessageFeature(t *testing.T) {
+func TestUserGodRejectsInvalidFeatures(t *testing.T) {
 	setupTestUser(t)
-	response, err := testConfig.HttpClient.Post(
-		fmt.Sprintf("%s/admin/user/god", testConfig.HttpUrl),
-		client.Config{Header: getAdminAuthHeader(), Body: &admin.UserGodRequest{
-			ServerUserId: testConfig.TestUserSuid,
-			Feature:      admin.GodFeature{Message: "invalid"},
-		}},
-	)
-	if err != nil {
-		t.Fatal(err)
+	testCases := []struct {
+		name    string
+		feature admin.GodFeature
+	}{
+		{name: "message", feature: admin.GodFeature{Message: "invalid"}},
+		{name: "fan", feature: admin.GodFeature{Fan: "invalid"}},
+		{name: "bond", feature: admin.GodFeature{Bond: "invalid"}},
 	}
-	if response.StatusCode() != 400 {
-		t.Fatalf("invalid god message feature returned status %d: %s", response.StatusCode(), response.Body())
+	for _, testCase := range testCases {
+		response, err := testConfig.HttpClient.Post(
+			fmt.Sprintf("%s/admin/user/god", testConfig.HttpUrl),
+			client.Config{Header: getAdminAuthHeader(), Body: &admin.UserGodRequest{
+				ServerUserId: testConfig.TestUserSuid,
+				Feature:      testCase.feature,
+			}},
+		)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if response.StatusCode() != 400 {
+			t.Fatalf("invalid god %s feature returned status %d: %s", testCase.name, response.StatusCode(), response.Body())
+		}
 	}
 	state, err := opuser.FindUserGodState(context.Background(), testConfig.TestUserSuid)
 	if err != nil || state.MessageFeature != "" {
-		t.Fatalf("invalid god message feature mutated policy: state=%v err=%v", state, err)
+		t.Fatalf("invalid god feature mutated policy: state=%v err=%v", state, err)
 	}
 }
 

@@ -33,9 +33,13 @@ import (
 )
 
 const (
-	GodMinimumResourceAmount int64 = 1_000_000
-	GodMinimumBalanceAmount  int32 = 999_999
-	GodMinimumPointAmount    int64 = 100_000_000_000
+	GodMinimumResourceAmount  int64 = 1_000_000
+	GodMinimumBalanceAmount   int32 = 999_999
+	GodMinimumPointAmount     int64 = 100_000_000_000
+	GodMinimumLightFanAmount  int32 = 500_000
+	GodMinimumMiddleFanAmount int32 = 300_000
+	GodMinimumHeavyFanAmount  int32 = 200_000
+	GodMinimumReliability     int32 = 1_000
 )
 
 type GodResult struct {
@@ -45,6 +49,8 @@ type GodResult struct {
 
 type GodFeature struct {
 	Message string `json:"message,omitempty"`
+	Fan     string `json:"fan,omitempty"`
+	Bond    string `json:"bond,omitempty"`
 }
 
 type godMasterData struct {
@@ -104,13 +110,18 @@ func GodUser(ctx context.Context, publicUserId, serverUserId string, feature God
 	if (publicUserId == "") == (serverUserId == "") {
 		return nil, fmt.Errorf("exactly one of publicUserId or serverUserId is required")
 	}
-	if feature.Message == "" {
-		feature.Message = umodel.GodMessageFeatureAll
+	var err error
+	feature.Message, err = normalizeGodFeature("message", feature.Message)
+	if err != nil {
+		return nil, err
 	}
-	switch feature.Message {
-	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
-	default:
-		return nil, fmt.Errorf("unsupported message feature %q", feature.Message)
+	feature.Fan, err = normalizeGodFeature("fan", feature.Fan)
+	if err != nil {
+		return nil, err
+	}
+	feature.Bond, err = normalizeGodFeature("bond", feature.Bond)
+	if err != nil {
+		return nil, err
 	}
 
 	auth, err := findGodUserAuth(ctx, publicUserId, serverUserId)
@@ -135,6 +146,18 @@ func GodUser(ctx context.Context, publicUserId, serverUserId string, feature God
 		return nil, fmt.Errorf("failed to unlock user: %w", err)
 	}
 	return result, nil
+}
+
+func normalizeGodFeature(name, value string) (string, error) {
+	if value == "" {
+		return umodel.GodMessageFeatureAll, nil
+	}
+	switch value {
+	case umodel.GodMessageFeatureNone, umodel.GodMessageFeatureAll, umodel.GodMessageFeatureEnjoy:
+		return value, nil
+	default:
+		return "", fmt.Errorf("unsupported %s feature %q", name, value)
+	}
 }
 
 func findGodUserAuth(ctx context.Context, publicUserId, serverUserId string) (*umodel.UserAuth, error) {
@@ -434,7 +457,7 @@ func applyGodMasterData(
 	if err := applyGodProgress(ctx, suid, data, now, counts); err != nil {
 		return err
 	}
-	if err := applyGodCompany(ctx, suid, data, now, counts); err != nil {
+	if err := applyGodCompany(ctx, suid, data, now, feature, counts); err != nil {
 		return err
 	}
 	if err := applyGodFeatureGates(ctx, suid, data, feature, counts); err != nil {
@@ -707,8 +730,10 @@ func applyGodOwnership(
 	}
 
 	characters := make([]opuser.GodUpsert[*ptransaction.UserCharacter], 0, len(data.userCharacters))
+	playableCharacterIDs := make(map[string]struct{}, len(data.userCharacters))
 	for _, value := range data.userCharacters {
 		characters = append(characters, godValue("characterId", value.CharacterId, value))
+		playableCharacterIDs[value.GetCharacterId()] = struct{}{}
 	}
 	if err := godUpsert(ctx, uname.UserCharacter, suid, characters, false, counts); err != nil {
 		return err
@@ -727,6 +752,20 @@ func applyGodOwnership(
 		if !value.InActivity && value.ActivityStamina < data.characterLevel.MaxStamina {
 			value.ActivityStamina = data.characterLevel.MaxStamina
 			value.StaminaUpdatedTime = now
+		}
+		_, playable := playableCharacterIDs[value.GetCharacterId()]
+		if playable && feature.Fan == umodel.GodMessageFeatureAll {
+			value.LightFanAmount = max(value.GetLightFanAmount(), GodMinimumLightFanAmount)
+			value.MiddleFanAmount = max(value.GetMiddleFanAmount(), GodMinimumMiddleFanAmount)
+			value.HeavyFanAmount = max(value.GetHeavyFanAmount(), GodMinimumHeavyFanAmount)
+			audience, err := godAudienceCandidateAmount(data.setting, value)
+			if err != nil {
+				return err
+			}
+			value.AudienceCandidateAmount = audience
+		}
+		if playable && feature.Bond == umodel.GodMessageFeatureAll {
+			value.Reliability = max(value.GetReliability(), GodMinimumReliability)
 		}
 		if err := opuser.UpsertUserCharacter(ctx, suid, value); err != nil {
 			return err
@@ -767,6 +806,16 @@ func applyGodOwnership(
 	}
 
 	return applyGodMediaOwnership(ctx, suid, data, now, feature, counts)
+}
+
+func godAudienceCandidateAmount(setting *pmaster.Setting, value *ptransaction.UserCharacter) (int32, error) {
+	amount := int64(value.GetLightFanAmount())*int64(setting.GetLiveLightFanAmountWeightPermil())/1000 +
+		int64(value.GetMiddleFanAmount())*int64(setting.GetLiveMiddleFanAmountWeightPermil())/1000 +
+		int64(value.GetHeavyFanAmount())*int64(setting.GetLiveHeavyFanAmountWeightPermil())/1000
+	if amount < 0 || amount > math.MaxInt32 {
+		return 0, fmt.Errorf("god audience candidate amount is invalid for character %q", value.GetCharacterId())
+	}
+	return int32(amount), nil
 }
 
 func applyGodMediaOwnership(
@@ -1102,6 +1151,7 @@ func applyGodCompany(
 	suid string,
 	data *godMasterData,
 	now int64,
+	feature GodFeature,
 	counts map[string]int,
 ) error {
 	var maxCharacterPoint int64
@@ -1230,11 +1280,16 @@ func applyGodCompany(
 	for _, condition := range data.conditions {
 		conditionByID[condition.GetId()] = condition
 	}
-	companyMissions := make([]opuser.GodUpsert[*ptransaction.UserMission], 0)
+	godMissions := make([]opuser.GodUpsert[*ptransaction.UserMission], 0)
 	for _, master := range data.missions {
-		if master.GetCompanyTrustMissionCategoryType() == penum.CompanyTrustMissionCategoryType_CompanyTrustMissionCategoryType_Unknown &&
-			master.GetCompanyEnjoyCharacterMissionCategoryType() == penum.CompanyEnjoyCharacterMissionCategoryType_CompanyEnjoyCharacterMissionCategoryType_Unknown &&
-			master.GetCompanyEnjoyCharacterId() == "" {
+		companyMission := master.GetCompanyTrustMissionCategoryType() != penum.CompanyTrustMissionCategoryType_CompanyTrustMissionCategoryType_Unknown ||
+			master.GetCompanyEnjoyCharacterMissionCategoryType() != penum.CompanyEnjoyCharacterMissionCategoryType_CompanyEnjoyCharacterMissionCategoryType_Unknown ||
+			master.GetCompanyEnjoyCharacterId() != ""
+		reliabilityMission := master.GetMissionType() == penum.MissionType_MissionType_ReliabilityAchievement
+		if reliabilityMission && feature.Bond != umodel.GodMessageFeatureAll {
+			continue
+		}
+		if !companyMission && !reliabilityMission {
 			continue
 		}
 		if !godCompanyConditionInTerm(conditionByID[master.GetViewConditionId()], master.GetViewConditionId(), now) {
@@ -1249,7 +1304,7 @@ func applyGodCompany(
 		if threshold <= 0 {
 			continue
 		}
-		companyMissions = append(companyMissions, godValue("missionId", master.GetId(), &ptransaction.UserMission{
+		godMissions = append(godMissions, godValue("missionId", master.GetId(), &ptransaction.UserMission{
 			MissionId:        master.GetId(),
 			CurrentThreshold: threshold,
 			Progress:         threshold,
@@ -1257,7 +1312,7 @@ func applyGodCompany(
 			LastUpdateTime:   now,
 		}))
 	}
-	return godUpsert(ctx, uname.UserMission, suid, companyMissions, true, counts)
+	return godUpsert(ctx, uname.UserMission, suid, godMissions, true, counts)
 }
 
 func godCompanyConditionInTerm(condition *pmaster.Condition, conditionID string, now int64) bool {
