@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	usercostume "github.com/vertesan/solis-server/internal/makino/user/costume"
@@ -24,6 +25,8 @@ import (
 )
 
 var ErrExchangeInsufficientResource = errors.New("insufficient exchange resource")
+
+const photoRecipeCapacityGiftMessage = "フォトレシピの所持上限を超えたためギフトに送られました"
 
 func FindMasterReward(ctx context.Context, rewardId string) (*pmaster.Reward, error) {
 	return opmaster.FindReward(ctx, rewardId)
@@ -631,15 +634,36 @@ func grantExchangePhotoRecipe(ctx context.Context, suid, recipeId string, amount
 		recipe = &ptransaction.UserPhotoRecipe{PhotoRecipeId: recipeId}
 	}
 	before := recipe.Amount
-	if before > math.MaxInt64-amount {
-		return nil, status.Error(codes.FailedPrecondition, "photo recipe amount overflows")
-	}
-	recipe.Amount += amount
-	if err := opuser.UpsertUserPhotoRecipe(ctx, suid, recipe); err != nil {
+	owned, capacity, err := FindPhotoRecipeCapacity(ctx, suid)
+	if err != nil {
 		return nil, err
 	}
-	updated.PhotoRecipes = append(updated.PhotoRecipes, recipe)
-	return exchangeRewardResult(penum.ResourceType_ResourceType_PhotoRecipe, recipeId, before, recipe.Amount, amount), nil
+	grantedAmount := min(amount, max(int64(0), capacity-owned))
+	if before > math.MaxInt64-grantedAmount {
+		return nil, status.Error(codes.FailedPrecondition, "photo recipe amount overflows")
+	}
+	if grantedAmount > 0 {
+		recipe.Amount += grantedAmount
+		if err := opuser.UpsertUserPhotoRecipe(ctx, suid, recipe); err != nil {
+			return nil, err
+		}
+		updated.PhotoRecipes = append(updated.PhotoRecipes, recipe)
+	}
+	overflowAmount := amount - grantedAmount
+	if overflowAmount > 0 {
+		if err := persistPhotoCapacityGift(
+			ctx, suid, penum.ResourceType_ResourceType_PhotoRecipe, recipeId,
+			overflowAmount, photoRecipeCapacityGiftMessage, updated,
+		); err != nil {
+			return nil, err
+		}
+	}
+	result := exchangeRewardResult(
+		penum.ResourceType_ResourceType_PhotoRecipe, recipeId,
+		before, recipe.Amount, amount,
+	)
+	result.IsGift = overflowAmount > 0
+	return result, nil
 }
 
 func grantExchangeShowcaseToy(ctx context.Context, suid, toyId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
@@ -703,14 +727,69 @@ func grantExchangePhotoAllInOne(ctx context.Context, suid, masterPhotoId string,
 		return nil, err
 	}
 
-	for range amount {
+	owned, capacity, err := FindPhotoCapacity(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
+	photos, err := opuser.FindAllUserPhotos(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
+	var before int64
+	for _, photo := range photos {
+		if photo.GetImageType() == penum.PhotoImageType_PhotoImageType_Asset &&
+			photo.GetAssetId() == masterPhoto.GetAssetId() {
+			before++
+		}
+	}
+	grantedAmount := min(amount, max(int64(0), capacity-owned))
+	for range grantedAmount {
 		photo := userphoto.NewUserPhotoFromAllInOne(masterPhoto)
 		if err := opuser.UpsertUserPhoto(ctx, suid, photo); err != nil {
 			return nil, err
 		}
 		updated.Photos = append(updated.Photos, photo)
 	}
-	return exchangeRewardResult(penum.ResourceType_ResourceType_PhotoAllInOne, masterPhotoId, 0, amount, amount), nil
+	overflowAmount := amount - grantedAmount
+	if overflowAmount > 0 {
+		if err := persistPhotoCapacityGift(
+			ctx, suid, penum.ResourceType_ResourceType_PhotoAllInOne, masterPhotoId,
+			overflowAmount, PhotoCapacityGiftMessage, updated,
+		); err != nil {
+			return nil, err
+		}
+	}
+	result := exchangeRewardResult(
+		penum.ResourceType_ResourceType_PhotoAllInOne, masterPhotoId,
+		before, before+grantedAmount, amount,
+	)
+	result.IsGift = overflowAmount > 0
+	return result, nil
+}
+
+func persistPhotoCapacityGift(
+	ctx context.Context,
+	suid string,
+	resourceType penum.ResourceType,
+	resourceID string,
+	amount int64,
+	message string,
+	updated *papi.UpdatedData,
+) error {
+	if amount <= 0 {
+		return status.Error(codes.FailedPrecondition, "photo capacity gift amount is invalid")
+	}
+	if err := opuser.UpsertUserGift(ctx, suid, &ptransaction.UserGift{
+		GiftId:       uuid.NewString(),
+		ResourceType: resourceType,
+		ResourceId:   resourceID,
+		Amount:       amount,
+		Message:      message,
+		PostedTime:   time.Now().UnixMilli(),
+	}); err != nil {
+		return err
+	}
+	return SetGiftNotification(ctx, suid, true, updated)
 }
 
 func grantExchangePoint(ctx context.Context, suid string, resourceType penum.ResourceType, pointType penum.PointType, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {

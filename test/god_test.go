@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strings"
 	"testing"
 	"time"
 
@@ -19,6 +20,7 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/http/admin"
+	"github.com/vertesan/solis-server/internal/utils/config"
 
 	"github.com/gofiber/fiber/v3/client"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -59,6 +61,27 @@ func TestUserGod(t *testing.T) {
 	first := callUserGod(t, &admin.UserGodRequest{PublicUserId: testConfig.TestUserPublicId})
 
 	ctx := context.Background()
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setting, err := opmaster.FindSetting(ctx, settingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userAfterFirstGod, err := opuser.FindUser(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if userAfterFirstGod.GetPhotoLimitExtendedCount() != setting.GetPhotoLimitExtendLimit() {
+		t.Fatalf("photo limit extension count = %d, want master limit %d",
+			userAfterFirstGod.GetPhotoLimitExtendedCount(), setting.GetPhotoLimitExtendLimit())
+	}
+	preservedPhotoLimitExtendedCount := setting.GetPhotoLimitExtendLimit() + 1
+	userAfterFirstGod.PhotoLimitExtendedCount = preservedPhotoLimitExtendedCount
+	if err := opuser.UpsertUser(ctx, testConfig.TestUserSuid, userAfterFirstGod); err != nil {
+		t.Fatal(err)
+	}
 	assertGodGrantedNoGachaTickets(t, ctx)
 	lovesBeforeSecondCall, err := opuser.FindAllUserLoves(ctx, testConfig.TestUserSuid)
 	if err != nil {
@@ -235,9 +258,14 @@ func TestUserGod(t *testing.T) {
 	if userData.ManagerLevel != maxLevel.Level || userData.ManagerExp != maxLevel.RequiredExp {
 		t.Fatalf("manager progression is not master-derived: user=%v master=%v", userData, maxLevel)
 	}
+	if userData.GetPhotoLimitExtendedCount() != preservedPhotoLimitExtendedCount {
+		t.Fatalf("god mode reduced photo limit extension count: got %d, want %d",
+			userData.GetPhotoLimitExtendedCount(), preservedPhotoLimitExtendedCount)
+	}
 	assertGodResourceAmounts(t, ctx)
 	assertGodCharacterActivityProgress(t, ctx)
 	assertGodCompanyProgress(t, ctx)
+	assertGodPhotoShootingCatalog(t, ctx)
 
 	masterCards, err := opmaster.FindAllCards(ctx)
 	if err != nil {
@@ -1128,21 +1156,13 @@ func assertGodResourceAmounts(t *testing.T, ctx context.Context) {
 		}
 	}
 
-	masterRecipes, err := opmaster.FindAllPhotoRecipes(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
 	userRecipes, err := opuser.FindAllUserPhotoRecipes(ctx, testConfig.TestUserSuid)
 	if err != nil {
 		t.Fatal(err)
 	}
-	recipeAmounts := make(map[string]int64, len(userRecipes))
 	for _, recipe := range userRecipes {
-		recipeAmounts[recipe.GetPhotoRecipeId()] = recipe.GetAmount()
-	}
-	for _, master := range masterRecipes {
-		if amount := recipeAmounts[master.GetId()]; amount < makinouser.GodMinimumResourceAmount {
-			t.Fatalf("god photo recipe %q amount = %d, want at least %d", master.GetId(), amount, makinouser.GodMinimumResourceAmount)
+		if !strings.HasPrefix(recipe.GetPhotoRecipeId(), "photo-recipe-5-rare-5-") && !strings.HasPrefix(recipe.GetPhotoRecipeId(), "photo-recipe-5-rare-4-") && recipe.GetAmount() != 1 {
+			t.Fatalf("god photo recipe %q not rarity 4 or 5, or amount != 1 (actual amount = %d)", recipe.GetPhotoRecipeId(), recipe.GetAmount())
 		}
 	}
 
@@ -1162,6 +1182,52 @@ func assertGodResourceAmounts(t *testing.T, ctx context.Context) {
 	}
 	if balance.GetFreeBalance() < makinouser.GodMinimumBalanceAmount || balance.GetPaidBalance() < makinouser.GodMinimumBalanceAmount {
 		t.Fatalf("god balance = free:%d paid:%d, want each at least %d", balance.GetFreeBalance(), balance.GetPaidBalance(), makinouser.GodMinimumBalanceAmount)
+	}
+}
+
+func assertGodPhotoShootingCatalog(t *testing.T, ctx context.Context) {
+	t.Helper()
+
+	masterMusics, err := opmaster.FindAllPhotoQuestMusics(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userMusics, err := opuser.FindAllUserPhotoMusics(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	musicStates := make(map[string]bool, len(userMusics))
+	for _, music := range userMusics {
+		musicStates[music.GetMusicId()] = music.GetIsUnlocked()
+	}
+	if len(musicStates) != len(masterMusics) {
+		t.Fatalf("god photo music count = %d, want %d from PhotoQuestMusic master", len(musicStates), len(masterMusics))
+	}
+	for _, master := range masterMusics {
+		if !musicStates[master.GetId()] {
+			t.Fatalf("god photo music %q is absent or locked", master.GetId())
+		}
+	}
+
+	masterStages, err := opmaster.FindAllPhotoQuestStages(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userStages, err := opuser.FindAllUserPhotoStages(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stageStates := make(map[string]bool, len(userStages))
+	for _, stage := range userStages {
+		stageStates[stage.GetStageId()] = stage.GetIsUnlocked()
+	}
+	if len(stageStates) != len(masterStages) {
+		t.Fatalf("god photo stage count = %d, want %d from PhotoQuestStage master", len(stageStates), len(masterStages))
+	}
+	for _, master := range masterStages {
+		if !stageStates[master.GetId()] {
+			t.Fatalf("god photo stage %q is absent or locked", master.GetId())
+		}
 	}
 }
 

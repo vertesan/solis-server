@@ -16,3 +16,9 @@ func FindStory(ctx context.Context, id string) (*pmaster.Story, error) {
 		ctx, mname.Story, bson.M{"Id": id},
 	)
 }
+
+func FindStoryPart(ctx context.Context, id string) (*pmaster.StoryPart, error) {
+	return mcommon.FindOne[mmodel.StoryPart, pmaster.StoryPart](
+		ctx, mname.StoryPart, bson.M{"Id": id},
+	)
+}

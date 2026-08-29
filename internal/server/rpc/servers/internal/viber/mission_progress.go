@@ -33,6 +33,36 @@ func AdvanceUserMissionsWithAmount(
 	amount func(*pmaster.Mission) int64,
 	targetIds ...string,
 ) ([]*ptransaction.UserMission, error) {
+	return updateUserMissions(ctx, suid, missionType, amount, false, targetIds...)
+}
+
+// ReachUserMissions records an achievement value rather than accumulating an
+// action count. Existing progress is preserved when it already exceeds value.
+func ReachUserMissions(
+	ctx context.Context,
+	suid string,
+	missionType penum.MissionType,
+	value int64,
+	targetIds ...string,
+) ([]*ptransaction.UserMission, error) {
+	return updateUserMissions(
+		ctx,
+		suid,
+		missionType,
+		func(*pmaster.Mission) int64 { return value },
+		true,
+		targetIds...,
+	)
+}
+
+func updateUserMissions(
+	ctx context.Context,
+	suid string,
+	missionType penum.MissionType,
+	amount func(*pmaster.Mission) int64,
+	reach bool,
+	targetIds ...string,
+) ([]*ptransaction.UserMission, error) {
 	userMissions, err := opuser.FindAllUserMissions(ctx, suid)
 	if err != nil {
 		return nil, err
@@ -77,7 +107,12 @@ func AdvanceUserMissionsWithAmount(
 		if increment <= 0 {
 			return nil, fmt.Errorf("mission progress amount must be positive")
 		}
-		newlyCompleted, didChange, err := addMissionProgress(mission, master, increment, now)
+		var newlyCompleted, didChange bool
+		if reach {
+			newlyCompleted, didChange, err = reachMissionProgress(mission, master, increment, now)
+		} else {
+			newlyCompleted, didChange, err = addMissionProgress(mission, master, increment, now)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -148,6 +183,18 @@ func AdvanceUserMissionsWithAmount(
 		result = append(result, mission)
 	}
 	return result, nil
+}
+
+func reachMissionProgress(
+	mission *ptransaction.UserMission,
+	master *pmaster.Mission,
+	value int64,
+	now int64,
+) (newlyCompleted bool, changed bool, err error) {
+	if value <= mission.GetProgress() {
+		return false, false, nil
+	}
+	return addMissionProgress(mission, master, value-mission.GetProgress(), now)
 }
 
 func addMissionProgress(

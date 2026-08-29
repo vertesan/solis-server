@@ -380,6 +380,13 @@ func TestCommerceAPIs(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to read user photos before exchange: %v", err)
 		}
+		var matchingBefore int64
+		for _, photo := range photosBefore {
+			if photo.GetImageType() == penum.PhotoImageType_PhotoImageType_Asset &&
+				photo.GetAssetId() == masterPhoto.GetAssetId() {
+				matchingBefore++
+			}
+		}
 		costID := candidate.booth.GetRequiredResourceId()
 		costBefore := userItemAmount(t, costID)
 		grpcCtx, cancel, err := getFullGrpcCtx()
@@ -419,7 +426,10 @@ func TestCommerceAPIs(t *testing.T) {
 		}
 		results := response.GetResults()
 		if len(results) != 1 || results[0].GetResourceType() != candidate.reward.GetResourceType() ||
-			results[0].GetResourceId() != candidate.reward.GetResourceId() || results[0].GetAmountI64() != int64(candidate.reward.GetAmount()) {
+			results[0].GetResourceId() != candidate.reward.GetResourceId() ||
+			results[0].GetBeforeAmount() != matchingBefore ||
+			results[0].GetAfterAmount() != matchingBefore+int64(candidate.reward.GetAmount()) ||
+			results[0].GetAmountI64() != int64(candidate.reward.GetAmount()) || results[0].GetIsGift() {
 			t.Fatalf("photo exchange returned incorrect reward result: %v", results)
 		}
 	})

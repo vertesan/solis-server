@@ -66,14 +66,19 @@ func RaiseUserResourcesForGod(
 	excludedItemIds []string,
 ) error {
 	for _, collection := range []string{uname.UserItem, uname.UserAccessory, uname.UserPhotoRecipe} {
-		filter := bson.M{"SUID": suid, "amount": bson.M{"$lt": minimum}}
+		amount := minimum
+		filter := bson.M{"SUID": suid, "amount": bson.M{"$lt": amount}}
 		if collection == uname.UserItem && len(excludedItemIds) > 0 {
 			filter["itemId"] = bson.M{"$nin": excludedItemIds}
+		}
+		// user recipe capacity is extremely limited, set this value to 1
+		if collection == uname.UserPhotoRecipe {
+			amount = 1
 		}
 		if _, err := depot.User.Collection(collection).UpdateMany(
 			ctx,
 			filter,
-			bson.M{"$set": bson.M{"amount": minimum}},
+			bson.M{"$set": bson.M{"amount": amount}},
 		); err != nil {
 			return fmt.Errorf("failed to raise god resources for collection %q: %w", collection, err)
 		}

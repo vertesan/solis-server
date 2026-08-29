@@ -121,5 +121,6 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterGachaServer(server, &ss.GachaServer{})
 	papi.RegisterActivityServer(server, &ss.ActivityServer{})
 	papi.RegisterCompanyServer(server, &ss.CompanyServer{})
+	papi.RegisterPhotoServer(server, &ss.PhotoServer{})
 	return server, nil
 }

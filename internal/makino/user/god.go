@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
@@ -81,14 +82,15 @@ type godMasterData struct {
 	musics           []*pmaster.Music
 	photoActivities  []*pmaster.PhotoActivity
 	photoExpressions []*pmaster.PhotoExpression
+	photoMusics      []*pmaster.PhotoQuestMusic
 	photoPoses       []*pmaster.PhotoPose
 	photoRecipes     []*pmaster.PhotoRecipe
+	photoStages      []*pmaster.PhotoQuestStage
 	quests           []*pmaster.Quest
 	showcaseMusics   []*pmaster.ShowcaseMusic
 	showcaseToys     []*pmaster.ShowcaseToy
 	staffLevels      []*pmaster.StaffLevel
 	staffRanks       []*pmaster.StaffLevelLimitBreakRank
-	stages           []*pmaster.Stage
 	stories          []*pmaster.Story
 	storyParts       []*pmaster.StoryPart
 	telephones       []*pmaster.Telephone
@@ -294,6 +296,10 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 		data.photoExpressions, err = opmaster.FindAllPhotoExpressions(groupCtx)
 		return err
 	})
+	run("PhotoQuestMusic", func() (err error) {
+		data.photoMusics, err = opmaster.FindAllPhotoQuestMusics(groupCtx)
+		return err
+	})
 	run("PhotoPose", func() (err error) {
 		data.photoPoses, err = opmaster.FindAllPhotoPoses(groupCtx)
 		return err
@@ -302,12 +308,12 @@ func loadGodMasterData(ctx context.Context) (*godMasterData, error) {
 		data.photoRecipes, err = opmaster.FindAllPhotoRecipes(groupCtx)
 		return err
 	})
-	run("Quest", func() (err error) {
-		data.quests, err = opmaster.FindAllQuests(groupCtx)
+	run("PhotoQuestStage", func() (err error) {
+		data.photoStages, err = opmaster.FindAllPhotoQuestStages(groupCtx)
 		return err
 	})
-	run("Stage", func() (err error) {
-		data.stages, err = opmaster.FindAllStages(groupCtx)
+	run("Quest", func() (err error) {
+		data.quests, err = opmaster.FindAllQuests(groupCtx)
 		return err
 	})
 	run("ShowcaseMusic", func() (err error) {
@@ -413,6 +419,10 @@ func applyGodMasterData(
 	userData.CardSupportLevel = data.setting.CardSupportLevelLimit
 	userData.CardSupportReleaseCount = data.cardSupport.Count
 	userData.CardSupportMaxNumber = data.cardSupport.Count + 3
+	userData.PhotoLimitExtendedCount = max(
+		userData.GetPhotoLimitExtendedCount(),
+		data.setting.GetPhotoLimitExtendLimit(),
+	)
 	if err := opuser.UpsertUser(ctx, suid, userData); err != nil {
 		return err
 	}
@@ -1387,6 +1397,21 @@ func applyGodProgress(
 		return err
 	}
 
+	// Shooting catalogs are a projection of current master data. Rebuild them so
+	// rows from older master versions do not remain visible after god mode.
+	if err := opuser.DeleteAllUserPhotoActivities(ctx, suid); err != nil {
+		return err
+	}
+	if err := opuser.DeleteAllUserPhotoExpressions(ctx, suid); err != nil {
+		return err
+	}
+	if err := opuser.DeleteAllUserPhotoMusics(ctx, suid); err != nil {
+		return err
+	}
+	if err := opuser.DeleteAllUserPhotoStages(ctx, suid); err != nil {
+		return err
+	}
+
 	activities := make([]opuser.GodUpsert[*papi.PhotoActivity], 0, len(data.photoActivities))
 	for _, master := range data.photoActivities {
 		activities = append(activities, godValue("photoActivityId", master.Id, &papi.PhotoActivity{PhotoActivityId: master.Id, IsUnlocked: true}))
@@ -1408,11 +1433,9 @@ func applyGodProgress(
 	if err := godUpsert(ctx, uname.UserPhotoPose, suid, poses, false, counts); err != nil {
 		return err
 	}
-	photoMusics := make([]opuser.GodUpsert[*papi.PhotoMusic], 0, len(data.musics))
-	for _, master := range data.musics {
-		if master.Is3DAvailable {
-			photoMusics = append(photoMusics, godValue("musicId", master.Id, &papi.PhotoMusic{MusicId: master.Id, IsUnlocked: true}))
-		}
+	photoMusics := make([]opuser.GodUpsert[*papi.PhotoMusic], 0, len(data.photoMusics))
+	for _, master := range data.photoMusics {
+		photoMusics = append(photoMusics, godValue("musicId", master.Id, &papi.PhotoMusic{MusicId: master.Id, IsUnlocked: true}))
 	}
 	if err := godUpsert(ctx, uname.UserPhotoMusic, suid, photoMusics, true, counts); err != nil {
 		return err
@@ -1436,8 +1459,8 @@ func applyGodProgress(
 	if err := godUpsert(ctx, uname.UserExcursionGazeReaction, suid, excursionGazes, false, counts); err != nil {
 		return err
 	}
-	stages := make([]opuser.GodUpsert[*papi.PhotoStage], 0, len(data.stages))
-	for _, master := range data.stages {
+	stages := make([]opuser.GodUpsert[*papi.PhotoStage], 0, len(data.photoStages))
+	for _, master := range data.photoStages {
 		stages = append(stages, godValue("stageId", master.Id, &papi.PhotoStage{StageId: master.Id, IsUnlocked: true}))
 	}
 	return godUpsert(ctx, uname.UserPhotoStage, suid, stages, true, counts)
@@ -1476,11 +1499,14 @@ func applyGodResources(
 	if err := opuser.DeleteGodGrantedUserItems(ctx, suid, excludedItemIds, GodMinimumResourceAmount); err != nil {
 		return err
 	}
-	recipes := make([]opuser.GodUpsert[*ptransaction.UserPhotoRecipe], 0, len(data.photoRecipes))
+	recipes := make([]opuser.GodUpsert[*ptransaction.UserPhotoRecipe], 0)
 	for _, master := range data.photoRecipes {
-		recipes = append(recipes, godValue("photoRecipeId", master.Id, &ptransaction.UserPhotoRecipe{
-			PhotoRecipeId: master.Id, Amount: GodMinimumResourceAmount,
-		}))
+		// user recipe capacity is extremely limited, populates high rarity recipes only
+		if strings.HasPrefix(master.Id, "photo-recipe-5-rare-5-") || strings.HasPrefix(master.Id, "photo-recipe-5-rare-4-") {
+			recipes = append(recipes, godValue("photoRecipeId", master.Id, &ptransaction.UserPhotoRecipe{
+				PhotoRecipeId: master.Id, Amount: 1,
+			}))
+		}
 	}
 	if err := godUpsert(ctx, uname.UserPhotoRecipe, suid, recipes, false, counts); err != nil {
 		return err

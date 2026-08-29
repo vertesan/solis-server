@@ -51,6 +51,9 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		if _, err := viber.UnlockManagerLevelPhotoAbilities(ctx, suid, user.GetManagerLevel()); err != nil {
+			return nil, err
+		}
 		photos, err := opuser.FindAllUserPhotos(ctx, suid)
 		if err != nil {
 			return nil, err

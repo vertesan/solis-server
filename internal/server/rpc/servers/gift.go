@@ -118,6 +118,10 @@ func (s *GiftServer) Receive(ctx context.Context, req *papi.GiftReceiveRequest) 
 			}
 			granted, err := viber.GrantGiftReward(ctx, suid, gift, updated)
 			if err != nil {
+				if errors.Is(err, viber.ErrPhotoGiftCapacity) || errors.Is(err, viber.ErrPhotoRecipeGiftCapacity) {
+					unreceivedIDs = append(unreceivedIDs, giftID)
+					continue
+				}
 				return nil, err
 			}
 			results = append(results, granted...)
@@ -157,14 +161,11 @@ func (s *GiftServer) Receive(ctx context.Context, req *papi.GiftReceiveRequest) 
 				break
 			}
 		}
-		notification := &ptransaction.UserNotification{
-			NotificationType: penum.NotificationType_NotificationType_Gift,
-			Valid:            hasUnreceived,
+		if len(receivedIDs) > 0 {
+			if err := viber.SetGiftNotification(ctx, suid, hasUnreceived, updated); err != nil {
+				return nil, err
+			}
 		}
-		if err := opuser.UpsertUserNotification(ctx, suid, notification); err != nil {
-			return nil, err
-		}
-		updated.Notifications = append(updated.Notifications, notification)
 		response = &papi.GiftReceiveResponse{
 			Results:           results,
 			HasUnreceivedGift: hasUnreceived,
@@ -210,7 +211,8 @@ func matchesGiftFilters(resourceType penum.ResourceType, filters []penum.GiftFil
 		category = penum.GiftFilterType_GiftFilterType_Card
 	case penum.ResourceType_ResourceType_PhotoSituation,
 		penum.ResourceType_ResourceType_PhotoAllInOne,
-		penum.ResourceType_ResourceType_PhotoGift:
+		penum.ResourceType_ResourceType_PhotoGift,
+		penum.ResourceType_ResourceType_PhotoRecipe:
 		category = penum.GiftFilterType_GiftFilterType_Photo
 	case penum.ResourceType_ResourceType_Accessory:
 		category = penum.GiftFilterType_GiftFilterType_Accessory

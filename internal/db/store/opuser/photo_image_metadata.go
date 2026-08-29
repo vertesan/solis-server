@@ -19,6 +19,51 @@ func FindUserPhotoImageMetadata(ctx context.Context, name string) (*umodel.UserP
 	return ucommon.FindOne[umodel.UserPhotoImageMetadata](ctx, uname.UserPhotoImageMetadata, bson.M{"_id": name})
 }
 
+func FindUserPhotoImageMetadataByNames(
+	ctx context.Context,
+	suid string,
+	names []string,
+) ([]*umodel.UserPhotoImageMetadata, error) {
+	if len(names) == 0 {
+		return []*umodel.UserPhotoImageMetadata{}, nil
+	}
+	return ucommon.FindAll[umodel.UserPhotoImageMetadata](
+		ctx,
+		uname.UserPhotoImageMetadata,
+		bson.M{"SUID": suid, "_id": bson.M{"$in": names}},
+	)
+}
+
+func FindFinalizedUserPhotoImageMetadataByNames(
+	ctx context.Context,
+	suid string,
+	names []string,
+) ([]*umodel.UserPhotoImageMetadata, error) {
+	if len(names) == 0 {
+		return []*umodel.UserPhotoImageMetadata{}, nil
+	}
+	return ucommon.FindAll[umodel.UserPhotoImageMetadata](
+		ctx,
+		uname.UserPhotoImageMetadata,
+		bson.M{
+			"SUID":        suid,
+			"_id":         bson.M{"$in": names},
+			"uploadState": umodel.UserPhotoImageUploadFinalized,
+		},
+	)
+}
+
+func DeleteUserPhotoImageMetadataByNames(ctx context.Context, suid string, names []string) error {
+	if len(names) == 0 {
+		return nil
+	}
+	return ucommon.Delete(
+		ctx,
+		uname.UserPhotoImageMetadata,
+		bson.M{"SUID": suid, "_id": bson.M{"$in": names}},
+	)
+}
+
 // StartUserPhotoImageUpload creates a session or replaces one whose active or
 // finalizing lease is stale. A live session and a finalized object are kept.
 func StartUserPhotoImageUpload(ctx context.Context, metadata *umodel.UserPhotoImageMetadata, staleBefore time.Time) (bool, error) {

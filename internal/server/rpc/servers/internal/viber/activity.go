@@ -403,6 +403,11 @@ func AddManagerExp(
 		return nil, err
 	}
 	updated.User = user
+	unlockedPhotos, err := UnlockManagerLevelPhotoAbilities(ctx, suid, user.GetManagerLevel())
+	if err != nil {
+		return nil, err
+	}
+	updated.Photos = append(updated.Photos, unlockedPhotos...)
 	return user, nil
 }
 

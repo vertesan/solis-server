@@ -647,21 +647,7 @@ func grantGachaCardShowcaseToys(
 }
 
 func ensureGachaGiftNotification(ctx context.Context, suid string, updated *papi.UpdatedData) error {
-	for _, notification := range updated.GetNotifications() {
-		if notification.GetNotificationType() == penum.NotificationType_NotificationType_Gift {
-			notification.Valid = true
-			return nil
-		}
-	}
-	notification := &ptransaction.UserNotification{
-		NotificationType: penum.NotificationType_NotificationType_Gift,
-		Valid:            true,
-	}
-	if err := opuser.UpsertUserNotification(ctx, suid, notification); err != nil {
-		return err
-	}
-	updated.Notifications = append(updated.Notifications, notification)
-	return nil
+	return SetGiftNotification(ctx, suid, true, updated)
 }
 
 func ensureGachaCardStories(

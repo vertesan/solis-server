@@ -244,8 +244,8 @@ func (s *MessageServer) Finish(ctx context.Context, req *papi.MessageFinishReque
 				return nil, err
 			}
 			updated.Characters = append(updated.Characters, character)
-			missions, err := viber.AdvanceUserMissions(
-				ctx, suid, penum.MissionType_MissionType_ReliabilityAchievement, int64(reliability), characterId,
+			missions, err := viber.ReachUserMissions(
+				ctx, suid, penum.MissionType_MissionType_ReliabilityAchievement, int64(character.GetReliability()), characterId,
 			)
 			if err != nil {
 				return nil, err

@@ -158,6 +158,7 @@ func ensureUserIndexes(ctx context.Context) error {
 		{uname.UserAccessory, bson.D{{Key: "SUID", Value: 1}, {Key: "accessoryId", Value: 1}}},
 		{uname.UserItem, bson.D{{Key: "SUID", Value: 1}, {Key: "itemId", Value: 1}, {Key: "expiredTime", Value: 1}}},
 		{uname.UserPhoto, bson.D{{Key: "SUID", Value: 1}, {Key: "photoId", Value: 1}}},
+		{uname.UserPhotoGift, bson.D{{Key: "SUID", Value: 1}, {Key: "photoId", Value: 1}}},
 		{uname.UserPhotoRecipe, bson.D{{Key: "SUID", Value: 1}, {Key: "photoRecipeId", Value: 1}}},
 		{uname.UserPoint, bson.D{{Key: "SUID", Value: 1}, {Key: "pointType", Value: 1}}},
 		{uname.UserNotification, bson.D{{Key: "SUID", Value: 1}, {Key: "notificationType", Value: 1}}},

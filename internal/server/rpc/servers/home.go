@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
+	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
@@ -305,6 +306,26 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		masterPhotoActivities, err := opmaster.FindAllPhotoActivities(ctx)
+		if err != nil {
+			return nil, err
+		}
+		masterPhotoMusics, err := opmaster.FindAllPhotoQuestMusics(ctx)
+		if err != nil {
+			return nil, err
+		}
+		masterPhotoStages, err := opmaster.FindAllPhotoQuestStages(ctx)
+		if err != nil {
+			return nil, err
+		}
+		masterPhotoExpressions, err := opmaster.FindAllPhotoExpressions(ctx)
+		if err != nil {
+			return nil, err
+		}
+		photoActivities = viber.FilterUserPhotoActivities(photoActivities, masterPhotoActivities)
+		photoMusics = viber.FilterUserPhotoMusics(photoMusics, masterPhotoMusics)
+		photoStages = viber.FilterUserPhotoStages(photoStages, masterPhotoStages)
+		photoExpressions = viber.FilterUserPhotoExpressions(photoExpressions, masterPhotoExpressions)
 		showcaseToyShopIds, err := opuser.FindUserShowcaseToyShopIds(ctx, suid)
 		if err != nil {
 			return nil, err

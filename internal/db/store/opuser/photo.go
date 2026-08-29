@@ -57,10 +57,48 @@ func DeleteUserPhoto(ctx context.Context, suid string, photoId string) error {
 	)
 }
 
+func DeleteUserPhotos(ctx context.Context, suid string, photoIds []string) error {
+	if len(photoIds) == 0 {
+		return nil
+	}
+	return ucommon.Delete(
+		ctx,
+		uname.UserPhoto,
+		bson.M{"SUID": suid, "photoId": bson.M{"$in": photoIds}},
+	)
+}
+
 func DeleteAllUserPhotos(ctx context.Context, suid string) error {
 	return ucommon.Delete(
 		ctx,
 		uname.UserPhoto,
 		bson.M{"SUID": suid},
+	)
+}
+
+// FindUserPhotoGift returns a fully generated photo that is waiting in the
+// gift box because the user's owned-photo capacity was full.
+func FindUserPhotoGift(ctx context.Context, suid, photoId string) (*ptransaction.UserPhoto, error) {
+	return ucommon.FindOne[ptransaction.UserPhoto](
+		ctx,
+		uname.UserPhotoGift,
+		bson.M{"SUID": suid, "photoId": photoId},
+	)
+}
+
+func UpsertUserPhotoGift(ctx context.Context, suid string, photo *ptransaction.UserPhoto) error {
+	return ucommon.UpsertOne(
+		ctx,
+		uname.UserPhotoGift,
+		bson.M{"SUID": suid, "photoId": photo.GetPhotoId()},
+		&umodel.UserStruct[*ptransaction.UserPhoto]{SUID: suid, Data: photo},
+	)
+}
+
+func DeleteUserPhotoGift(ctx context.Context, suid, photoId string) error {
+	return ucommon.Delete(
+		ctx,
+		uname.UserPhotoGift,
+		bson.M{"SUID": suid, "photoId": photoId},
 	)
 }

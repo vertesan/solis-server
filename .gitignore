@@ -38,6 +38,7 @@ traffic/
 __debug_bin*
 /solis-server
 /solis
+/cmd/solis/solis
 
 # local files
 settings.local.json
