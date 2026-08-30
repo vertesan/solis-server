@@ -1,0 +1,71 @@
+musics:
+  - musicId: music-clb-011
+    stageId: stage-live-unique-004-00
+    order: 3
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-clb-011-25-0826
+  - musicId: music-hsm-003
+    stageId: stage-live-dome-01-00
+    order: 1
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-360live-25-0624
+  - musicId: music-hsm-015
+    stageId: stage-live-dome-03-00
+    order: 2
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-360live-25-0624
+  - musicId: music-hsm-016
+    stageId: stage-live-dome-04-00
+    order: 12
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-hsm-016-26-0624
+  - musicId: music-liz-005
+    stageId: stage-live-dome-01-01
+    order: 11
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-liz-005-26-0527
+  - musicId: music-moon-010
+    stageId: stage-live-dome-01-01
+    order: 6
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-moon-010-25-1224
+  - musicId: music-moon-011
+    stageId: stage-live-dome-01-06
+    order: 8
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-moon-011-26-0128
+  - musicId: music-sun-004
+    stageId: stage-live-dome-00-00
+    order: 14
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-sun-004-26-0708
+  - musicId: music-thrx-007
+    stageId: stage-live-dome-02-01
+    order: 7
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-thrx-007-26-0104
+  - musicId: music-tri-010
+    stageId: stage-live-dome-00-00
+    order: 13
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-tri-010-26-0625
+  - musicId: music-unit-010-360
+    stageId: stage-live-dome-05-00
+    order: 5
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-unit-010-25-1128
+  - musicId: music-unit-012
+    stageId: stage-live-dome-04-00
+    order: 4
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-unit-012-25-0927
+  - musicId: music-unit-013
+    stageId: stage-live-dome-01-06
+    order: 9
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-unit-013-26-0226
+  - musicId: music-unit-014
+    stageId: stage-live-dome-03-00
+    order: 10
+    unlockConditionId: cd-tutorial-finish-photo-create-shooting
+    viewConditionId: cd-time-music-unit-014-26-0327

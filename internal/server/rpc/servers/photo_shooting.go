@@ -43,6 +43,7 @@ type photoShootingScene struct {
 	storyID                  string
 	storyShooting            bool
 	expressionShooting       bool
+	panoramaShooting         bool
 	musicID                  string
 	specifiedPoseCounts      map[string]int64
 	specifiedCharacterCounts map[string]int64
@@ -610,6 +611,21 @@ func createUserPhotoShootings(
 			}
 			updated.Missions = viber.AppendUniquePhotoMissions(updated.Missions, characterMissions)
 		}
+	}
+	if scene.panoramaShooting {
+		missions, err := viber.AdvanceUserMissions(
+			ctx, suid, penum.MissionType_MissionType_PhotoPanoramaShootingCount, count,
+		)
+		if err != nil {
+			return nil, err
+		}
+		totalMissions, err := viber.AdvanceUserMissions(
+			ctx, suid, penum.MissionType_MissionType_PhotoPanoramaShootingTotalCount, count,
+		)
+		if err != nil {
+			return nil, err
+		}
+		updated.Missions = viber.AppendUniquePhotoMissions(updated.Missions, missions, totalMissions)
 	}
 	if scene.musicID != "" {
 		missions, err := viber.AdvanceUserMissions(

@@ -15,3 +15,9 @@ func FindAllMusics(ctx context.Context) ([]*pmaster.Music, error) {
 		ctx, mname.Music, bson.M{},
 	)
 }
+
+func FindMusic(ctx context.Context, id string) (*pmaster.Music, error) {
+	return mcommon.FindOne[mmodel.Music, pmaster.Music](
+		ctx, mname.Music, bson.M{"Id": id},
+	)
+}
