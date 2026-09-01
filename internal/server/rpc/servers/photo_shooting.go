@@ -37,16 +37,19 @@ type photoCreateParam struct {
 }
 
 type photoShootingScene struct {
-	placeName                string
-	eventName                string
-	candidateCharacterIDs    []string
-	storyID                  string
-	storyShooting            bool
-	expressionShooting       bool
-	panoramaShooting         bool
-	musicID                  string
-	specifiedPoseCounts      map[string]int64
-	specifiedCharacterCounts map[string]int64
+	placeName                   string
+	eventName                   string
+	photoNamePrefix             string
+	candidateCharacterIDs       []string
+	storyID                     string
+	storyShooting               bool
+	expressionShooting          bool
+	panoramaShooting            bool
+	showcaseShooting            bool
+	reliabilityOncePerCharacter bool
+	musicID                     string
+	specifiedPoseCounts         map[string]int64
+	specifiedCharacterCounts    map[string]int64
 }
 
 type photoCreationResult struct {
@@ -447,11 +450,15 @@ func createUserPhotoShootings(
 		if err != nil {
 			return nil, err
 		}
+		photoName := strings.TrimSpace(character.GetName()) + " " + date
+		if scene.photoNamePrefix != "" {
+			photoName = strings.TrimSpace(scene.photoNamePrefix) + " " + date
+		}
 		photo := &ptransaction.UserPhoto{
 			PhotoId:          uuid.NewString(),
 			AssetId:          param.imageID,
 			ImageType:        penum.PhotoImageType_PhotoImageType_User,
-			Name:             strings.TrimSpace(character.GetName()) + " " + date,
+			Name:             photoName,
 			Rarity:           traits.Rarity,
 			PlaceName:        scene.placeName,
 			EventName:        scene.eventName,
@@ -470,7 +477,11 @@ func createUserPhotoShootings(
 			highestPhotoLevel = int64(photo.GetLevel())
 		}
 		if character.GetType() != penum.CharacterType_CharacterType_Npc {
-			reliabilityIncreases[focusID]++
+			if scene.reliabilityOncePerCharacter {
+				reliabilityIncreases[focusID] = 1
+			} else {
+				reliabilityIncreases[focusID]++
+			}
 		}
 	}
 	ownedPhotos := created[:ownedPhotoCount]
@@ -626,6 +637,15 @@ func createUserPhotoShootings(
 			return nil, err
 		}
 		updated.Missions = viber.AppendUniquePhotoMissions(updated.Missions, missions, totalMissions)
+	}
+	if scene.showcaseShooting {
+		missions, err := viber.AdvanceUserMissions(
+			ctx, suid, penum.MissionType_MissionType_ShowcasePhotoShootingTotalCount, count,
+		)
+		if err != nil {
+			return nil, err
+		}
+		updated.Missions = viber.AppendUniquePhotoMissions(updated.Missions, missions)
 	}
 	if scene.musicID != "" {
 		missions, err := viber.AdvanceUserMissions(

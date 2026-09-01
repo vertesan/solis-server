@@ -11,6 +11,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/consts"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -31,7 +32,7 @@ func TestFreshCommerceCatalogIdentity(t *testing.T) {
 		t.Fatal(err)
 	}
 	wantShopIDs := make([]string, 0, len(shops))
-	wantShowcaseShopIDs := make([]string, 0, len(shops))
+	wantShowcaseShopIDs := consts.GetUserInitialShowcaseToyShopIds()
 	for _, shop := range shops {
 		if shop.Info == nil {
 			continue
@@ -40,7 +41,7 @@ func TestFreshCommerceCatalogIdentity(t *testing.T) {
 		case penum.ShopType_ShopType_ShowcaseToyShop,
 			penum.ShopType_ShopType_DefaultShowcaseToyShop,
 			penum.ShopType_ShopType_OnlyShowcaseShop:
-			wantShowcaseShopIDs = append(wantShowcaseShopIDs, shop.ShopId)
+			continue
 		default:
 			wantShopIDs = append(wantShopIDs, shop.ShopId)
 		}

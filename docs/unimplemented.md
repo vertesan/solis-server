@@ -1,0 +1,392 @@
+# Unimplemented gRPC APIs
+
+Last audited: 2026-08-31
+
+This inventory uses the generated API declarations in
+`internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
+with registrations in `internal/server/rpc/rpc.go` and concrete methods on the
+server types in `internal/server/rpc/servers`.
+
+An RPC is classified as unimplemented when either:
+
+- its entire generated service has no registered server, or
+- its service is registered, but the concrete server does not override the
+  generated `Unimplemented<Service>Server` method.
+
+This is an implementation-presence audit, not a review of game-logic
+completeness. A concrete handler is counted as implemented even if particular
+inputs are unsupported or its behavior is intentionally minimal.
+
+## Summary
+
+| Category | Services | RPCs |
+| --- | ---: | ---: |
+| Generated API surface | 67 | 425 |
+| Registered services | 29 | 186 |
+| Concrete handlers | 29 | 139 |
+| Entirely unregistered services | 38 | 239 |
+| Missing methods on registered services | 15 | 47 |
+| Total unimplemented RPCs | 53 | 286 |
+
+The “Total unimplemented RPCs” service count is the 38 entirely unregistered
+services plus 15 registered services that are only partially implemented.
+
+## Entirely unregistered services
+
+These services have generated definitions but no registration or concrete
+server under `internal/server/rpc/servers`. Requests are handled by the gRPC
+unknown-service handler.
+
+- `Advertisement` (2):
+  - `/api.Advertisement/Start`
+  - `/api.Advertisement/End`
+- `Anniversary` (1):
+  - `/api.Anniversary/OutputTransitionLog`
+- `Backside` (9):
+  - `/api.Backside/Top`
+  - `/api.Backside/Ranking`
+  - `/api.Backside/StageStart`
+  - `/api.Backside/StageAction`
+  - `/api.Backside/StageLiveBonus`
+  - `/api.Backside/StagePracticeUpdate`
+  - `/api.Backside/StageReset`
+  - `/api.Backside/StageSurpriseFinish`
+  - `/api.Backside/StageDeckPositionChange`
+- `Birthday` (5):
+  - `/api.Birthday/Top`
+  - `/api.Birthday/SetWatched`
+  - `/api.Birthday/ReceiveReward`
+  - `/api.Birthday/OutputWatchedLog`
+  - `/api.Birthday/SetWatchedRemindInfo`
+- `Deck` (3):
+  - `/api.Deck/Save`
+  - `/api.Deck/Delete`
+  - `/api.Deck/BuddyList`
+- `Dice` (15):
+  - `/api.Dice/Top`
+  - `/api.Dice/MovePanel`
+  - `/api.Dice/UseItem`
+  - `/api.Dice/DiscardItem`
+  - `/api.Dice/PurchaseItem`
+  - `/api.Dice/SellItem`
+  - `/api.Dice/FinishShopPanel`
+  - `/api.Dice/FinishStoryPanel`
+  - `/api.Dice/UseStaminaRecoveryItem`
+  - `/api.Dice/ListDeck`
+  - `/api.Dice/StartQuest`
+  - `/api.Dice/StartGoalQuest`
+  - `/api.Dice/ChooseLiveBonus`
+  - `/api.Dice/ListRanking`
+  - `/api.Dice/SaveDeck`
+- `Dream` (7):
+  - `/api.Dream/Top`
+  - `/api.Dream/ListMaterialPhoto`
+  - `/api.Dream/ListQuest`
+  - `/api.Dream/GenerateArea`
+  - `/api.Dream/StartQuest`
+  - `/api.Dream/SkipQuest`
+  - `/api.Dream/ResetArea`
+- `Duty` (3):
+  - `/api.Duty/Top`
+  - `/api.Duty/ExchangeReward`
+  - `/api.Duty/ReceiveTotalObtainReward`
+- `Exercise` (4):
+  - `/api.Exercise/Top`
+  - `/api.Exercise/SaveDeck`
+  - `/api.Exercise/Start`
+  - `/api.Exercise/ListAsset`
+- `FishHeaven` (5):
+  - `/api.FishHeaven/Top`
+  - `/api.FishHeaven/ClearMiniGameTutorial`
+  - `/api.FishHeaven/StartMiniGame`
+  - `/api.FishHeaven/FinishMiniGame`
+  - `/api.FishHeaven/ListRanking`
+- `Forum` (9):
+  - `/api.Forum/ListThread`
+  - `/api.Forum/ListThreadReply`
+  - `/api.Forum/CreateThread`
+  - `/api.Forum/SendThreadReply`
+  - `/api.Forum/LikeReply`
+  - `/api.Forum/DislikeReply`
+  - `/api.Forum/BookmarkThread`
+  - `/api.Forum/UnbookmarkThread`
+  - `/api.Forum/BlockUser`
+- `Friend` (10):
+  - `/api.Friend/List`
+  - `/api.Friend/Delete`
+  - `/api.Friend/Apply`
+  - `/api.Friend/Approve`
+  - `/api.Friend/Cancel`
+  - `/api.Friend/CancelAll`
+  - `/api.Friend/Reject`
+  - `/api.Friend/ListApplying`
+  - `/api.Friend/ListApplied`
+  - `/api.Friend/Search`
+- `Gpp` (1):
+  - `/api.Gpp/ReceiveReward`
+- `Guild` (3):
+  - `/api.Guild/List`
+  - `/api.Guild/Top`
+  - `/api.Guild/Join`
+- `Gvg` (5):
+  - `/api.Gvg/Top`
+  - `/api.Gvg/ListOpponent`
+  - `/api.Gvg/ListRanking`
+  - `/api.Gvg/Start`
+  - `/api.Gvg/ListAsset`
+- `Health` (1):
+  - `/api.Health/Check`
+- `Hierarchy` (4):
+  - `/api.Hierarchy/Top`
+  - `/api.Hierarchy/ListRanking`
+  - `/api.Hierarchy/ReceiveRewards`
+  - `/api.Hierarchy/ReceiveDivisionRewards`
+- `Invite` (3):
+  - `/api.Invite/Top`
+  - `/api.Invite/ReceiveHostRewards`
+  - `/api.Invite/EnterCode`
+- `Item` (1):
+  - `/api.Item/Sell`
+- `Ladder` (2):
+  - `/api.Ladder/Top`
+  - `/api.Ladder/ReachPanel`
+- `League` (9):
+  - `/api.League/Top`
+  - `/api.League/GetLiveResult`
+  - `/api.League/SaveDeck`
+  - `/api.League/GetLastSeasonResult`
+  - `/api.League/ListPointRanking`
+  - `/api.League/ListCardHighestScoreRanking`
+  - `/api.League/ListCardSkillRateRanking`
+  - `/api.League/ListCardMvpRanking`
+  - `/api.League/GetDailyDetail`
+- `Love` (17):
+  - `/api.Love/Title`
+  - `/api.Love/TitleExtra`
+  - `/api.Love/Register`
+  - `/api.Love/Top`
+  - `/api.Love/Start`
+  - `/api.Love/Restart`
+  - `/api.Love/Finish`
+  - `/api.Love/ResetReadingStoryStatus`
+  - `/api.Love/Present`
+  - `/api.Love/Save`
+  - `/api.Love/UpdateSaveName`
+  - `/api.Love/Load`
+  - `/api.Love/Reset`
+  - `/api.Love/ReceiveLessonReward`
+  - `/api.Love/PromoteLesson`
+  - `/api.Love/UpdateName`
+  - `/api.Love/GetMainCharacter`
+- `Marathon` (21):
+  - `/api.Marathon/Top`
+  - `/api.Marathon/UnlockQuest`
+  - `/api.Marathon/StartQuest`
+  - `/api.Marathon/ListQuestAsset`
+  - `/api.Marathon/UseQuestStaminaRecoveryItem`
+  - `/api.Marathon/ListDeck`
+  - `/api.Marathon/SaveDeck`
+  - `/api.Marathon/BuddyDeck`
+  - `/api.Marathon/DrawBoxGacha`
+  - `/api.Marathon/ResetBoxGacha`
+  - `/api.Marathon/ListRaid`
+  - `/api.Marathon/CheckRaidProgress`
+  - `/api.Marathon/ListRaidHistory`
+  - `/api.Marathon/GetRaidHistoryDetail`
+  - `/api.Marathon/ListRaidRanking`
+  - `/api.Marathon/StartRaid`
+  - `/api.Marathon/JoinRaid`
+  - `/api.Marathon/FinishRaid`
+  - `/api.Marathon/UseRaidStaminaRecoveryItem`
+  - `/api.Marathon/ListRaidDeck`
+  - `/api.Marathon/SaveRaidDeck`
+- `Mission` (4):
+  - `/api.Mission/List`
+  - `/api.Mission/Receive`
+  - `/api.Mission/URLTransition`
+  - `/api.Mission/Event`
+- `Mosaic` (3):
+  - `/api.Mosaic/Top`
+  - `/api.Mosaic/Exchange`
+  - `/api.Mosaic/ReceiveTotalConsumptionReward`
+- `PhotoContest` (7):
+  - `/api.PhotoContest/Top`
+  - `/api.PhotoContest/ListPhoto`
+  - `/api.PhotoContest/Ranking`
+  - `/api.PhotoContest/ReceiveSectionRewards`
+  - `/api.PhotoContest/CheckShooting`
+  - `/api.PhotoContest/SubmitShooting`
+  - `/api.PhotoContest/CreateShooting`
+- `Profile` (12):
+  - `/api.Profile/Top`
+  - `/api.Profile/FindUser`
+  - `/api.Profile/UpdateName`
+  - `/api.Profile/UpdateMessage`
+  - `/api.Profile/UpdateBackground`
+  - `/api.Profile/UpdateFavoriteCharacters`
+  - `/api.Profile/UpdateDecoration`
+  - `/api.Profile/UpdateEmblem`
+  - `/api.Profile/UpdateLayout`
+  - `/api.Profile/ClearTwitterMission`
+  - `/api.Profile/UpdateBuddyCard`
+  - `/api.Profile/UpdateBirthday`
+- `Pvp` (5):
+  - `/api.Pvp/Top`
+  - `/api.Pvp/ListOpponent`
+  - `/api.Pvp/ListRanking`
+  - `/api.Pvp/Start`
+  - `/api.Pvp/ListAsset`
+- `Quest` (15):
+  - `/api.Quest/Top`
+  - `/api.Quest/ListMain`
+  - `/api.Quest/ListDaily`
+  - `/api.Quest/ListContest`
+  - `/api.Quest/ListTower`
+  - `/api.Quest/Start`
+  - `/api.Quest/StartBulkDaily`
+  - `/api.Quest/ListTowerRanking`
+  - `/api.Quest/ListContestRanking`
+  - `/api.Quest/ListLatestClear`
+  - `/api.Quest/ListAsset`
+  - `/api.Quest/GetLatestClearLiveResult`
+  - `/api.Quest/GetRankingLiveResult`
+  - `/api.Quest/TowerTop`
+  - `/api.Quest/OutputLiveResultDetailLog`
+- `Race` (12):
+  - `/api.Race/Top`
+  - `/api.Race/MovePanel`
+  - `/api.Race/ReceiveActivityLesson`
+  - `/api.Race/EnhanceLiveBonus`
+  - `/api.Race/ResetLiveBonus`
+  - `/api.Race/StartLivePanelQuest`
+  - `/api.Race/StartLiveAreaQuest`
+  - `/api.Race/ListQuestAsset`
+  - `/api.Race/ListDeck`
+  - `/api.Race/SaveDeck`
+  - `/api.Race/ResetCardCoolTime`
+  - `/api.Race/Ranking`
+- `Roulette` (3):
+  - `/api.Roulette/Top`
+  - `/api.Roulette/Check`
+  - `/api.Roulette/Draw`
+- `Salary` (2):
+  - `/api.Salary/GetPayslip`
+  - `/api.Salary/Pay`
+- `Satellite` (1):
+  - `/api.Satellite/InitCode`
+- `Shelf` (10):
+  - `/api.Shelf/Top`
+  - `/api.Shelf/AlbumTop`
+  - `/api.Shelf/CheckShooting`
+  - `/api.Shelf/SavePhoto`
+  - `/api.Shelf/SetPhoto`
+  - `/api.Shelf/CreatePhoto`
+  - `/api.Shelf/CreateAlbumPhoto`
+  - `/api.Shelf/DeletePhoto`
+  - `/api.Shelf/SwitchTemplate`
+  - `/api.Shelf/UnsetPhoto`
+- `Staff` (3):
+  - `/api.Staff/Train`
+  - `/api.Staff/LevelLimitBreak`
+  - `/api.Staff/Reset`
+- `Tour` (13):
+  - `/api.Tour/Top`
+  - `/api.Tour/Ranking`
+  - `/api.Tour/AreaTop`
+  - `/api.Tour/AreaActivity`
+  - `/api.Tour/AreaRefresh`
+  - `/api.Tour/AreaScout`
+  - `/api.Tour/AreaLive`
+  - `/api.Tour/AreaLiveBonus`
+  - `/api.Tour/AreaPvp`
+  - `/api.Tour/AreaClear`
+  - `/api.Tour/AreaNext`
+  - `/api.Tour/AreaRetire`
+  - `/api.Tour/DeckSave`
+- `Tutorial` (8):
+  - `/api.Tutorial/Init`
+  - `/api.Tutorial/Progress`
+  - `/api.Tutorial/StartQuest`
+  - `/api.Tutorial/StartFanEvent`
+  - `/api.Tutorial/ReceivePromotionReward`
+  - `/api.Tutorial/ReceiveLessonReward`
+  - `/api.Tutorial/CreateShooting`
+  - `/api.Tutorial/Skip`
+- `Warning` (1):
+  - `/api.Warning/SetDisplayed`
+
+## Unimplemented methods on registered services
+
+These services are registered, but the listed RPCs still dispatch to inherited
+generated stubs. The unary interceptor converts their `codes.Unimplemented`
+result into the client’s “return to title” response.
+
+- `Accessory` (1 of 3):
+  - `/api.Accessory/Sell`
+- `Auth` (3 of 4):
+  - `/api.Auth/Create`
+  - `/api.Auth/Delete`
+  - `/api.Auth/Recreate`
+- `Card` (6 of 11):
+  - `/api.Card/ActivityAbilityEnhance`
+  - `/api.Card/Reset`
+  - `/api.Card/RemoveSupport`
+  - `/api.Card/ReleaseSupport`
+  - `/api.Card/RankUp`
+  - `/api.Card/UpdateDisplayType`
+- `Division` (1 of 2):
+  - `/api.Division/Move`
+- `Exchange` (1 of 3):
+  - `/api.Exchange/TryOn`
+- `Excursion` (1 of 4):
+  - `/api.Excursion/SetWatchedGazeReaction`
+- `Gacha` (1 of 7):
+  - `/api.Gacha/Exchange`
+- `Home` (2 of 5):
+  - `/api.Home/ReadTalk`
+  - `/api.Home/SetReview`
+- `Master` (4 of 5):
+  - `/api.Master/Rule`
+  - `/api.Master/GetInquiryTemplate`
+  - `/api.Master/GetHelpCategory`
+  - `/api.Master/GetVersion`
+- `Migration` (9 of 12):
+  - `/api.Migration/SetPassword`
+  - `/api.Migration/LinkApple`
+  - `/api.Migration/MigrateApple`
+  - `/api.Migration/LinkGoogle`
+  - `/api.Migration/MigrateGoogle`
+  - `/api.Migration/RequestTwitterOAuthToken`
+  - `/api.Migration/LinkTwitter`
+  - `/api.Migration/MigrateTwitter`
+  - `/api.Migration/Unlink`
+- `Notice` (1 of 3):
+  - `/api.Notice/Get`
+- `Photo` (5 of 26):
+  - `/api.Photo/Report`
+  - `/api.Photo/ListSpecialShooting`
+  - `/api.Photo/CheckSpecialShooting`
+  - `/api.Photo/CreateSpecialShootings`
+  - `/api.Photo/ActivateStoryEpisodeShooting`
+- `Shop` (9 of 13):
+  - `/api.Shop/GetConditionRewardPackageItem`
+  - `/api.Shop/RegisterPurchaseTransaction`
+  - `/api.Shop/CancelPurchaseTransaction`
+  - `/api.Shop/PurchaseStone`
+  - `/api.Shop/RecoverPurchaseStone`
+  - `/api.Shop/CheckPurchaseStone`
+  - `/api.Shop/RegisterBirthday`
+  - `/api.Shop/ReceiveConditionReward`
+  - `/api.Shop/TryOn`
+- `Story` (2 of 8):
+  - `/api.Story/ReleaseEpisode`
+  - `/api.Story/ReadAnniversaryStory`
+- `User` (1 of 2):
+  - `/api.User/ProvideExternalReward`
+
+## Fully implemented registered service surfaces
+
+For comparison, every generated RPC currently has a concrete handler for these
+registered services: `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
+`Hair`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`, `Showcase`, `System`,
+and `Telephone`.

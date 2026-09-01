@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
@@ -1021,7 +1022,7 @@ func FilterHomeCommerceIDs(
 	ctx context.Context,
 	suid string,
 	shopIDs []string,
-	showcaseShopIDs []string,
+	_ []string,
 	boothIDs []string,
 ) ([]string, []string, []string, []string, []string, []string, error) {
 	now := time.Now().UnixMilli()
@@ -1030,33 +1031,42 @@ func FilterHomeCommerceIDs(
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, err
 	}
-	allShopIDs := append([]string(nil), shopIDs...)
-	allShowcaseShopIDs := append([]string(nil), showcaseShopIDs...)
-	shopSet := StringSet(allShopIDs)
-	showcaseSet := StringSet(allShowcaseShopIDs)
+	legacyShowcaseShopIDs := make(map[string]struct{})
+	for _, shop := range shops {
+		if shop.Info != nil && IsShowcaseShopType(shop.Info.GetType()) {
+			legacyShowcaseShopIDs[shop.ShopId] = struct{}{}
+		}
+	}
+	allShopIDs := make([]string, 0, len(shopIDs)+len(shops))
+	shopSet := make(map[string]struct{}, len(shopIDs)+len(shops))
+	for _, shopID := range shopIDs {
+		_, legacyShowcase := legacyShowcaseShopIDs[shopID]
+		if IsShowcaseCommerceShopID(shopID) || legacyShowcase || strings.HasPrefix(shopID, "shop_top_shop-showcase-") {
+			continue
+		}
+		if _, exists := shopSet[shopID]; !exists {
+			shopSet[shopID] = struct{}{}
+			allShopIDs = append(allShopIDs, shopID)
+		}
+	}
 	for _, shop := range shops {
 		if shop.Info == nil {
 			continue
 		}
-		switch shop.Info.GetType() {
-		case penum.ShopType_ShopType_ShowcaseToyShop,
-			penum.ShopType_ShopType_DefaultShowcaseToyShop,
-			penum.ShopType_ShopType_OnlyShowcaseShop:
-			if _, ok := showcaseSet[shop.ShopId]; !ok {
-				showcaseSet[shop.ShopId] = struct{}{}
-				allShowcaseShopIDs = append(allShowcaseShopIDs, shop.ShopId)
-			}
-		default:
-			if _, ok := shopSet[shop.ShopId]; !ok {
-				shopSet[shop.ShopId] = struct{}{}
-				allShopIDs = append(allShopIDs, shop.ShopId)
-			}
+		if IsShowcaseShopType(shop.Info.GetType()) {
+			continue
+		}
+		if _, ok := shopSet[shop.ShopId]; !ok {
+			shopSet[shop.ShopId] = struct{}{}
+			allShopIDs = append(allShopIDs, shop.ShopId)
 		}
 	}
 	visibleShops := make([]string, 0, len(shopIDs))
-	visibleShowcaseShops := make([]string, 0, len(showcaseShopIDs))
 	for _, shop := range shops {
 		if shop.Info == nil {
+			continue
+		}
+		if IsShowcaseShopType(shop.Info.GetType()) {
 			continue
 		}
 		visible, err := evaluator.Satisfied(shop.Info.GetViewConditionId())
@@ -1076,7 +1086,19 @@ func FilterHomeCommerceIDs(
 		if _, ok := shopSet[shop.ShopId]; ok {
 			visibleShops = append(visibleShops, shop.ShopId)
 		}
-		if _, ok := showcaseSet[shop.ShopId]; ok {
+	}
+	showcaseCatalog, err := BuildShowcaseCommerceCatalog(ctx, suid)
+	if err != nil {
+		return nil, nil, nil, nil, nil, nil, err
+	}
+	allShowcaseShopIDs := showcaseCatalog.ShopIDs()
+	visibleShowcaseShops := make([]string, 0, len(allShowcaseShopIDs))
+	for _, shop := range showcaseCatalog.Shops() {
+		visible, err := evaluator.Satisfied(shop.Info.GetViewConditionId())
+		if err != nil {
+			return nil, nil, nil, nil, nil, nil, err
+		}
+		if visible {
 			visibleShowcaseShops = append(visibleShowcaseShops, shop.ShopId)
 		}
 	}
@@ -1112,6 +1134,17 @@ func FilterHomeCommerceIDs(
 	}
 	return visibleShops, visibleShowcaseShops, visibleBooths,
 		allShopIDs, allShowcaseShopIDs, allBoothIDs, nil
+}
+
+func IsShowcaseShopType(shopType penum.ShopType) bool {
+	switch shopType {
+	case penum.ShopType_ShopType_ShowcaseToyShop,
+		penum.ShopType_ShopType_DefaultShowcaseToyShop,
+		penum.ShopType_ShopType_OnlyShowcaseShop:
+		return true
+	default:
+		return false
+	}
 }
 
 func StringSet(values []string) map[string]struct{} {

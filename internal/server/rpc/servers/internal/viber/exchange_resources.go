@@ -104,6 +104,7 @@ var autoRewardResourceTypes = map[string]penum.ResourceType{
 	"card_rarity_exp":                      penum.ResourceType_ResourceType_CardRarityExp,
 	"photo_recipe":                         penum.ResourceType_ResourceType_PhotoRecipe,
 	"showcase_toy":                         penum.ResourceType_ResourceType_ShowcaseToy,
+	"showcase_music":                       penum.ResourceType_ResourceType_ShowcaseMusic,
 	"photo_pose":                           penum.ResourceType_ResourceType_PhotoPose,
 	"photo_all_in_one":                     penum.ResourceType_ResourceType_PhotoAllInOne,
 	"company_point":                        penum.ResourceType_ResourceType_CompanyPoint,
@@ -156,6 +157,7 @@ func isSupportedExchangeReward(resourceType penum.ResourceType) bool {
 		penum.ResourceType_ResourceType_Hair,
 		penum.ResourceType_ResourceType_CompanyPoint,
 		penum.ResourceType_ResourceType_ShowcaseToy,
+		penum.ResourceType_ResourceType_ShowcaseMusic,
 		penum.ResourceType_ResourceType_PhotoPose,
 		penum.ResourceType_ResourceType_PhotoAllInOne:
 		return true
@@ -352,6 +354,8 @@ func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.Rewar
 		return grantExchangePhotoRecipe(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_ShowcaseToy:
 		return grantExchangeShowcaseToy(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_ShowcaseMusic:
+		return grantExchangeShowcaseMusic(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_PhotoPose:
 		return grantExchangePhotoPose(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_PhotoAllInOne:
@@ -667,7 +671,8 @@ func grantExchangePhotoRecipe(ctx context.Context, suid, recipeId string, amount
 }
 
 func grantExchangeShowcaseToy(ctx context.Context, suid, toyId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
-	if _, err := opmaster.FindShowcaseToy(ctx, toyId); err != nil {
+	masterToy, err := opmaster.FindShowcaseToy(ctx, toyId)
+	if err != nil {
 		return nil, invalidExchangeMasterResource("showcase toy", toyId, err)
 	}
 	toy, err := opuser.FindUserShowcaseToy(ctx, suid, toyId)
@@ -678,6 +683,12 @@ func grantExchangeShowcaseToy(ctx context.Context, suid, toyId string, amount in
 		toy = &ptransaction.UserShowcaseToy{ShowcaseToyId: toyId}
 	}
 	before := toy.Amount
+	if masterToy.GetCategoryId() == "toy-category-figure" {
+		if before > 0 {
+			return exchangeRewardResult(penum.ResourceType_ResourceType_ShowcaseToy, toyId, before, before, 0), nil
+		}
+		amount = 1
+	}
 	if before > math.MaxInt64-amount {
 		return nil, status.Error(codes.FailedPrecondition, "showcase toy amount overflows")
 	}
@@ -687,6 +698,26 @@ func grantExchangeShowcaseToy(ctx context.Context, suid, toyId string, amount in
 	}
 	updated.ShowcaseToys = append(updated.ShowcaseToys, toy)
 	return exchangeRewardResult(penum.ResourceType_ResourceType_ShowcaseToy, toyId, before, toy.Amount, amount), nil
+}
+
+func grantExchangeShowcaseMusic(ctx context.Context, suid, musicID string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	if amount != 1 {
+		return nil, status.Error(codes.FailedPrecondition, "showcase music rewards must have amount one")
+	}
+	if _, err := opmaster.FindShowcaseMusic(ctx, musicID); err != nil {
+		return nil, invalidExchangeMasterResource("showcase music", musicID, err)
+	}
+	if _, err := opuser.FindUserShowcaseMusic(ctx, suid, musicID); err == nil {
+		return exchangeRewardResult(penum.ResourceType_ResourceType_ShowcaseMusic, musicID, 1, 1, 0), nil
+	} else if !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	music := &ptransaction.UserShowcaseMusic{ShowcaseMusicId: musicID}
+	if err := opuser.UpsertUserShowcaseMusic(ctx, suid, music); err != nil {
+		return nil, err
+	}
+	updated.ShowcaseMusics = append(updated.ShowcaseMusics, music)
+	return exchangeRewardResult(penum.ResourceType_ResourceType_ShowcaseMusic, musicID, 0, 1, 1), nil
 }
 
 func grantExchangePhotoPose(ctx context.Context, suid, poseId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {

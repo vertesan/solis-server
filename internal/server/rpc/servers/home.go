@@ -259,6 +259,10 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		// The private server's Showcase catalog is generated from current master
+		// data. Never expose stale, captured item IDs as "new item" badges.
+		notiShowcaseShopItem.ShopId = viber.ShowcaseGoodsShopID
+		notiShowcaseShopItem.ShopItemIds = []string{}
 		eventInfo, err := opsolis.FindHomeEventInfo(ctx)
 		if err != nil {
 			return nil, err

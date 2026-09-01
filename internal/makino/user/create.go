@@ -408,6 +408,25 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			return nil, err
 		}
 
+		// UserShowcase and UserShowcaseMyset
+		for number := int32(1); number <= 5; number++ {
+			if err := opuser.UpsertUserShowcase(ctx, suid, &ptransaction.UserShowcase{
+				Number:          number,
+				Name:            fmt.Sprintf("ケース%d", number),
+				IsOpen:          true,
+				ShowcaseFrameId: "frame-001",
+			}); err != nil {
+				return nil, err
+			}
+			if err := opuser.UpsertUserShowcaseMyset(ctx, suid, &ptransaction.UserShowcaseMyset{
+				Number: number,
+				Name:   fmt.Sprintf("マイセット%d", number),
+				IsSave: false,
+			}); err != nil {
+				return nil, err
+			}
+		}
+
 		// UserShowcaseLike
 		if err := opuser.UpsertUserShowcaseLike(ctx, suid, &ptransaction.UserShowcaseLike{
 			RewardLikeCount: 30,
@@ -463,7 +482,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			return nil, err
 		}
 		shopIds := make([]string, 0, len(shopCatalog))
-		showcaseShopIds := make([]string, 0, len(shopCatalog))
+		showcaseShopIds := consts.GetUserInitialShowcaseToyShopIds()
 		for _, shop := range shopCatalog {
 			if shop.Info == nil {
 				continue
@@ -472,7 +491,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			case penum.ShopType_ShopType_ShowcaseToyShop,
 				penum.ShopType_ShopType_DefaultShowcaseToyShop,
 				penum.ShopType_ShopType_OnlyShowcaseShop:
-				showcaseShopIds = append(showcaseShopIds, shop.ShopId)
+				continue
 			default:
 				shopIds = append(shopIds, shop.ShopId)
 			}

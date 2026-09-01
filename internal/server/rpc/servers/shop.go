@@ -56,6 +56,9 @@ func (s *ShopServer) List(ctx context.Context, _ *papi.Empty) (*papi.ShopListRes
 		if entry.Info == nil {
 			continue
 		}
+		if viber.IsShowcaseCommerceShopID(entry.ShopId) || viber.IsShowcaseShopType(entry.Info.GetType()) {
+			continue
+		}
 		if _, ok := allowed[entry.ShopId]; !ok {
 			continue
 		}
@@ -142,21 +145,12 @@ func (s *ShopServer) Purchase(ctx context.Context, req *papi.ShopPurchaseRequest
 	var response *papi.ShopPurchaseResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 		now := time.Now()
-		definition, err := opsolis.FindShopCatalogEntryByItemId(ctx, req.GetShopItemId())
-		if err != nil {
-			if errors.Is(err, mongo.ErrNoDocuments) {
-				return nil, status.Error(codes.NotFound, "shop item not found")
-			}
-			return nil, err
-		}
 		evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, now.UnixMilli())
-		entry, err := findAuthorizedShopEntry(ctx, suid, definition.ShopId, evaluator)
+		entry, itemDefinition, err := findAuthorizedShopItemEntry(
+			ctx, suid, req.GetShopItemId(), evaluator,
+		)
 		if err != nil {
 			return nil, err
-		}
-		itemDefinition := findShopItem(entry, req.GetShopItemId())
-		if itemDefinition == nil {
-			return nil, status.Error(codes.NotFound, "shop item not found")
 		}
 		purchase, err := viber.FindUserShopPurchaseOrEmpty(ctx, suid)
 		if err != nil {
@@ -330,6 +324,24 @@ func findAuthorizedShopEntry(
 	shopID string,
 	evaluator *viber.CommerceConditionEvaluator,
 ) (*smodel.ShopCatalogEntry, error) {
+	if viber.IsShowcaseCommerceShopID(shopID) {
+		catalog, err := viber.BuildShowcaseCommerceCatalog(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		entry, ok := catalog.FindShop(shopID)
+		if !ok {
+			return nil, status.Error(codes.NotFound, "shop has no available items")
+		}
+		visible, err := evaluator.Satisfied(entry.Info.GetViewConditionId())
+		if err != nil {
+			return nil, err
+		}
+		if !visible {
+			return nil, status.Error(codes.PermissionDenied, "shop is locked")
+		}
+		return entry, nil
+	}
 	_, err := findUserShopAccess(ctx, suid)
 	if err != nil {
 		return nil, err
@@ -352,6 +364,49 @@ func findAuthorizedShopEntry(
 		return nil, status.Error(codes.PermissionDenied, "shop is locked")
 	}
 	return entry, nil
+}
+
+func findAuthorizedShopItemEntry(
+	ctx context.Context,
+	suid string,
+	shopItemID string,
+	evaluator *viber.CommerceConditionEvaluator,
+) (*smodel.ShopCatalogEntry, *papi.ShopItem, error) {
+	if viber.IsShowcaseCommerceItemID(shopItemID) {
+		catalog, err := viber.BuildShowcaseCommerceCatalog(ctx, suid)
+		if err != nil {
+			return nil, nil, err
+		}
+		entry, item, ok := catalog.FindItem(shopItemID)
+		if !ok {
+			return nil, nil, status.Error(codes.NotFound, "shop item not found")
+		}
+		visible, err := evaluator.Satisfied(entry.Info.GetViewConditionId())
+		if err != nil {
+			return nil, nil, err
+		}
+		if !visible {
+			return nil, nil, status.Error(codes.PermissionDenied, "shop is locked")
+		}
+		return entry, item, nil
+	}
+
+	definition, err := opsolis.FindShopCatalogEntryByItemId(ctx, shopItemID)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return nil, nil, status.Error(codes.NotFound, "shop item not found")
+		}
+		return nil, nil, err
+	}
+	entry, err := findAuthorizedShopEntry(ctx, suid, definition.ShopId, evaluator)
+	if err != nil {
+		return nil, nil, err
+	}
+	item := findShopItem(entry, shopItemID)
+	if item == nil {
+		return nil, nil, status.Error(codes.NotFound, "shop item not found")
+	}
+	return entry, item, nil
 }
 
 func findUserShopAccess(ctx context.Context, suid string) (map[string]struct{}, error) {
