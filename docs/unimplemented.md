@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-08-31
+Last audited: 2026-09-01
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -22,13 +22,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 29 | 186 |
-| Concrete handlers | 29 | 139 |
-| Entirely unregistered services | 38 | 239 |
+| Registered services | 31 | 193 |
+| Concrete handlers | 31 | 146 |
+| Entirely unregistered services | 36 | 232 |
 | Missing methods on registered services | 15 | 47 |
-| Total unimplemented RPCs | 53 | 286 |
+| Total unimplemented RPCs | 51 | 279 |
 
-The “Total unimplemented RPCs” service count is the 38 entirely unregistered
+The “Total unimplemented RPCs” service count is the 36 entirely unregistered
 services plus 15 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -124,10 +124,6 @@ unknown-service handler.
   - `/api.Friend/Search`
 - `Gpp` (1):
   - `/api.Gpp/ReceiveReward`
-- `Guild` (3):
-  - `/api.Guild/List`
-  - `/api.Guild/Top`
-  - `/api.Guild/Join`
 - `Gvg` (5):
   - `/api.Gvg/Top`
   - `/api.Gvg/ListOpponent`
@@ -136,11 +132,6 @@ unknown-service handler.
   - `/api.Gvg/ListAsset`
 - `Health` (1):
   - `/api.Health/Check`
-- `Hierarchy` (4):
-  - `/api.Hierarchy/Top`
-  - `/api.Hierarchy/ListRanking`
-  - `/api.Hierarchy/ReceiveRewards`
-  - `/api.Hierarchy/ReceiveDivisionRewards`
 - `Invite` (3):
   - `/api.Invite/Top`
   - `/api.Invite/ReceiveHostRewards`
@@ -388,5 +379,5 @@ result into the client’s “return to title” response.
 
 For comparison, every generated RPC currently has a concrete handler for these
 registered services: `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
-`Hair`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`, `Showcase`, `System`,
-and `Telephone`.
+`Guild`, `Hair`, `Hierarchy`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`,
+`Showcase`, `System`, and `Telephone`.

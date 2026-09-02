@@ -274,9 +274,16 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err == nil && godState.UnlockCurrentEvents {
 			unlockHomeEventInfo(eventInfo.ProtoReflect())
 		}
-		hierarchyNotiInfo, err := opuser.FindUserHierarchyNotiInfo(ctx, suid)
+		hierarchyNotiInfo, hierarchy, hierarchyChanged, err := viber.ReconcileHierarchyNotification(
+			ctx,
+			suid,
+			hierarchyPrivateServerRank,
+		)
 		if err != nil {
 			return nil, err
+		}
+		if hierarchyChanged {
+			updatedData.Hierarchy = hierarchy
 		}
 		eventStoryInfos, err := opuser.FindAllUserEventStoryInfos(ctx, suid)
 		if err != nil {

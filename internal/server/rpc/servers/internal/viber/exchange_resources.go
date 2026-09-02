@@ -108,6 +108,7 @@ var autoRewardResourceTypes = map[string]penum.ResourceType{
 	"photo_pose":                           penum.ResourceType_ResourceType_PhotoPose,
 	"photo_all_in_one":                     penum.ResourceType_ResourceType_PhotoAllInOne,
 	"company_point":                        penum.ResourceType_ResourceType_CompanyPoint,
+	"guild_medal":                          penum.ResourceType_ResourceType_GuildMedal,
 }
 
 func ValidateExchangeResources(costType penum.ResourceType, rewards []*pmaster.RewardResource) error {
@@ -156,6 +157,8 @@ func isSupportedExchangeReward(resourceType penum.ResourceType) bool {
 		penum.ResourceType_ResourceType_Decoration,
 		penum.ResourceType_ResourceType_Hair,
 		penum.ResourceType_ResourceType_CompanyPoint,
+		penum.ResourceType_ResourceType_HierarchyFixedPoint,
+		penum.ResourceType_ResourceType_HierarchyVariablePoint,
 		penum.ResourceType_ResourceType_ShowcaseToy,
 		penum.ResourceType_ResourceType_ShowcaseMusic,
 		penum.ResourceType_ResourceType_PhotoPose,
@@ -368,6 +371,9 @@ func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.Rewar
 		return grantExchangeHair(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_CompanyPoint:
 		return GrantCompanyPoint(ctx, suid, reward.GetResourceId(), amount, updated)
+	case penum.ResourceType_ResourceType_HierarchyFixedPoint,
+		penum.ResourceType_ResourceType_HierarchyVariablePoint:
+		return grantHierarchyPoint(ctx, suid, reward.GetResourceType(), amount, updated)
 	default:
 		pointType, ok := exchangePointType(reward.GetResourceType())
 		if !ok {
@@ -863,6 +869,58 @@ func grantExchangePoint(ctx context.Context, suid string, resourceType penum.Res
 		updated.Missions = append(updated.Missions, missions...)
 	}
 	return exchangeRewardResult(resourceType, "", before, point.Amount, amount), nil
+}
+
+func grantHierarchyPoint(
+	ctx context.Context,
+	suid string,
+	resourceType penum.ResourceType,
+	amount int64,
+	updated *papi.UpdatedData,
+) (*ptransaction.RewardResult, error) {
+	hierarchy, err := opuser.FindUserHierarchy(ctx, suid)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := HierarchyTotalPoint(hierarchy); err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+
+	var beforeResource int64
+	switch resourceType {
+	case penum.ResourceType_ResourceType_HierarchyFixedPoint:
+		beforeResource = hierarchy.GetCurrentFixedPoint()
+		if beforeResource > math.MaxInt64-amount {
+			return nil, status.Error(codes.FailedPrecondition, "hierarchy fixed point overflows")
+		}
+		hierarchy.CurrentFixedPoint += amount
+	case penum.ResourceType_ResourceType_HierarchyVariablePoint:
+		beforeResource = hierarchy.GetCurrentVariablePoint()
+		if beforeResource > math.MaxInt64-amount {
+			return nil, status.Error(codes.FailedPrecondition, "hierarchy variable point overflows")
+		}
+		hierarchy.CurrentVariablePoint += amount
+	default:
+		return nil, status.Error(codes.Internal, "invalid hierarchy point resource type")
+	}
+
+	afterTotal, err := HierarchyTotalPoint(hierarchy)
+	if err != nil {
+		return nil, status.Error(codes.FailedPrecondition, err.Error())
+	}
+	if afterTotal > hierarchy.GetBestTotalPoint() {
+		hierarchy.BestTotalPoint = afterTotal
+	}
+	hierarchy.CurrentPointUpdateDatetime = time.Now().UnixMilli()
+	if err := opuser.UpsertUserHierarchy(ctx, suid, hierarchy); err != nil {
+		return nil, err
+	}
+	_, reconciled, _, err := ReconcileHierarchyNotification(ctx, suid, 1)
+	if err != nil {
+		return nil, err
+	}
+	updated.Hierarchy = reconciled
+	return exchangeRewardResult(resourceType, "", beforeResource, beforeResource+amount, amount), nil
 }
 
 func exchangeRewardResult(resourceType penum.ResourceType, resourceId string, before, after, amount int64) *ptransaction.RewardResult {

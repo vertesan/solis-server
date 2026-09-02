@@ -32,6 +32,7 @@ var supportedCommerceConditionFields = map[string]struct{}{
 	"startHours":                    {},
 	"managerLevel":                  {},
 	"deckMaxOverallValue":           {},
+	"joinedGuild":                   {},
 	"clearQuest":                    {},
 	"clearMission":                  {},
 	"companyGradeGte":               {},
@@ -57,6 +58,8 @@ var supportedCommerceConditionFields = map[string]struct{}{
 	"obtainCharacter":               {},
 	"obtainEmblem":                  {},
 	"staffTrainTotalCount":          {},
+	"hierarchyDetailGradeId":        {},
+	"hierarchyPointGte":             {},
 }
 
 type CommerceConditionEvaluator struct {
@@ -97,9 +100,12 @@ type CommerceConditionEvaluator struct {
 	totalCountLoaded       bool
 	company                *ptransaction.UserCompany
 	companyLoaded          bool
+	hierarchy              *ptransaction.UserHierarchy
+	hierarchyLoaded        bool
 	companyEnjoyLevels     []*pmaster.CompanyEnjoyLevel
 	companyTrustLevels     []*pmaster.CompanyTrustLevel
 	companyCharacterLevels []*pmaster.CompanyEnjoyCharacterLevel
+	hierarchyDetailGrades  []*pmaster.HierarchyDetailGrade
 }
 
 func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) *CommerceConditionEvaluator {
@@ -308,6 +314,25 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			merge(commerceConditionUnsatisfied)
 		}
 	}
+	if value := setting.GetJoinedGuild(); value != nil {
+		hasKnownField = true
+		user, err := e.loadUser()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		switch value.GetJoinedGuildType() {
+		case penum.JoinedGuildType_JoinedGuildType_Join:
+			if user.GetGuildId() == "" {
+				merge(commerceConditionUnsatisfied)
+			}
+		case penum.JoinedGuildType_JoinedGuildType_NotJoin:
+			if user.GetGuildId() != "" {
+				merge(commerceConditionUnsatisfied)
+			}
+		default:
+			return commerceConditionIndeterminate, nil
+		}
+	}
 	if value := setting.GetClearQuest(); value != nil {
 		hasKnownField = true
 		if value.GetQuestId() == "" {
@@ -479,6 +504,58 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 		}
 		character := characters[value.GetCharacterId()]
 		if character == nil || character.GetCompanyEnjoyPoint() < value.GetPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetHierarchyPointGte(); value != nil {
+		hasKnownField = true
+		if value.GetHierarchyPointGte() < 0 {
+			return commerceConditionIndeterminate, nil
+		}
+		hierarchy, err := e.loadHierarchy()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		point, err := HierarchyTotalPoint(hierarchy)
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		if point < value.GetHierarchyPointGte() {
+			merge(commerceConditionUnsatisfied)
+		}
+	}
+	if value := setting.GetHierarchyDetailGradeId(); value != nil {
+		hasKnownField = true
+		if value.GetHierarchyDetailGradeId() == "" {
+			return commerceConditionIndeterminate, nil
+		}
+		hierarchy, err := e.loadHierarchy()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		grades, err := e.loadHierarchyDetailGrades()
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		point, err := HierarchyTotalPoint(hierarchy)
+		if err != nil {
+			return commerceConditionIndeterminate, err
+		}
+		currentGrade, err := ResolveHierarchyDetailGrade(grades, point, 1)
+		if err != nil {
+			return commerceConditionIndeterminate, nil
+		}
+		achievedID, err := StrongestHierarchyDetailGradeID(
+			grades, currentGrade.GetId(), hierarchy.GetBestDetailGradeId(),
+		)
+		if err != nil {
+			return commerceConditionIndeterminate, nil
+		}
+		reached, err := HierarchyDetailGradeReached(grades, achievedID, value.GetHierarchyDetailGradeId())
+		if err != nil {
+			return commerceConditionIndeterminate, nil
+		}
+		if !reached {
 			merge(commerceConditionUnsatisfied)
 		}
 	}
@@ -955,6 +1032,18 @@ func (e *CommerceConditionEvaluator) loadCompany() (*ptransaction.UserCompany, e
 	return e.company, nil
 }
 
+func (e *CommerceConditionEvaluator) loadHierarchy() (*ptransaction.UserHierarchy, error) {
+	if !e.hierarchyLoaded {
+		var err error
+		e.hierarchy, err = opuser.FindUserHierarchy(e.ctx, e.suid)
+		if err != nil {
+			return nil, err
+		}
+		e.hierarchyLoaded = true
+	}
+	return e.hierarchy, nil
+}
+
 func (e *CommerceConditionEvaluator) loadCompanyEnjoyLevels() ([]*pmaster.CompanyEnjoyLevel, error) {
 	if e.companyEnjoyLevels == nil {
 		var err error
@@ -986,6 +1075,17 @@ func (e *CommerceConditionEvaluator) loadCompanyCharacterLevels() ([]*pmaster.Co
 		}
 	}
 	return e.companyCharacterLevels, nil
+}
+
+func (e *CommerceConditionEvaluator) loadHierarchyDetailGrades() ([]*pmaster.HierarchyDetailGrade, error) {
+	if e.hierarchyDetailGrades == nil {
+		var err error
+		e.hierarchyDetailGrades, err = opmaster.FindAllHierarchyDetailGrades(e.ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return e.hierarchyDetailGrades, nil
 }
 
 func companyEnjoyLevelAtPoint(levels []*pmaster.CompanyEnjoyLevel, point int64) int32 {
