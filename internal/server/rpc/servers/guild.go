@@ -20,7 +20,10 @@ import (
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 )
 
-const guildDailyCheckInMedalAmount int32 = 100
+const (
+	guildDailyCheckInBaseMedalAmount     int64 = 50
+	guildDailyCheckInFallbackMedalAmount int32 = 100
+)
 
 type GuildServer struct {
 	papi.UnimplementedGuildServer
@@ -63,7 +66,10 @@ func (s *GuildServer) Top(ctx context.Context, _ *papi.Empty) (*papi.GuildTopRes
 		now := time.Now().UnixMilli()
 		if user.GetGuildId() != "" && !viber.SameJSTDay(user.GetLastGuildCheckTime(), now) {
 			updated = &papi.UpdatedData{}
-			rewardAmount = guildDailyCheckInMedalAmount
+			rewardAmount, err = guildDailyCheckInReward(ctx, suid)
+			if err != nil {
+				return nil, err
+			}
 
 			user.LastGuildCheckTime = now
 			if err := opuser.UpsertUser(ctx, suid, user); err != nil {
@@ -73,7 +79,7 @@ func (s *GuildServer) Top(ctx context.Context, _ *papi.Empty) (*papi.GuildTopRes
 
 			if _, err := viber.GrantExchangeRewards(ctx, suid, &pmaster.RewardResource{
 				ResourceType: penum.ResourceType_ResourceType_GuildMedal,
-				Amount:       guildDailyCheckInMedalAmount,
+				Amount:       rewardAmount,
 			}, updated); err != nil {
 				return nil, err
 			}
@@ -127,6 +133,36 @@ func (s *GuildServer) Top(ctx context.Context, _ *papi.Empty) (*papi.GuildTopRes
 		return nil, viber.GameplayError(err)
 	}
 	return response, nil
+}
+
+func guildDailyCheckInReward(ctx context.Context, suid string) (int32, error) {
+	staffs, err := opuser.FindAllUserStaffs(ctx, suid)
+	if err != nil {
+		return 0, err
+	}
+	enhanceCount, err := viber.CurrentStaffEnhanceCount(staffs)
+	if err != nil {
+		return 0, err
+	}
+	advantage, err := opmaster.FindTotalStaffEnhanceAdvantage(ctx, enhanceCount)
+	if err != nil {
+		if errors.Is(err, mongo.ErrNoDocuments) {
+			return guildDailyCheckInFallbackMedalAmount, nil
+		}
+		return 0, err
+	}
+	if !advantage.GetIsDataExist() {
+		return guildDailyCheckInFallbackMedalAmount, nil
+	}
+	if advantage.GetAdvantagePermil() < 0 {
+		return 0, viber.FailedPreconditionf("staff check-in advantage is invalid")
+	}
+	amount := guildDailyCheckInBaseMedalAmount +
+		guildDailyCheckInBaseMedalAmount*int64(advantage.GetAdvantagePermil())/1000
+	if amount <= 0 || amount > math.MaxInt32 {
+		return 0, viber.FailedPreconditionf("guild check-in reward is invalid")
+	}
+	return int32(amount), nil
 }
 
 func appendUniqueGuildMissions(groups ...[]*ptransaction.UserMission) []*ptransaction.UserMission {

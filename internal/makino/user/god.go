@@ -1286,10 +1286,11 @@ func applyGodCompany(
 			master.GetCompanyEnjoyCharacterMissionCategoryType() != penum.CompanyEnjoyCharacterMissionCategoryType_CompanyEnjoyCharacterMissionCategoryType_Unknown ||
 			master.GetCompanyEnjoyCharacterId() != ""
 		reliabilityMission := master.GetMissionType() == penum.MissionType_MissionType_ReliabilityAchievement
+		staffMission := master.GetMissionType() == penum.MissionType_MissionType_StaffTrainTotalCount
 		if reliabilityMission && feature.Bond != umodel.GodMessageFeatureAll {
 			continue
 		}
-		if !companyMission && !reliabilityMission {
+		if !companyMission && !reliabilityMission && !staffMission {
 			continue
 		}
 		if !godCompanyConditionInTerm(conditionByID[master.GetViewConditionId()], master.GetViewConditionId(), now) {
@@ -1388,6 +1389,31 @@ func applyGodProgress(
 	if err := godUpsert(ctx, uname.UserStaff, suid, staffs, true, counts); err != nil {
 		return err
 	}
+	var staffTrainCount int64
+	for _, level := range data.staffLevels {
+		if level.GetLevel() < 1 || staffTrainCount > math.MaxInt64-int64(level.GetLevel()-1) {
+			return fmt.Errorf("staff training count overflows")
+		}
+		staffTrainCount += int64(level.GetLevel() - 1)
+	}
+	totalCount, err := opuser.FindUserTotalCount(ctx, suid)
+	if err != nil {
+		if !errors.Is(err, mongo.ErrNoDocuments) {
+			return err
+		}
+		totalCount = &ptransaction.UserTotalCount{}
+	}
+	if staffTrainCount > totalCount.GetStaffTrainCount() {
+		totalCount.StaffTrainCount = staffTrainCount
+	}
+	if err := opuser.UpsertUserTotalCount(ctx, suid, totalCount); err != nil {
+		return err
+	}
+	counts[uname.UserTotalCount] = 1
+	if err := opuser.UpsertUserStaffTrainingReset(ctx, suid, &ptransaction.UserStaffTrainingReset{}); err != nil {
+		return err
+	}
+	counts[uname.UserStaffTrainingReset] = 1
 
 	areas := make([]*ptransaction.UserArea, 0, len(data.areas))
 	for _, master := range data.areas {

@@ -270,6 +270,13 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 			if !errors.Is(err, mongo.ErrNoDocuments) {
 				return nil, err
 			}
+		} else if staffTrainingReset.GetStaffTrainingResetCount() != 0 {
+			// Staff resets are free and unlimited on the private server. Normalize
+			// imported official state before the client can hide a third reset.
+			staffTrainingReset.StaffTrainingResetCount = 0
+			if err := opuser.UpsertUserStaffTrainingReset(ctx, suid, staffTrainingReset); err != nil {
+				return nil, err
+			}
 		}
 		userPublic, err := opuser.FindUserPublic(ctx, suid)
 		if err != nil {

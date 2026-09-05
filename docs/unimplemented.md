@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-01
+Last audited: 2026-09-02
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -22,13 +22,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 31 | 193 |
-| Concrete handlers | 31 | 146 |
-| Entirely unregistered services | 36 | 232 |
+| Registered services | 32 | 196 |
+| Concrete handlers | 32 | 149 |
+| Entirely unregistered services | 35 | 229 |
 | Missing methods on registered services | 15 | 47 |
-| Total unimplemented RPCs | 51 | 279 |
+| Total unimplemented RPCs | 50 | 276 |
 
-The “Total unimplemented RPCs” service count is the 36 entirely unregistered
+The “Total unimplemented RPCs” service count is the 35 entirely unregistered
 services plus 15 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -276,10 +276,6 @@ unknown-service handler.
   - `/api.Shelf/DeletePhoto`
   - `/api.Shelf/SwitchTemplate`
   - `/api.Shelf/UnsetPhoto`
-- `Staff` (3):
-  - `/api.Staff/Train`
-  - `/api.Staff/LevelLimitBreak`
-  - `/api.Staff/Reset`
 - `Tour` (13):
   - `/api.Tour/Top`
   - `/api.Tour/Ranking`
@@ -380,4 +376,4 @@ result into the client’s “return to title” response.
 For comparison, every generated RPC currently has a concrete handler for these
 registered services: `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
 `Guild`, `Hair`, `Hierarchy`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`,
-`Showcase`, `System`, and `Telephone`.
+`Showcase`, `Staff`, `System`, and `Telephone`.

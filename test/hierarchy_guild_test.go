@@ -114,8 +114,9 @@ func TestGuildScenario(t *testing.T) {
 	})
 	checkInFinished := time.Now().UnixMilli()
 	requireHierarchyGuildCommonResponse(t, checkIn.GetCommonResponse())
-	if checkIn.GetRewardGuildMedalAmount() != 100 {
-		t.Fatalf("first Guild.Top of the JST day rewarded %d medals, want 100", checkIn.GetRewardGuildMedalAmount())
+	checkInReward := int64(checkIn.GetRewardGuildMedalAmount())
+	if checkInReward <= 0 {
+		t.Fatalf("first Guild.Top of the JST day rewarded %d medals, want a positive current reward", checkInReward)
 	}
 	assertGuildMembership(
 		t,
@@ -124,7 +125,7 @@ func TestGuildScenario(t *testing.T) {
 		checkInStarted,
 		checkInFinished,
 	)
-	assertGuildCheckInState(t, dbCtx, checkIn, medalsBefore+100, totalBefore.GetGuildCheckInCount()+1)
+	assertGuildCheckInState(t, dbCtx, checkIn, medalsBefore+checkInReward, totalBefore.GetGuildCheckInCount()+1)
 
 	storedAfterCheckIn, err := opuser.FindUser(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
@@ -139,8 +140,8 @@ func TestGuildScenario(t *testing.T) {
 		t.Fatalf("repeated Guild.Top on the same JST day rewarded %d medals, want 0", secondTop.GetRewardGuildMedalAmount())
 	}
 	assertNoGuildCheckInMutation(t, secondTop)
-	if got := guildMedalAmount(t, dbCtx); got != medalsBefore+100 {
-		t.Fatalf("persisted guild medals after repeated Guild.Top = %d, want %d", got, medalsBefore+100)
+	if got := guildMedalAmount(t, dbCtx); got != medalsBefore+checkInReward {
+		t.Fatalf("persisted guild medals after repeated Guild.Top = %d, want %d", got, medalsBefore+checkInReward)
 	}
 	storedAfterSecondTop, err := opuser.FindUser(dbCtx, testConfig.TestUserSuid)
 	if err != nil {
