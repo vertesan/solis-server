@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
@@ -26,20 +25,20 @@ const (
 const (
 	showcaseColorCode           = "71BDFD"
 	showcaseBackgroundColorCode = "3388D1"
-	showcaseItemIDPrefix        = "shop_showcase_catalog_"
-	showcaseMusicItemIDPrefix   = ShowcaseMusicShopID + "_"
+	ShowcaseItemIDPrefix        = "shop_showcase_catalog_"
+	ShowcaseMusicItemIDPrefix   = ShowcaseMusicShopID + "_"
 	showcaseFrameItemIDPrefix   = "item-showcase_"
 )
 
 type ShowcaseCommerceCatalog struct {
-	shops     []*smodel.ShopCatalogEntry
-	shopsByID map[string]*smodel.ShopCatalogEntry
-	itemsByID map[string]showcaseCommerceItem
+	ShopEntries []*smodel.ShopCatalogEntry
+	ShopsByID   map[string]*smodel.ShopCatalogEntry
+	ItemsByID   map[string]showcaseCommerceItem
 }
 
 type showcaseCommerceItem struct {
-	shop *smodel.ShopCatalogEntry
-	item *papi.ShopItem
+	Shop *smodel.ShopCatalogEntry
+	Item *papi.ShopItem
 }
 
 func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCommerceCatalog, error) {
@@ -95,8 +94,8 @@ func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCo
 	}
 
 	catalog := &ShowcaseCommerceCatalog{
-		shopsByID: make(map[string]*smodel.ShopCatalogEntry, 3),
-		itemsByID: make(map[string]showcaseCommerceItem, len(toys)+len(frames)+len(showcaseMusics)),
+		ShopsByID: make(map[string]*smodel.ShopCatalogEntry, 3),
+		ItemsByID: make(map[string]showcaseCommerceItem, len(toys)+len(frames)+len(showcaseMusics)),
 	}
 	catalog.addShop(buildShowcaseGoodsShop(toys, ownedToyIDs))
 	catalog.addShop(buildShowcaseFrameShop(frames, ownedItemIDs))
@@ -108,10 +107,6 @@ func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCo
 	return catalog, nil
 }
 
-func ShowcaseCommerceShopIDs() []string {
-	return []string{ShowcaseGoodsShopID, ShowcaseMusicShopID, ShowcaseFrameShopID}
-}
-
 func IsShowcaseCommerceShopID(shopID string) bool {
 	switch shopID {
 	case ShowcaseGoodsShopID, ShowcaseFrameShopID, ShowcaseMusicShopID:
@@ -121,53 +116,22 @@ func IsShowcaseCommerceShopID(shopID string) bool {
 	}
 }
 
-func IsShowcaseCommerceItemID(itemID string) bool {
-	return strings.HasPrefix(itemID, showcaseItemIDPrefix) || strings.HasPrefix(itemID, showcaseMusicItemIDPrefix)
-}
-
 func (c *ShowcaseCommerceCatalog) Shops() []*smodel.ShopCatalogEntry {
 	if c == nil {
 		return nil
 	}
-	return append([]*smodel.ShopCatalogEntry(nil), c.shops...)
-}
-
-func (c *ShowcaseCommerceCatalog) ShopIDs() []string {
-	if c == nil {
-		return nil
-	}
-	ids := make([]string, 0, len(c.shops))
-	for _, shop := range c.shops {
-		ids = append(ids, shop.ShopId)
-	}
-	return ids
-}
-
-func (c *ShowcaseCommerceCatalog) FindShop(shopID string) (*smodel.ShopCatalogEntry, bool) {
-	if c == nil {
-		return nil, false
-	}
-	shop, ok := c.shopsByID[shopID]
-	return shop, ok
-}
-
-func (c *ShowcaseCommerceCatalog) FindItem(itemID string) (*smodel.ShopCatalogEntry, *papi.ShopItem, bool) {
-	if c == nil {
-		return nil, nil, false
-	}
-	entry, ok := c.itemsByID[itemID]
-	return entry.shop, entry.item, ok
+	return append([]*smodel.ShopCatalogEntry(nil), c.ShopEntries...)
 }
 
 func (c *ShowcaseCommerceCatalog) addShop(shop *smodel.ShopCatalogEntry) {
 	if shop == nil || shop.Info == nil || len(shop.Items) == 0 {
 		return
 	}
-	c.shops = append(c.shops, shop)
-	c.shopsByID[shop.ShopId] = shop
+	c.ShopEntries = append(c.ShopEntries, shop)
+	c.ShopsByID[shop.ShopId] = shop
 	for _, item := range shop.Items {
 		if item != nil {
-			c.itemsByID[item.GetId()] = showcaseCommerceItem{shop: shop, item: item}
+			c.ItemsByID[item.GetId()] = showcaseCommerceItem{Shop: shop, Item: item}
 		}
 	}
 }
@@ -190,7 +154,7 @@ func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]
 			}
 		}
 		items = append(items, newShowcaseShopItem(
-			showcaseItemIDPrefix+toy.GetId(),
+			ShowcaseItemIDPrefix+toy.GetId(),
 			toy.GetName(),
 			toy.GetDescription(),
 			"rd_auto;showcase_toy;"+toy.GetId()+";1",
@@ -222,7 +186,7 @@ func buildShowcaseFrameShop(frames []*pmaster.ShowcaseFrame, ownedItemIDs map[st
 			continue
 		}
 		shopItem := newShowcaseShopItem(
-			showcaseItemIDPrefix+"toy-goods-"+frame.GetId(),
+			ShowcaseItemIDPrefix+"toy-goods-"+frame.GetId(),
 			"ケース："+frame.GetName(),
 			"ケース："+frame.GetDescription(),
 			"rd_auto;item;"+itemID+";1",
@@ -263,7 +227,7 @@ func buildShowcaseMusicShop(
 			return nil, fmt.Errorf("showcase music %q is missing its Music master", musicID)
 		}
 		items = append(items, newShowcaseShopItem(
-			showcaseMusicItemIDPrefix+musicID,
+			ShowcaseMusicItemIDPrefix+musicID,
 			name,
 			name,
 			"rd_auto;showcase_music;"+musicID+";1",

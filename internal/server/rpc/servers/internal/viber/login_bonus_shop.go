@@ -6,10 +6,8 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
-	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -45,14 +43,6 @@ func FindUserShopPurchaseOrEmpty(ctx context.Context, suid string) (*umodel.User
 	return purchase, nil
 }
 
-func IsLoginBonusShopItem(entry *smodel.ShopCatalogEntry, shopItemID string) bool {
-	if entry == nil || entry.LoginBonusPackageItem == nil {
-		return false
-	}
-	item := entry.LoginBonusPackageItem.GetShopItem()
-	return item != nil && item.GetId() != "" && item.GetId() == shopItemID
-}
-
 func LoginBonusShopIsActive(purchase *umodel.UserShopPurchase, entry *smodel.ShopCatalogEntry) bool {
 	if purchase == nil || entry == nil || entry.LoginBonusPackageItem == nil {
 		return false
@@ -67,21 +57,6 @@ func LoginBonusShopIsActive(purchase *umodel.UserShopPurchase, entry *smodel.Sho
 		}
 	}
 	return false
-}
-
-// ActivateLoginBonusShop records the free package entitlement. It is
-// intentionally idempotent because clients can retry Purchase after a lost
-// response.
-func ActivateLoginBonusShop(purchase *umodel.UserShopPurchase, entry *smodel.ShopCatalogEntry) bool {
-	if purchase == nil || entry == nil || entry.LoginBonusPackageItem == nil {
-		return false
-	}
-	itemID := entry.LoginBonusPackageItem.GetShopItem().GetId()
-	if itemID == "" || LoginBonusShopIsActive(purchase, entry) {
-		return false
-	}
-	purchase.PurchasedItemIds = append(purchase.PurchasedItemIds, itemID)
-	return true
 }
 
 // RenderLoginBonusShop derives all purchase/progress fields from the user's
@@ -113,90 +88,4 @@ func RenderLoginBonusShop(
 		bonus.IsReceived = active && bonus.GetDay() > 0 && bonus.GetDay() <= progress
 	}
 	return info, loginPackage, nil
-}
-
-// ApplyPurchasedLoginBonusShops grants at most one scheduled reward per
-// active package and JST day. After the last configured day, the permanent
-// private-server package starts a new reward cycle.
-func ApplyPurchasedLoginBonusShops(
-	ctx context.Context,
-	suid string,
-	nowMillis int64,
-	updated *papi.UpdatedData,
-) ([]*papi.PurchasedLoginBonusShopInfo, error) {
-	if nowMillis <= 0 || updated == nil {
-		return nil, status.Error(codes.Internal, "login bonus grant context is invalid")
-	}
-	entries, err := opsolis.FindAllShopCatalogEntries(ctx)
-	if err != nil {
-		return nil, err
-	}
-	purchase, err := FindUserShopPurchaseOrEmpty(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	purchasedInfos := make([]*papi.PurchasedLoginBonusShopInfo, 0)
-	changed := false
-	for _, entry := range entries {
-		if entry.LoginBonusPackageItem == nil || !LoginBonusShopIsActive(purchase, entry) {
-			continue
-		}
-		bonuses := entry.LoginBonusPackageItem.GetLoginBonuses()
-		if len(bonuses) == 0 {
-			return nil, status.Error(codes.FailedPrecondition, "login bonus shop has no daily rewards")
-		}
-		progress := purchase.LoginBonusProgress[entry.ShopId]
-		if progress < 0 || int(progress) > len(bonuses) {
-			return nil, status.Error(codes.FailedPrecondition, "login bonus shop progress is invalid")
-		}
-		lastGrantTime := purchase.LoginBonusLastGrantTimes[entry.ShopId]
-		if lastGrantTime == 0 || lastGrantTime < nowMillis && !SameJSTDay(lastGrantTime, nowMillis) {
-			nextProgress := progress + 1
-			if int(nextProgress) > len(bonuses) {
-				nextProgress = 1
-			}
-			bonus := findLoginBonusDay(bonuses, nextProgress)
-			if bonus == nil || bonus.GetRewardId() == "" {
-				return nil, status.Error(codes.FailedPrecondition, "login bonus shop daily reward is missing")
-			}
-			resources, err := ResolveRewardResources(ctx, bonus.GetRewardId(), 1)
-			if err != nil {
-				return nil, err
-			}
-			if err := ValidateExchangeRewardResources(resources); err != nil {
-				return nil, err
-			}
-			for _, resource := range resources {
-				if _, err := GrantExchangeRewards(ctx, suid, resource, updated); err != nil {
-					return nil, err
-				}
-			}
-			purchase.LoginBonusProgress[entry.ShopId] = nextProgress
-			purchase.LoginBonusLastGrantTimes[entry.ShopId] = nowMillis
-			changed = true
-		}
-		info, loginPackage, err := RenderLoginBonusShop(entry, purchase)
-		if err != nil {
-			return nil, err
-		}
-		purchasedInfos = append(purchasedInfos, &papi.PurchasedLoginBonusShopInfo{
-			ShopInfo:              info,
-			LoginBonusPackageItem: loginPackage,
-		})
-	}
-	if changed {
-		if err := opuser.UpsertUserShopPurchase(ctx, purchase); err != nil {
-			return nil, err
-		}
-	}
-	return purchasedInfos, nil
-}
-
-func findLoginBonusDay(bonuses []*papi.ShopLoginBonus, day int32) *papi.ShopLoginBonus {
-	for _, bonus := range bonuses {
-		if bonus.GetDay() == day {
-			return bonus
-		}
-	}
-	return nil
 }

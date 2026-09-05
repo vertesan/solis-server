@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"math"
-	"sort"
 	"strings"
 	"time"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,8 +28,8 @@ const (
 )
 
 type GachaOverflowGiftBatch struct {
-	postedTime int64
-	byCardID   map[string]int64
+	PostedTime int64
+	ByCardID   map[string]int64
 }
 
 type gachaDuplicateCardProgress struct {
@@ -40,95 +38,18 @@ type gachaDuplicateCardProgress struct {
 	increasedAfterEvolutionLevel int32
 }
 
-func NewGachaOverflowGiftBatch(postedTime int64) *GachaOverflowGiftBatch {
-	return &GachaOverflowGiftBatch{postedTime: postedTime, byCardID: make(map[string]int64)}
-}
-
 func (b *GachaOverflowGiftBatch) add(cardID string, amount int64) error {
 	if b == nil || cardID == "" || amount <= 0 {
 		return status.Error(codes.Internal, "gacha overflow gift batch entry is invalid")
 	}
-	if b.byCardID[cardID] > math.MaxInt64-amount {
+	if b.ByCardID[cardID] > math.MaxInt64-amount {
 		return status.Error(codes.FailedPrecondition, "gacha overflow gift amount overflows")
 	}
-	b.byCardID[cardID] += amount
+	b.ByCardID[cardID] += amount
 	return nil
 }
 
-func (b *GachaOverflowGiftBatch) Flush(ctx context.Context, suid string, updated *papi.UpdatedData) error {
-	if b == nil || len(b.byCardID) == 0 {
-		return nil
-	}
-	cardIDs := make([]string, 0, len(b.byCardID))
-	for cardID := range b.byCardID {
-		cardIDs = append(cardIDs, cardID)
-	}
-	sort.Strings(cardIDs)
-	for _, cardID := range cardIDs {
-		if err := persistGachaCardLimitBreakGift(ctx, suid, b.byCardID[cardID], b.postedTime); err != nil {
-			return err
-		}
-	}
-	return ensureGachaGiftNotification(ctx, suid, updated)
-}
-
-func GrantGachaExchangeResource(
-	ctx context.Context,
-	suid string,
-	resourceType penum.ResourceType,
-	resourceID string,
-	amount int64,
-	expiredTime int64,
-	updated *papi.UpdatedData,
-) ([]*ptransaction.RewardResult, error) {
-	if resourceType == penum.ResourceType_ResourceType_Unknown && resourceID == "" {
-		return nil, nil
-	}
-	if resourceType == penum.ResourceType_ResourceType_Unknown || resourceID == "" {
-		return nil, status.Error(codes.FailedPrecondition, "gacha exchange reward is incomplete")
-	}
-	if amount <= 0 || amount > math.MaxInt32 {
-		return nil, status.Error(codes.FailedPrecondition, "gacha exchange reward amount is invalid")
-	}
-	if resourceType == penum.ResourceType_ResourceType_Item {
-		result, err := grantExchangeItemWithExpiration(ctx, suid, resourceID, amount, expiredTime, updated)
-		if err != nil {
-			return nil, err
-		}
-		return []*ptransaction.RewardResult{result}, nil
-	}
-	return GrantExchangeRewards(ctx, suid, &pmaster.RewardResource{
-		ResourceType: resourceType,
-		ResourceId:   resourceID,
-		Amount:       int32(amount),
-	}, updated)
-}
-
-// GrantGachaReward applies one master-data reward. Card grants also apply the
-// card's first-obtain unlocks or its master-defined duplicate compensation.
 func GrantGachaReward(
-	ctx context.Context,
-	suid string,
-	reward *pmaster.RewardResource,
-	updated *papi.UpdatedData,
-) ([]*ptransaction.RewardResult, error) {
-	return grantGachaReward(ctx, suid, reward, nil, updated)
-}
-
-func GrantGachaDrawReward(
-	ctx context.Context,
-	suid string,
-	reward *pmaster.RewardResource,
-	overflowGifts *GachaOverflowGiftBatch,
-	updated *papi.UpdatedData,
-) ([]*ptransaction.RewardResult, error) {
-	if overflowGifts == nil {
-		return nil, status.Error(codes.Internal, "gacha draw overflow gift batch is required")
-	}
-	return grantGachaReward(ctx, suid, reward, overflowGifts, updated)
-}
-
-func grantGachaReward(
 	ctx context.Context,
 	suid string,
 	reward *pmaster.RewardResource,
@@ -190,7 +111,7 @@ func grantGachaCard(
 		results := []*ptransaction.RewardResult{primary}
 		results = append(results, progress.evolutionRewardResults...)
 		for _, resource := range resources {
-			granted, err := grantGachaReward(ctx, suid, resource, overflowGifts, updated)
+			granted, err := GrantGachaReward(ctx, suid, resource, overflowGifts, updated)
 			if err != nil {
 				return nil, err
 			}
@@ -390,10 +311,10 @@ func grantGachaDuplicateCardExp(
 			return nil, err
 		}
 	} else {
-		if err := persistGachaCardLimitBreakGift(ctx, suid, overflowExp, time.Now().UnixMilli()); err != nil {
+		if err := PersistGachaCardLimitBreakGift(ctx, suid, overflowExp, time.Now().UnixMilli()); err != nil {
 			return nil, err
 		}
-		if err := ensureGachaGiftNotification(ctx, suid, updated); err != nil {
+		if err := EnsureGachaGiftNotification(ctx, suid, updated); err != nil {
 			return nil, err
 		}
 	}
@@ -471,7 +392,7 @@ func grantGachaEvolutionRewards(
 	return results, nil
 }
 
-func persistGachaCardLimitBreakGift(ctx context.Context, suid string, amount, postedTime int64) error {
+func PersistGachaCardLimitBreakGift(ctx context.Context, suid string, amount, postedTime int64) error {
 	return opuser.UpsertUserGift(ctx, suid, &ptransaction.UserGift{
 		GiftId:       uuid.NewString(),
 		ResourceType: penum.ResourceType_ResourceType_Item,
@@ -639,14 +560,14 @@ func grantGachaCardShowcaseToys(
 		})
 	}
 	if len(rewards) > 0 {
-		if err := ensureGachaGiftNotification(ctx, suid, updated); err != nil {
+		if err := EnsureGachaGiftNotification(ctx, suid, updated); err != nil {
 			return nil, err
 		}
 	}
 	return rewards, nil
 }
 
-func ensureGachaGiftNotification(ctx context.Context, suid string, updated *papi.UpdatedData) error {
+func EnsureGachaGiftNotification(ctx context.Context, suid string, updated *papi.UpdatedData) error {
 	return SetGiftNotification(ctx, suid, true, updated)
 }
 

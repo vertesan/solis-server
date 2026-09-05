@@ -12,7 +12,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -354,3 +353,5 @@ func orderedHierarchyDetailGrades(
 	})
 	return ordered, nil
 }
+
+const HierarchyPrivateServerRank int32 = 1

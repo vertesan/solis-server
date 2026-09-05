@@ -12,7 +12,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 )
 
@@ -25,54 +24,13 @@ const (
 type narrativeUnlockKind uint8
 
 const (
-	narrativeUnlockAll narrativeUnlockKind = iota
-	narrativeUnlockReadStory
-	narrativeUnlockFinishedMessage
-	narrativeUnlockNone
+	NarrativeUnlockAll narrativeUnlockKind = iota
+	NarrativeUnlockReadStory
+	NarrativeUnlockFinishedMessage
+	NarrativeUnlockNone
 )
 
-// ReconcileNarrativeSchedules unlocks newly satisfied messages and standalone
-// telephone calls, then schedules the first waiting entry for each message group.
-// Master records are visited in database insertion order.
 func ReconcileNarrativeSchedules(
-	ctx context.Context,
-	suid string,
-	now int64,
-	updated *papi.UpdatedData,
-) error {
-	return reconcileNarrativeSchedules(ctx, suid, now, updated, narrativeUnlockAll, "")
-}
-
-func ReconcileNarrativeSchedulesAfterStory(
-	ctx context.Context,
-	suid string,
-	now int64,
-	storyID string,
-	updated *papi.UpdatedData,
-) error {
-	return reconcileNarrativeSchedules(ctx, suid, now, updated, narrativeUnlockReadStory, storyID)
-}
-
-func ReconcileNarrativeSchedulesAfterMessage(
-	ctx context.Context,
-	suid string,
-	now int64,
-	messageID string,
-	updated *papi.UpdatedData,
-) error {
-	return reconcileNarrativeSchedules(ctx, suid, now, updated, narrativeUnlockFinishedMessage, messageID)
-}
-
-func ReconcileNarrativeQueues(
-	ctx context.Context,
-	suid string,
-	now int64,
-	updated *papi.UpdatedData,
-) error {
-	return reconcileNarrativeSchedules(ctx, suid, now, updated, narrativeUnlockNone, "")
-}
-
-func reconcileNarrativeSchedules(
 	ctx context.Context,
 	suid string,
 	now int64,
@@ -342,11 +300,11 @@ func narrativeConditionEligible(
 	unlockID string,
 	conditions map[string]*pmaster.Condition,
 ) bool {
-	if feature == umodel.GodMessageFeatureNone || unlockKind == narrativeUnlockNone {
+	if feature == umodel.GodMessageFeatureNone || unlockKind == NarrativeUnlockNone {
 		return false
 	}
 	if feature == umodel.GodMessageFeatureEnjoy {
-		return unlockKind == narrativeUnlockAll && conditionID == ""
+		return unlockKind == NarrativeUnlockAll && conditionID == ""
 	}
 	// Unconditional entries are introduced by their owning game feature. The
 	// reconciler handles dependency-based unlocks for ordinary users.
@@ -354,13 +312,13 @@ func narrativeConditionEligible(
 		return false
 	}
 	switch unlockKind {
-	case narrativeUnlockAll:
+	case NarrativeUnlockAll:
 		return true
-	case narrativeUnlockReadStory:
+	case NarrativeUnlockReadStory:
 		return conditionMatchesNarrativeDependency(
 			conditionID, conditions, unlockKind, unlockID, make(map[string]struct{}),
 		)
-	case narrativeUnlockFinishedMessage:
+	case NarrativeUnlockFinishedMessage:
 		return conditionMatchesNarrativeDependency(
 			conditionID, conditions, unlockKind, unlockID, make(map[string]struct{}),
 		)
@@ -431,10 +389,10 @@ func conditionMatchesNarrativeDependency(
 		return false
 	}
 	for _, setting := range condition.GetSettings() {
-		if kind == narrativeUnlockReadStory && setting.GetReadStory().GetStoryId() == targetID {
+		if kind == NarrativeUnlockReadStory && setting.GetReadStory().GetStoryId() == targetID {
 			return true
 		}
-		if kind == narrativeUnlockFinishedMessage && setting.GetFinishedMessage().GetMessageId() == targetID {
+		if kind == NarrativeUnlockFinishedMessage && setting.GetFinishedMessage().GetMessageId() == targetID {
 			return true
 		}
 		if dependency := setting.GetSatisfyCondition(); dependency != nil &&

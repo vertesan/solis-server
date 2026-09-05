@@ -10,11 +10,9 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
-	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -36,9 +34,9 @@ var photoRarityPercentagesByMinimumRarity = map[int32][]int{
 	5: {100},
 }
 
-// ordinaryDedicatedPhotoChancePercent applies after an ordinary film produces
+// OrdinaryDedicatedPhotoChancePercent applies after an ordinary film produces
 // a ★5 photo. Set it to zero to disable ordinary dedicated-photo drops.
-var ordinaryDedicatedPhotoChancePercent = 1
+var OrdinaryDedicatedPhotoChancePercent = 1
 
 // UnlockManagerLevelPhotoAbilities makes mission-bound dedicated abilities
 // usable as soon as their manager-level gate has been reached.
@@ -80,7 +78,7 @@ func UnlockManagerLevelPhotoAbilities(
 // the server.
 type PhotoGenerator struct {
 	abilitySets           []*pmaster.PhotoAbilitySet
-	dedicatedCharacterIDs []string
+	DedicatedCharacterIDs []string
 	qualityAnchors        map[int32]int32
 	thresholds            []int32
 	minLevel              int32
@@ -144,7 +142,7 @@ func NewPhotoGenerator(ctx context.Context, setting *pmaster.Setting) (*PhotoGen
 	}
 	for _, character := range characters {
 		if len(generator.dedicatedSets(character.GetId())) > 0 {
-			generator.dedicatedCharacterIDs = append(generator.dedicatedCharacterIDs, character.GetId())
+			generator.DedicatedCharacterIDs = append(generator.DedicatedCharacterIDs, character.GetId())
 		}
 	}
 	return generator, nil
@@ -170,16 +168,16 @@ func (g *PhotoGenerator) Generate(
 		rarity = g.randomRarity(item.GetValue())
 	}
 	dedicated := item.GetIsPhotoShootingCharacterOnly()
-	if !dedicated && rarity == 5 && rand.IntN(100) < ordinaryDedicatedPhotoChancePercent {
+	if !dedicated && rarity == 5 && rand.IntN(100) < OrdinaryDedicatedPhotoChancePercent {
 		dedicated = g.hasDedicatedSet(focusCharacterID)
 	}
 
 	level := g.randomLevel(item, managerLevel, guaranteedFive)
-	abilities, usedDedicated, err := g.randomAbilities(ctx, rarity, level, focusCharacterID, dedicated)
+	abilities, usedDedicated, err := g.RandomAbilities(ctx, rarity, level, focusCharacterID, dedicated)
 	if err != nil {
 		return nil, err
 	}
-	configureDedicatedPhotoAbility(abilities, usedDedicated, managerLevel)
+	ConfigureDedicatedPhotoAbility(abilities, usedDedicated, managerLevel)
 	return &GeneratedPhotoTraits{
 		Rarity:      rarity,
 		Level:       level,
@@ -189,44 +187,7 @@ func (g *PhotoGenerator) Generate(
 	}, nil
 }
 
-func (g *PhotoGenerator) RandomAbilities(
-	ctx context.Context,
-	rarity int32,
-	level int32,
-) ([]*ptransaction.UserPhotoAbility, error) {
-	return g.abilitiesFromCandidates(ctx, g.genericSets(rarity), level)
-}
-
-// RandomRerollTraits replaces every randomized option, including the
-// character restriction. The ordinary dedicated-photo chance is reused
-// because the official reroll-specific distribution is not available.
-func (g *PhotoGenerator) RandomRerollTraits(
-	ctx context.Context,
-	rarity int32,
-	level int32,
-	managerLevel int32,
-) (*GeneratedPhotoTraits, error) {
-	dedicated := rarity == 5 && len(g.dedicatedCharacterIDs) > 0 &&
-		rand.IntN(100) < ordinaryDedicatedPhotoChancePercent
-	characterID := ""
-	if dedicated {
-		characterID = g.dedicatedCharacterIDs[rand.IntN(len(g.dedicatedCharacterIDs))]
-	}
-	abilities, usedDedicated, err := g.randomAbilities(ctx, rarity, level, characterID, dedicated)
-	if err != nil {
-		return nil, err
-	}
-	configureDedicatedPhotoAbility(abilities, usedDedicated, managerLevel)
-	return &GeneratedPhotoTraits{
-		Rarity:      rarity,
-		Level:       level,
-		Abilities:   abilities,
-		Dedicated:   usedDedicated,
-		CharacterID: characterID,
-	}, nil
-}
-
-func configureDedicatedPhotoAbility(
+func ConfigureDedicatedPhotoAbility(
 	abilities []*ptransaction.UserPhotoAbility,
 	dedicated bool,
 	managerLevel int32,
@@ -242,7 +203,7 @@ func configureDedicatedPhotoAbility(
 	abilities[0].IsAvailable = managerLevel >= photoDedicatedAbilityMinLevel
 }
 
-func (g *PhotoGenerator) randomAbilities(
+func (g *PhotoGenerator) RandomAbilities(
 	ctx context.Context,
 	rarity int32,
 	level int32,
@@ -433,40 +394,6 @@ func BuildPhotoAbilitiesFromSet(
 	return result, nil
 }
 
-func RecalculatePhotoAbilities(
-	ctx context.Context,
-	abilities []*ptransaction.UserPhotoAbility,
-	level int32,
-) error {
-	ids := make([]string, 0, len(abilities))
-	for _, ability := range abilities {
-		if ability == nil || ability.GetPhotoAbilityId() == "" {
-			return status.Error(codes.FailedPrecondition, "photo contains an invalid ability")
-		}
-		ids = append(ids, ability.GetPhotoAbilityId())
-	}
-	masters, err := opmaster.FindPhotoAbilities(ctx, ids)
-	if err != nil {
-		return err
-	}
-	byID := make(map[string]*pmaster.PhotoAbility, len(masters))
-	for _, master := range masters {
-		byID[master.GetId()] = master
-	}
-	for _, ability := range abilities {
-		master := byID[ability.GetPhotoAbilityId()]
-		if master == nil {
-			return status.Errorf(codes.FailedPrecondition, "photo ability %q is absent", ability.GetPhotoAbilityId())
-		}
-		value, err := PhotoAbilityEffectValue(master, level, ability.GetGrade())
-		if err != nil {
-			return err
-		}
-		ability.EffectValue = value
-	}
-	return nil
-}
-
 func PhotoAbilityEffectValue(master *pmaster.PhotoAbility, level, grade int32) (int64, error) {
 	var selectedLevel *pmaster.PhotoAbilityLevel
 	for _, candidate := range master.GetPhotoAbilityLevels() {
@@ -492,50 +419,6 @@ func PhotoAbilityEffectValue(master *pmaster.PhotoAbility, level, grade int32) (
 		return 0, status.Errorf(codes.FailedPrecondition, "photo ability %q lacks level %d or grade %d", master.GetId(), level, grade)
 	}
 	return int64(selectedLevel.GetValue())*int64(selectedGrade.GetBonusPermil())/1000 + int64(selectedGrade.GetBonusValue()), nil
-}
-
-// ConsumePhotoConsumptions aggregates identical resources before applying
-// them, so UpdatedData contains one authoritative post-image per resource.
-func ConsumePhotoConsumptions(
-	ctx context.Context,
-	suid string,
-	consumptions []*pmaster.Consumption,
-	updated *papi.UpdatedData,
-) error {
-	type key struct {
-		resourceType penum.ResourceType
-		resourceID   string
-	}
-	amounts := make(map[key]int64)
-	order := make([]key, 0)
-	for _, consumption := range consumptions {
-		if consumption == nil {
-			return status.Error(codes.FailedPrecondition, "photo consumption master data is missing")
-		}
-		for _, resource := range consumption.GetResources() {
-			if resource.GetAmount() <= 0 {
-				return status.Error(codes.FailedPrecondition, "photo consumption amount must be positive")
-			}
-			resourceID := ""
-			if len(resource.GetResourceIds()) > 1 {
-				return status.Error(codes.FailedPrecondition, "photo consumption has multiple alternative resource IDs")
-			}
-			if len(resource.GetResourceIds()) == 1 {
-				resourceID = resource.GetResourceIds()[0]
-			}
-			entry := key{resourceType: resource.GetResourceType(), resourceID: resourceID}
-			if _, exists := amounts[entry]; !exists {
-				order = append(order, entry)
-			}
-			amounts[entry] += int64(resource.GetAmount())
-		}
-	}
-	for _, entry := range order {
-		if err := ConsumeExchangeResource(ctx, suid, entry.resourceType, entry.resourceID, amounts[entry], updated); err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 func AppendUniquePhotoMissions(target []*ptransaction.UserMission, values ...[]*ptransaction.UserMission) []*ptransaction.UserMission {

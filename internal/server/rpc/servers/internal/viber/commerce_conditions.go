@@ -4,16 +4,13 @@ import (
 	"context"
 	"errors"
 	"math"
-	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
-	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/protobuf/reflect/protoreflect"
 )
@@ -377,7 +374,7 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 		if err != nil {
 			return commerceConditionIndeterminate, err
 		}
-		total, err := companyPointTotal(company)
+		total, err := CompanyPointTotal(company)
 		if err != nil {
 			return commerceConditionIndeterminate, err
 		}
@@ -394,7 +391,7 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 		if err != nil {
 			return commerceConditionIndeterminate, err
 		}
-		total, err := companyPointTotal(company)
+		total, err := CompanyPointTotal(company)
 		if err != nil {
 			return commerceConditionIndeterminate, err
 		}
@@ -1116,124 +1113,6 @@ func companyCharacterLevelAtPoint(levels []*pmaster.CompanyEnjoyCharacterLevel, 
 		}
 	}
 	return result
-}
-
-func FilterHomeCommerceIDs(
-	ctx context.Context,
-	suid string,
-	shopIDs []string,
-	_ []string,
-	boothIDs []string,
-) ([]string, []string, []string, []string, []string, []string, error) {
-	now := time.Now().UnixMilli()
-	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
-	shops, err := opsolis.FindAllShopCatalogEntries(ctx)
-	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
-	}
-	legacyShowcaseShopIDs := make(map[string]struct{})
-	for _, shop := range shops {
-		if shop.Info != nil && IsShowcaseShopType(shop.Info.GetType()) {
-			legacyShowcaseShopIDs[shop.ShopId] = struct{}{}
-		}
-	}
-	allShopIDs := make([]string, 0, len(shopIDs)+len(shops))
-	shopSet := make(map[string]struct{}, len(shopIDs)+len(shops))
-	for _, shopID := range shopIDs {
-		_, legacyShowcase := legacyShowcaseShopIDs[shopID]
-		if IsShowcaseCommerceShopID(shopID) || legacyShowcase || strings.HasPrefix(shopID, "shop_top_shop-showcase-") {
-			continue
-		}
-		if _, exists := shopSet[shopID]; !exists {
-			shopSet[shopID] = struct{}{}
-			allShopIDs = append(allShopIDs, shopID)
-		}
-	}
-	for _, shop := range shops {
-		if shop.Info == nil {
-			continue
-		}
-		if IsShowcaseShopType(shop.Info.GetType()) {
-			continue
-		}
-		if _, ok := shopSet[shop.ShopId]; !ok {
-			shopSet[shop.ShopId] = struct{}{}
-			allShopIDs = append(allShopIDs, shop.ShopId)
-		}
-	}
-	visibleShops := make([]string, 0, len(shopIDs))
-	for _, shop := range shops {
-		if shop.Info == nil {
-			continue
-		}
-		if IsShowcaseShopType(shop.Info.GetType()) {
-			continue
-		}
-		visible, err := evaluator.Satisfied(shop.Info.GetViewConditionId())
-		if err != nil {
-			return nil, nil, nil, nil, nil, nil, err
-		}
-		if !visible {
-			continue
-		}
-		hasContent, err := ShopCatalogHasVisibleContent(evaluator, shop)
-		if err != nil {
-			return nil, nil, nil, nil, nil, nil, err
-		}
-		if !hasContent {
-			continue
-		}
-		if _, ok := shopSet[shop.ShopId]; ok {
-			visibleShops = append(visibleShops, shop.ShopId)
-		}
-	}
-	showcaseCatalog, err := BuildShowcaseCommerceCatalog(ctx, suid)
-	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
-	}
-	allShowcaseShopIDs := showcaseCatalog.ShopIDs()
-	visibleShowcaseShops := make([]string, 0, len(allShowcaseShopIDs))
-	for _, shop := range showcaseCatalog.Shops() {
-		visible, err := evaluator.Satisfied(shop.Info.GetViewConditionId())
-		if err != nil {
-			return nil, nil, nil, nil, nil, nil, err
-		}
-		if visible {
-			visibleShowcaseShops = append(visibleShowcaseShops, shop.ShopId)
-		}
-	}
-
-	booths, err := opsolis.FindAllExchangeBooths(ctx)
-	if err != nil {
-		return nil, nil, nil, nil, nil, nil, err
-	}
-	allBoothIDs := append([]string(nil), boothIDs...)
-	boothSet := StringSet(allBoothIDs)
-	for _, booth := range booths {
-		if _, ok := boothSet[booth.GetId()]; !ok {
-			boothSet[booth.GetId()] = struct{}{}
-			allBoothIDs = append(allBoothIDs, booth.GetId())
-		}
-	}
-	visibleBooths := make([]string, 0, len(boothIDs))
-	for _, booth := range booths {
-		if _, ok := boothSet[booth.GetId()]; !ok || booth.GetEndTime() > 0 && booth.GetEndTime() <= now {
-			continue
-		}
-		visible, err := evaluator.Satisfied(booth.GetViewConditionId())
-		if err != nil {
-			return nil, nil, nil, nil, nil, nil, err
-		}
-		unlocked, err := evaluator.Satisfied(booth.GetUnlockConditionId())
-		if err != nil {
-			return nil, nil, nil, nil, nil, nil, err
-		}
-		if visible && unlocked {
-			visibleBooths = append(visibleBooths, booth.GetId())
-		}
-	}
-	return visibleShops, visibleShowcaseShops, visibleBooths,
-		allShopIDs, allShowcaseShopIDs, allBoothIDs, nil
 }
 
 func IsShowcaseShopType(shopType penum.ShopType) bool {

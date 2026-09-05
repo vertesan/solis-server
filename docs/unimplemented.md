@@ -5,7 +5,10 @@ Last audited: 2026-09-05
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
 with registrations in `internal/server/rpc/rpc.go` and concrete methods on the
-server types in `internal/server/rpc/servers`.
+server types in `internal/server/rpc/servers/<server>/*.go`, searched
+recursively. Each server has its own package, with one file per RPC. Helpers
+shared by that server's RPCs live in its `common.go`; helpers shared across
+servers live in `internal/server/rpc/servers/internal/viber`.
 
 An RPC is classified as unimplemented when either:
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
-
 	"go.yaml.in/yaml/v3"
 )
 
@@ -50,15 +49,6 @@ type GachaRarityPool struct {
 	ID                   string `yaml:"id"`
 	MinimumRarity        int32  `yaml:"minimumRarity"`
 	UseMasterCardRewards bool   `yaml:"useMasterCardRewards"`
-}
-
-func (r *GachaRules) GuaranteedRarityPool(id string) *GachaRarityPool {
-	for i := range r.GuaranteedRarityGachas {
-		if r.GuaranteedRarityGachas[i].ID == id {
-			return &r.GuaranteedRarityGachas[i]
-		}
-	}
-	return nil
 }
 
 type GachaContinuous struct {

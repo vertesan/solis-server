@@ -9,7 +9,39 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/codec"
 	"github.com/vertesan/solis-server/internal/server/rpc/internal/interceptor"
-	ss "github.com/vertesan/solis-server/internal/server/rpc/servers"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/accessory"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/activity"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/auth"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/card"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/company"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/costume"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/diary"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/division"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/dokan"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/exchange"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/excursion"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/gacha"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/gift"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/guild"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/hair"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/hierarchy"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/home"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/item"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/login_bonus"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/market"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/master"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/message"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/migration"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/notice"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo_panorama"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/shop"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/showcase"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/staff"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/story"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/system"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/telephone"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/user"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"go.uber.org/zap"
 
@@ -97,38 +129,38 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 		unknownServiceHandler,
 	)
 	server := grpc.NewServer(opts...)
-	papi.RegisterSystemServer(server, &ss.SystemServer{})
-	papi.RegisterMigrationServer(server, &ss.MigrationServer{})
-	papi.RegisterAuthServer(server, &ss.AuthServer{})
-	papi.RegisterMasterServer(server, &ss.MasterServer{})
-	papi.RegisterUserServer(server, &ss.UserServer{})
-	papi.RegisterHomeServer(server, &ss.HomeServer{})
-	papi.RegisterDokanServer(server, &ss.DokanServer{})
-	papi.RegisterNoticeServer(server, &ss.NoticeServer{})
-	papi.RegisterStoryServer(server, &ss.StoryServer{})
-	papi.RegisterAccessoryServer(server, &ss.AccessoryServer{})
-	papi.RegisterItemServer(server, &ss.ItemServer{})
-	papi.RegisterCardServer(server, &ss.CardServer{})
-	papi.RegisterDivisionServer(server, &ss.DivisionServer{})
-	papi.RegisterExchangeServer(server, &ss.ExchangeServer{})
-	papi.RegisterShopServer(server, &ss.ShopServer{})
-	papi.RegisterGiftServer(server, &ss.GiftServer{})
-	papi.RegisterLoginBonusServer(server, &ss.LoginBonusServer{})
-	papi.RegisterCostumeServer(server, &ss.CostumeServer{})
-	papi.RegisterHairServer(server, &ss.HairServer{})
-	papi.RegisterDiaryServer(server, &ss.DiaryServer{})
-	papi.RegisterMessageServer(server, &ss.MessageServer{})
-	papi.RegisterTelephoneServer(server, &ss.TelephoneServer{})
-	papi.RegisterMarketServer(server, &ss.MarketServer{})
-	papi.RegisterExcursionServer(server, &ss.ExcursionServer{})
-	papi.RegisterGachaServer(server, &ss.GachaServer{})
-	papi.RegisterActivityServer(server, &ss.ActivityServer{})
-	papi.RegisterCompanyServer(server, &ss.CompanyServer{})
-	papi.RegisterHierarchyServer(server, &ss.HierarchyServer{})
-	papi.RegisterGuildServer(server, &ss.GuildServer{})
-	papi.RegisterStaffServer(server, &ss.StaffServer{})
-	papi.RegisterPhotoServer(server, &ss.PhotoServer{})
-	papi.RegisterPhotoPanoramaServer(server, &ss.PhotoPanoramaServer{})
-	papi.RegisterShowcaseServer(server, &ss.ShowcaseServer{})
+	papi.RegisterSystemServer(server, &system.SystemServer{})
+	papi.RegisterMigrationServer(server, &migration.MigrationServer{})
+	papi.RegisterAuthServer(server, &auth.AuthServer{})
+	papi.RegisterMasterServer(server, &master.MasterServer{})
+	papi.RegisterUserServer(server, &user.UserServer{})
+	papi.RegisterHomeServer(server, &home.HomeServer{})
+	papi.RegisterDokanServer(server, &dokan.DokanServer{})
+	papi.RegisterNoticeServer(server, &notice.NoticeServer{})
+	papi.RegisterStoryServer(server, &story.StoryServer{})
+	papi.RegisterAccessoryServer(server, &accessory.AccessoryServer{})
+	papi.RegisterItemServer(server, &item.ItemServer{})
+	papi.RegisterCardServer(server, &card.CardServer{})
+	papi.RegisterDivisionServer(server, &division.DivisionServer{})
+	papi.RegisterExchangeServer(server, &exchange.ExchangeServer{})
+	papi.RegisterShopServer(server, &shop.ShopServer{})
+	papi.RegisterGiftServer(server, &gift.GiftServer{})
+	papi.RegisterLoginBonusServer(server, &loginbonus.LoginBonusServer{})
+	papi.RegisterCostumeServer(server, &costume.CostumeServer{})
+	papi.RegisterHairServer(server, &hair.HairServer{})
+	papi.RegisterDiaryServer(server, &diary.DiaryServer{})
+	papi.RegisterMessageServer(server, &message.MessageServer{})
+	papi.RegisterTelephoneServer(server, &telephone.TelephoneServer{})
+	papi.RegisterMarketServer(server, &market.MarketServer{})
+	papi.RegisterExcursionServer(server, &excursion.ExcursionServer{})
+	papi.RegisterGachaServer(server, &gacha.GachaServer{})
+	papi.RegisterActivityServer(server, &activity.ActivityServer{})
+	papi.RegisterCompanyServer(server, &company.CompanyServer{})
+	papi.RegisterHierarchyServer(server, &hierarchy.HierarchyServer{})
+	papi.RegisterGuildServer(server, &guild.GuildServer{})
+	papi.RegisterStaffServer(server, &staff.StaffServer{})
+	papi.RegisterPhotoServer(server, &photo.PhotoServer{})
+	papi.RegisterPhotoPanoramaServer(server, &photopanorama.PhotoPanoramaServer{})
+	papi.RegisterShowcaseServer(server, &showcase.ShowcaseServer{})
 	return server, nil
 }

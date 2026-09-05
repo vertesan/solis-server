@@ -1,0 +1,9 @@
+package home
+
+import (
+	"github.com/vertesan/solis-server/internal/proto/papi"
+)
+
+type HomeServer struct {
+	papi.UnimplementedHomeServer
+}

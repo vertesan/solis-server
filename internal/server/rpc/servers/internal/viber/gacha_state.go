@@ -2,11 +2,8 @@ package viber
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"math"
 	"strings"
-	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
@@ -15,8 +12,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
-	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -96,7 +91,7 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 		if !shown {
 			continue
 		}
-		info, err := renderCurrentGachaInfo(
+		info, err := RenderCurrentGachaInfo(
 			ctx, evaluator, catalog, rules, masterGacha, stateByID[masterGacha.GetId()], notices, now,
 		)
 		if err != nil {
@@ -110,48 +105,7 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	return visible, nil
 }
 
-func FlattenGachaButtons(infos []*papi.GachaInfo) []*ptransaction.UserGachaButton {
-	buttons := make([]*ptransaction.UserGachaButton, 0)
-	for _, info := range infos {
-		for _, button := range info.GetButtons() {
-			buttons = append(buttons, &ptransaction.UserGachaButton{
-				GachaButtonId: button.GetId(),
-				DrawTime:      button.GetDrawTime(),
-				TodayCount:    button.GetTodayCount(),
-				TotalCount:    button.GetTotalCount(),
-			})
-		}
-	}
-	return buttons
-}
-
-func CurrentGachaInfo(
-	ctx context.Context,
-	suid string,
-	catalog *GachaMasterCatalog,
-	masterGacha *pmaster.Gacha,
-	now int64,
-) (*papi.GachaInfo, error) {
-	previous, err := opuser.FindUserGachaInfo(ctx, suid, masterGacha.GetId())
-	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
-		return nil, err
-	}
-	rules, err := LoadGachaRules()
-	if err != nil {
-		return nil, err
-	}
-	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
-	shown, err := evaluator.Satisfied(masterGacha.GetViewConditionId())
-	if err != nil {
-		return nil, err
-	}
-	if !shown {
-		return nil, status.Error(codes.PermissionDenied, "gacha is not currently visible")
-	}
-	return renderCurrentGachaInfo(ctx, evaluator, catalog, rules, masterGacha, previous, nil, now)
-}
-
-func renderCurrentGachaInfo(
+func RenderCurrentGachaInfo(
 	ctx context.Context,
 	evaluator *CommerceConditionEvaluator,
 	catalog *GachaMasterCatalog,
@@ -399,56 +353,6 @@ func ResetGachaDailyCount(button *papi.GachaButtonInfo, now int64) {
 		return
 	}
 	button.TodayCount = 0
-}
-
-func GachaTermStart(ctx context.Context, conditionID string) int64 {
-	start, _ := GachaTerm(ctx, conditionID)
-	return start
-}
-
-func GachaTermEnd(ctx context.Context, conditionID string) int64 {
-	_, end := GachaTerm(ctx, conditionID)
-	return end
-}
-
-func GachaButtonBonusExpiration(ctx context.Context, conditionID string) (int64, error) {
-	end := GachaTermEnd(ctx, conditionID)
-	if end <= 0 {
-		return 0, nil
-	}
-	rules, err := LoadGachaRules()
-	if err != nil {
-		return 0, err
-	}
-	grace := rules.ButtonBonusExpirationGraceHours * time.Hour.Milliseconds()
-	if grace <= 0 || end > math.MaxInt64-grace {
-		return 0, status.Error(codes.FailedPrecondition, "gacha button bonus expiration is invalid")
-	}
-	return end + grace, nil
-}
-
-func GachaTerm(ctx context.Context, conditionID string) (int64, int64) {
-	if conditionID == "" {
-		return 0, 0
-	}
-	condition, err := opmaster.FindCondition(ctx, conditionID)
-	if err != nil {
-		return 0, 0
-	}
-	var start, end int64
-	for _, setting := range condition.GetSettings() {
-		term := setting.GetTerm()
-		if term == nil {
-			continue
-		}
-		if term.GetNowAfter() > 0 && (start == 0 || term.GetNowAfter() < start) {
-			start = term.GetNowAfter()
-		}
-		if term.GetNowBefore() > end {
-			end = term.GetNowBefore()
-		}
-	}
-	return start, end
 }
 
 func transactionRewardsToMaster(rewards []*ptransaction.Reward) []*pmaster.RewardResource {

@@ -18,7 +18,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -331,21 +330,10 @@ func GrantExchangeRewards(ctx context.Context, suid string, reward *pmaster.Rewa
 	return []*ptransaction.RewardResult{result}, nil
 }
 
-// GrantExchangeReward preserves the single-result API for callers which do
-// not expose reward results. Multi-result callers should use
-// GrantExchangeRewards so dependent grants are included in their response.
-func GrantExchangeReward(ctx context.Context, suid string, reward *pmaster.RewardResource, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
-	results, err := GrantExchangeRewards(ctx, suid, reward, updated)
-	if err != nil {
-		return nil, err
-	}
-	return results[0], nil
-}
-
 func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.RewardResource, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
 	switch reward.GetResourceType() {
 	case penum.ResourceType_ResourceType_Item:
-		return grantExchangeItem(ctx, suid, reward.GetResourceId(), amount, updated)
+		return GrantExchangeItem(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Accessory:
 		return grantExchangeAccessory(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Stone, penum.ResourceType_ResourceType_PaidStone:
@@ -443,11 +431,11 @@ func grantExchangeDecoration(ctx context.Context, suid, decorationID string, amo
 	return exchangeRewardResult(penum.ResourceType_ResourceType_Decoration, decorationID, 0, 1, 1), nil
 }
 
-func grantExchangeItem(ctx context.Context, suid, itemId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
-	return grantExchangeItemWithExpiration(ctx, suid, itemId, amount, 0, updated)
+func GrantExchangeItem(ctx context.Context, suid, itemId string, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+	return GrantExchangeItemWithExpiration(ctx, suid, itemId, amount, 0, updated)
 }
 
-func grantExchangeItemWithExpiration(ctx context.Context, suid, itemId string, amount, expiredTime int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
+func GrantExchangeItemWithExpiration(ctx context.Context, suid, itemId string, amount, expiredTime int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
 	if _, err := opmaster.FindItem(ctx, itemId); err != nil {
 		return nil, invalidExchangeMasterResource("item", itemId, err)
 	}

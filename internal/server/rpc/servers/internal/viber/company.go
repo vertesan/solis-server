@@ -8,13 +8,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,7 +21,7 @@ import (
 const (
 	companyEnjoyPointPrefix = "company_grade_point-enjoy-"
 	companyTrustPointID     = "company_grade_point-trust"
-	companyUnlockCondition  = "cd-function_lock-company"
+	CompanyUnlockCondition  = "cd-function_lock-company"
 	// The spelling is part of the official master-data identifier.
 	companySalaryPointID = "company_grade_point-salaly"
 )
@@ -184,7 +182,7 @@ func GrantCompanyPoint(
 	if err != nil {
 		return nil, err
 	}
-	before, err := companyPointTotal(company)
+	before, err := CompanyPointTotal(company)
 	if err != nil || before > math.MaxInt64-amount {
 		return nil, status.Error(codes.FailedPrecondition, "company point amount overflows")
 	}
@@ -233,126 +231,7 @@ func GrantCompanyPoint(
 	), nil
 }
 
-// BuildCompanyHomeInfo computes the two Company notification badges from
-// claimable grade/trust rewards and character-enjoy rewards.
-func BuildCompanyHomeInfo(ctx context.Context, suid string) (*papi.CompanyInfo, error) {
-	unlocked, err := NewCommerceConditionEvaluator(ctx, suid, time.Now().UnixMilli()).Satisfied(companyUnlockCondition)
-	if err != nil {
-		return nil, err
-	}
-	if !unlocked {
-		return &papi.CompanyInfo{}, nil
-	}
-	if err := ReconcileCompanyMissions(ctx, suid); err != nil {
-		return nil, err
-	}
-	info := &papi.CompanyInfo{}
-	company, err := opuser.FindUserCompany(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	state, err := opuser.FindUserCompanyRewardState(ctx, suid)
-	if errors.Is(err, mongo.ErrNoDocuments) {
-		state = &umodel.UserCompanyRewardState{SUID: suid}
-	} else if err != nil {
-		return nil, err
-	}
-	missions, err := opuser.FindAllUserMissions(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	missionIDs := make([]string, 0, len(missions))
-	for _, mission := range missions {
-		if mission == nil || mission.GetStatusType() != penum.MissionStatusType_MissionStatusType_NotReceived {
-			continue
-		}
-		missionIDs = append(missionIDs, mission.GetMissionId())
-	}
-	if len(missionIDs) > 0 {
-		masters, err := opmaster.FindMissionsByIds(ctx, missionIDs)
-		if err != nil {
-			return nil, err
-		}
-		for _, master := range masters {
-			if master.GetCompanyTrustMissionCategoryType() != penum.CompanyTrustMissionCategoryType_CompanyTrustMissionCategoryType_Unknown {
-				info.IsReceivableRewards = true
-			}
-			if master.GetCompanyEnjoyCharacterMissionCategoryType() != penum.CompanyEnjoyCharacterMissionCategoryType_CompanyEnjoyCharacterMissionCategoryType_Unknown {
-				info.IsReceivableEnjoyRewards = true
-			}
-		}
-	}
-
-	receivedGrades := stringSet(state.ReceivedGradeIds)
-	grades, err := opmaster.FindAllCompanyGrades(ctx)
-	if err != nil {
-		return nil, err
-	}
-	total, err := companyPointTotal(company)
-	if err != nil {
-		return nil, err
-	}
-	for _, grade := range grades {
-		if grade.GetAchieveRewardId() != "" && grade.GetRequiredPoint() <= total && !receivedGrades[grade.GetId()] {
-			info.IsReceivableRewards = true
-			break
-		}
-	}
-	receivedTrust := int32Set(state.ReceivedTrustLevelKeys)
-	trustLevels, err := opmaster.FindAllCompanyTrustLevels(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for _, level := range trustLevels {
-		if level.GetAchieveRewardId() != "" && level.GetRequiredPoint() <= company.GetTrustPoint() && !receivedTrust[level.GetLevelKey()] {
-			info.IsReceivableRewards = true
-			break
-		}
-	}
-	if info.GetIsReceivableEnjoyRewards() {
-		return info, nil
-	}
-
-	characters, err := opuser.FindAllUserCharacters(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	levels, err := opmaster.FindAllCompanyEnjoyCharacterLevels(ctx)
-	if err != nil {
-		return nil, err
-	}
-	settings, err := opmaster.FindAllCompanyEnjoyCharacterLevelSettings(ctx)
-	if err != nil {
-		return nil, err
-	}
-	levelByKey := make(map[int32]int64, len(levels))
-	for _, level := range levels {
-		levelByKey[level.GetLevelKey()] = level.GetRequiredPoint()
-	}
-	characterPoints := make(map[string]int64, len(characters))
-	for _, character := range characters {
-		characterPoints[character.GetCharacterId()] = character.GetCompanyEnjoyPoint()
-	}
-	receivedByCharacter := state.ReceivedEnjoyCharacterLevelKeys
-	receivedSets := make(map[string]map[int32]bool, len(receivedByCharacter))
-	for characterID, keys := range receivedByCharacter {
-		receivedSets[characterID] = int32Set(keys)
-	}
-	for _, setting := range settings {
-		point, owned := characterPoints[setting.GetCharacterId()]
-		requiredPoint, levelExists := levelByKey[setting.GetLevelKey()]
-		if !owned || !levelExists || setting.GetAchieveRewardId() == "" || point < requiredPoint {
-			continue
-		}
-		if !receivedSets[setting.GetCharacterId()][setting.GetLevelKey()] {
-			info.IsReceivableEnjoyRewards = true
-			break
-		}
-	}
-	return info, nil
-}
-
-func companyPointTotal(company *ptransaction.UserCompany) (int64, error) {
+func CompanyPointTotal(company *ptransaction.UserCompany) (int64, error) {
 	if company == nil || company.GetEnjoyPoint() < 0 || company.GetTrustPoint() < 0 || company.GetSalaryPoint() < 0 ||
 		company.GetEnjoyPoint() > math.MaxInt64-company.GetTrustPoint() ||
 		company.GetEnjoyPoint()+company.GetTrustPoint() > math.MaxInt64-company.GetSalaryPoint() {
@@ -369,20 +248,4 @@ func putUpdatedCompanyCharacter(updated *papi.UpdatedData, character *ptransacti
 		}
 	}
 	updated.Characters = append(updated.Characters, character)
-}
-
-func stringSet(values []string) map[string]bool {
-	result := make(map[string]bool, len(values))
-	for _, value := range values {
-		result[value] = true
-	}
-	return result
-}
-
-func int32Set(values []int32) map[int32]bool {
-	result := make(map[int32]bool, len(values))
-	for _, value := range values {
-		result[value] = true
-	}
-	return result
 }

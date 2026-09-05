@@ -1,0 +1,69 @@
+package telephone
+
+import (
+	"context"
+	"time"
+
+	"github.com/vertesan/solis-server/internal/db/store/opmaster"
+	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/penum"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+func (s *TelephoneServer) Receive(
+	ctx context.Context,
+	req *papi.TelephoneReceiveRequest,
+) (*papi.TelephoneReceiveResponse, error) {
+	if len(req.GetTelephoneIds()) == 0 {
+		return nil, viber.InvalidArgumentf("at least one telephoneId is required")
+	}
+	suid := viber.GetSuid(ctx).String()
+	var response *papi.TelephoneReceiveResponse
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		now := time.Now().UnixMilli()
+		updated := &papi.UpdatedData{}
+		seen := make(map[string]struct{}, len(req.GetTelephoneIds()))
+		for _, telephoneID := range req.GetTelephoneIds() {
+			if telephoneID == "" {
+				return nil, viber.InvalidArgumentf("telephoneId must not be empty")
+			}
+			if _, duplicate := seen[telephoneID]; duplicate {
+				continue
+			}
+			seen[telephoneID] = struct{}{}
+			if _, err := opmaster.FindTelephone(ctx, telephoneID); err != nil {
+				return nil, err
+			}
+			telephone, err := opuser.FindUserTelephone(ctx, suid, telephoneID)
+			if err != nil {
+				return nil, err
+			}
+			switch telephone.GetTelephoneStatusType() {
+			case penum.TelephoneStatusType_TelephoneStatusType_Received,
+				penum.TelephoneStatusType_TelephoneStatusType_Finished:
+				continue
+			case penum.TelephoneStatusType_TelephoneStatusType_Scheduled:
+			default:
+				return nil, status.Errorf(codes.FailedPrecondition, "telephone %q is not scheduled", telephoneID)
+			}
+			if telephone.GetScheduledTime() <= 0 || telephone.GetScheduledTime() > now {
+				return nil, status.Errorf(codes.FailedPrecondition, "telephone %q has not arrived", telephoneID)
+			}
+			telephone.TelephoneStatusType = penum.TelephoneStatusType_TelephoneStatusType_Received
+			if err := opuser.UpsertUserTelephone(ctx, suid, telephone); err != nil {
+				return nil, err
+			}
+			updated.Telephones = append(updated.Telephones, telephone)
+		}
+		response = &papi.TelephoneReceiveResponse{CommonResponse: viber.NewCommonResponse(updated)}
+		return nil, nil
+	})
+	if err != nil {
+		return nil, viber.GameplayError(err)
+	}
+	return response, nil
+}
