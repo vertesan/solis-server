@@ -59,7 +59,15 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
-		if req.Level > cardRarity.LevelLimit || req.Level > managerLevel.MaxCardLevel {
+		rarityLevelLimit := int64(cardRarity.LevelLimit)
+		if card.Rank > 0 {
+			rank, err := opmaster.FindCardRank(ctx, card.Rank)
+			if err != nil {
+				return nil, err
+			}
+			rarityLevelLimit += int64(rank.LevelLimitUpAmount)
+		}
+		if int64(req.Level) > rarityLevelLimit || req.Level > managerLevel.MaxCardLevel {
 			return nil, viber.FailedPreconditionf("target level exceeds the manager or rarity level limit")
 		}
 		target, err := opmaster.FindCardLevel(ctx, req.Level)
@@ -88,7 +96,7 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
-		stories, err := newlyUnlockedCardStories(ctx, suid, masterCard, req.Level)
+		stories, _, err := viber.UpdateCardStoryUnlocks(ctx, suid, masterCard, req.Level, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}
@@ -107,9 +115,6 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 			return nil, err
 		}
-		if err := opuser.UpsertManyUserStories(ctx, suid, stories); err != nil {
-			return nil, err
-		}
 		missions, err := viber.AdvanceUserMissions(
 			ctx,
 			suid,
@@ -121,6 +126,11 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
+		characterMissions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		if err != nil {
+			return nil, err
+		}
+		missions = append(missions, characterMissions...)
 		response = &papi.CardEnhanceResponse{CommonResponse: viber.NewCommonResponse(&papi.UpdatedData{
 			Items:    []*ptransaction.UserItem{item},
 			Cards:    []*ptransaction.UserCard{card},
@@ -235,6 +245,15 @@ func (s *CardServer) SkillEnhance(ctx context.Context, req *papi.CardSkillEnhanc
 		if err != nil {
 			return nil, err
 		}
+		masterCard, err := opmaster.FindCard(ctx, card.CardId)
+		if err != nil {
+			return nil, err
+		}
+		characterMissions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		if err != nil {
+			return nil, err
+		}
+		missions = append(missions, characterMissions...)
 		response = &papi.CardSkillEnhanceResponse{CommonResponse: viber.NewCommonResponse(&papi.UpdatedData{
 			Items: []*ptransaction.UserItem{item}, Cards: []*ptransaction.UserCard{card}, Missions: missions,
 		})}
@@ -333,11 +352,8 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 		if err != nil {
 			return nil, err
 		}
-		if int32(len(supports)) >= user.CardSupportMaxNumber {
-			return nil, viber.FailedPreconditionf("all card support slots are occupied")
-		}
 		for _, support := range supports {
-			if support.Number == req.Number {
+			if support.Number == req.Number && support.CardId != "" {
 				return nil, viber.FailedPreconditionf("card support slot is already occupied")
 			}
 			if support.CardId == req.CardId {
@@ -370,21 +386,25 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 		card.SkillId1, card.SkillId2, card.SkillId3 = skillIDs[0], skillIDs[1], skillIDs[2]
 		card.SkillId4 = skillIDs[3]
 		card.LiveAbilityId, card.ActivityAbilityId = abilityIDs[0], abilityIDs[1]
+		if card.SkillId4 != "" && card.SkillLevel4 == 0 {
+			card.SkillLevel4 = 1
+		}
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 			return nil, err
 		}
 		if err := opuser.UpsertUserCardSupport(ctx, suid, support); err != nil {
 			return nil, err
 		}
-		stories, err := newlyUnlockedCardStories(ctx, suid, masterCard, supportLevel)
+		stories, _, err := viber.UpdateCardStoryUnlocks(ctx, suid, masterCard, supportLevel, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}
-		if err := opuser.UpsertManyUserStories(ctx, suid, stories); err != nil {
+		missions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		if err != nil {
 			return nil, err
 		}
 		response = &papi.CardSetSupportResponse{CommonResponse: viber.NewCommonResponse(&papi.UpdatedData{
-			Cards: []*ptransaction.UserCard{card}, CardSupports: []*ptransaction.UserCardSupport{support}, Stories: stories,
+			Cards: []*ptransaction.UserCard{card}, CardSupports: []*ptransaction.UserCardSupport{support}, Stories: stories, Missions: missions,
 		})}
 		return response, nil
 	})
@@ -453,33 +473,4 @@ func nextLiveAbilityLevel(ability *pmaster.LiveAbility, current, cardLevel int32
 		}
 	}
 	return nil, viber.FailedPreconditionf("live ability is already at maximum level")
-}
-
-func newlyUnlockedCardStories(ctx context.Context, suid string, masterCard *pmaster.Card, level int32) ([]*ptransaction.UserStory, error) {
-	releases, err := usercard.CalcReleaseCounts(ctx, level, masterCard)
-	if err != nil {
-		return nil, err
-	}
-	storyCount := releases[penum.CardLevelReleaseType_CardLevelReleaseType_Story]
-	if storyCount > int32(len(masterCard.Stories)) {
-		storyCount = int32(len(masterCard.Stories))
-	}
-	existingStories, err := opuser.FindAllUserStories(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	existingStoryIDs := make(map[string]struct{}, len(existingStories))
-	for _, story := range existingStories {
-		existingStoryIDs[story.StoryId] = struct{}{}
-	}
-	stories := make([]*ptransaction.UserStory, 0, storyCount)
-	for _, story := range masterCard.Stories[:storyCount] {
-		if _, exists := existingStoryIDs[story.StoryId]; exists {
-			continue
-		}
-		stories = append(stories, &ptransaction.UserStory{
-			StoryId: story.StoryId, StatusType: penum.StoryStatusType_StoryStatusType_Unread,
-		})
-	}
-	return stories, nil
 }

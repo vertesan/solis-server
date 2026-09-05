@@ -29,3 +29,7 @@ func UpsertUserCardSupport(ctx context.Context, suid string, support *ptransacti
 		},
 	)
 }
+
+func DeleteUserCardSupport(ctx context.Context, suid string, number int32) error {
+	return ucommon.Delete(ctx, uname.UserCardSupport, bson.M{"SUID": suid, "number": number})
+}

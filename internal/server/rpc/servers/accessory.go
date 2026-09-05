@@ -267,39 +267,17 @@ func selectAccessoryMaterial(
 		}
 		return nil, err
 	}
-	reserved := int64(0)
-	if materialType == penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_ExcludeAllDeck {
-		if accessoryUsedInDeck(materialMaster.Id, deckPositions) {
-			reserved = 1
-		}
+	if materialType != penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_ExcludeAllDeck {
+		deckPositions = nil
 	}
-	if materialType != penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_AllUserAccessory {
-		if accessoryUsedInLeague(materialMaster.Id, leaguePositions) {
-			reserved = 1
-		}
+	if materialType == penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_AllUserAccessory {
+		leaguePositions = nil
 	}
+	reserved := viber.ReservedAccessoryAmount(materialMaster.Id, deckPositions, leaguePositions)
 	if accessory.Amount-reserved >= required {
 		return accessory, nil
 	}
 	return nil, viber.FailedPreconditionf("insufficient eligible previous-rarity accessories")
-}
-
-func accessoryUsedInDeck(id string, positions []*ptransaction.UserDeckPosition) bool {
-	for _, position := range positions {
-		if position.Part1AccessoryId == id || position.Part2AccessoryId == id {
-			return true
-		}
-	}
-	return false
-}
-
-func accessoryUsedInLeague(id string, positions []*ptransaction.UserLeagueDeckPosition) bool {
-	for _, position := range positions {
-		if position.Part1AccessoryId == id || position.Part2AccessoryId == id {
-			return true
-		}
-	}
-	return false
 }
 
 func clearConsumedAccessoryFromDecks(
@@ -310,17 +288,24 @@ func clearConsumedAccessoryFromDecks(
 	deckPositions []*ptransaction.UserDeckPosition,
 	leaguePositions []*ptransaction.UserLeagueDeckPosition,
 ) ([]*ptransaction.UserDeckPosition, []*ptransaction.UserLeagueDeckPosition, error) {
-	if remaining > 0 || materialType == penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_ExcludeAllDeck {
+	if materialType == penum.AccessoryEnhanceMaterialType_AccessoryEnhanceMaterialType_ExcludeAllDeck {
 		return nil, nil, nil
 	}
 	var updatedDecks []*ptransaction.UserDeckPosition
+	usedByDeck := make(map[int32]int64)
 	for _, position := range deckPositions {
 		changed := false
 		if position.Part1AccessoryId == accessoryID {
-			position.Part1AccessoryId, changed = "", true
+			usedByDeck[position.Number]++
+			if usedByDeck[position.Number] > remaining {
+				position.Part1AccessoryId, changed = "", true
+			}
 		}
 		if position.Part2AccessoryId == accessoryID {
-			position.Part2AccessoryId, changed = "", true
+			usedByDeck[position.Number]++
+			if usedByDeck[position.Number] > remaining {
+				position.Part2AccessoryId, changed = "", true
+			}
 		}
 		if changed {
 			updatedDecks = append(updatedDecks, position)
@@ -333,13 +318,25 @@ func clearConsumedAccessoryFromDecks(
 		return updatedDecks, nil, nil
 	}
 	var updatedLeagueDecks []*ptransaction.UserLeagueDeckPosition
+	type leagueDeckKey struct {
+		season string
+		typeID penum.LeagueDeckType
+	}
+	usedByLeagueDeck := make(map[leagueDeckKey]int64)
 	for _, position := range leaguePositions {
 		changed := false
+		key := leagueDeckKey{position.LeagueSeasonId, position.DeckType}
 		if position.Part1AccessoryId == accessoryID {
-			position.Part1AccessoryId, changed = "", true
+			usedByLeagueDeck[key]++
+			if usedByLeagueDeck[key] > remaining {
+				position.Part1AccessoryId, changed = "", true
+			}
 		}
 		if position.Part2AccessoryId == accessoryID {
-			position.Part2AccessoryId, changed = "", true
+			usedByLeagueDeck[key]++
+			if usedByLeagueDeck[key] > remaining {
+				position.Part2AccessoryId, changed = "", true
+			}
 		}
 		if changed {
 			updatedLeagueDecks = append(updatedLeagueDecks, position)

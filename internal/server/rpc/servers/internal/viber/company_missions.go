@@ -13,8 +13,8 @@ import (
 )
 
 // ReconcileCompanyMissions creates the visible Company mission rows which are
-// absent from a user's data. Existing progress is never rewritten: master data
-// reconciliation only makes newly-unlocked missions available.
+// absent from a user's data and projects recorded home talk achievements.
+// Reconciliation never reduces existing progress or reopens claimed missions.
 func ReconcileCompanyMissions(ctx context.Context, suid string) error {
 	masters, err := opmaster.FindAllMissions(ctx)
 	if err != nil {
@@ -57,7 +57,8 @@ func ReconcileCompanyMissions(ctx context.Context, suid string) error {
 		}
 	}
 	if len(candidates) == 0 {
-		return nil
+		_, err := ReachCharacterHomeTalkMissions(ctx, suid, "")
+		return err
 	}
 	conditions, err := opmaster.FindAllConditions(ctx)
 	if err != nil {
@@ -86,7 +87,11 @@ func ReconcileCompanyMissions(ctx context.Context, suid string) error {
 			StatusType:       penum.MissionStatusType_MissionStatusType_Progress,
 		})
 	}
-	return opuser.UpsertManyUserMissions(ctx, suid, created)
+	if err := opuser.UpsertManyUserMissions(ctx, suid, created); err != nil {
+		return err
+	}
+	_, err = ReachCharacterHomeTalkMissions(ctx, suid, "")
+	return err
 }
 
 func firstCompanyMissionThreshold(progresses []*pmaster.MissionProgress) (int64, bool) {

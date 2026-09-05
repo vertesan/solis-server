@@ -210,9 +210,9 @@ func TestInterceptorUnimplementedService(t *testing.T) {
 		t.Fatal(err)
 	}
 	var registeredHeaders metadata.MD
-	registeredResponse, err := papi.NewAccessoryClient(testConfig.GrpcConn).Sell(
+	registeredResponse, err := papi.NewHomeClient(testConfig.GrpcConn).SetReview(
 		ctx,
-		&papi.AccessorySellRequest{},
+		&papi.Empty{},
 		grpc.Header(&registeredHeaders),
 	)
 	cancel()

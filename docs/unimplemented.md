@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-02
+Last audited: 2026-09-05
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -22,14 +22,14 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 32 | 196 |
-| Concrete handlers | 32 | 149 |
-| Entirely unregistered services | 35 | 229 |
-| Missing methods on registered services | 15 | 47 |
-| Total unimplemented RPCs | 50 | 276 |
+| Registered services | 33 | 197 |
+| Concrete handlers | 33 | 157 |
+| Entirely unregistered services | 34 | 228 |
+| Missing methods on registered services | 14 | 40 |
+| Total unimplemented RPCs | 48 | 268 |
 
-The “Total unimplemented RPCs” service count is the 35 entirely unregistered
-services plus 15 registered services that are only partially implemented.
+The “Total unimplemented RPCs” service count is the 34 entirely unregistered
+services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
 
@@ -136,8 +136,6 @@ unknown-service handler.
   - `/api.Invite/Top`
   - `/api.Invite/ReceiveHostRewards`
   - `/api.Invite/EnterCode`
-- `Item` (1):
-  - `/api.Item/Sell`
 - `Ladder` (2):
   - `/api.Ladder/Top`
   - `/api.Ladder/ReachPanel`
@@ -308,19 +306,13 @@ These services are registered, but the listed RPCs still dispatch to inherited
 generated stubs. The unary interceptor converts their `codes.Unimplemented`
 result into the client’s “return to title” response.
 
-- `Accessory` (1 of 3):
-  - `/api.Accessory/Sell`
 - `Auth` (3 of 4):
   - `/api.Auth/Create`
   - `/api.Auth/Delete`
   - `/api.Auth/Recreate`
-- `Card` (6 of 11):
-  - `/api.Card/ActivityAbilityEnhance`
-  - `/api.Card/Reset`
-  - `/api.Card/RemoveSupport`
+- `Card` (2 of 11):
   - `/api.Card/ReleaseSupport`
   - `/api.Card/RankUp`
-  - `/api.Card/UpdateDisplayType`
 - `Division` (1 of 2):
   - `/api.Division/Move`
 - `Exchange` (1 of 3):
@@ -329,16 +321,14 @@ result into the client’s “return to title” response.
   - `/api.Excursion/SetWatchedGazeReaction`
 - `Gacha` (1 of 7):
   - `/api.Gacha/Exchange`
-- `Home` (2 of 5):
-  - `/api.Home/ReadTalk`
+- `Home` (1 of 5):
   - `/api.Home/SetReview`
 - `Master` (4 of 5):
   - `/api.Master/Rule`
   - `/api.Master/GetInquiryTemplate`
   - `/api.Master/GetHelpCategory`
   - `/api.Master/GetVersion`
-- `Migration` (9 of 12):
-  - `/api.Migration/SetPassword`
+- `Migration` (8 of 12):
   - `/api.Migration/LinkApple`
   - `/api.Migration/MigrateApple`
   - `/api.Migration/LinkGoogle`
@@ -374,6 +364,6 @@ result into the client’s “return to title” response.
 ## Fully implemented registered service surfaces
 
 For comparison, every generated RPC currently has a concrete handler for these
-registered services: `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
-`Guild`, `Hair`, `Hierarchy`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`,
+registered services: `Accessory`, `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
+`Guild`, `Hair`, `Hierarchy`, `Item`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`,
 `Showcase`, `Staff`, `System`, and `Telephone`.

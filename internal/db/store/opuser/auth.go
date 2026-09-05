@@ -34,6 +34,22 @@ func DeleteUserAuth(ctx context.Context, suid string) error {
 	return nil
 }
 
+// Changing a transfer password also invalidates any transfer token issued with
+// the previous password. It does not revoke the user's current login sessions.
+func UpdateUserAuthPassword(ctx context.Context, suid, password string) error {
+	result, err := depot.User.Collection(uname.UserAuth).UpdateOne(ctx,
+		bson.M{"serverUserId": suid},
+		bson.M{"$set": bson.M{"password": password}, "$unset": bson.M{"oneTimeToken": ""}},
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update user auth password: %w", err)
+	}
+	if result.MatchedCount == 0 {
+		return mongo.ErrNoDocuments
+	}
+	return nil
+}
+
 func UpdateUserAuthOneTimeToken(ctx context.Context, suid string, oneTimeToken string) error {
 	result, err := depot.User.Collection(uname.UserAuth).UpdateOne(
 		ctx,

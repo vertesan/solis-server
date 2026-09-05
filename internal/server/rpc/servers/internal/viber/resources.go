@@ -5,6 +5,7 @@ import (
 	"errors"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -53,6 +54,16 @@ func ConsumeGold(ctx context.Context, suid string, amount int64) (*ptransaction.
 		return nil, err
 	}
 	return point, nil
+}
+
+// GrantGold accepts int64 sale proceeds while preserving earned-gold counters
+// and mission progress, which use the same accounting as other Gold rewards.
+func GrantGold(ctx context.Context, suid string, amount int64, updated *papi.UpdatedData) error {
+	if amount <= 0 {
+		return status.Error(codes.Internal, "gold reward must be positive")
+	}
+	_, err := grantExchangePoint(ctx, suid, penum.ResourceType_ResourceType_Gold, penum.PointType_PointType_Gold, amount, updated)
+	return err
 }
 
 func InvalidArgumentf(format string, args ...any) error {

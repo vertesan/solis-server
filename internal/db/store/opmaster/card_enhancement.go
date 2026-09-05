@@ -22,3 +22,15 @@ func FindLiveAbility(ctx context.Context, id string) (*pmaster.LiveAbility, erro
 		ctx, mname.LiveAbility, bson.M{"Id": id},
 	)
 }
+
+func FindActivityAbility(ctx context.Context, id string) (*pmaster.ActivityAbility, error) {
+	return mcommon.FindOne[mmodel.ActivityAbility, pmaster.ActivityAbility](
+		ctx, mname.ActivityAbility, bson.M{"Id": id},
+	)
+}
+
+func FindCardRank(ctx context.Context, rank int32) (*pmaster.CardRank, error) {
+	return mcommon.FindOne[mmodel.CardRank, pmaster.CardRank](
+		ctx, mname.CardRank, bson.M{"Rank": rank},
+	)
+}

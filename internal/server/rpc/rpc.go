@@ -107,6 +107,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterNoticeServer(server, &ss.NoticeServer{})
 	papi.RegisterStoryServer(server, &ss.StoryServer{})
 	papi.RegisterAccessoryServer(server, &ss.AccessoryServer{})
+	papi.RegisterItemServer(server, &ss.ItemServer{})
 	papi.RegisterCardServer(server, &ss.CardServer{})
 	papi.RegisterDivisionServer(server, &ss.DivisionServer{})
 	papi.RegisterExchangeServer(server, &ss.ExchangeServer{})
