@@ -20,6 +20,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/dokan"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/exchange"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/excursion"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/friend"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/gacha"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/gift"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/guild"
@@ -35,6 +36,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/notice"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo_panorama"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/profile"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/shop"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/showcase"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/staff"
@@ -162,5 +164,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterPhotoServer(server, &photo.PhotoServer{})
 	papi.RegisterPhotoPanoramaServer(server, &photopanorama.PhotoPanoramaServer{})
 	papi.RegisterShowcaseServer(server, &showcase.ShowcaseServer{})
+	papi.RegisterProfileServer(server, &profile.ProfileServer{})
+	papi.RegisterFriendServer(server, &friend.FriendServer{})
 	return server, nil
 }

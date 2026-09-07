@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-05
+Last audited: 2026-09-06
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,13 +25,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 33 | 197 |
-| Concrete handlers | 33 | 157 |
-| Entirely unregistered services | 34 | 228 |
+| Registered services | 35 | 219 |
+| Concrete handlers | 35 | 179 |
+| Entirely unregistered services | 32 | 206 |
 | Missing methods on registered services | 14 | 40 |
-| Total unimplemented RPCs | 48 | 268 |
+| Total unimplemented RPCs | 46 | 246 |
 
-The “Total unimplemented RPCs” service count is the 34 entirely unregistered
+The “Total unimplemented RPCs” service count is the 32 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -114,17 +114,6 @@ unknown-service handler.
   - `/api.Forum/BookmarkThread`
   - `/api.Forum/UnbookmarkThread`
   - `/api.Forum/BlockUser`
-- `Friend` (10):
-  - `/api.Friend/List`
-  - `/api.Friend/Delete`
-  - `/api.Friend/Apply`
-  - `/api.Friend/Approve`
-  - `/api.Friend/Cancel`
-  - `/api.Friend/CancelAll`
-  - `/api.Friend/Reject`
-  - `/api.Friend/ListApplying`
-  - `/api.Friend/ListApplied`
-  - `/api.Friend/Search`
 - `Gpp` (1):
   - `/api.Gpp/ReceiveReward`
 - `Gvg` (5):
@@ -209,19 +198,6 @@ unknown-service handler.
   - `/api.PhotoContest/CheckShooting`
   - `/api.PhotoContest/SubmitShooting`
   - `/api.PhotoContest/CreateShooting`
-- `Profile` (12):
-  - `/api.Profile/Top`
-  - `/api.Profile/FindUser`
-  - `/api.Profile/UpdateName`
-  - `/api.Profile/UpdateMessage`
-  - `/api.Profile/UpdateBackground`
-  - `/api.Profile/UpdateFavoriteCharacters`
-  - `/api.Profile/UpdateDecoration`
-  - `/api.Profile/UpdateEmblem`
-  - `/api.Profile/UpdateLayout`
-  - `/api.Profile/ClearTwitterMission`
-  - `/api.Profile/UpdateBuddyCard`
-  - `/api.Profile/UpdateBirthday`
 - `Pvp` (5):
   - `/api.Pvp/Top`
   - `/api.Pvp/ListOpponent`

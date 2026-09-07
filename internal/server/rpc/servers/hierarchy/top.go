@@ -17,7 +17,7 @@ func (s *HierarchyServer) Top(ctx context.Context, _ *papi.Empty) (*papi.Hierarc
 		if err != nil {
 			return nil, err
 		}
-		profile, err := hierarchySelfProfile(ctx, suid)
+		profile, err := viber.LoadSelfProfileInfo(ctx, suid)
 		if err != nil {
 			return nil, err
 		}
@@ -77,33 +77,4 @@ func (s *HierarchyServer) Top(ctx context.Context, _ *papi.Empty) (*papi.Hierarc
 		return nil, viber.GameplayError(err)
 	}
 	return response, nil
-}
-
-func hierarchySelfProfile(ctx context.Context, suid string) (*papi.ProfileInfo, error) {
-	user, err := opuser.FindUser(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	public, err := opuser.FindUserPublic(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	profile, err := opuser.FindUserProfile(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	return &papi.ProfileInfo{
-		UserId:               public.GetPublicUserId(),
-		Name:                 user.GetName(),
-		ManagerExp:           user.GetManagerExp(),
-		ManagerLevel:         user.GetManagerLevel(),
-		EmblemId:             user.GetEmblemId(),
-		FavoriteCharacterIds: append([]string(nil), profile.GetFavoriteCharacterIds()...),
-		BackgroundType:       profile.GetBackgroundType(),
-		LayoutType:           profile.GetLayoutType(),
-		LastLoginTime:        user.GetLastLoginTime(),
-		DecorationId:         profile.GetDecorationId(),
-		InformationType:      profile.GetInformationType(),
-		ColorType:            profile.GetColorType(),
-	}, nil
 }

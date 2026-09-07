@@ -3,7 +3,6 @@ package card
 import (
 	"context"
 
-	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -23,25 +22,8 @@ func (s *CardServer) UpdateDisplayType(ctx context.Context, req *papi.CardUpdate
 		if err != nil {
 			return nil, err
 		}
-		images, err := opmaster.FindCardImages(ctx, card.CardId)
-		if err != nil {
+		if err := viber.ValidateCardDisplayType(ctx, card, req.DisplayType); err != nil {
 			return nil, err
-		}
-		available := false
-		for _, image := range images {
-			if image.DisplayType == req.DisplayType {
-				available = true
-				break
-			}
-		}
-		if !available {
-			return nil, viber.FailedPreconditionf("card has no image for the requested display type")
-		}
-		if req.DisplayType == penum.CardDisplayType_CardDisplayType_AfterLimitBreak && card.Rarity < 5 {
-			return nil, viber.FailedPreconditionf("card must reach rarity 5 for its limit-break image")
-		}
-		if req.DisplayType == penum.CardDisplayType_CardDisplayType_AfterEvolution && card.EvolutionLevel <= 0 {
-			return nil, viber.FailedPreconditionf("card must be evolved for its evolution image")
 		}
 		card.DisplayType = req.DisplayType
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
