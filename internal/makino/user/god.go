@@ -15,6 +15,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
+	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/makino/user/card"
 	"github.com/vertesan/solis-server/internal/makino/user/character"
 	"github.com/vertesan/solis-server/internal/makino/user/costume"
@@ -466,6 +467,9 @@ func applyGodMasterData(
 	if err := applyGodResources(ctx, suid, data, counts); err != nil {
 		return err
 	}
+	if err := applyGodMoshikoi(ctx, suid, counts); err != nil {
+		return err
+	}
 	if err := opuser.UpsertUserDiaryState(ctx, &umodel.UserDiaryState{SUID: suid, AllRead: true}); err != nil {
 		return err
 	}
@@ -868,8 +872,18 @@ func applyGodMediaOwnership(
 		if existing := existingLovesById[master.LoveId]; existing != nil {
 			value = proto.Clone(existing).(*ptransaction.UserLove)
 		}
-		if value.HiddenFavorability < master.RequiredExp {
-			value.HiddenFavorability = master.RequiredExp
+		requiredFavorability := master.RequiredExp
+		if _, err := moshikoi.LoadConfig(master.LoveId); err == nil {
+			// EXP unlocks episodes; favorability selects home dialogue tiers.
+			requiredFavorability = 0
+			for _, action := range data.loveHomeActions {
+				if action.GetLoveId() == master.LoveId {
+					requiredFavorability = max(requiredFavorability, action.GetHiddenFavorabilityGte())
+				}
+			}
+		}
+		if value.HiddenFavorability < requiredFavorability {
+			value.HiddenFavorability = requiredFavorability
 		}
 		seenEndIds := make(map[string]struct{}, len(value.UnlockedLoveStoryEndIDs)+len(loveStoryEndIds[master.LoveId]))
 		mergedEndIds := make([]string, 0, len(value.UnlockedLoveStoryEndIDs)+len(loveStoryEndIds[master.LoveId]))

@@ -12,6 +12,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -82,6 +83,10 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		notiShowcaseShopItem.ShopId = viber.ShowcaseGoodsShopID
 		notiShowcaseShopItem.ShopItemIds = []string{}
 		eventInfo, err := opsolis.FindHomeEventInfo(ctx)
+		if err != nil {
+			return nil, err
+		}
+		eventInfo.LoveEventInfos, err = homeLoveEvents(ctx, suid, now, updatedData)
 		if err != nil {
 			return nil, err
 		}
@@ -600,6 +605,41 @@ func showcaseShopIDs(c *viber.ShowcaseCommerceCatalog) []string {
 		ids = append(ids, shop.ShopId)
 	}
 	return ids
+}
+
+// homeLoveEvents replaces stale captured dates and flags with the supported
+// permanent catalog and caller's current progress. Daily missions are refreshed
+// before subsequent activity/photo actions can contribute to them.
+func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.UpdatedData) ([]*papi.HomeLoveEventInfo, error) {
+	infos := make([]*papi.HomeLoveEventInfo, 0)
+	for _, id := range moshikoi.SupportedLoveIDs() {
+		catalog, err := moshikoi.LoadCatalog(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		state, err := moshikoi.LoadState(ctx, suid, id)
+		if err != nil {
+			return nil, err
+		}
+		if state.Registered {
+			if err := viber.ReconcileLoveMissions(ctx, suid, id, state.Exp, updated); err != nil {
+				return nil, err
+			}
+		}
+		info, err := viber.BuildLoveInfo(ctx, suid, catalog, now)
+		if err != nil {
+			return nil, err
+		}
+		infos = append(infos, &papi.HomeLoveEventInfo{
+			Id: id, Name: catalog.Config.Name, StartTime: info.GetStartTime(), EndTime: 0,
+			BannerAssetId: catalog.Config.BannerAssetID, Order: info.GetOrder(),
+			UnlockConditionId: info.GetUnlockConditionId(), IsUnlocked: info.GetIsUnlocked(),
+			EventMissionIds: info.GetEventMissionIds(), LimitedEventMissionIds: info.GetLimitedEventMissionIds(),
+			IsLessonRewardMax: info.GetIsLessonRewardMax(), IsUnplayed: info.GetIsUnplayed(),
+			HasHiddenFavorabilityObtainItem: info.GetHasHiddenFavorabilityObtainItem(), BaseType: info.GetBaseType(),
+		})
+	}
+	return infos, nil
 }
 
 func unlockHomeEventInfo(message protoreflect.Message) {

@@ -14,6 +14,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
+	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	makinouser "github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
@@ -402,8 +403,23 @@ func TestUserGod(t *testing.T) {
 	}
 	expectedEventInfo := proto.Clone(globalEventInfo).(*papi.HomeEventInfo)
 	unlockTestHomeEvents(expectedEventInfo.ProtoReflect())
-	if !proto.Equal(homeResponse.EventInfo, expectedEventInfo) {
-		t.Fatalf("home events are not based on the current global rotation: got=%v want=%v", homeResponse.EventInfo, expectedEventInfo)
+	// Love entrances are now permanent, per-user projections; all unrelated
+	// events must still track the current global catalog exactly.
+	actualRotatingEvents := proto.Clone(homeResponse.EventInfo).(*papi.HomeEventInfo)
+	actualRotatingEvents.LoveEventInfos = nil
+	expectedEventInfo.LoveEventInfos = nil
+	if !proto.Equal(actualRotatingEvents, expectedEventInfo) {
+		t.Fatalf("home events are not based on the current global rotation: got=%v want=%v", actualRotatingEvents, expectedEventInfo)
+	}
+	if len(homeResponse.EventInfo.GetLoveEventInfos()) != len(moshikoi.SupportedLoveIDs()) {
+		t.Fatal("god home omitted a supported permanent Love event")
+	}
+	for _, loveID := range moshikoi.SupportedLoveIDs() {
+		if !slices.ContainsFunc(homeResponse.EventInfo.GetLoveEventInfos(), func(info *papi.HomeLoveEventInfo) bool {
+			return info.GetId() == loveID && info.GetEndTime() == 0 && info.GetIsUnlocked() && !info.GetIsUnplayed()
+		}) {
+			t.Fatalf("god home did not expose registered permanent Love event %s", loveID)
+		}
 	}
 	assertHomeEventsUnlocked(t, homeResponse.EventInfo.ProtoReflect())
 	if homeResponse.GetCompanyInfo().GetIsReceivableRewards() ||

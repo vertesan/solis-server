@@ -29,6 +29,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/home"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/item"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/login_bonus"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/love"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/market"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/master"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/message"
@@ -166,5 +167,6 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterShowcaseServer(server, &showcase.ShowcaseServer{})
 	papi.RegisterProfileServer(server, &profile.ProfileServer{})
 	papi.RegisterFriendServer(server, &friend.FriendServer{})
+	papi.RegisterLoveServer(server, &love.LoveServer{})
 	return server, nil
 }

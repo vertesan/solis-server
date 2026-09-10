@@ -87,7 +87,7 @@ func ReconcileNarrativeSchedules(
 	}
 
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
-	evaluator.primeConditions(masterConditions)
+	evaluator.PrimeConditions(masterConditions)
 	messagesByID := make(map[string]*ptransaction.UserMessage, len(userMessages)+len(masters))
 	for _, message := range userMessages {
 		messagesByID[message.GetMessageId()] = message

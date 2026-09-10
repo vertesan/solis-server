@@ -117,7 +117,7 @@ func NewCommerceConditionEvaluator(ctx context.Context, suid string, now int64) 
 	}
 }
 
-func (e *CommerceConditionEvaluator) primeConditions(conditions []*pmaster.Condition) {
+func (e *CommerceConditionEvaluator) PrimeConditions(conditions []*pmaster.Condition) {
 	for _, condition := range conditions {
 		if condition.GetId() != "" {
 			e.conditions[condition.GetId()] = condition

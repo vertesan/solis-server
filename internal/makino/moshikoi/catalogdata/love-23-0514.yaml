@@ -1,0 +1,22 @@
+# Captured server-owned settings. End time is intentionally absent.
+loveId: love-23-0514
+name: もし恋 ~もしも君と恋をしたら~
+description: 一ノ瀬怜編
+startTime: 1684033200000
+unlockConditionId: cd-clear-area-main-002
+bannerAssetId: img_banner_l_event-love-23-1215
+characterId: char-rei
+costumeId: cos-rei-schl-00
+characterAssetId: img_chr_mem_rei
+color: 68D2E9
+storyReadItemId: item-love-23-0514-story
+presentItemId: item-love-23-0514-present
+promoteItemId: item-love-23-0514-lesson-boost
+lessonMaxHours: 12
+eventMissionIds:
+  - event-love-23-0514-normal
+  - event-love-23-0514-normal-card
+limitedEventMissionIds:
+  - event-love-23-0514-limited
+episodeUnlockLevels: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+hintUnlockLevels: {1: 9, 2: 10}

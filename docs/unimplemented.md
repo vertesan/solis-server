@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-06
+Last audited: 2026-09-10
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,13 +25,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 35 | 219 |
-| Concrete handlers | 35 | 179 |
-| Entirely unregistered services | 32 | 206 |
+| Registered services | 36 | 236 |
+| Concrete handlers | 36 | 196 |
+| Entirely unregistered services | 31 | 189 |
 | Missing methods on registered services | 14 | 40 |
-| Total unimplemented RPCs | 46 | 246 |
+| Total unimplemented RPCs | 45 | 229 |
 
-The “Total unimplemented RPCs” service count is the 32 entirely unregistered
+The “Total unimplemented RPCs” service count is the 31 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -141,24 +141,6 @@ unknown-service handler.
   - `/api.League/ListCardSkillRateRanking`
   - `/api.League/ListCardMvpRanking`
   - `/api.League/GetDailyDetail`
-- `Love` (17):
-  - `/api.Love/Title`
-  - `/api.Love/TitleExtra`
-  - `/api.Love/Register`
-  - `/api.Love/Top`
-  - `/api.Love/Start`
-  - `/api.Love/Restart`
-  - `/api.Love/Finish`
-  - `/api.Love/ResetReadingStoryStatus`
-  - `/api.Love/Present`
-  - `/api.Love/Save`
-  - `/api.Love/UpdateSaveName`
-  - `/api.Love/Load`
-  - `/api.Love/Reset`
-  - `/api.Love/ReceiveLessonReward`
-  - `/api.Love/PromoteLesson`
-  - `/api.Love/UpdateName`
-  - `/api.Love/GetMainCharacter`
 - `Marathon` (21):
   - `/api.Marathon/Top`
   - `/api.Marathon/UnlockQuest`

@@ -8,6 +8,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -34,6 +35,9 @@ func readUserStory(
 	storyId string,
 	allowCreate bool,
 ) ([]*ptransaction.RewardResult, *papi.UpdatedData, error) {
+	if moshikoi.SupportedStoryLoveID(storyId) != "" {
+		return nil, nil, viber.FailedPreconditionf("love stories must be played through Love.Start and Love.Finish")
+	}
 	master, err := opmaster.FindStory(ctx, storyId)
 	if err != nil {
 		return nil, nil, err

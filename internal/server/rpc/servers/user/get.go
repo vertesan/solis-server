@@ -3,12 +3,14 @@ package user
 import (
 	"context"
 	"errors"
+	"slices"
 	"strings"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -211,6 +213,11 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		loves, err := opuser.FindAllUserLoves(ctx, suid)
 		if err != nil {
 			return nil, err
+		}
+		for i, love := range loves {
+			if slices.Contains(moshikoi.SupportedLoveIDs(), love.GetLoveId()) {
+				loves[i] = moshikoi.VisibleLove(love)
+			}
 		}
 		leagueDeckPositions, err := opuser.FindAllUserLeagueDeckPositions(ctx, suid)
 		if err != nil {

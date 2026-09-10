@@ -1,0 +1,103 @@
+# Choice indices follow the 1-based API, not the handwritten map's 0-based indices.
+# Route connections come from docs/love-23-0514-routemap.md. Scores, condition
+# branch indices and first-ending bonuses are inferred from the captured runs.
+loveId: love-23-0514
+endingConditions:
+  cd-event-love-23-0514-normal-mission_love-end_emb: love-end-love-23-0514-008-happy-002
+  cd-event-love-23-0514-limited-mission_love-end_emb-sp: love-end-love-23-0514-008-happy-002
+endings:
+  - {id: love-end-love-23-0514-001-bad, name: オトクオトクエンド, favorability: 206}
+  - {id: love-end-love-23-0514-008-happy-001, name: 大学生エンド, favorability: 1441}
+  - {id: love-end-love-23-0514-008-happy-002, name: TRUE エンド, favorability: 2059, endRollAssetId: event_2305_02_02}
+  - {id: love-end-love-23-0514-008-happy-003, name: さよならエンド, favorability: 1441}
+  - {id: love-end-love-23-0514-008-normal-001, name: 夢追いエンド, favorability: 618}
+  - {id: love-end-love-23-0514-008-normal-002, name: これからも一緒にエンド, favorability: 618}
+  - {id: love-end-love-23-0514-008-bad-001, name: 恋はタイミングエンド, favorability: 206}
+  - {id: love-end-love-23-0514-008-bad-002, name: 嫌われエンド, favorability: 206}
+  - {id: love-end-love-23-0514-008-bad-003, name: 勘違いエンド, favorability: 206}
+episodes:
+  love-event-story-love-23-0514-001:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 2, choice: 2}], ending: love-end-love-23-0514-001-bad}
+    next: love-event-story-love-23-0514-002
+  love-event-story-love-23-0514-002:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 2, scores: [0, 35]}
+    next: love-event-story-love-23-0514-003
+  love-event-story-love-23-0514-003:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [35, 0]}
+    next: love-event-story-love-23-0514-004
+  love-event-story-love-23-0514-004:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [0, -70]}
+      - {index: 2, count: 2, best: 2, scores: [0, 35]}
+    next: love-event-story-love-23-0514-005
+  love-event-story-love-23-0514-005:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 2, scores: [-35, 140]}
+    next: love-event-story-love-23-0514-006
+  love-event-story-love-23-0514-006:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 140]}
+      - {index: 2, count: 2, best: 2, scores: [-70, 70]}
+      - {index: 3, count: 2, best: 1, scores: [210, 0]}
+    outcomes:
+      - {all: [{group: 3, choice: 2}], next: love-event-story-love-23-0514-007-bad}
+    next: love-event-story-love-23-0514-007
+  love-event-story-love-23-0514-007:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 70]}
+      - {index: 2, count: 2, best: 1, scores: [210, 0], requires: [{group: 1, choice: 2}]}
+    branches:
+      - group: 1
+        match: 1
+        otherwise: 2
+        all: [{episode: love-event-story-love-23-0514-006, group: 2, choice: 2}]
+    outcomes:
+      - next: love-event-story-love-23-0514-008-happy
+        all:
+          - {episode: love-event-story-love-23-0514-003, group: 1, choice: 1}
+          - {episode: love-event-story-love-23-0514-004, group: 1, choice: 1}
+          - {episode: love-event-story-love-23-0514-004, group: 2, choice: 2}
+          - {episode: love-event-story-love-23-0514-005, group: 2, choice: 2}
+          - {episode: love-event-story-love-23-0514-006, group: 1, choice: 2}
+          - {episode: love-event-story-love-23-0514-006, group: 2, choice: 2}
+          - {episode: love-event-story-love-23-0514-006, group: 3, choice: 1}
+          - {group: 1, choice: 2}
+          - {group: 2, choice: 1}
+    next: love-event-story-love-23-0514-008-normal
+  love-event-story-love-23-0514-007-bad: &bad
+    groups:
+      - {index: 1, count: 3, best: 2, scores: [0, 0, 0]}
+    branches:
+      - {group: 1, match: 1, otherwise: 2, all: [{episode: love-event-story-love-23-0514-006, group: 3, choice: 2}]}
+      - {group: 2, match: 1, otherwise: 2, all: [{episode: love-event-story-love-23-0514-006, group: 2, choice: 2}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-0514-008-bad-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-0514-008-bad-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-23-0514-008-bad-003}
+  love-event-story-love-23-0514-008-bad:
+    <<: *bad
+    branches: []
+  love-event-story-love-23-0514-008-happy:
+    groups:
+      - {index: 1, count: 3, best: 2, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-0514-008-happy-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-0514-008-happy-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-23-0514-008-happy-003}
+  love-event-story-love-23-0514-008-normal:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    branches:
+      - {group: 1, match: 1, otherwise: 2, all: [{episode: love-event-story-love-23-0514-006, group: 2, choice: 2}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-0514-008-normal-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-0514-008-normal-002}

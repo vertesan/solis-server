@@ -81,6 +81,7 @@ func getUserCollection() []collection {
 		{Name: uname.UserDecoration, SUIDField: suidField},
 		{Name: uname.UserPhotoRecipe, SUIDField: suidField},
 		{Name: uname.UserLove, SUIDField: suidField},
+		{Name: uname.UserLoveState, SUIDField: suidField},
 		{Name: uname.UserLeagueDeckPosition, SUIDField: suidField},
 		{Name: uname.UserDuty, SUIDField: suidField},
 		{Name: uname.UserDutyPoint, SUIDField: suidField},

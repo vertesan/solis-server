@@ -65,7 +65,7 @@ func ReconcileCompanyMissions(ctx context.Context, suid string) error {
 		return err
 	}
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, time.Now().UnixMilli())
-	evaluator.primeConditions(conditions)
+	evaluator.PrimeConditions(conditions)
 
 	sort.SliceStable(candidates, func(i, j int) bool { return candidates[i].GetId() < candidates[j].GetId() })
 	created := make([]*ptransaction.UserMission, 0)
