@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	usercard "github.com/vertesan/solis-server/internal/makino/user/card"
 	usercharacter "github.com/vertesan/solis-server/internal/makino/user/character"
 	usercostume "github.com/vertesan/solis-server/internal/makino/user/costume"
@@ -190,6 +191,9 @@ func grantGachaCard(
 		return nil, err
 	}
 	results = append(results, storyResults...)
+	if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
+		return nil, err
+	}
 	return results, nil
 }
 

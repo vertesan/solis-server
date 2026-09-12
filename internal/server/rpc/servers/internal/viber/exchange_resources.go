@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	usercostume "github.com/vertesan/solis-server/internal/makino/user/costume"
 	userphoto "github.com/vertesan/solis-server/internal/makino/user/photo"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -149,6 +150,7 @@ func isSupportedExchangeReward(resourceType penum.ResourceType) bool {
 		penum.ResourceType_ResourceType_Costume,
 		penum.ResourceType_ResourceType_Stone,
 		penum.ResourceType_ResourceType_PaidStone,
+		penum.ResourceType_ResourceType_ManagerExp,
 		penum.ResourceType_ResourceType_CardRarityExp,
 		penum.ResourceType_ResourceType_CardRarityExpLimitChange,
 		penum.ResourceType_ResourceType_PhotoRecipe,
@@ -332,6 +334,12 @@ func GrantExchangeRewards(ctx context.Context, suid string, reward *pmaster.Rewa
 
 func grantExchangeReward(ctx context.Context, suid string, reward *pmaster.RewardResource, amount int64, updated *papi.UpdatedData) (*ptransaction.RewardResult, error) {
 	switch reward.GetResourceType() {
+	case penum.ResourceType_ResourceType_ManagerExp:
+		user, err := AddManagerExp(ctx, suid, amount, updated)
+		if err != nil {
+			return nil, err
+		}
+		return exchangeRewardResult(reward.GetResourceType(), reward.GetResourceId(), user.GetManagerExp()-amount, user.GetManagerExp(), amount), nil
 	case penum.ResourceType_ResourceType_Item:
 		return GrantExchangeItem(ctx, suid, reward.GetResourceId(), amount, updated)
 	case penum.ResourceType_ResourceType_Accessory:
@@ -908,6 +916,9 @@ func grantHierarchyPoint(
 		return nil, err
 	}
 	updated.Hierarchy = reconciled
+	if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
+		return nil, err
+	}
 	return exchangeRewardResult(resourceType, "", beforeResource, beforeResource+amount, amount), nil
 }
 

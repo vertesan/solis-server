@@ -14,7 +14,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
-	"google.golang.org/protobuf/proto"
 )
 
 func (s *LoveServer) Top(ctx context.Context, req *papi.LoveTopRequest) (*papi.LoveTopResponse, error) {
@@ -120,10 +119,7 @@ func loveEventMissionInfos(ctx context.Context, suid, loveID string) ([]*papi.Ev
 			if err != nil {
 				return nil, nil, err
 			}
-			permanent := proto.Clone(condition).(*pmaster.Condition)
-			for _, setting := range permanent.GetSettings() {
-				setting.Term = nil
-			}
+			permanent := viber.PermanentLoveMissionCondition(condition)
 			evaluator.PrimeConditions([]*pmaster.Condition{permanent})
 			unlocked, err = evaluator.Satisfied(conditionID)
 			if err != nil {
@@ -138,6 +134,13 @@ func loveEventMissionInfos(ctx context.Context, suid, loveID string) ([]*papi.Ev
 		masterByID := make(map[string]*pmaster.Mission, len(masters))
 		for _, master := range masters {
 			masterByID[master.GetId()] = master
+			if id := master.GetViewConditionId(); id != "" {
+				condition, err := opmaster.FindCondition(ctx, id)
+				if err != nil {
+					return nil, nil, err
+				}
+				evaluator.PrimeConditions([]*pmaster.Condition{viber.PermanentLoveMissionCondition(condition)})
+			}
 		}
 		for _, id := range group.GetMissionIds() {
 			if user := byID[id]; user != nil {

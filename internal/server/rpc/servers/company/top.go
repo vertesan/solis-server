@@ -3,11 +3,13 @@ package company
 import (
 	"context"
 	"sort"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
@@ -81,13 +83,20 @@ func (s *CompanyServer) Top(ctx context.Context, _ *papi.CompanyTopRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
+			return nil, err
+		}
+		thisMonthSalaryPoint, err := salary.ThisMonthCompanyPoint(ctx, suid, time.Now())
+		if err != nil {
+			return nil, err
+		}
 		response = &papi.CompanyTopResponse{
 			CompanyGradeInfos:                      gradeInfos,
 			TrustMissionInfos:                      trustMissionInfos,
 			TrustLevelInfos:                        trustLevelInfos,
 			CurrentRank:                            1,
 			ReceivableLevelRewardEnjoyCharacterIds: receivableCharacterIDs,
-			ThisMonthSalaryPoint:                   0,
+			ThisMonthSalaryPoint:                   thisMonthSalaryPoint,
 			DokanInfos:                             []*papi.DokanInfo{},
 			CommonResponse:                         viber.NewCommonResponse(nil),
 		}

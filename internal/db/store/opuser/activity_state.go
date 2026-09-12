@@ -30,6 +30,10 @@ func FindUserFanEventRanking(ctx context.Context, suid, activityFanEventID strin
 	)
 }
 
+func FindAllUserFanEventRankings(ctx context.Context, suid string) ([]*umodel.UserFanEventRanking, error) {
+	return ucommon.FindAll[umodel.UserFanEventRanking](ctx, uname.UserFanEventRanking, bson.M{"SUID": suid})
+}
+
 func UpsertUserFanEventRanking(ctx context.Context, ranking *umodel.UserFanEventRanking) error {
 	return ucommon.UpsertOne(
 		ctx,

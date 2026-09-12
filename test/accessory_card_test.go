@@ -63,6 +63,7 @@ func testCardProgression(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Card.Enhance failed: %v", err)
 	}
+	assertEligibleSalaryMutationSnapshot(t)
 	if got := userItemAmount(t, "item-card_enhance"); got != beforeEnhanceItem-expectedEnhanceCost {
 		t.Fatalf("Card.Enhance cost mismatch: got %d, want %d", got, beforeEnhanceItem-expectedEnhanceCost)
 	}

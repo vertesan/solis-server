@@ -7,6 +7,8 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/birthday"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
@@ -80,6 +82,22 @@ func (s *HomeServer) Login(ctx context.Context, req *papi.HomeLoginRequest) (*pa
 		response = &papi.HomeLoginResponse{
 			PurchasedLoginBonusShopInfos: purchasedLoginBonusShopInfos,
 			CommonResponse:               viber.NewCommonResponse(updatedData),
+		}
+		profile, err := opuser.FindUserProfile(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		birthdayEvent, err := birthday.Reconcile(ctx, suid, profile, now)
+		if err != nil {
+			return nil, err
+		}
+		response.BirthdayAdvInfo = birthdayEvent.NextAdv()
+		response.BirthdayRemindInfo = birthdayEvent.Reminder()
+		if err := salary.RecordAttendance(ctx, suid, now); err != nil {
+			return nil, err
+		}
+		if _, err := viber.ReconcileUserMissions(ctx, suid, now.UnixMilli(), updatedData); err != nil {
+			return nil, err
 		}
 		if balance.PaidBalance > 0 {
 			response.PaidJpy = &papi.PaidJpy{Amount: balance.PaidBalance}

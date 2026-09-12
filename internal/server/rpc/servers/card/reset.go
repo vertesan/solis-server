@@ -3,10 +3,12 @@ package card
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	usercard "github.com/vertesan/solis-server/internal/makino/user/card"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
@@ -139,6 +141,9 @@ func (s *CardServer) Reset(ctx context.Context, req *papi.CardResetRequest) (*pa
 		}
 		updated.Cards = append(updated.Cards, card)
 		updated.Stories = append(updated.Stories, unlocked...)
+		if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
+			return nil, err
+		}
 		common := viber.NewCommonResponse(updated)
 		common.DeletedData.Stories = locked
 		response = &papi.CardResetResponse{CommonResponse: common, Rewards: rewards}

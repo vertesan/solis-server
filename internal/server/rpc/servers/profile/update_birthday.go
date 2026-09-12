@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/vertesan/solis-server/internal/makino/birthday"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -16,16 +17,21 @@ func (s *ProfileServer) UpdateBirthday(ctx context.Context, req *papi.ProfileUpd
 	if month < 1 || month > 12 || day < 1 || day > 31 || int32(date.Month()) != month || int32(date.Day()) != day {
 		return nil, viber.InvalidArgumentf("birthday must be a valid month and day")
 	}
-	common, err := updateProfile(ctx, func(_ context.Context, _ string, profile *ptransaction.UserProfile) error {
+	var birthdayEvent *birthday.Event
+	now := time.Now()
+	common, err := updateProfile(ctx, func(ctx context.Context, suid string, profile *ptransaction.UserProfile) error {
 		if profile.GetBirthMonth() != 0 || profile.GetBirthDay() != 0 {
 			return viber.FailedPreconditionf("birthday has already been set")
 		}
 		profile.BirthMonth = int64(month)
 		profile.BirthDay = int64(day)
-		return nil
+		var err error
+		birthdayEvent, err = birthday.Reconcile(ctx, suid, profile, now)
+		return err
 	})
 	if err != nil {
 		return nil, err
 	}
-	return &papi.ProfileUpdateBirthdayResponse{CommonResponse: common}, nil
+	return &papi.ProfileUpdateBirthdayResponse{CommonResponse: common,
+		BirthdayAdvInfo: birthdayEvent.NextAdv(), BirthdayRemindInfo: birthdayEvent.Reminder()}, nil
 }

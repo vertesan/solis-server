@@ -12,7 +12,9 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/birthday"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -90,12 +92,18 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		profile, err := opuser.FindUserProfile(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		birthdayEvent, err := birthday.Reconcile(ctx, suid, profile, time.UnixMilli(now))
+		if err != nil {
+			return nil, err
+		}
+		eventInfo.HomeBirthdayInfo = birthdayEvent.HomeInfo()
 		godState, err := opuser.FindUserGodState(ctx, suid)
 		if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 			return nil, err
-		}
-		if err == nil && godState.UnlockCurrentEvents {
-			unlockHomeEventInfo(eventInfo.ProtoReflect())
 		}
 		hierarchyNotiInfo, hierarchy, hierarchyChanged, err := viber.ReconcileHierarchyNotification(
 			ctx,
@@ -199,6 +207,20 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		if err := salary.RecordAttendance(ctx, suid, time.UnixMilli(now)); err != nil {
+			return nil, err
+		}
+		payslip, err := salary.PendingPayslip(ctx, suid, time.UnixMilli(now))
+		if err != nil {
+			return nil, err
+		}
+		eventInfo.EventMissionInfos, err = viber.ReconcileUserMissions(ctx, suid, now, updatedData)
+		if err != nil {
+			return nil, err
+		}
+		if godState != nil && godState.UnlockCurrentEvents {
+			unlockHomeEventInfo(eventInfo.ProtoReflect())
+		}
 
 		response = &papi.HomeEnterResponse{
 			GachaInfos:              gachaInfos,
@@ -226,6 +248,7 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 			UnlockedShowcaseNumbers: unlockedShowcaseNumber.Numbers,
 			PhotoExpressions:        photoExpressions,
 			CompanyInfo:             companyInfo,
+			Payslip:                 payslip,
 			CommonResponse:          viber.NewCommonResponse(updatedData),
 		}
 		return response, nil

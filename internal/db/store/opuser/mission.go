@@ -24,6 +24,10 @@ func FindAllUserMissions(ctx context.Context, suid string) ([]*ptransaction.User
 	)
 }
 
+func FindUserMission(ctx context.Context, suid, missionID string) (*ptransaction.UserMission, error) {
+	return ucommon.FindOne[ptransaction.UserMission](ctx, uname.UserMission, bson.M{"SUID": suid, "missionId": missionID})
+}
+
 func UpsertUserMission(ctx context.Context, suid string, mission *ptransaction.UserMission) error {
 	return ucommon.UpsertOne(
 		ctx,

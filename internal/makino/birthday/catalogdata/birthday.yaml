@@ -1,0 +1,33 @@
+# Birthday master data is not included in the shipped master database.
+# Asset/reward identifiers are resolved from master Decoration and Character.
+# Captions come from feature-0912/birthdaytop and the original birthday flow;
+# kana and miho were supplied directly by the user.
+bannerAssetId: img_banner_l_user-birthday
+order: 1000
+defaultText: "お誕生日\nおめでとうございます！"
+texts:
+  char-ai: "全力でお祝い\nしますねっ！"
+  char-aoi: "やぁやぁ\nおめでとう"
+  char-chs: "いっぱいお祝い\nしないとです！"
+  char-hrk: "君も立派に\nなったわね～"
+  char-kan: "一緒に\n写真撮ろ～！"
+  char-kkr: "こころがお祝い\nしてあげま～す"
+  char-kor: "お祝いのお返し\n期待してますよ"
+  char-ktn: "お、おめでとう\nございます…！"
+  char-mei: "おめでとーー\nーーーーー！"
+  char-mhk: "私だってお祝い\nくらいしますよ"
+  char-ngs: "自分のことのよ\nうに嬉しいです"
+  char-rei: "ちゃんとお祝い\nさせて下さいね"
+  char-rio: "一応、気持ちを\n込めたのよ"
+  char-rui: "私にとっても\n特別な日です"
+  char-ski: "良い一年を過ご\nせますように"
+  char-skr: "あなたに～～！\n届け～～～～！"
+  char-smr: "お兄ちゃん\nおめでと～！"
+  char-suz: "お、お祝いして\n差し上げますわ"
+  char-szk: "お誕生日…\nめでたい…！"
+  char-yu: "ふふ、何が\nほしいん？"
+reminder:
+  assetId: user-birthday-advance-notice
+  description: ご案内
+  linkTitle: 注力アイドルを設定する
+  linkType: 109

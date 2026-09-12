@@ -242,7 +242,8 @@ func addMissionProgress(
 
 func missionCanProgress(mission *ptransaction.UserMission) bool {
 	return mission.StatusType == penum.MissionStatusType_MissionStatusType_Progress ||
-		mission.StatusType == penum.MissionStatusType_MissionStatusType_Clear
+		mission.StatusType == penum.MissionStatusType_MissionStatusType_Clear ||
+		mission.StatusType == penum.MissionStatusType_MissionStatusType_NotReceived
 }
 
 func missionTargetsMatch(masterTargetIds, actionTargetIds []string) bool {

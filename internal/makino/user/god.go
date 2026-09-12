@@ -16,6 +16,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/makino/user/card"
 	"github.com/vertesan/solis-server/internal/makino/user/character"
 	"github.com/vertesan/solis-server/internal/makino/user/costume"
@@ -142,6 +143,14 @@ func GodUser(ctx context.Context, publicUserId, serverUserId string, feature God
 		if err := applyGodMasterData(ctx, auth.ServerUserId, masters, feature, result.Collections); err != nil {
 			return nil, err
 		}
+		if err := salary.RefreshSnapshot(ctx, auth.ServerUserId, time.Now()); err != nil {
+			return nil, err
+		}
+		salaries, err := opuser.FindAllUserSalaries(ctx, auth.ServerUserId)
+		if err != nil {
+			return nil, err
+		}
+		result.Collections[uname.UserSalary] = len(salaries)
 		return nil, nil
 	}); err != nil {
 		return nil, fmt.Errorf("failed to unlock user: %w", err)

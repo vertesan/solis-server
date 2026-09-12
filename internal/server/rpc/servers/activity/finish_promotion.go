@@ -6,6 +6,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -33,6 +34,9 @@ func (s *ActivityServer) FinishPromotion(ctx context.Context, _ *papi.Empty) (*p
 		}
 		info.ActivePromotion = nil
 		if err := opuser.UpsertUserPromotionInfo(ctx, suid, info); err != nil {
+			return nil, err
+		}
+		if err := salary.RecordActivity(ctx, suid, progress.GetStartTime(), min(time.Now().UnixMilli(), progress.GetFinishTime()), int32(len(progress.GetCharacters()))); err != nil {
 			return nil, err
 		}
 		if err := opuser.DeleteUserPromotionRun(ctx, suid); err != nil {

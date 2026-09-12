@@ -8,6 +8,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	usercard "github.com/vertesan/solis-server/internal/makino/user/card"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
@@ -127,6 +128,9 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 			Missions: missions,
 		}
 		if _, err := viber.ReconcileCardSupportLevel(ctx, suid, user, updated); err != nil {
+			return nil, err
+		}
+		if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
 			return nil, err
 		}
 		response = &papi.CardEnhanceResponse{CommonResponse: viber.NewCommonResponse(updated)}

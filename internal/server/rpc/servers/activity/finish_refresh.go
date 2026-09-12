@@ -8,6 +8,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
@@ -99,9 +100,6 @@ func (s *ActivityServer) FinishRefresh(ctx context.Context, _ *papi.Empty) (*pap
 		if err := opuser.UpsertUserRefreshInfo(ctx, suid, info); err != nil {
 			return nil, err
 		}
-		if err := opuser.DeleteUserRefreshRun(ctx, suid); err != nil {
-			return nil, err
-		}
 		maxLevel := int32(0)
 		for _, level := range refresh.GetLevels() {
 			if level.GetIsUnlocked() && level.GetLevel() > maxLevel {
@@ -110,6 +108,12 @@ func (s *ActivityServer) FinishRefresh(ctx context.Context, _ *papi.Empty) (*pap
 		}
 		if maxLevel == 0 {
 			maxLevel = refresh.GetLevel()
+		}
+		if err := salary.RecordActivity(ctx, suid, progress.GetStartTime(), progress.GetFinishTime(), int32(len(progress.GetCharacters()))); err != nil {
+			return nil, err
+		}
+		if err := opuser.DeleteUserRefreshRun(ctx, suid); err != nil {
+			return nil, err
 		}
 		updated := &papi.UpdatedData{Characters: characters, TotalCount: totalCount}
 		response = &papi.ActivityFinishRefreshResponse{

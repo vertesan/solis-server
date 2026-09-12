@@ -12,6 +12,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -138,9 +139,6 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 		if err := opuser.UpsertUserFanEventInfo(ctx, suid, info); err != nil {
 			return nil, err
 		}
-		if err := opuser.DeleteUserFanEventRun(ctx, suid); err != nil {
-			return nil, err
-		}
 		total, err := opuser.FindUserTotalCount(ctx, suid)
 		if err != nil {
 			return nil, err
@@ -166,6 +164,19 @@ func (s *ActivityServer) FinishFanEvent(ctx context.Context, _ *papi.Empty) (*pa
 		}
 		updated.ActivityFanEventProgress = best
 		if err := updateFanEventRanking(ctx, suid, progress); err != nil {
+			return nil, err
+		}
+		_, stepMillis, err := viber.FanEventStepDurations(ctx, progress)
+		if err != nil {
+			return nil, err
+		}
+		for _, character := range progress.GetCharacters() {
+			end := min(now, progress.GetStartTime()+int64(character.GetMaxStep())*stepMillis)
+			if err := salary.RecordActivity(ctx, suid, progress.GetStartTime(), end, 1); err != nil {
+				return nil, err
+			}
+		}
+		if err := opuser.DeleteUserFanEventRun(ctx, suid); err != nil {
 			return nil, err
 		}
 		maxLevel, err := maxUnlockedFanEventLevel(ctx, suid, fanEvent.GetId(), now, fanEvent.GetLevel())

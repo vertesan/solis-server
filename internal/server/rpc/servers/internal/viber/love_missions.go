@@ -13,7 +13,26 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
+	"google.golang.org/protobuf/proto"
 )
+
+// PermanentLoveMissionCondition removes only calendar gates. A branch that
+// contained only a date becomes unconditional, rather than an unsupported
+// empty ConditionSetting (conditions are ORs of their settings).
+func PermanentLoveMissionCondition(condition *pmaster.Condition) *pmaster.Condition {
+	permanent := proto.Clone(condition).(*pmaster.Condition)
+	for _, setting := range permanent.GetSettings() {
+		if setting.GetTerm() == nil {
+			continue
+		}
+		setting.Term = nil
+		if proto.Size(setting) == 0 {
+			permanent.Settings = nil
+			break
+		}
+	}
+	return permanent
+}
 
 // ReconcileLoveMissions activates the supported event's master-defined missions.
 // Daily missions reset on JST midnight; loading a save never rewinds missions.

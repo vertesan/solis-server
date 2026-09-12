@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-10
+Last audited: 2026-09-12
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,13 +25,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 36 | 236 |
-| Concrete handlers | 36 | 196 |
-| Entirely unregistered services | 31 | 189 |
-| Missing methods on registered services | 14 | 40 |
-| Total unimplemented RPCs | 45 | 229 |
+| Registered services | 40 | 248 |
+| Concrete handlers | 40 | 210 |
+| Entirely unregistered services | 27 | 177 |
+| Missing methods on registered services | 14 | 38 |
+| Total unimplemented RPCs | 41 | 215 |
 
-The “Total unimplemented RPCs” service count is the 31 entirely unregistered
+The “Total unimplemented RPCs” service count is the 27 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -55,12 +55,6 @@ unknown-service handler.
   - `/api.Backside/StageReset`
   - `/api.Backside/StageSurpriseFinish`
   - `/api.Backside/StageDeckPositionChange`
-- `Birthday` (5):
-  - `/api.Birthday/Top`
-  - `/api.Birthday/SetWatched`
-  - `/api.Birthday/ReceiveReward`
-  - `/api.Birthday/OutputWatchedLog`
-  - `/api.Birthday/SetWatchedRemindInfo`
 - `Deck` (3):
   - `/api.Deck/Save`
   - `/api.Deck/Delete`
@@ -122,8 +116,6 @@ unknown-service handler.
   - `/api.Gvg/ListRanking`
   - `/api.Gvg/Start`
   - `/api.Gvg/ListAsset`
-- `Health` (1):
-  - `/api.Health/Check`
 - `Invite` (3):
   - `/api.Invite/Top`
   - `/api.Invite/ReceiveHostRewards`
@@ -163,11 +155,6 @@ unknown-service handler.
   - `/api.Marathon/UseRaidStaminaRecoveryItem`
   - `/api.Marathon/ListRaidDeck`
   - `/api.Marathon/SaveRaidDeck`
-- `Mission` (4):
-  - `/api.Mission/List`
-  - `/api.Mission/Receive`
-  - `/api.Mission/URLTransition`
-  - `/api.Mission/Event`
 - `Mosaic` (3):
   - `/api.Mosaic/Top`
   - `/api.Mosaic/Exchange`
@@ -219,9 +206,6 @@ unknown-service handler.
   - `/api.Roulette/Top`
   - `/api.Roulette/Check`
   - `/api.Roulette/Draw`
-- `Salary` (2):
-  - `/api.Salary/GetPayslip`
-  - `/api.Salary/Pay`
 - `Satellite` (1):
   - `/api.Satellite/InitCode`
 - `Shelf` (10):
@@ -271,8 +255,7 @@ result into the client’s “return to title” response.
   - `/api.Auth/Create`
   - `/api.Auth/Delete`
   - `/api.Auth/Recreate`
-- `Card` (2 of 11):
-  - `/api.Card/ReleaseSupport`
+- `Card` (1 of 11):
   - `/api.Card/RankUp`
 - `Division` (1 of 2):
   - `/api.Division/Move`
@@ -316,8 +299,7 @@ result into the client’s “return to title” response.
   - `/api.Shop/RegisterBirthday`
   - `/api.Shop/ReceiveConditionReward`
   - `/api.Shop/TryOn`
-- `Story` (2 of 8):
-  - `/api.Story/ReleaseEpisode`
+- `Story` (1 of 8):
   - `/api.Story/ReadAnniversaryStory`
 - `User` (1 of 2):
   - `/api.User/ProvideExternalReward`
@@ -325,6 +307,7 @@ result into the client’s “return to title” response.
 ## Fully implemented registered service surfaces
 
 For comparison, every generated RPC currently has a concrete handler for these
-registered services: `Accessory`, `Activity`, `Company`, `Costume`, `Diary`, `Dokan`, `Gift`,
-`Guild`, `Hair`, `Hierarchy`, `Item`, `LoginBonus`, `Market`, `Message`, `PhotoPanorama`,
-`Showcase`, `Staff`, `System`, and `Telephone`.
+registered services: `Accessory`, `Activity`, `Birthday`, `Company`, `Costume`, `Diary`,
+`Dokan`, `Friend`, `Gift`, `Guild`, `Hair`, `Health`, `Hierarchy`, `Item`, `LoginBonus`,
+`Love`, `Market`, `Message`, `Mission`, `PhotoPanorama`, `Profile`, `Salary`, `Showcase`,
+`Staff`, `System`, and `Telephone`.

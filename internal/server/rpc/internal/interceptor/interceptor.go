@@ -43,6 +43,7 @@ var (
 	noNeedTokenSet = map[string]struct{}{
 		"/api.Auth/Login":                {},
 		"/api.System/Check":              {},
+		"/api.Health/Check":              {},
 		"/api.Migration/MigratePassword": {},
 		"/api.Migration/Execute":         {},
 	}
@@ -237,7 +238,7 @@ func abstractErrorMsg(err error) error {
 }
 
 func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
-	if info.FullMethod == "/api.System/Check" {
+	if info.FullMethod == "/api.System/Check" || info.FullMethod == "/api.Health/Check" {
 		return nil
 	}
 	// verify x-app-version

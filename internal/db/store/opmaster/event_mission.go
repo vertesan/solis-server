@@ -16,3 +16,7 @@ func FindEventMissions(ctx context.Context, ids []string) ([]*pmaster.EventMissi
 	}
 	return mcommon.FindMany[mmodel.EventMission, pmaster.EventMission](ctx, mname.EventMission, bson.M{"Id": bson.M{"$in": ids}})
 }
+
+func FindAllEventMissions(ctx context.Context) ([]*pmaster.EventMission, error) {
+	return mcommon.FindMany[mmodel.EventMission, pmaster.EventMission](ctx, mname.EventMission, bson.M{})
+}

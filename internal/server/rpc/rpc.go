@@ -12,6 +12,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/accessory"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/activity"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/auth"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/birthday"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/card"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/company"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/costume"
@@ -25,6 +26,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/gift"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/guild"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/hair"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/health"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/hierarchy"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/home"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/item"
@@ -34,10 +36,12 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/master"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/message"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/migration"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/mission"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/notice"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo_panorama"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/profile"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/salary"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/shop"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/showcase"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/staff"
@@ -168,5 +172,9 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterProfileServer(server, &profile.ProfileServer{})
 	papi.RegisterFriendServer(server, &friend.FriendServer{})
 	papi.RegisterLoveServer(server, &love.LoveServer{})
+	papi.RegisterHealthServer(server, &health.HealthServer{})
+	papi.RegisterSalaryServer(server, &salary.SalaryServer{})
+	papi.RegisterMissionServer(server, &mission.MissionServer{})
+	papi.RegisterBirthdayServer(server, &birthday.BirthdayServer{})
 	return server, nil
 }

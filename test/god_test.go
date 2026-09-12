@@ -403,13 +403,36 @@ func TestUserGod(t *testing.T) {
 	}
 	expectedEventInfo := proto.Clone(globalEventInfo).(*papi.HomeEventInfo)
 	unlockTestHomeEvents(expectedEventInfo.ProtoReflect())
-	// Love entrances are now permanent, per-user projections; all unrelated
-	// events must still track the current global catalog exactly.
+	// Love, mission and birthday entrances are per-user projections; all
+	// unrelated events must still track the current global catalog exactly.
 	actualRotatingEvents := proto.Clone(homeResponse.EventInfo).(*papi.HomeEventInfo)
 	actualRotatingEvents.LoveEventInfos = nil
+	actualRotatingEvents.EventMissionInfos = nil
+	actualRotatingEvents.HomeBirthdayInfo = nil
 	expectedEventInfo.LoveEventInfos = nil
+	expectedEventInfo.EventMissionInfos = nil
+	expectedEventInfo.HomeBirthdayInfo = nil
 	if !proto.Equal(actualRotatingEvents, expectedEventInfo) {
 		t.Fatalf("home events are not based on the current global rotation: got=%v want=%v", actualRotatingEvents, expectedEventInfo)
+	}
+	if homeResponse.GetEventInfo().GetHomeBirthdayInfo() != nil {
+		t.Fatal("god mode started a birthday event without a registered birthday")
+	}
+	missionGroups, err := opmaster.FindAllEventMissions(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	groupsByID := make(map[string]*pmaster.EventMission, len(missionGroups))
+	for _, group := range missionGroups {
+		groupsByID[group.GetId()] = group
+	}
+	seenGroups := make(map[string]bool)
+	for _, info := range homeResponse.GetEventInfo().GetEventMissionInfos() {
+		master := groupsByID[info.GetId()]
+		if master == nil || seenGroups[info.GetId()] || master.GetEventMissionType() != penum.EventMissionType_EventMissionType_Campaign || info.GetOrder() != master.GetOrder() || !info.GetUnlocked() {
+			t.Fatalf("god home returned invalid master-driven mission entrance: %v", info)
+		}
+		seenGroups[info.GetId()] = true
 	}
 	if len(homeResponse.EventInfo.GetLoveEventInfos()) != len(moshikoi.SupportedLoveIDs()) {
 		t.Fatal("god home omitted a supported permanent Love event")

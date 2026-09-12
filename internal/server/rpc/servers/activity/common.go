@@ -14,6 +14,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -151,7 +152,7 @@ func grantActivityReward(
 		return status.Error(codes.FailedPrecondition, "activity reward must be positive")
 	}
 	if reward.GetResourceType() == penum.ResourceType_ResourceType_ManagerExp {
-		_, err := addManagerExp(ctx, suid, reward.GetAmount(), updated)
+		_, err := viber.AddManagerExp(ctx, suid, reward.GetAmount(), updated)
 		return err
 	}
 	if reward.GetAmount() > math.MaxInt32 {
@@ -188,49 +189,6 @@ func recalculateAudienceCandidateAmount(ctx context.Context, character *ptransac
 	}
 	character.AudienceCandidateAmount = int32(amount)
 	return nil
-}
-
-func addManagerExp(
-	ctx context.Context,
-	suid string,
-	amount int64,
-	updated *papi.UpdatedData,
-) (*ptransaction.User, error) {
-	if amount <= 0 {
-		return nil, status.Error(codes.FailedPrecondition, "manager exp must be positive")
-	}
-	user, err := opuser.FindUser(ctx, suid)
-	if err != nil {
-		return nil, err
-	}
-	if user.GetManagerExp() > math.MaxInt64-amount {
-		return nil, status.Error(codes.FailedPrecondition, "manager exp overflows")
-	}
-	user.ManagerExp += amount
-	maxLevel, err := opmaster.FindMaxManagerLevel(ctx)
-	if err != nil {
-		return nil, err
-	}
-	for user.GetManagerLevel() < maxLevel.GetLevel() {
-		next, err := opmaster.FindManagerLevel(ctx, user.GetManagerLevel()+1)
-		if err != nil {
-			return nil, err
-		}
-		if user.GetManagerExp() < next.GetRequiredExp() {
-			break
-		}
-		user.ManagerLevel = next.GetLevel()
-	}
-	if err := opuser.UpsertUser(ctx, suid, user); err != nil {
-		return nil, err
-	}
-	updated.User = user
-	unlockedPhotos, err := viber.UnlockManagerLevelPhotoAbilities(ctx, suid, user.GetManagerLevel())
-	if err != nil {
-		return nil, err
-	}
-	updated.Photos = append(updated.Photos, unlockedPhotos...)
-	return user, nil
 }
 
 func maxUnlockedPromotionLevel(ctx context.Context, suid, promotionID string, now int64, fallback int32) (int32, error) {
@@ -496,7 +454,10 @@ func updateFanEventRanking(ctx context.Context, suid string, progress *papi.FanE
 	for _, character := range progress.GetCharacters() {
 		ranking.CharacterIds = append(ranking.CharacterIds, character.GetCharacterId())
 	}
-	return opuser.UpsertUserFanEventRanking(ctx, ranking)
+	if err := opuser.UpsertUserFanEventRanking(ctx, ranking); err != nil {
+		return err
+	}
+	return salary.RefreshSnapshot(ctx, suid, time.Now())
 }
 
 const lessonCardEnhanceItemID = "item-card_enhance"
@@ -760,6 +721,9 @@ func settlePromotionRewards(
 	progress.Rewards = []*papi.ActivityPromotionReward{}
 	runState.LastSettledCompletedStep = int64(progress.GetCompletedStep())
 	if err := opuser.UpsertUserPromotionRunState(ctx, runState); err != nil {
+		return nil, err
+	}
+	if err := salary.RefreshSnapshot(ctx, suid, time.Now()); err != nil {
 		return nil, err
 	}
 	return &promotionSettlement{
