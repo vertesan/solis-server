@@ -7,8 +7,6 @@ import (
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 func (s *ProfileServer) FindUser(ctx context.Context, req *papi.ProfileFindUserRequest) (*papi.ProfileFindUserResponse, error) {
@@ -18,13 +16,21 @@ func (s *ProfileServer) FindUser(ctx context.Context, req *papi.ProfileFindUserR
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.ProfileFindUserResponse
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-		self, err := viber.LoadSelfProfileInfo(ctx, suid)
+		public, err := opuser.FindUserPublic(ctx, suid)
 		if err != nil {
 			return nil, err
 		}
 		// The private server never looks up or exposes another account.
-		if req.GetUserId() != self.GetUserId() && req.GetUserId() != suid {
-			return nil, status.Error(codes.NotFound, "user not found")
+		if req.GetUserId() != public.GetPublicUserId() && req.GetUserId() != suid {
+			// Official missing-user searches succeed with a default profile and
+			// a present commonResponse. A gRPC NotFound error has no message body
+			// and does not take the client's normal "no matching user" path.
+			response = &papi.ProfileFindUserResponse{CommonResponse: viber.NewCommonResponse(nil)}
+			return nil, nil
+		}
+		self, err := viber.LoadSelfProfileInfo(ctx, suid)
+		if err != nil {
+			return nil, err
 		}
 		user, err := opuser.FindUser(ctx, suid)
 		if err != nil {

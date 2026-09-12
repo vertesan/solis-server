@@ -21,13 +21,28 @@ import (
 
 func TestShowcaseScenario(t *testing.T) {
 	setupTestUser(t)
-	promoteTestUser(t)
 
 	dbCtx := context.Background()
 	client := papi.NewShowcaseClient(testConfig.GrpcConn)
 	shopClient := papi.NewShopClient(testConfig.GrpcConn)
+	// Check the frame/music entrances before god promotion owns every unique
+	// item and removes those shops. The client consumes this metadata before
+	// sending Shop.ListItem, so successful purchases alone cannot catch it.
+	freshTop := showcaseTop(t, client)
+	assertShowcaseShopPresentation(t, freshTop.GetShops())
+	assertShowcaseRepeatedTop(t, freshTop, showcaseTop(t, client))
+	promoteTestUser(t)
 
 	top := showcaseTop(t, client)
+	assertShowcaseShopPresentation(t, top.GetShops())
+	// Opening the shop list invokes Top a second time. Owning all unique
+	// frames/BGM must not leave only the special catalog type (1003).
+	assertShowcaseRepeatedTop(t, top, showcaseTop(t, client))
+	for _, shop := range top.GetShops() {
+		if shop.GetId() == "shop_top_shop-showcase-frame" || shop.GetId() == "shop_top_shop-showcase-music" {
+			t.Fatalf("god user's fully owned unique shop should be hidden: %v", shop)
+		}
+	}
 	if len(top.GetShowcaseInfos()) == 0 || len(top.GetMysetInfos()) == 0 ||
 		len(top.GetFrameInfos()) == 0 || len(top.GetShowcaseMusicIds()) == 0 {
 		t.Fatalf("Showcase.Top returned incomplete master-driven data: %v", top)
@@ -79,7 +94,7 @@ func TestShowcaseScenario(t *testing.T) {
 		ownedCharacterIDs[character.GetCharacterId()] = struct{}{}
 	}
 
-	var goodsItems []*papi.ShopItem
+	var goodsItems, badgeItems []*papi.ShopItem
 	for _, shop := range top.GetShops() {
 		items := listShopItems(t, shopClient, shop.GetId()).GetShopItems()
 		if len(items) == 0 {
@@ -88,20 +103,24 @@ func TestShowcaseScenario(t *testing.T) {
 		if shop.GetId() == "shop_top_shop-showcase-goods-catalog" {
 			goodsItems = items
 		}
+		if shop.GetId() == "shop_top_shop-showcase-buttonbadge" {
+			badgeItems = items
+		}
 	}
 	if len(goodsItems) == 0 {
 		t.Fatal("Showcase.Top did not advertise a nonempty goods catalog")
 	}
+	assertShowcaseBadgeCatalog(t, badgeItems, masterToyByID)
 
 	shopItem, selectedToy, focusCharacterID := selectShowcaseToyPurchase(
-		t, goodsItems, masterToyByID, ownedCharacterIDs,
+		t, badgeItems, masterToyByID, ownedCharacterIDs,
 	)
 	cost, ok := showcaseMedalConsumption(shopItem.GetConsumptionId())
 	if !ok || cost <= 0 {
 		t.Fatalf("selected ShowcaseToy item has an unsupported consumption: %v", shopItem)
 	}
 	const showcaseMedalID = "item-showcase_medal"
-	seedAmount := cost + 1000
+	seedAmount := 2*cost + 1000
 	if err := opuser.UpsertUserItem(dbCtx, testConfig.TestUserSuid, &ptransaction.UserItem{
 		ItemId: showcaseMedalID,
 		Amount: seedAmount,
@@ -114,25 +133,28 @@ func TestShowcaseScenario(t *testing.T) {
 	}
 	toyAmountBefore := showcaseToyAmount(toysBefore, selectedToy.GetId())
 
-	purchaseCtx, purchaseCancel := showcaseGRPCCallContext(t)
-	purchase, err := shopClient.Purchase(purchaseCtx, &papi.ShopPurchaseRequest{ShopItemId: shopItem.GetId()})
-	purchaseCancel()
-	if err != nil {
-		t.Fatalf("Shop.Purchase(%q) failed: %v", shopItem.GetId(), err)
-	}
-	if purchase.GetCommonResponse().GetUpdatedData() == nil ||
-		purchase.GetCommonResponse().GetDeletedData() == nil {
-		t.Fatal("ShowcaseToy purchase returned an incomplete common response")
+	var purchase *papi.ShopPurchaseResponse
+	for range 2 {
+		purchaseCtx, purchaseCancel := showcaseGRPCCallContext(t)
+		purchase, err = shopClient.Purchase(purchaseCtx, &papi.ShopPurchaseRequest{ShopItemId: shopItem.GetId()})
+		purchaseCancel()
+		if err != nil {
+			t.Fatalf("Shop.Purchase(%q) failed: %v", shopItem.GetId(), err)
+		}
+		if purchase.GetCommonResponse().GetUpdatedData() == nil ||
+			purchase.GetCommonResponse().GetDeletedData() == nil {
+			t.Fatal("ShowcaseToy purchase returned an incomplete common response")
+		}
 	}
 	storedToy, err := opuser.FindUserShowcaseToy(dbCtx, testConfig.TestUserSuid, selectedToy.GetId())
 	if err != nil {
 		t.Fatal(err)
 	}
-	if storedToy.GetAmount() != toyAmountBefore+1 {
-		t.Fatalf("ShowcaseToy amount = %d, want %d", storedToy.GetAmount(), toyAmountBefore+1)
+	if storedToy.GetAmount() != toyAmountBefore+2 {
+		t.Fatalf("ShowcaseToy amount = %d, want %d", storedToy.GetAmount(), toyAmountBefore+2)
 	}
-	if got := photoPermanentItemAmount(t, dbCtx, showcaseMedalID); got != seedAmount-cost {
-		t.Fatalf("showcase medal amount = %d, want %d", got, seedAmount-cost)
+	if got := photoPermanentItemAmount(t, dbCtx, showcaseMedalID); got != seedAmount-2*cost {
+		t.Fatalf("showcase medal amount = %d, want %d", got, seedAmount-2*cost)
 	}
 	if showcaseToyAmount(purchase.GetCommonResponse().GetUpdatedData().GetShowcaseToys(), selectedToy.GetId()) != storedToy.GetAmount() {
 		t.Fatalf("Shop.Purchase omitted ShowcaseToy post-image: %v", purchase)
@@ -409,6 +431,83 @@ func showcaseTop(t *testing.T, client papi.ShowcaseClient) *papi.ShowcaseTopResp
 	}
 	assertShowcaseCommonResponse(t, "Showcase.Top", response.GetCommonResponse())
 	return response
+}
+
+func assertShowcaseShopPresentation(t *testing.T, shops []*papi.ShopInfo) {
+	t.Helper()
+	if len(shops) == 0 {
+		t.Fatal("Showcase.Top returned no goods catalog entrance")
+	}
+	hasRegularShop, hasBadgeShop := false, false
+	for _, shop := range shops {
+		notice := shop.GetNoticeInfo()
+		if notice == nil || notice.GetId() == "" || notice.GetTitle() == "" ||
+			notice.GetListTitle() == "" || notice.GetBannerAssetId() == "" ||
+			notice.GetLinkType() != penum.LinkType_LinkType_WebView || notice.GetLinkDetail() == "" {
+			t.Fatalf("Showcase.Top shop %q has incomplete pre-entry notice metadata: %v", shop.GetId(), notice)
+		}
+		if notice.GetDisplayNotification() {
+			t.Fatalf("Showcase.Top shop %q enabled a permanent notice badge", shop.GetId())
+		}
+		if shop.GetId() == "shop_top_shop-showcase-goods-catalog" {
+			if shop.GetType() != penum.ShopType_ShopType_DefaultShowcaseToyShop || shop.GetThumbnailAssetId() != "null" {
+				t.Fatalf("Showcase.Top goods entrance differs from the captured client contract: %v", shop)
+			}
+		} else if shop.GetThumbnailAssetId() == "" {
+			t.Fatalf("Showcase.Top shop %q has no thumbnail asset", shop.GetId())
+		}
+		if shop.GetType() == penum.ShopType_ShopType_OnlyShowcaseShop {
+			hasRegularShop = true
+		}
+		if shop.GetId() == "shop_top_shop-showcase-buttonbadge" {
+			hasBadgeShop = true
+			if shop.GetType() != penum.ShopType_ShopType_OnlyShowcaseShop ||
+				shop.GetOrder() != 102 || shop.GetThumbnailAssetId() != "showcase-buttonbadge" {
+				t.Fatalf("Showcase.Top badge entrance differs from the official client contract: %v", shop)
+			}
+		}
+	}
+	if !hasRegularShop || !hasBadgeShop {
+		t.Fatalf("Showcase.Top must retain a regular badge shop, not just the special goods catalog: %v", shops)
+	}
+}
+
+func assertShowcaseRepeatedTop(t *testing.T, first, second *papi.ShowcaseTopResponse) {
+	t.Helper()
+	if len(first.GetShops()) != len(second.GetShops()) {
+		t.Fatalf("opening the goods shop list changed the available shops: first=%v second=%v", first.GetShops(), second.GetShops())
+	}
+	for i, shop := range first.GetShops() {
+		if !proto.Equal(shop, second.GetShops()[i]) {
+			t.Fatalf("opening the goods shop list changed shop metadata: first=%v second=%v", shop, second.GetShops()[i])
+		}
+	}
+}
+
+func assertShowcaseBadgeCatalog(t *testing.T, items []*papi.ShopItem, masters map[string]*pmaster.ShowcaseToy) {
+	t.Helper()
+	badges := make(map[string]struct{})
+	for id, toy := range masters {
+		if toy.GetCategoryId() == "toy-category-buttonbadge" {
+			badges[id] = struct{}{}
+		}
+	}
+	if len(items) == 0 || len(items) != len(badges) {
+		t.Fatalf("badge shop has %d items, want %d from ShowcaseToy master", len(items), len(badges))
+	}
+	for _, item := range items {
+		toyID, ok := showcaseToyRewardID(item.GetRewardId())
+		if !ok {
+			t.Fatalf("badge shop has an invalid toy reward: %v", item)
+		}
+		if _, exists := badges[toyID]; !exists {
+			t.Fatalf("badge shop has a duplicate or non-badge reward: %v", item)
+		}
+		delete(badges, toyID)
+		if !item.GetUnlocked() || item.GetPurchaseLimit() != 0 || item.GetProductId() != "" {
+			t.Fatalf("badge shop should offer repeatable non-cash purchases: %v", item)
+		}
+	}
 }
 
 func showcaseSelfInfo(infos []*papi.ShowcaseSelfInfo, number int32) *papi.ShowcaseSelfInfo {

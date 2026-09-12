@@ -13,6 +13,7 @@ import (
 	"image"
 	"image/color"
 	"image/jpeg"
+	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -335,6 +336,236 @@ func TestPhotoImageStorageScenario(t *testing.T) {
 	if _, err := opuser.FindUserPhotoImageMetadata(context.Background(), objectName); !errors.Is(err, mongo.ErrNoDocuments) {
 		t.Fatalf("deleting the test user did not remove photo metadata: %v", err)
 	}
+}
+
+func TestPhotoImageReplacementScenario(t *testing.T) {
+	setupTestUser(t)
+	ctx := context.Background()
+	userAuth, err := opuser.GetUserAuthByServerId(ctx, testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	authorization := "Firebase " + getPhotoFirebaseIdToken(t, userAuth)
+	filename := "photo-replacement-" + uuid.NewString()
+	name := "Photo/" + testConfig.TestUserPublicId + "/" + filename
+	objectURL := testConfig.HttpUrl + "/v0/b/udc-idolypride/o/" + url.PathEscape(name)
+	imagePath := filepath.Join(config.GetResourceDir(), "Photo", testConfig.TestUserPublicId, filename+".jpg")
+	start := func() (string, string) {
+		t.Helper()
+		response, err := testConfig.HttpClient.Post(testConfig.HttpUrl+"/v0/b/udc-idolypride/o", client.Config{
+			Param: map[string]string{"name": name, "uploadType": "resumable"},
+			Header: map[string]string{
+				"Authorization": authorization, "X-Goog-Upload-Command": "start",
+				"X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Header-Content-Type": "image/jpeg",
+			},
+			Body: map[string]string{"contentType": "image/jpeg"},
+		})
+		if err != nil || response.StatusCode() != 200 {
+			t.Fatalf("replacement upload start failed: response=%v error=%v", response, err)
+		}
+		uploadURL, err := url.Parse(response.Header("X-Goog-Upload-URL"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		return testConfig.HttpUrl + uploadURL.RequestURI(), response.Header("X-GUploader-UploadID")
+	}
+	finalizeHeaders := map[string]string{
+		"Authorization": authorization, "X-Goog-Upload-Command": "upload, finalize",
+		"X-Goog-Upload-Protocol": "resumable", "X-Goog-Upload-Offset": "0",
+		"Content-Type": "application/x-www-form-urlencoded",
+	}
+	assertPublished := func(expected *umodel.UserPhotoImageMetadata, body []byte) {
+		t.Helper()
+		response, err := testConfig.HttpClient.Get(objectURL, client.Config{
+			Header: map[string]string{"Authorization": authorization}, DisablePathNormalizing: true,
+		})
+		if err != nil || response.StatusCode() != 200 {
+			t.Fatalf("published metadata became unavailable: response=%v error=%v", response, err)
+		}
+		metadata := decodePhotoMetadata(t, response.Body())
+		if metadata.Generation != expected.Generation || metadata.DownloadTokens != expected.DownloadTokens || metadata.MD5Hash != expected.MD5Hash {
+			t.Fatalf("published metadata changed before a successful finalize: got %+v, want %+v", metadata, expected)
+		}
+		response, err = testConfig.HttpClient.Get(objectURL, client.Config{
+			Param: map[string]string{"alt": "media", "token": expected.DownloadTokens}, DisablePathNormalizing: true,
+		})
+		if err != nil || response.StatusCode() != 200 || !bytes.Equal(response.Body(), body) ||
+			response.Header("x-goog-generation") != expected.Generation {
+			t.Fatalf("published photo/metadata mismatch: response=%v error=%v", response, err)
+		}
+		stored, err := os.ReadFile(imagePath)
+		if err != nil || !bytes.Equal(stored, body) {
+			t.Fatalf("published file changed unexpectedly: %v", err)
+		}
+		metadataList, err := opuser.FindFinalizedUserPhotoImageMetadataByNames(ctx, testConfig.TestUserSuid, []string{name})
+		if err != nil || len(metadataList) != 1 || metadataList[0].Generation != expected.Generation {
+			t.Fatalf("published photo missing from gRPC image lookup: metadata=%v error=%v", metadataList, err)
+		}
+	}
+
+	originalBody := makeTestJPEG(t)
+	replacementImage := image.NewRGBA(image.Rect(0, 0, 4, 3))
+	replacementImage.Set(0, 0, color.RGBA{G: 0xff, A: 0xff})
+	var replacementBuffer bytes.Buffer
+	if err := jpeg.Encode(&replacementBuffer, replacementImage, &jpeg.Options{Quality: 90}); err != nil {
+		t.Fatal(err)
+	}
+	replacementBody := replacementBuffer.Bytes()
+	// JPEG decoders ignore padding after EOI. Use different images of equal
+	// length so a stale response cannot hide behind a changed Content-Length.
+	size := max(len(originalBody), len(replacementBody))
+	originalBody = append(originalBody, make([]byte, size-len(originalBody))...)
+	replacementBody = append(replacementBody, make([]byte, size-len(replacementBody))...)
+	originalURL, originalID := start()
+	response, err := testConfig.HttpClient.Post(originalURL, client.Config{Header: finalizeHeaders, Body: originalBody})
+	if err != nil || response.StatusCode() != 200 {
+		t.Fatalf("initial image finalize failed: response=%v error=%v", response, err)
+	}
+	original := decodePhotoMetadata(t, response.Body())
+	assertPublished(original, originalBody)
+
+	replacementURL, replacementID := start()
+	if replacementID == originalID {
+		t.Fatal("replacement reused the finalized upload session")
+	}
+	if _, repeatedID := start(); repeatedID != replacementID {
+		t.Fatal("duplicate start invalidated the active replacement")
+	}
+	assertPublished(original, originalBody)
+	response, err = testConfig.HttpClient.Post(replacementURL, client.Config{Header: finalizeHeaders, Body: []byte("not a JPEG")})
+	if err != nil || response.StatusCode() != 400 {
+		t.Fatalf("invalid replacement was not rejected: response=%v error=%v", response, err)
+	}
+	assertPublished(original, originalBody)
+	response, err = testConfig.HttpClient.Post(originalURL, client.Config{Header: finalizeHeaders, Body: originalBody})
+	if err != nil || response.StatusCode() != 403 {
+		t.Fatalf("old upload session can overwrite replacement: response=%v error=%v", response, err)
+	}
+	assertPublished(original, originalBody)
+
+	response, err = testConfig.HttpClient.Post(replacementURL, client.Config{Header: finalizeHeaders, Body: replacementBody})
+	if err != nil || response.StatusCode() != 200 {
+		t.Fatalf("replacement finalize failed: response=%v error=%v", response, err)
+	}
+	replacement := decodePhotoMetadata(t, response.Body())
+	assertPhotoMetadata(t, replacement, name, filename, replacementBody)
+	if replacement.Generation == original.Generation || replacement.MD5Hash == original.MD5Hash ||
+		replacement.ETag == original.ETag || replacement.DownloadTokens == original.DownloadTokens {
+		t.Fatalf("replacement did not revise metadata and its Firebase download URL: original=%+v replacement=%+v", original, replacement)
+	}
+	assertPublished(replacement, replacementBody)
+	response, err = testConfig.HttpClient.Get(objectURL, client.Config{
+		Param: map[string]string{"alt": "media", "token": original.DownloadTokens}, DisablePathNormalizing: true,
+	})
+	if err != nil || response.StatusCode() != 403 {
+		t.Fatalf("old download token survived replacement: response=%v error=%v", response, err)
+	}
+
+	// HTTP dates have only whole-second precision. Model a same-second
+	// replacement without a timing-dependent sleep or an upload race.
+	modifiedAt, err := time.Parse("2006-01-02T15:04:05.000Z", original.TimeCreated)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(imagePath, modifiedAt, modifiedAt); err != nil {
+		t.Fatal(err)
+	}
+	originalDigest := md5.Sum(originalBody)
+	replacementDigest := md5.Sum(replacementBody)
+	oldETag := `"` + hex.EncodeToString(originalDigest[:]) + `"`
+	newETag := `"` + hex.EncodeToString(replacementDigest[:]) + `"`
+	for _, headers := range []map[string]string{
+		{"If-None-Match": oldETag, "If-Modified-Since": modifiedAt.Format(http.TimeFormat)},
+		{"If-Modified-Since": modifiedAt.Format(http.TimeFormat)},
+	} {
+		response, err := testConfig.HttpClient.Get(objectURL, client.Config{
+			Param:  map[string]string{"alt": "media", "token": replacement.DownloadTokens},
+			Header: headers, DisablePathNormalizing: true,
+		})
+		if err != nil || response.StatusCode() != 200 || !bytes.Equal(response.Body(), replacementBody) || response.Header("ETag") != newETag {
+			t.Fatalf("old cache validators hid the replacement: response=%v error=%v", response, err)
+		}
+	}
+	response, err = testConfig.HttpClient.Get(objectURL, client.Config{
+		Param:  map[string]string{"alt": "media", "token": replacement.DownloadTokens},
+		Header: map[string]string{"If-None-Match": newETag}, DisablePathNormalizing: true,
+	})
+	if err != nil || response.StatusCode() != 304 || len(response.Body()) != 0 || response.Header("ETag") != newETag {
+		t.Fatalf("current photo ETag did not revalidate: response=%v error=%v", response, err)
+	}
+	response, err = testConfig.HttpClient.Get(objectURL, client.Config{
+		Param:                  map[string]string{"alt": "media", "token": replacement.DownloadTokens},
+		Header:                 map[string]string{"Range": "bytes=0-199", "If-None-Match": oldETag, "If-Modified-Since": modifiedAt.Format(http.TimeFormat)},
+		DisablePathNormalizing: true,
+	})
+	if err != nil || response.StatusCode() != 206 || !bytes.Equal(response.Body(), replacementBody[:200]) ||
+		response.Header("Content-Range") != fmt.Sprintf("bytes 0-199/%d", len(replacementBody)) {
+		t.Fatalf("replacement range download was stale: response=%v error=%v", response, err)
+	}
+	response, err = testConfig.HttpClient.Post(replacementURL, client.Config{Header: finalizeHeaders, Body: originalBody})
+	if err != nil || response.StatusCode() != 200 || decodePhotoMetadata(t, response.Body()).Generation != replacement.Generation ||
+		decodePhotoMetadata(t, response.Body()).DownloadTokens != replacement.DownloadTokens {
+		t.Fatalf("replacement finalize retry is not idempotent: response=%v error=%v", response, err)
+	}
+	assertPublished(replacement, replacementBody)
+
+	// Two finalizers for one session must publish one generation and agree on
+	// its metadata, even when their submitted bytes differ.
+	concurrentURL, _ := start()
+	type finalizeResult struct {
+		status int
+		body   []byte
+		err    error
+	}
+	results := make(chan finalizeResult, 2)
+	for _, body := range [][]byte{originalBody, replacementBody} {
+		go func() {
+			response, err := testConfig.HttpClient.Post(concurrentURL, client.Config{Header: finalizeHeaders, Body: body})
+			if err != nil {
+				results <- finalizeResult{err: err}
+				return
+			}
+			results <- finalizeResult{status: response.StatusCode(), body: append([]byte(nil), response.Body()...)}
+		}()
+	}
+	var concurrentMetadata *umodel.UserPhotoImageMetadata
+	for range 2 {
+		result := <-results
+		if result.err != nil || result.status != 200 {
+			t.Fatalf("concurrent finalization failed: status=%d error=%v body=%s", result.status, result.err, result.body)
+		}
+		metadata := decodePhotoMetadata(t, result.body)
+		if concurrentMetadata != nil && (metadata.Generation != concurrentMetadata.Generation || metadata.MD5Hash != concurrentMetadata.MD5Hash || metadata.DownloadTokens != concurrentMetadata.DownloadTokens) {
+			t.Fatal("concurrent finalizers published conflicting generations")
+		}
+		concurrentMetadata = metadata
+	}
+	if concurrentMetadata.MD5Hash == original.MD5Hash {
+		replacementBody = originalBody
+	} else if concurrentMetadata.MD5Hash != replacement.MD5Hash {
+		t.Fatal("concurrent finalization published bytes from neither request")
+	}
+	replacement = concurrentMetadata
+	assertPublished(replacement, replacementBody)
+
+	// Expired replacement sessions must not delete the last published image.
+	expiredAt := time.Now().Add(-25 * time.Hour)
+	expiredSession := &umodel.UserPhotoImageMetadata{
+		ID: name, SUID: testConfig.TestUserSuid, PublicUserId: testConfig.TestUserPublicId,
+		Name: name, Bucket: "udc-idolypride", ContentType: "image/jpeg", UploadId: uuid.NewString(),
+		UploadState: umodel.UserPhotoImageUploadActive, UploadStateUpdatedAt: expiredAt, UploadExpiresAt: &expiredAt,
+	}
+	if started, err := opuser.StartUserPhotoImageUpload(ctx, expiredSession, time.Now().Add(-time.Hour)); err != nil || !started {
+		t.Fatalf("failed to prepare expired replacement: started=%v error=%v", started, err)
+	}
+	if err := opuser.DeleteExpiredUserPhotoImageUploads(ctx, time.Now()); err != nil {
+		t.Fatal(err)
+	}
+	assertPublished(replacement, replacementBody)
+	if _, nextID := start(); nextID == expiredSession.UploadId || nextID == replacementID {
+		t.Fatal("expired replacement session was not renewed")
+	}
+	assertPublished(replacement, replacementBody)
 }
 
 func getPhotoFirebaseIdToken(t *testing.T, userAuth *umodel.UserAuth) string {

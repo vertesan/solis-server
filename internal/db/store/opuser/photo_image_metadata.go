@@ -46,9 +46,9 @@ func FindFinalizedUserPhotoImageMetadataByNames(
 		ctx,
 		uname.UserPhotoImageMetadata,
 		bson.M{
-			"SUID":        suid,
-			"_id":         bson.M{"$in": names},
-			"uploadState": umodel.UserPhotoImageUploadFinalized,
+			"SUID":       suid,
+			"_id":        bson.M{"$in": names},
+			"generation": bson.M{"$exists": true, "$ne": ""},
 		},
 	)
 }
@@ -64,15 +64,18 @@ func DeleteUserPhotoImageMetadataByNames(ctx context.Context, suid string, names
 	)
 }
 
-// StartUserPhotoImageUpload creates a session or replaces one whose active or
-// finalizing lease is stale. A live session and a finalized object are kept.
+// StartUserPhotoImageUpload starts a new object or a replacement upload without
+// discarding the last published generation. Live upload leases are kept.
 func StartUserPhotoImageUpload(ctx context.Context, metadata *umodel.UserPhotoImageMetadata, staleBefore time.Time) (bool, error) {
-	result, err := depot.User.Collection(uname.UserPhotoImageMetadata).ReplaceOne(
+	result, err := depot.User.Collection(uname.UserPhotoImageMetadata).UpdateOne(
 		ctx,
 		bson.M{
-			"_id": metadata.ID,
+			"_id":          metadata.ID,
+			"SUID":         metadata.SUID,
+			"publicUserId": metadata.PublicUserId,
 			"$or": bson.A{
 				bson.M{"uploadState": bson.M{"$exists": false}},
+				bson.M{"uploadState": umodel.UserPhotoImageUploadFinalized},
 				bson.M{
 					"uploadState":          bson.M{"$in": bson.A{umodel.UserPhotoImageUploadActive, umodel.UserPhotoImageUploadFinalizing}},
 					"uploadStateUpdatedAt": bson.M{"$exists": false},
@@ -83,8 +86,19 @@ func StartUserPhotoImageUpload(ctx context.Context, metadata *umodel.UserPhotoIm
 				},
 			},
 		},
-		metadata,
-		options.Replace().SetUpsert(true),
+		bson.M{
+			"$set": bson.M{
+				"uploadId":             metadata.UploadId,
+				"uploadState":          metadata.UploadState,
+				"uploadStateUpdatedAt": metadata.UploadStateUpdatedAt,
+				"uploadExpiresAt":      metadata.UploadExpiresAt,
+				"name":                 metadata.Name,
+				"bucket":               metadata.Bucket,
+				"contentType":          metadata.ContentType,
+			},
+			"$unset": bson.M{"finalizationId": ""},
+		},
+		options.UpdateOne().SetUpsert(true),
 	)
 	if mongo.IsDuplicateKeyError(err) {
 		return false, nil
@@ -174,7 +188,15 @@ func ReleaseUserPhotoImageUpload(
 func DeleteExpiredUserPhotoImageUploads(ctx context.Context, now time.Time) error {
 	_, err := depot.User.Collection(uname.UserPhotoImageMetadata).DeleteMany(
 		ctx,
-		bson.M{"uploadExpiresAt": bson.M{"$lte": now}},
+		// Expiring an unfinished replacement must not delete the published
+		// object. Its stale session can be replaced by the next upload start.
+		bson.M{
+			"uploadExpiresAt": bson.M{"$lte": now},
+			"$or": bson.A{
+				bson.M{"generation": bson.M{"$exists": false}},
+				bson.M{"generation": ""},
+			},
+		},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to delete expired user photo image uploads: %w", err)

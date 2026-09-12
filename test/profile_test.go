@@ -128,7 +128,7 @@ func TestProfileCustomizationScenario(t *testing.T) {
 			t.Fatalf("self lookup does not reflect customized profile: %v", self)
 		}
 	}
-	profileReject(t, codes.NotFound, client.FindUser, &papi.ProfileFindUserRequest{UserId: "ZZZZZZZZ"})
+	assertProfileUserNotFound(t, profileCall(t, client.FindUser, &papi.ProfileFindUserRequest{UserId: "ZZZZZZZZ"}))
 	top := profileCall(t, client.Top, &papi.Empty{})
 	if len(top.GetFriendProfiles()) != 0 || top.GetHierarchyCurrentRank() != 1 || top.GetHierarchyCurrentDetailGradeId() == "" {
 		t.Fatalf("Profile.Top has inconsistent private-server hierarchy/social state: %v", top)
@@ -151,6 +151,42 @@ func TestProfileCustomizationScenario(t *testing.T) {
 	if !proto.Equal(userGet.GetProfile(), expected) || userGet.GetUser().GetName() != expectedUser.GetName() ||
 		userGet.GetUser().GetBuddyCardId() != expectedUser.GetBuddyCardId() || userGet.GetUser().GetEmblemId() != expectedUser.GetEmblemId() {
 		t.Fatal("User.Get did not return the persisted profile/user settings")
+	}
+}
+
+func TestProfileMissingUserScenario(t *testing.T) {
+	setupTestUser(t)
+	client := papi.NewProfileClient(testConfig.GrpcConn)
+	before, err := opuser.FindUserProfile(context.Background(), testConfig.TestUserSuid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The first ID is from traffic/mixed/fix-0911/ProfileFindUserRequest.json.
+	// Neither request may look up another account or return a gRPC error.
+	for _, id := range []string{"YGHOYDHJ", "11111111-1111-1111-1111-111111111111"} {
+		response := profileCall(t, client.FindUser, &papi.ProfileFindUserRequest{UserId: id})
+		assertProfileUserNotFound(t, response)
+	}
+	self := profileCall(t, client.FindUser, &papi.ProfileFindUserRequest{UserId: testConfig.TestUserPublicId})
+	if self.GetUserId() != testConfig.TestUserSuid || self.GetName() == "" {
+		t.Fatalf("self lookup stopped working after a missing-user search: %v", self)
+	}
+	assertProfileStored(t, before)
+}
+
+func assertProfileUserNotFound(t *testing.T, response *papi.ProfileFindUserResponse) {
+	t.Helper()
+	// Captured ProfileFindUserResponse has all default profile fields but
+	// explicitly includes these two nested common-response messages.
+	expected := &papi.ProfileFindUserResponse{CommonResponse: &papi.CommonResponse{
+		UpdatedData: &papi.UpdatedData{}, DeletedData: &papi.DeletedData{},
+	}}
+	if !proto.Equal(response, expected) {
+		t.Fatalf("missing-user response differs from the official default profile: %v", response)
+	}
+	body, err := proto.Marshal(response)
+	if err != nil || len(body) == 0 {
+		t.Fatalf("missing-user search returned an empty protobuf body: %v", err)
 	}
 }
 

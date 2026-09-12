@@ -10,7 +10,8 @@ const (
 
 // UserPhotoImageMetadata stores the Firebase Storage-compatible metadata for
 // one uploaded photo. The session fields are internal bookkeeping and must not
-// be exposed in the Firebase metadata response.
+// be exposed in the Firebase metadata response. A nonempty Generation describes
+// the last published image, including while a replacement upload is active.
 type UserPhotoImageMetadata struct {
 	ID                   string     `bson:"_id" json:"-"`
 	SUID                 string     `bson:"SUID" json:"-"`

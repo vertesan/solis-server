@@ -7,6 +7,7 @@ import (
 	"maps"
 	"net/url"
 	"slices"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -840,6 +841,7 @@ func TestPhotoImageURLScenario(t *testing.T) {
 	metadata.FinalizationId = finalizationID
 	metadata.UploadStateUpdatedAt = now
 	metadata.UploadExpiresAt = nil
+	metadata.Generation = strconv.FormatInt(now.UnixMicro(), 10)
 	completed, err := opuser.CompleteUserPhotoImageUpload(dbCtx, metadata)
 	if err != nil {
 		t.Fatal(err)
@@ -870,8 +872,25 @@ func TestPhotoImageURLScenario(t *testing.T) {
 	}
 	if parsed.Scheme != "https" || parsed.Host != "firebasestorage.googleapis.com" ||
 		parsed.EscapedPath() != "/v0/b/udc-idolypride/o/"+url.PathEscape(objectName) ||
-		parsed.Query().Get("alt") != "media" || parsed.Query().Get("token") != downloadToken {
+		parsed.Query().Get("alt") != "media" || parsed.Query().Get("token") != downloadToken || parsed.Query().Get("v") != metadata.Generation {
 		t.Fatalf("Photo.GetImageURL returned an unexpected Firebase-compatible URL: %s", imageURL.GetOrigUrl())
+	}
+
+	// The published URL remains usable while a replacement generation uploads.
+	metadata.UploadId = "photo-image-url-replacement"
+	metadata.UploadState = umodel.UserPhotoImageUploadActive
+	metadata.UploadExpiresAt = &expiresAt
+	started, err = opuser.StartUserPhotoImageUpload(dbCtx, metadata, now.Add(-time.Hour))
+	if err != nil || !started {
+		t.Fatalf("failed to start image URL replacement fixture: started=%v err=%v", started, err)
+	}
+	ctx, cancel = photoGRPCCallContext(t)
+	replacementResponse, err := papi.NewPhotoClient(testConfig.GrpcConn).GetImageURL(ctx, &papi.PhotoGetImageUrlRequest{
+		Type: penum.PhotoImageRequestType_PhotoImageRequestType_Both, AssetIds: []string{assetID},
+	})
+	cancel()
+	if err != nil || len(replacementResponse.GetUrlList()) != 1 || !proto.Equal(replacementResponse.GetUrlList()[0], imageURL) {
+		t.Fatalf("pending replacement lost the published image URL: response=%v err=%v", replacementResponse, err)
 	}
 }
 

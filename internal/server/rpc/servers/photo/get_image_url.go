@@ -29,19 +29,24 @@ func (s *PhotoServer) GetImageURL(
 	}
 
 	names := make([]string, len(req.GetAssetIds()))
+	lookupNames := make([]string, 0, 2*len(names))
 	for index, assetID := range req.GetAssetIds() {
 		if !isPhotoAssetID(assetID) {
 			return nil, viber.InvalidArgumentf("invalid photo assetId %q", assetID)
 		}
 		names[index] = photoObjectPrefix + "/" + public.GetPublicUserId() + "/" + assetID
+		lookupNames = append(lookupNames, names[index])
+		if req.GetType() != penum.PhotoImageRequestType_PhotoImageRequestType_Original {
+			lookupNames = append(lookupNames, names[index]+"_t")
+		}
 	}
-	metadata, err := opuser.FindFinalizedUserPhotoImageMetadataByNames(ctx, suid, names)
+	metadata, err := opuser.FindFinalizedUserPhotoImageMetadataByNames(ctx, suid, lookupNames)
 	if err != nil {
 		return nil, viber.GameplayError(err)
 	}
 	metadataByName := make(map[string]*umodel.UserPhotoImageMetadata, len(metadata))
 	for _, entry := range metadata {
-		if entry.UploadState == umodel.UserPhotoImageUploadFinalized &&
+		if entry.Generation != "" &&
 			entry.PublicUserId == public.GetPublicUserId() {
 			metadataByName[entry.Name] = entry
 		}
@@ -50,15 +55,21 @@ func (s *PhotoServer) GetImageURL(
 	urls := make([]*papi.PhotoImageUrl, 0, len(names))
 	for index, name := range names {
 		downloadURL := photoFirebaseDownloadURL(name, metadataByName[name])
+		thumbnailURL := downloadURL
+		if thumbnail := metadataByName[name+"_t"]; thumbnail != nil {
+			thumbnailURL = photoFirebaseDownloadURL(thumbnail.Name, thumbnail)
+		}
+		// Older single-image photos have no separately uploaded thumbnail.
+		// Retain their original-image fallback until a published _t exists.
 		entry := &papi.PhotoImageUrl{AssetId: req.AssetIds[index]}
 		switch req.GetType() {
 		case penum.PhotoImageRequestType_PhotoImageRequestType_Original:
 			entry.OrigUrl = downloadURL
 		case penum.PhotoImageRequestType_PhotoImageRequestType_Thumbnail:
-			entry.TmbUrl = downloadURL
+			entry.TmbUrl = thumbnailURL
 		case penum.PhotoImageRequestType_PhotoImageRequestType_Both:
 			entry.OrigUrl = downloadURL
-			entry.TmbUrl = downloadURL
+			entry.TmbUrl = thumbnailURL
 		}
 		urls = append(urls, entry)
 	}
@@ -74,6 +85,11 @@ func photoFirebaseDownloadURL(name string, metadata *umodel.UserPhotoImageMetada
 	query := url.Values{"alt": []string{"media"}}
 	if metadata != nil && metadata.DownloadTokens != "" {
 		query.Set("token", metadata.DownloadTokens)
+	}
+	if metadata != nil && metadata.Generation != "" {
+		// Also make the published generation explicit for clients that obtain
+		// image URLs through this RPC instead of Firebase metadata directly.
+		query.Set("v", metadata.Generation)
 	}
 	return "https://firebasestorage.googleapis.com/v0/b/" + photoFirebaseBucket + "/o/" + url.PathEscape(name) + "?" + query.Encode()
 }

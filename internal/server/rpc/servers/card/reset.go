@@ -73,6 +73,18 @@ func (s *CardServer) Reset(ctx context.Context, req *papi.CardResetRequest) (*pa
 			return nil, fmt.Errorf("card reset stone cost is negative")
 		}
 		updated := &papi.UpdatedData{}
+		user, err := opuser.FindUser(ctx, suid)
+		if err != nil {
+			return nil, err
+		}
+		// Capture the old trainer level before resetting it, including legacy
+		// accounts whose assist high-water mark has not yet been reconciled.
+		if _, err := viber.ReconcileCardSupportLevel(ctx, suid, user, updated); err != nil {
+			return nil, err
+		}
+		if err := opuser.UpsertUser(ctx, suid, user); err != nil {
+			return nil, err
+		}
 		if setting.CardResetStoneAmount > 0 {
 			balance, err := opuser.FindUserBalance(ctx, suid)
 			if err != nil {
@@ -121,11 +133,12 @@ func (s *CardServer) Reset(ctx context.Context, req *papi.CardResetRequest) (*pa
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 			return nil, err
 		}
-		unlocked, locked, err := updateCardStoryUnlocks(ctx, suid, master, card.Level, card.EvolutionLevel)
+		unlocked, locked, err := viber.UpdateCardStoryUnlocks(ctx, suid, master, card.Level, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}
-		updated.Cards, updated.Stories = []*ptransaction.UserCard{card}, unlocked
+		updated.Cards = append(updated.Cards, card)
+		updated.Stories = append(updated.Stories, unlocked...)
 		common := viber.NewCommonResponse(updated)
 		common.DeletedData.Stories = locked
 		response = &papi.CardResetResponse{CommonResponse: common, Rewards: rewards}

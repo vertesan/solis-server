@@ -25,6 +25,9 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		if _, err := viber.ReconcileCardSupportLevel(ctx, suid, user, &papi.UpdatedData{}); err != nil {
+			return nil, err
+		}
 		items, err := opuser.FindAllUserItems(ctx, suid)
 		if err != nil {
 			return nil, err

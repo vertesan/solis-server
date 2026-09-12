@@ -41,6 +41,9 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
+		if err := opuser.UpsertUser(ctx, suid, user); err != nil {
+			return nil, err
+		}
 		managerLevel, err := opmaster.FindManagerLevel(ctx, user.ManagerLevel)
 		if err != nil {
 			return nil, err
@@ -82,7 +85,7 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
-		stories, _, err := updateCardStoryUnlocks(ctx, suid, masterCard, req.Level, card.EvolutionLevel)
+		stories, _, err := viber.UpdateCardStoryUnlocks(ctx, suid, masterCard, req.Level, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}
@@ -112,17 +115,21 @@ func (s *CardServer) Enhance(ctx context.Context, req *papi.CardEnhanceRequest) 
 		if err != nil {
 			return nil, err
 		}
-		characterMissions, err := reachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		characterMissions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
 		if err != nil {
 			return nil, err
 		}
 		missions = append(missions, characterMissions...)
-		response = &papi.CardEnhanceResponse{CommonResponse: viber.NewCommonResponse(&papi.UpdatedData{
+		updated := &papi.UpdatedData{
 			Items:    []*ptransaction.UserItem{item},
 			Cards:    []*ptransaction.UserCard{card},
 			Stories:  stories,
 			Missions: missions,
-		})}
+		}
+		if _, err := viber.ReconcileCardSupportLevel(ctx, suid, user, updated); err != nil {
+			return nil, err
+		}
+		response = &papi.CardEnhanceResponse{CommonResponse: viber.NewCommonResponse(updated)}
 		return response, nil
 	})
 	if err != nil {

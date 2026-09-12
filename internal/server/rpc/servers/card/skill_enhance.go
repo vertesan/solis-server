@@ -63,7 +63,7 @@ func (s *CardServer) SkillEnhance(ctx context.Context, req *papi.CardSkillEnhanc
 		if err != nil {
 			return nil, err
 		}
-		characterMissions, err := reachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		characterMissions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
 		if err != nil {
 			return nil, err
 		}

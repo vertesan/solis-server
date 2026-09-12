@@ -4,6 +4,7 @@ import "github.com/vertesan/solis-server/internal/proto/papi"
 
 const (
 	ShowcaseGoodsCatalogShopID = "shop_top_shop-showcase-goods-catalog"
+	ShowcaseBadgeShopID        = "shop_top_shop-showcase-buttonbadge"
 	ShowcaseFrameShopID        = "shop_top_shop-showcase-frame"
 	ShowcaseMusicShopID        = "shop_top_shop-showcase-music"
 )
@@ -15,6 +16,7 @@ func GetUserInitialNotiShowcaseShopItem() *papi.NotiShopItem {
 func GetUserInitialShowcaseToyShopIds() []string {
 	return []string{
 		ShowcaseGoodsCatalogShopID,
+		ShowcaseBadgeShopID,
 		ShowcaseFrameShopID,
 		ShowcaseMusicShopID,
 	}

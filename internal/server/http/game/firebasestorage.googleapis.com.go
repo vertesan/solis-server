@@ -8,12 +8,10 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"hash/crc32"
 	"image/jpeg"
 	"net/http"
 	"net/url"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -21,6 +19,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 	"github.com/vertesan/solis-server/internal/utils/mcontext"
@@ -68,6 +67,8 @@ var PostPhoto fiber.Handler = func(c fiber.Ctx) error {
 	if err != nil {
 		return err
 	}
+	unlock := diver.LockPhotoObject(name.Name)
+	defer unlock()
 
 	uploadId := c.Query("upload_id")
 	if uploadId == "" {
@@ -124,7 +125,7 @@ func startPhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.UserA
 			existing.UploadState == umodel.UserPhotoImageUploadActive {
 			return sendPhotoUploadStart(c, name.Name, existing.UploadId)
 		}
-		return fiber.NewError(fiber.StatusConflict, "photo already exists or is being finalized")
+		return fiber.NewError(fiber.StatusConflict, "photo upload is being finalized")
 	}
 	return sendPhotoUploadStart(c, name.Name, uploadId)
 }
@@ -220,10 +221,10 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 	createdAt := time.Now().UTC().Truncate(time.Millisecond)
 	metadata := completePhotoMetadata(session, name.Filename, body, createdAt)
 	photoPath := photoImagePath(name)
-	if err := writePhotoImageAtomically(photoPath, body, createdAt); err != nil {
-		removeErr := os.Remove(photoPath)
+	publication, err := diver.PublishPhotoImage(photoPath, body, createdAt)
+	if err != nil {
 		releasePhotoUpload(c, session)
-		mcontext.GetLogger(c).Error("failed to store photo image", zap.Error(err), zap.Error(removeErr))
+		mcontext.GetLogger(c).Error("failed to store photo image", zap.Error(err))
 		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
 	}
 
@@ -231,24 +232,32 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 	if err != nil || !completed {
 		current, findErr := opuser.FindUserPhotoImageMetadata(c, name.Name)
 		if findErr == nil && samePublishedPhoto(current, metadata) {
+			if cleanupErr := publication.Commit(); cleanupErr != nil {
+				mcontext.GetLogger(c).Error("failed to remove previous photo image", zap.Error(cleanupErr))
+			}
 			setFirebaseMetadataHeaders(c, uploadId, firebaseStorageUploadFinal)
 			return c.JSON(current)
 		}
 		if findErr == nil && current.SUID == session.SUID && current.UploadId == session.UploadId &&
 			current.FinalizationId == session.FinalizationId &&
 			current.UploadState == umodel.UserPhotoImageUploadFinalizing {
-			removeErr := os.Remove(photoPath)
-			releasePhotoUpload(c, session)
-			mcontext.GetLogger(c).Error("photo metadata remained uncommitted", zap.Error(err), zap.Error(removeErr))
+			rollbackErr := publication.Rollback()
+			if rollbackErr == nil {
+				releasePhotoUpload(c, session)
+			}
+			mcontext.GetLogger(c).Error("photo metadata remained uncommitted", zap.Error(err), zap.Error(rollbackErr))
 		} else if errors.Is(findErr, mongo.ErrNoDocuments) {
-			removeErr := os.Remove(photoPath)
-			mcontext.GetLogger(c).Error("photo metadata disappeared during finalization", zap.Error(err), zap.Error(removeErr))
+			rollbackErr := publication.Rollback()
+			mcontext.GetLogger(c).Error("photo metadata disappeared during finalization", zap.Error(err), zap.Error(rollbackErr))
 		} else {
 			// A failed MongoDB write can have committed remotely. Preserve the
 			// published bytes whenever the outcome cannot be proven uncommitted.
 			mcontext.GetLogger(c).Error("photo metadata finalization outcome is ambiguous", zap.Error(err), zap.Error(findErr))
 		}
 		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+	}
+	if cleanupErr := publication.Commit(); cleanupErr != nil {
+		mcontext.GetLogger(c).Error("failed to remove previous photo image", zap.Error(cleanupErr))
 	}
 
 	setFirebaseMetadataHeaders(c, uploadId, firebaseStorageUploadFinal)
@@ -275,6 +284,8 @@ var GetPhoto fiber.Handler = func(c fiber.Ctx) error {
 			return err
 		}
 	}
+	unlock := diver.LockPhotoObject(name.Name)
+	defer unlock()
 
 	metadata, err := opuser.FindUserPhotoImageMetadata(c, name.Name)
 	if err != nil {
@@ -284,7 +295,7 @@ var GetPhoto fiber.Handler = func(c fiber.Ctx) error {
 		mcontext.GetLogger(c).Error("failed to retrieve photo metadata", zap.Error(err))
 		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
 	}
-	if metadata.UploadState != umodel.UserPhotoImageUploadFinalized {
+	if metadata.Generation == "" {
 		return fiber.NewError(fiber.StatusNotFound, "photo not found")
 	}
 
@@ -422,7 +433,11 @@ func completePhotoMetadata(
 	metadata.UploadState = umodel.UserPhotoImageUploadFinalized
 	metadata.UploadStateUpdatedAt = createdAt
 	metadata.UploadExpiresAt = nil
-	metadata.Generation = strconv.FormatInt(createdAt.UnixMicro(), 10)
+	generation := createdAt.UnixMicro()
+	if previous, err := strconv.ParseInt(session.Generation, 10, 64); err == nil && generation <= previous {
+		generation = previous + 1
+	}
+	metadata.Generation = strconv.FormatInt(generation, 10)
 	metadata.Metageneration = "1"
 	metadata.TimeCreated = createdAt.Format(firebaseStorageTimeFormat)
 	metadata.Updated = metadata.TimeCreated
@@ -433,66 +448,16 @@ func completePhotoMetadata(
 	metadata.ContentDisposition = "inline; filename*=utf-8''" + filename
 	metadata.CRC32C = base64.StdEncoding.EncodeToString(crc32Bytes)
 	metadata.ETag = base64.StdEncoding.EncodeToString(md5Digest[:8])
+	// Firebase derives GetDownloadURL from downloadTokens, not generation.
+	// Rotate it for each newly published upload so metadata-only clients get a
+	// fresh image URL. Finalize retries return the already-published metadata
+	// above and do not come through here; pending uploads retain the old token.
 	metadata.DownloadTokens = uuid.NewString()
 	return &metadata
 }
 
 func photoImagePath(name *photoObjectName) string {
 	return filepath.Join(config.GetResourceDir(), "Photo", name.PublicUserId, name.Filename+".jpg")
-}
-
-func writePhotoImageAtomically(destination string, body []byte, modifiedAt time.Time) (retErr error) {
-	directory := filepath.Dir(destination)
-	if err := os.MkdirAll(directory, 0o750); err != nil {
-		return fmt.Errorf("failed to create photo directory: %w", err)
-	}
-
-	temporary, err := os.CreateTemp(directory, ".photo-upload-*")
-	if err != nil {
-		return fmt.Errorf("failed to create temporary photo: %w", err)
-	}
-	temporaryPath := temporary.Name()
-	published := false
-	defer func() {
-		if temporary != nil {
-			retErr = errors.Join(retErr, temporary.Close())
-		}
-		if retErr != nil && !published {
-			retErr = errors.Join(retErr, os.Remove(temporaryPath))
-		}
-	}()
-
-	if _, err := temporary.Write(body); err != nil {
-		return fmt.Errorf("failed to write temporary photo: %w", err)
-	}
-	if err := temporary.Chmod(0o640); err != nil {
-		return fmt.Errorf("failed to set photo permissions: %w", err)
-	}
-	if err := temporary.Sync(); err != nil {
-		return fmt.Errorf("failed to sync temporary photo: %w", err)
-	}
-	if err := temporary.Close(); err != nil {
-		temporary = nil
-		return fmt.Errorf("failed to close temporary photo: %w", err)
-	}
-	temporary = nil
-	if err := os.Rename(temporaryPath, destination); err != nil {
-		return fmt.Errorf("failed to publish photo: %w", err)
-	}
-	published = true
-	if err := os.Chtimes(destination, modifiedAt, modifiedAt); err != nil {
-		return fmt.Errorf("failed to set photo timestamps: %w", err)
-	}
-
-	directoryHandle, err := os.Open(directory)
-	if err != nil {
-		return fmt.Errorf("failed to open photo directory: %w", err)
-	}
-	defer func() { retErr = errors.Join(retErr, directoryHandle.Close()) }()
-	if err := directoryHandle.Sync(); err != nil {
-		return fmt.Errorf("failed to sync photo directory: %w", err)
-	}
-	return nil
 }
 
 func releasePhotoUpload(c fiber.Ctx, session *umodel.UserPhotoImageMetadata) {
@@ -556,7 +521,7 @@ func sendPhotoImage(c fiber.Ctx, name *photoObjectName, metadata *umodel.UserPho
 	}
 	c.Set("X-GUploader-UploadID", requestId)
 	c.Set(fiber.HeaderExpires, time.Now().UTC().Format(http.TimeFormat))
-	c.Set(fiber.HeaderCacheControl, "private, max-age=0")
+	c.Set(fiber.HeaderCacheControl, "private, no-cache, max-age=0")
 	c.Set(fiber.HeaderLastModified, createdAt.Format(http.TimeFormat))
 	c.Set(fiber.HeaderETag, `"`+hex.EncodeToString(md5Digest)+`"`)
 	c.Set("x-goog-generation", metadata.Generation)
@@ -568,5 +533,16 @@ func sendPhotoImage(c fiber.Ctx, name *photoObjectName, metadata *umodel.UserPho
 	c.Append("x-goog-hash", "crc32c="+metadata.CRC32C)
 	c.Append("x-goog-hash", "md5="+metadata.MD5Hash)
 	c.Set("x-goog-storage-class", metadata.StorageClass)
+	// Replacements can share the same whole-second Last-Modified timestamp.
+	// Only the content ETag can reliably validate mutable photo URLs. Also keep
+	// SendFile from returning a date-based 304 after an ETag mismatch.
+	modifiedSince := strings.Clone(c.Get(fiber.HeaderIfModifiedSince))
+	c.Request().Header.Del(fiber.HeaderIfModifiedSince)
+	if modifiedSince != "" {
+		defer c.Request().Header.Set(fiber.HeaderIfModifiedSince, modifiedSince)
+	}
+	if c.Fresh() {
+		return c.Status(fiber.StatusNotModified).Send(nil)
+	}
 	return c.SendFile(photoImagePath(name), fiber.SendFile{ByteRange: true, CacheDuration: -1})
 }

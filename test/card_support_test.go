@@ -12,10 +12,222 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
+	"github.com/vertesan/solis-server/internal/utils/config"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
+
+func TestCardAssistProgressionScenario(t *testing.T) {
+	setupTestUser(t)
+	ctx := context.Background()
+	suid := testConfig.TestUserSuid
+	client := papi.NewCardClient(testConfig.GrpcConn)
+	user, err := opuser.FindUser(ctx, suid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	manager, err := opmaster.FindMaxManagerLevel(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	user.ManagerLevel = manager.Level
+	if err := opuser.UpsertUser(ctx, suid, user); err != nil {
+		t.Fatal(err)
+	}
+	trainers, err := opuser.FindAllUserCards(ctx, suid)
+	if err != nil || len(trainers) < 5 {
+		t.Fatalf("initial trainer cards: %v, %v", trainers, err)
+	}
+	trainers = trainers[:5]
+	ownedCharacters, err := opuser.FindAllUserCharacters(ctx, suid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	owned := make(map[string]bool)
+	for _, character := range ownedCharacters {
+		owned[character.CharacterId] = true
+	}
+	masters, err := opmaster.FindAllCards(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var master *pmaster.Card
+	for _, candidate := range masters {
+		if owned[candidate.CharacterId] && candidate.InitialRarity <= 2 {
+			master = candidate
+			break
+		}
+	}
+	if master == nil {
+		t.Fatal("no low-rarity card for an initially owned character")
+	}
+	assisted, err := usercard.SpawnUserCard(ctx, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := opuser.UpsertUserCard(ctx, suid, assisted); err != nil {
+		t.Fatal(err)
+	}
+	rarity, err := opmaster.FindCardRarity(ctx, int64(assisted.Rarity))
+	if err != nil {
+		t.Fatal(err)
+	}
+	target := rarity.LevelLimit + 1
+	level, err := opmaster.FindCardLevel(ctx, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	setCardTrainingItem(t, "item-card_enhance", 5*level.RequiredExp+100)
+	for index, trainer := range trainers {
+		goal := target
+		if index == 4 {
+			goal--
+		}
+		response := cardSupportCall(t, func(ctx context.Context) (*papi.CardEnhanceResponse, error) {
+			return client.Enhance(ctx, &papi.CardEnhanceRequest{CardId: trainer.CardId, Level: goal})
+		})
+		current, err := opuser.FindUser(ctx, suid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		want := int32(1)
+		if index == 4 {
+			want = target - 1
+			if response.GetCommonResponse().GetUpdatedData().GetUser().GetCardSupportLevel() != want {
+				t.Fatalf("fifth trainer did not publish assist level %d: %v", want, response)
+			}
+		}
+		if current.CardSupportLevel != want {
+			t.Fatalf("assist level after training card %d = %d, want %d", index+1, current.CardSupportLevel, want)
+		}
+	}
+	cardSupportExpectCode(t, codes.FailedPrecondition, func(ctx context.Context) error {
+		_, err := client.SetSupport(ctx, &papi.CardSetSupportRequest{Number: 1, CardId: trainers[0].CardId})
+		return err
+	})
+	assigned := cardSupportCall(t, func(ctx context.Context) (*papi.CardSetSupportResponse, error) {
+		return client.SetSupport(ctx, &papi.CardSetSupportRequest{Number: 1, CardId: assisted.CardId})
+	})
+	support := assigned.GetCommonResponse().GetUpdatedData().GetCardSupports()[0]
+	if cooldown := time.Until(time.UnixMilli(support.RemovableTime)); cooldown < 12*time.Hour-time.Minute || cooldown > 12*time.Hour {
+		t.Fatalf("support removal cooldown = %v, want 12 hours", cooldown)
+	}
+	beforeEXP := userItemAmount(t, "item-card_enhance")
+	cardSupportExpectCode(t, codes.FailedPrecondition, func(ctx context.Context) error {
+		_, err := client.Enhance(ctx, &papi.CardEnhanceRequest{CardId: assisted.CardId, Level: target})
+		return err
+	})
+	if userItemAmount(t, "item-card_enhance") != beforeEXP {
+		t.Fatal("rejected assisted-card enhancement consumed EXP materials")
+	}
+	raised := cardSupportCall(t, func(ctx context.Context) (*papi.CardEnhanceResponse, error) {
+		return client.Enhance(ctx, &papi.CardEnhanceRequest{CardId: trainers[4].CardId, Level: target})
+	})
+	if updates := raised.GetCommonResponse().GetUpdatedData(); updates.GetUser().GetCardSupportLevel() != target || len(updates.GetCards()) != 2 {
+		t.Fatalf("trainer enhancement omitted raised assistance: %v", raised)
+	}
+	assertCardAssistProjection(t, master, assisted, target)
+
+	// User.Get repairs old users whose trained cards predate the support-level
+	// update logic. An assisted card must not act as an extra high-level trainer.
+	legacyUser, err := opuser.FindUser(ctx, suid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacyUser.CardSupportLevel = 1
+	if err := opuser.UpsertUser(ctx, suid, legacyUser); err != nil {
+		t.Fatal(err)
+	}
+	legacyCard, err := opuser.FindUserCard(ctx, suid, assisted.CardId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacyCard.Level = 1
+	if err := opuser.UpsertUserCard(ctx, suid, legacyCard); err != nil {
+		t.Fatal(err)
+	}
+	got := cardSupportCall(t, func(ctx context.Context) (*papi.UserGetResponse, error) {
+		return papi.NewUserClient(testConfig.GrpcConn).Get(ctx, &papi.Empty{})
+	})
+	if got.GetUser().GetCardSupportLevel() != target {
+		t.Fatalf("User.Get did not repair legacy assist progression: %v", got.GetUser())
+	}
+	foundAssisted := false
+	for _, card := range got.GetCards() {
+		if card.CardId == assisted.CardId {
+			foundAssisted = true
+			if card.Level != target || !card.Supported || card.BaseLevel != assisted.BaseLevel {
+				t.Fatalf("User.Get returned a stale assisted card: %v", card)
+			}
+		}
+	}
+	if !foundAssisted {
+		t.Fatal("User.Get omitted the assisted card")
+	}
+	if err := opuser.UpsertUserBalance(ctx, suid, &ptransaction.UserBalance{FreeBalance: 10000}); err != nil {
+		t.Fatal(err)
+	}
+	cardSupportCall(t, func(ctx context.Context) (*papi.CardResetResponse, error) {
+		return client.Reset(ctx, &papi.CardResetRequest{CardId: trainers[0].CardId})
+	})
+	got = cardSupportCall(t, func(ctx context.Context) (*papi.UserGetResponse, error) {
+		return papi.NewUserClient(testConfig.GrpcConn).Get(ctx, &papi.Empty{})
+	})
+	if got.GetUser().GetCardSupportLevel() != target {
+		t.Fatalf("resetting a trainer lowered achieved assist level: %v", got.GetUser())
+	}
+	assertCardAssistProjection(t, master, assisted, target)
+
+	// Drop the stored high-water mark to model a pre-fix user after a trainer
+	// reset. Only four naturally trained cards remain; the assisted card is not
+	// allowed to manufacture the missing fifth trainer.
+	legacyUser = got.GetUser()
+	legacyUser.CardSupportLevel = 1
+	if err := opuser.UpsertUser(ctx, suid, legacyUser); err != nil {
+		t.Fatal(err)
+	}
+	got = cardSupportCall(t, func(ctx context.Context) (*papi.UserGetResponse, error) {
+		return papi.NewUserClient(testConfig.GrpcConn).Get(ctx, &papi.Empty{})
+	})
+	if got.GetUser().GetCardSupportLevel() != 1 {
+		t.Fatalf("assisted card was counted as a trainer: %v", got.GetUser())
+	}
+	support.RemovableTime = time.Now().Add(-time.Minute).UnixMilli()
+	if err := opuser.UpsertUserCardSupport(ctx, suid, support); err != nil {
+		t.Fatal(err)
+	}
+	removed := cardSupportCall(t, func(ctx context.Context) (*papi.CardRemoveSupportResponse, error) {
+		return client.RemoveSupport(ctx, &papi.CardRemoveSupportRequest{Number: 1})
+	})
+	if cards := removed.GetCommonResponse().GetUpdatedData().GetCards(); len(cards) != 1 || !proto.Equal(cards[0], assisted) {
+		t.Fatalf("support removal did not preserve natural training: %v", removed)
+	}
+}
+
+func assertCardAssistProjection(t *testing.T, master *pmaster.Card, base *ptransaction.UserCard, level int32) {
+	t.Helper()
+	ctx := context.Background()
+	card, err := opuser.FindUserCard(ctx, testConfig.TestUserSuid, base.CardId)
+	if err != nil {
+		t.Fatal(err)
+	}
+	attributes, err := usercard.CalcUserCardBaseAttr(ctx, master, level, base.Rarity)
+	if err != nil {
+		t.Fatal(err)
+	}
+	photos, skills, abilities, err := usercard.CalcUnlocksWithEvolution(ctx, level, base.EvolutionLevel, master)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !card.Supported || card.Level != level || card.BaseLevel != base.BaseLevel || card.TotalExp != base.TotalExp ||
+		card.BaseVocal != base.BaseVocal || card.BaseDance != base.BaseDance || card.BaseVisual != base.BaseVisual || card.BaseStamina != base.BaseStamina ||
+		card.Vocal != attributes.Vocal || card.Dance != attributes.Dance || card.Visual != attributes.Visual || card.Stamina != attributes.Stamina ||
+		card.PhotoEquipableCount != photos || card.SkillId1 != skills[0] || card.SkillId2 != skills[1] || card.SkillId3 != skills[2] || card.SkillId4 != skills[3] ||
+		card.LiveAbilityId != abilities[0] || card.ActivityAbilityId != abilities[1] {
+		t.Fatalf("incorrect assisted projection at level %d: %v", level, card)
+	}
+}
 
 func TestCardSupportScenario(t *testing.T) {
 	setupTestUser(t)
@@ -42,6 +254,17 @@ func TestCardSupportScenario(t *testing.T) {
 	updated := assigned.GetCommonResponse().GetUpdatedData()
 	if len(updated.GetCards()) != 1 || !updated.Cards[0].Supported || updated.Cards[0].BaseLevel != card.BaseLevel || updated.Cards[0].Level <= card.Level {
 		t.Fatalf("SetSupport did not preserve base training and apply support: %v", assigned)
+	}
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	setting, err := opmaster.FindSetting(ctx, settingID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if updated.Cards[0].Level != setting.CardSupportLevelLimit {
+		t.Fatalf("god assistance did not preserve the master cap: %v", updated.Cards[0])
 	}
 	if len(updated.GetStories()) < 2 {
 		t.Fatalf("support did not unlock card stories: %v", updated.GetStories())

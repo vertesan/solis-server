@@ -36,6 +36,25 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 		if req.Number > user.CardSupportMaxNumber {
 			return nil, viber.InvalidArgumentf("card support number must be between 1 and %d", user.CardSupportMaxNumber)
 		}
+		updated := &papi.UpdatedData{}
+		trainers, err := viber.ReconcileCardSupportLevel(ctx, suid, user, updated)
+		if err != nil {
+			return nil, err
+		}
+		for index, trainer := range trainers {
+			// Equal-level cards can take a tied trainer's place. Do not make
+			// arbitrary card ID tie-breaking prevent an otherwise valid choice.
+			if trainer.CardId == card.CardId && index < 5 &&
+				(len(trainers) < 6 || trainers[5].BaseLevel < card.BaseLevel) {
+				return nil, viber.FailedPreconditionf("a trainer cannot receive level assistance")
+			}
+		}
+		if card.BaseLevel > user.CardSupportLevel {
+			return nil, viber.FailedPreconditionf("level assistance cannot lower a card's trained level")
+		}
+		if err := opuser.UpsertUser(ctx, suid, user); err != nil {
+			return nil, err
+		}
 		settingID, err := config.GetGameSettingId()
 		if err != nil {
 			return nil, err
@@ -71,14 +90,7 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 			return nil, err
 		}
 		supportLevel := user.CardSupportLevel
-		attributes, err := usercard.CalcUserCardBaseAttr(ctx, masterCard, supportLevel, card.Rarity)
-		if err != nil {
-			return nil, err
-		}
-		photoCount, skillIDs, abilityIDs, err := usercard.CalcUnlocksWithEvolution(
-			ctx, supportLevel, card.GetEvolutionLevel(), masterCard,
-		)
-		if err != nil {
+		if err := usercard.ApplySupportLevel(ctx, masterCard, card, supportLevel); err != nil {
 			return nil, err
 		}
 		support := &ptransaction.UserCardSupport{
@@ -86,32 +98,25 @@ func (s *CardServer) SetSupport(ctx context.Context, req *papi.CardSetSupportReq
 			RemovableTime: time.Now().Add(time.Duration(setting.CardSupportRemovableMinutes) * time.Minute).UnixMilli(),
 		}
 		card.Supported = true
-		card.Level = supportLevel
-		card.Vocal, card.Dance, card.Visual, card.Stamina = attributes.Vocal, attributes.Dance, attributes.Visual, attributes.Stamina
-		card.PhotoEquipableCount = photoCount
-		card.SkillId1, card.SkillId2, card.SkillId3 = skillIDs[0], skillIDs[1], skillIDs[2]
-		card.SkillId4 = skillIDs[3]
-		card.LiveAbilityId, card.ActivityAbilityId = abilityIDs[0], abilityIDs[1]
-		if card.SkillId4 != "" && card.SkillLevel4 == 0 {
-			card.SkillLevel4 = 1
-		}
 		if err := opuser.UpsertUserCard(ctx, suid, card); err != nil {
 			return nil, err
 		}
 		if err := opuser.UpsertUserCardSupport(ctx, suid, support); err != nil {
 			return nil, err
 		}
-		stories, _, err := updateCardStoryUnlocks(ctx, suid, masterCard, supportLevel, card.EvolutionLevel)
+		stories, _, err := viber.UpdateCardStoryUnlocks(ctx, suid, masterCard, supportLevel, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}
-		missions, err := reachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
+		missions, err := viber.ReachCharacterCardTrainingMissions(ctx, suid, masterCard.CharacterId)
 		if err != nil {
 			return nil, err
 		}
-		response = &papi.CardSetSupportResponse{CommonResponse: viber.NewCommonResponse(&papi.UpdatedData{
-			Cards: []*ptransaction.UserCard{card}, CardSupports: []*ptransaction.UserCardSupport{support}, Stories: stories, Missions: missions,
-		})}
+		updated.Cards = append(updated.Cards, card)
+		updated.CardSupports = []*ptransaction.UserCardSupport{support}
+		updated.Stories = append(updated.Stories, stories...)
+		viber.MergeCardTrainingMissions(updated, missions)
+		response = &papi.CardSetSupportResponse{CommonResponse: viber.NewCommonResponse(updated)}
 		return response, nil
 	})
 	if err != nil {

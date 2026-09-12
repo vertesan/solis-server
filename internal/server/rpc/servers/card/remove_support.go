@@ -69,7 +69,7 @@ func (s *CardServer) RemoveSupport(ctx context.Context, req *papi.CardRemoveSupp
 		if err := opuser.DeleteUserCardSupport(ctx, suid, support.Number); err != nil {
 			return nil, err
 		}
-		unlocked, locked, err := updateCardStoryUnlocks(ctx, suid, master, card.Level, card.EvolutionLevel)
+		unlocked, locked, err := viber.UpdateCardStoryUnlocks(ctx, suid, master, card.Level, card.EvolutionLevel)
 		if err != nil {
 			return nil, err
 		}

@@ -21,8 +21,8 @@ import (
 )
 
 func (s *ShowcaseServer) Save(ctx context.Context, req *papi.ShowcaseSaveRequest) (*papi.ShowcaseSaveResponse, error) {
-	if req.GetNumber() <= 0 || req.GetFrameId() == "" || req.GetAssetId() == "" || req.GetLayoutInfo() == nil {
-		return nil, viber.InvalidArgumentf("number, frameId, assetId, and layoutInfo are required")
+	if req.GetNumber() <= 0 || req.GetFrameId() == "" || req.GetLayoutInfo() == nil {
+		return nil, viber.InvalidArgumentf("number, frameId, and layoutInfo are required")
 	}
 	suid := viber.GetSuid(ctx).String()
 	var response *papi.ShowcaseSaveResponse
@@ -42,8 +42,18 @@ func (s *ShowcaseServer) Save(ctx context.Context, req *papi.ShowcaseSaveRequest
 		if err != nil {
 			return nil, err
 		}
+		// Layout-only saves omit assetId in the official client. Keep the
+		// existing thumbnail unless a replacement is explicitly supplied.
+		assetID := req.GetAssetId()
+		if assetID == "" {
+			assetID = showcase.GetThumbnailAssetId()
+		}
+		if assetID == "" {
+			return nil, viber.InvalidArgumentf("assetId is required for the first showcase save")
+		}
+		reusesThumbnail := showcase.GetThumbnailAssetId() == assetID
 		showcase.ShowcaseFrameId = frame.GetId()
-		showcase.ThumbnailAssetId = req.GetAssetId()
+		showcase.ThumbnailAssetId = assetID
 		showcase.HashTagIds, err = deriveShowcaseHashtags(ctx, req.GetLayoutInfo(), toys)
 		if err != nil {
 			return nil, err
@@ -70,8 +80,12 @@ func (s *ShowcaseServer) Save(ctx context.Context, req *papi.ShowcaseSaveRequest
 			return nil, err
 		}
 		updated.Missions = viber.AppendUniquePhotoMissions(saveMissions, hashtagMissions)
-		if err := consumeShowcaseThumbnailImageID(ctx, suid, req.GetAssetId(), updated); err != nil {
-			return nil, err
+		// Editing a saved case uploads a new generation under its existing
+		// thumbnail name. Only a newly selected image consumes a reservation.
+		if !reusesThumbnail {
+			if err := consumeShowcaseThumbnailImageID(ctx, suid, assetID, updated); err != nil {
+				return nil, err
+			}
 		}
 		response = &papi.ShowcaseSaveResponse{CommonResponse: viber.NewCommonResponse(updated)}
 		return response, nil

@@ -1,0 +1,12 @@
+# Shared by the permanent showcase shops in traffic/mixed/fix-0911.
+# This is presentation metadata only; shop items are generated from master data.
+id: info-news-shop-23-0328-02
+title: 「感謝祭ショップ」登場！
+bannerAssetId: img_banner_l_shop-shop-pack-23-0328
+linkType: 999
+linkDetail: https://stat.game-idolypride.jp/notice/60c1fc0c4298072db569f39bab28b42fd5457f450ee6d131f32297afd47fa0f9/index.html?_v=20260910-140725
+# Do not add notification badges for this permanent shop notice.
+displayNotification: false
+startTime: "1679972400000"
+listTitle: 「感謝祭ショップ」登場！
+notificationRestartTime: "0"

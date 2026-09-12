@@ -2,6 +2,8 @@ package viber
 
 import (
 	"context"
+	"embed"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"time"
@@ -12,10 +14,20 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
+	"go.yaml.in/yaml/v3"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
+
+// Only the captured shop presentation is static; goods continue to come from
+// master data. ReadFile keeps the decoded YAML payload local to each call.
+//
+//go:embed catalogdata/showcase_shop_notice.yaml
+var showcaseShopNoticeFiles embed.FS
 
 const (
 	ShowcaseGoodsShopID   = "shop_top_shop-showcase-goods-catalog"
+	ShowcaseBadgeShopID   = "shop_top_shop-showcase-buttonbadge"
 	ShowcaseFrameShopID   = "shop_top_shop-showcase-frame"
 	ShowcaseMusicShopID   = "shop_top_shop-showcase-music"
 	ShowcaseMedalItemID   = "item-showcase_medal"
@@ -94,22 +106,52 @@ func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCo
 	}
 
 	catalog := &ShowcaseCommerceCatalog{
-		ShopsByID: make(map[string]*smodel.ShopCatalogEntry, 3),
+		ShopsByID: make(map[string]*smodel.ShopCatalogEntry, 4),
 		ItemsByID: make(map[string]showcaseCommerceItem, len(toys)+len(frames)+len(showcaseMusics)),
 	}
 	catalog.addShop(buildShowcaseGoodsShop(toys, ownedToyIDs))
+	catalog.addShop(buildShowcaseBadgeShop(toys))
 	catalog.addShop(buildShowcaseFrameShop(frames, ownedItemIDs))
 	musicShop, err := buildShowcaseMusicShop(showcaseMusics, musicNames, ownedMusicIDs)
 	if err != nil {
 		return nil, err
 	}
 	catalog.addShop(musicShop)
+	notice, err := loadShowcaseShopNotice()
+	if err != nil {
+		return nil, err
+	}
+	for _, shop := range catalog.ShopEntries {
+		// Official Showcase.Top supplies a notice even for permanent shops.
+		// Keep it present before the client opens the shop's item screen.
+		shop.Info.NoticeInfo = proto.Clone(notice).(*papi.NoticeInfo)
+	}
 	return catalog, nil
+}
+
+func loadShowcaseShopNotice() (*papi.NoticeInfo, error) {
+	data, err := showcaseShopNoticeFiles.ReadFile("catalogdata/showcase_shop_notice.yaml")
+	if err != nil {
+		return nil, fmt.Errorf("read showcase shop notice: %w", err)
+	}
+	var snapshot map[string]any
+	if err := yaml.Unmarshal(data, &snapshot); err != nil {
+		return nil, fmt.Errorf("decode showcase shop notice: %w", err)
+	}
+	protobufJSON, err := json.Marshal(snapshot)
+	if err != nil {
+		return nil, fmt.Errorf("normalize showcase shop notice: %w", err)
+	}
+	notice := &papi.NoticeInfo{}
+	if err := protojson.Unmarshal(protobufJSON, notice); err != nil {
+		return nil, fmt.Errorf("decode showcase shop notice protobuf: %w", err)
+	}
+	return notice, nil
 }
 
 func IsShowcaseCommerceShopID(shopID string) bool {
 	switch shopID {
-	case ShowcaseGoodsShopID, ShowcaseFrameShopID, ShowcaseMusicShopID:
+	case ShowcaseGoodsShopID, ShowcaseBadgeShopID, ShowcaseFrameShopID, ShowcaseMusicShopID:
 		return true
 	default:
 		return false
@@ -164,7 +206,33 @@ func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]
 	}
 	return newShowcaseShopCatalogEntry(
 		ShowcaseGoodsShopID, "グッズカタログ", penum.ShopType_ShopType_DefaultShowcaseToyShop,
-		101, "", items,
+		// Preserve the literal "null" asset sentinel from official traffic.
+		101, "null", items,
+	)
+}
+
+func buildShowcaseBadgeShop(toys []*pmaster.ShowcaseToy) *smodel.ShopCatalogEntry {
+	// DefaultShowcaseToyShop is the catalog, not a regular shop-list entry.
+	// Keep the captured button-badge entrance available even when every unique
+	// frame and BGM is owned. Badges can be acquired repeatedly, so this shop
+	// never becomes empty merely because the user has been promoted to god.
+	items := make([]*papi.ShopItem, 0)
+	for _, toy := range toys {
+		if toy.GetId() == "" || toy.GetCategoryId() != "toy-category-buttonbadge" {
+			continue
+		}
+		items = append(items, newShowcaseShopItem(
+			ShowcaseItemIDPrefix+"buttonbadge_"+toy.GetId(),
+			toy.GetName(),
+			toy.GetDescription(),
+			"rd_auto;showcase_toy;"+toy.GetId()+";1",
+			showcaseGoodsItemCost,
+			toy.GetOrder(),
+		))
+	}
+	return newShowcaseShopCatalogEntry(
+		ShowcaseBadgeShopID, "缶バッジショップ", penum.ShopType_ShopType_OnlyShowcaseShop,
+		102, "showcase-buttonbadge", items,
 	)
 }
 
