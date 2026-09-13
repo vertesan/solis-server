@@ -74,7 +74,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		if err := opuser.UpsertUser(ctx, suid, &ptransaction.User{
 			Name:                               "牧野航平",
 			ManagerExp:                         50,
-			DeckSequence:                       1,
+			DeckSequence:                       0,
 			GuildId:                            "",
 			LastGuildCheckTime:                 0,
 			DivisionId:                         divisions[0].Id,

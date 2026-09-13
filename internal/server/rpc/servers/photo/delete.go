@@ -7,6 +7,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -78,6 +79,9 @@ func (s *PhotoServer) Delete(ctx context.Context, req *papi.PhotoDeleteRequest) 
 		if err != nil {
 			return nil, err
 		}
+		if err := removeDeletedPhotosFromDecks(ctx, suid, ids, updated); err != nil {
+			return nil, err
+		}
 		if err := opuser.DeleteUserPhotos(ctx, suid, ids); err != nil {
 			return nil, err
 		}
@@ -91,6 +95,45 @@ func (s *PhotoServer) Delete(ctx context.Context, req *papi.PhotoDeleteRequest) 
 	}
 	removeUserPhotoImageObjects(ctx, suid, assetIDs)
 	return response, nil
+}
+
+// Selling an equipped photo is allowed, but its references must be removed in
+// the same transaction so every saved formation remains usable.
+func removeDeletedPhotosFromDecks(ctx context.Context, suid string, ids []string, updated *papi.UpdatedData) error {
+	deleted := make(map[string]struct{}, len(ids))
+	for _, id := range ids {
+		deleted[id] = struct{}{}
+	}
+	remove := func(id string) bool {
+		_, exists := deleted[id]
+		return exists
+	}
+	positions, err := opuser.FindAllUserDeckPositions(ctx, suid)
+	if err != nil {
+		return err
+	}
+	for _, position := range positions {
+		count := len(position.PhotoIds)
+		position.PhotoIds = slices.DeleteFunc(position.PhotoIds, remove)
+		if len(position.PhotoIds) != count {
+			updated.DeckPositions = append(updated.DeckPositions, position)
+		}
+	}
+	if err := opuser.UpsertManyUserDeckPositions(ctx, suid, updated.DeckPositions); err != nil {
+		return err
+	}
+	leaguePositions, err := opuser.FindAllUserLeagueDeckPositions(ctx, suid)
+	if err != nil {
+		return err
+	}
+	for _, position := range leaguePositions {
+		count := len(position.PhotoIds)
+		position.PhotoIds = slices.DeleteFunc(position.PhotoIds, remove)
+		if len(position.PhotoIds) != count {
+			updated.LeagueDeckPositions = append(updated.LeagueDeckPositions, position)
+		}
+	}
+	return opuser.UpsertManyUserLeagueDeckPositions(ctx, suid, updated.LeagueDeckPositions)
 }
 
 func removeUserPhotoImageObjects(ctx context.Context, suid string, assetIDs []string) {

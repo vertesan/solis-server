@@ -22,15 +22,18 @@ func SpawnUserDeck(ctx context.Context, suid string, number int32, name string) 
 		ctx,
 		suid,
 		bson.M{"$inc": bson.M{"deckSequence": 1}},
-		options.FindOneAndUpdate().SetReturnDocument(options.Before),
+		options.FindOneAndUpdate().SetReturnDocument(options.After),
 	)
 	if err != nil {
 		return nil, err
 	}
 
 	num := int32(user.DeckSequence)
+	if name == "" {
+		name = fmt.Sprintf("ユニット%d", num)
+	}
 	return &ptransaction.UserDeck{
 		Number: num,
-		Name:   fmt.Sprintf("ユニット%d", num),
+		Name:   name,
 	}, nil
 }

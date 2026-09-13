@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-12
+Last audited: 2026-09-13
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,13 +25,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 40 | 248 |
-| Concrete handlers | 40 | 210 |
-| Entirely unregistered services | 27 | 177 |
+| Registered services | 41 | 251 |
+| Concrete handlers | 41 | 213 |
+| Entirely unregistered services | 26 | 174 |
 | Missing methods on registered services | 14 | 38 |
-| Total unimplemented RPCs | 41 | 215 |
+| Total unimplemented RPCs | 40 | 212 |
 
-The “Total unimplemented RPCs” service count is the 27 entirely unregistered
+The “Total unimplemented RPCs” service count is the 26 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -55,10 +55,6 @@ unknown-service handler.
   - `/api.Backside/StageReset`
   - `/api.Backside/StageSurpriseFinish`
   - `/api.Backside/StageDeckPositionChange`
-- `Deck` (3):
-  - `/api.Deck/Save`
-  - `/api.Deck/Delete`
-  - `/api.Deck/BuddyList`
 - `Dice` (15):
   - `/api.Dice/Top`
   - `/api.Dice/MovePanel`
@@ -307,7 +303,7 @@ result into the client’s “return to title” response.
 ## Fully implemented registered service surfaces
 
 For comparison, every generated RPC currently has a concrete handler for these
-registered services: `Accessory`, `Activity`, `Birthday`, `Company`, `Costume`, `Diary`,
+registered services: `Accessory`, `Activity`, `Birthday`, `Company`, `Costume`, `Deck`, `Diary`,
 `Dokan`, `Friend`, `Gift`, `Guild`, `Hair`, `Health`, `Hierarchy`, `Item`, `LoginBonus`,
 `Love`, `Market`, `Message`, `Mission`, `PhotoPanorama`, `Profile`, `Salary`, `Showcase`,
 `Staff`, `System`, and `Telephone`.
