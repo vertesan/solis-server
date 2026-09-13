@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"slices"
 	"strings"
 	"time"
 
@@ -187,18 +188,24 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
-		if err := opuser.UpsertUserShopId(ctx, &umodel.UserShopId{SUID: suid, ShopIds: allShopIds}); err != nil {
-			return nil, err
+		if !slices.Equal(shopIds.ShopIds, allShopIds) {
+			if err := opuser.UpsertUserShopId(ctx, &umodel.UserShopId{SUID: suid, ShopIds: allShopIds}); err != nil {
+				return nil, err
+			}
 		}
-		if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
-			SUID: suid, ShopIds: allShowcaseShopIds,
-		}); err != nil {
-			return nil, err
+		if !slices.Equal(showcaseToyShopIds.ShopIds, allShowcaseShopIds) {
+			if err := opuser.UpsertUserShowcaseToyShopId(ctx, &umodel.UserShowcaseToyShopId{
+				SUID: suid, ShopIds: allShowcaseShopIds,
+			}); err != nil {
+				return nil, err
+			}
 		}
-		if err := opuser.UpsertUserExchangeBooth(ctx, &umodel.UserExchangeBooth{
-			SUID: suid, BoothIds: allExchangeBoothIds,
-		}); err != nil {
-			return nil, err
+		if !slices.Equal(exchangeBooth.BoothIds, allExchangeBoothIds) {
+			if err := opuser.UpsertUserExchangeBooth(ctx, &umodel.UserExchangeBooth{
+				SUID: suid, BoothIds: allExchangeBoothIds,
+			}); err != nil {
+				return nil, err
+			}
 		}
 		if err := reconcileNarrativeSchedules(ctx, suid, now, updatedData); err != nil {
 			return nil, err
@@ -405,13 +412,14 @@ func filterHomeCommerceIDs(
 			visibleShops = append(visibleShops, shop.ShopId)
 		}
 	}
-	showcaseCatalog, err := viber.BuildShowcaseCommerceCatalog(ctx, suid)
+	showcaseShops, err := viber.FindAvailableShowcaseCommerceShops(ctx, suid)
 	if err != nil {
 		return nil, nil, nil, nil, nil, nil, err
 	}
-	allShowcaseShopIDs := showcaseShopIDs(showcaseCatalog)
-	visibleShowcaseShops := make([]string, 0, len(allShowcaseShopIDs))
-	for _, shop := range showcaseCatalog.Shops() {
+	allShowcaseShopIDs := make([]string, 0, len(showcaseShops))
+	visibleShowcaseShops := make([]string, 0, len(showcaseShops))
+	for _, shop := range showcaseShops {
+		allShowcaseShopIDs = append(allShowcaseShopIDs, shop.ShopId)
 		visible, err := evaluator.Satisfied(shop.Info.GetViewConditionId())
 		if err != nil {
 			return nil, nil, nil, nil, nil, nil, err
@@ -478,7 +486,10 @@ func buildCompanyHomeInfo(ctx context.Context, suid string) (*papi.CompanyInfo, 
 	} else if err != nil {
 		return nil, err
 	}
-	missions, err := opuser.FindAllUserMissions(ctx, suid)
+	// Only claimable Company tasks affect these badges. Leave unrelated and
+	// already-claimed mission documents in MongoDB instead of decoding all of
+	// them on every Home entry.
+	missions, err := opuser.FindUserMissionsByStatuses(ctx, suid, []penum.MissionStatusType{penum.MissionStatusType_MissionStatusType_NotReceived})
 	if err != nil {
 		return nil, err
 	}
@@ -617,17 +628,6 @@ func reconcileActiveFanEventForHome(ctx context.Context, suid string, now int64,
 		return err
 	}
 	return opuser.UpsertUserFanEventInfo(ctx, suid, info)
-}
-
-func showcaseShopIDs(c *viber.ShowcaseCommerceCatalog) []string {
-	if c == nil {
-		return nil
-	}
-	ids := make([]string, 0, len(c.ShopEntries))
-	for _, shop := range c.ShopEntries {
-		ids = append(ids, shop.ShopId)
-	}
-	return ids
 }
 
 // homeLoveEvents replaces stale captured dates and flags with the supported

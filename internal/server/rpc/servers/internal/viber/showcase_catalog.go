@@ -54,6 +54,21 @@ type showcaseCommerceItem struct {
 }
 
 func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCommerceCatalog, error) {
+	return buildShowcaseCommerceCatalog(ctx, suid, false)
+}
+
+// FindAvailableShowcaseCommerceShops uses the same item eligibility rules as
+// Shop.ListItem, but only materializes the first item in each shop. Home needs
+// its entrances, not hundreds of merchandise descriptions or their notices.
+func FindAvailableShowcaseCommerceShops(ctx context.Context, suid string) ([]*smodel.ShopCatalogEntry, error) {
+	catalog, err := buildShowcaseCommerceCatalog(ctx, suid, true)
+	if err != nil {
+		return nil, err
+	}
+	return catalog.Shops(), nil
+}
+
+func buildShowcaseCommerceCatalog(ctx context.Context, suid string, firstOnly bool) (*ShowcaseCommerceCatalog, error) {
 	toys, err := opmaster.FindAllShowcaseToys(ctx)
 	if err != nil {
 		return nil, err
@@ -105,18 +120,25 @@ func BuildShowcaseCommerceCatalog(ctx context.Context, suid string) (*ShowcaseCo
 		musicNames[music.GetId()] = music.GetName()
 	}
 
+	itemCapacity := len(toys) + len(frames) + len(showcaseMusics)
+	if firstOnly {
+		itemCapacity = 4
+	}
 	catalog := &ShowcaseCommerceCatalog{
 		ShopsByID: make(map[string]*smodel.ShopCatalogEntry, 4),
-		ItemsByID: make(map[string]showcaseCommerceItem, len(toys)+len(frames)+len(showcaseMusics)),
+		ItemsByID: make(map[string]showcaseCommerceItem, itemCapacity),
 	}
-	catalog.addShop(buildShowcaseGoodsShop(toys, ownedToyIDs))
-	catalog.addShop(buildShowcaseBadgeShop(toys))
-	catalog.addShop(buildShowcaseFrameShop(frames, ownedItemIDs))
-	musicShop, err := buildShowcaseMusicShop(showcaseMusics, musicNames, ownedMusicIDs)
+	catalog.addShop(buildShowcaseGoodsShop(toys, ownedToyIDs, firstOnly))
+	catalog.addShop(buildShowcaseBadgeShop(toys, firstOnly))
+	catalog.addShop(buildShowcaseFrameShop(frames, ownedItemIDs, firstOnly))
+	musicShop, err := buildShowcaseMusicShop(showcaseMusics, musicNames, ownedMusicIDs, firstOnly)
 	if err != nil {
 		return nil, err
 	}
 	catalog.addShop(musicShop)
+	if firstOnly {
+		return catalog, nil
+	}
 	notice, err := loadShowcaseShopNotice()
 	if err != nil {
 		return nil, err
@@ -178,7 +200,7 @@ func (c *ShowcaseCommerceCatalog) addShop(shop *smodel.ShopCatalogEntry) {
 	}
 }
 
-func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]struct{}) *smodel.ShopCatalogEntry {
+func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]struct{}, firstOnly bool) *smodel.ShopCatalogEntry {
 	sort.Slice(toys, func(i, j int) bool {
 		if toys[i].GetOrder() != toys[j].GetOrder() {
 			return toys[i].GetOrder() < toys[j].GetOrder()
@@ -203,6 +225,9 @@ func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]
 			showcaseGoodsItemCost,
 			toy.GetOrder(),
 		))
+		if firstOnly {
+			break
+		}
 	}
 	return newShowcaseShopCatalogEntry(
 		ShowcaseGoodsShopID, "グッズカタログ", penum.ShopType_ShopType_DefaultShowcaseToyShop,
@@ -211,7 +236,7 @@ func buildShowcaseGoodsShop(toys []*pmaster.ShowcaseToy, ownedToyIDs map[string]
 	)
 }
 
-func buildShowcaseBadgeShop(toys []*pmaster.ShowcaseToy) *smodel.ShopCatalogEntry {
+func buildShowcaseBadgeShop(toys []*pmaster.ShowcaseToy, firstOnly bool) *smodel.ShopCatalogEntry {
 	// DefaultShowcaseToyShop is the catalog, not a regular shop-list entry.
 	// Keep the captured button-badge entrance available even when every unique
 	// frame and BGM is owned. Badges can be acquired repeatedly, so this shop
@@ -229,6 +254,9 @@ func buildShowcaseBadgeShop(toys []*pmaster.ShowcaseToy) *smodel.ShopCatalogEntr
 			showcaseGoodsItemCost,
 			toy.GetOrder(),
 		))
+		if firstOnly {
+			break
+		}
 	}
 	return newShowcaseShopCatalogEntry(
 		ShowcaseBadgeShopID, "缶バッジショップ", penum.ShopType_ShopType_OnlyShowcaseShop,
@@ -236,7 +264,7 @@ func buildShowcaseBadgeShop(toys []*pmaster.ShowcaseToy) *smodel.ShopCatalogEntr
 	)
 }
 
-func buildShowcaseFrameShop(frames []*pmaster.ShowcaseFrame, ownedItemIDs map[string]struct{}) *smodel.ShopCatalogEntry {
+func buildShowcaseFrameShop(frames []*pmaster.ShowcaseFrame, ownedItemIDs map[string]struct{}, firstOnly bool) *smodel.ShopCatalogEntry {
 	sort.Slice(frames, func(i, j int) bool {
 		if frames[i].GetOrder() != frames[j].GetOrder() {
 			return frames[i].GetOrder() < frames[j].GetOrder()
@@ -263,6 +291,9 @@ func buildShowcaseFrameShop(frames []*pmaster.ShowcaseFrame, ownedItemIDs map[st
 		)
 		shopItem.ThumbnailAssetId = "img_shop_item_thumb_toy-goods-" + frame.GetId()
 		items = append(items, shopItem)
+		if firstOnly {
+			break
+		}
 	}
 	return newShowcaseShopCatalogEntry(
 		ShowcaseFrameShopID, "グッズケースショップ", penum.ShopType_ShopType_OnlyShowcaseShop,
@@ -274,6 +305,7 @@ func buildShowcaseMusicShop(
 	showcaseMusics []*pmaster.ShowcaseMusic,
 	musicNames map[string]string,
 	ownedMusicIDs map[string]struct{},
+	firstOnly bool,
 ) (*smodel.ShopCatalogEntry, error) {
 	sort.Slice(showcaseMusics, func(i, j int) bool {
 		if showcaseMusics[i].GetOrder() != showcaseMusics[j].GetOrder() {
@@ -293,6 +325,10 @@ func buildShowcaseMusicShop(
 		name, ok := musicNames[musicID]
 		if !ok || name == "" {
 			return nil, fmt.Errorf("showcase music %q is missing its Music master", musicID)
+		}
+		// Retain catalog validation even when only the entrance is requested.
+		if firstOnly && len(items) > 0 {
+			continue
 		}
 		items = append(items, newShowcaseShopItem(
 			ShowcaseMusicItemIDPrefix+musicID,

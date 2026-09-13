@@ -3,10 +3,12 @@ package mcommon
 import (
 	"context"
 	"fmt"
-	"github.com/vertesan/solis-server/internal/db/internal/depot"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
 	"iter"
 
+	"github.com/vertesan/solis-server/internal/db/internal/depot"
+	"github.com/vertesan/solis-server/internal/utils/mcontext"
+
+	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo/options"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -14,6 +16,13 @@ import (
 
 type MongoMaster interface {
 	GetData() []byte
+}
+
+// The expanded master fields are used by MongoDB for filtering and sorting.
+// Callers only consume the protobuf payload, so do not transfer and BSON-decode
+// a second expanded copy of every master record before decoding its protobuf.
+type masterPayload struct {
+	Data []byte `bson:"data"`
 }
 
 func FindOne[T interface{}, U interface{},
@@ -31,7 +40,8 @@ func FindOne[T interface{}, U interface{},
 	filter interface{},
 	opts ...options.Lister[options.FindOneOptions],
 ) (V, error) {
-	data := W(new(T))
+	data := &masterPayload{}
+	opts = append([]options.Lister[options.FindOneOptions]{options.FindOne().SetProjection(bson.M{"data": 1, "_id": 0})}, opts...)
 	err := depot.Master.Collection(dbName).FindOne(
 		ctx, filter, opts...,
 	).Decode(data)
@@ -39,7 +49,7 @@ func FindOne[T interface{}, U interface{},
 		return nil, fmt.Errorf("failed to decode value from master db: %w", err)
 	}
 	pit := V(new(U))
-	if err := proto.Unmarshal(data.GetData(), pit); err != nil {
+	if err := proto.Unmarshal(data.Data, pit); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal bytes to proto object: %w", err)
 	}
 	return pit, nil
@@ -60,7 +70,8 @@ func FindMany[T interface{}, U interface{},
 	filter interface{},
 	opts ...options.Lister[options.FindOptions],
 ) ([]V, error) {
-	src := []W{}
+	src := []masterPayload{}
+	opts = append([]options.Lister[options.FindOptions]{options.Find().SetProjection(bson.M{"data": 1, "_id": 0})}, opts...)
 	cursor, err := depot.Master.Collection(dbName).Find(
 		ctx, filter, opts...,
 	)
@@ -73,7 +84,7 @@ func FindMany[T interface{}, U interface{},
 	dst := make([]V, 0, len(src))
 	for _, it := range src {
 		pit := V(new(U))
-		if err := proto.Unmarshal(it.GetData(), pit); err != nil {
+		if err := proto.Unmarshal(it.Data, pit); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal bytes to proto: %w", err)
 		}
 		dst = append(dst, pit)
@@ -98,8 +109,9 @@ func YieldMany[T interface{}, U interface{},
 ) iter.Seq[V] {
 	return func(yield func(V) bool) {
 		logger := mcontext.GetLogger(ctx)
+		queryOpts := append([]options.Lister[options.FindOptions]{options.Find().SetProjection(bson.M{"data": 1, "_id": 0})}, opts...)
 		cursor, err := depot.Master.Collection(dbName).Find(
-			ctx, filter, opts...,
+			ctx, filter, queryOpts...,
 		)
 		if err != nil {
 			logger.Error("failed to get protos from master db", zap.Error(err))
@@ -107,13 +119,13 @@ func YieldMany[T interface{}, U interface{},
 		}
 		defer cursor.Close(ctx)
 		for cursor.Next(ctx) {
-			obj := new(W)
+			obj := &masterPayload{}
 			if err := cursor.Decode(obj); err != nil {
 				logger.Error("failed to decode mongo object", zap.Error(err))
 				return
 			}
 			p := V(new(U))
-			if err := proto.Unmarshal((*obj).GetData(), p); err != nil {
+			if err := proto.Unmarshal(obj.Data, p); err != nil {
 				logger.Error("failed to unmarshal bytes to proto", zap.Error(err))
 				return
 			}

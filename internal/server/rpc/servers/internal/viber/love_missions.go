@@ -58,7 +58,7 @@ func ReconcileLoveMissions(ctx context.Context, suid, loveID string, exp int64, 
 	if err != nil {
 		return err
 	}
-	users, err := opuser.FindAllUserMissions(ctx, suid)
+	users, err := opuser.FindUserMissionsByIds(ctx, suid, ids)
 	if err != nil {
 		return err
 	}

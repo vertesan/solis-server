@@ -31,10 +31,12 @@ func TestShowcaseScenario(t *testing.T) {
 	freshTop := showcaseTop(t, client)
 	assertShowcaseShopPresentation(t, freshTop.GetShops())
 	assertShowcaseRepeatedTop(t, freshTop, showcaseTop(t, client))
+	assertHomeShowcaseShopRoster(t, freshTop.GetShops(), false)
 	promoteTestUser(t)
 
 	top := showcaseTop(t, client)
 	assertShowcaseShopPresentation(t, top.GetShops())
+	assertHomeShowcaseShopRoster(t, top.GetShops(), true)
 	// Opening the shop list invokes Top a second time. Owning all unique
 	// frames/BGM must not leave only the special catalog type (1003).
 	assertShowcaseRepeatedTop(t, top, showcaseTop(t, client))
@@ -480,6 +482,34 @@ func assertShowcaseRepeatedTop(t *testing.T, first, second *papi.ShowcaseTopResp
 	for i, shop := range first.GetShops() {
 		if !proto.Equal(shop, second.GetShops()[i]) {
 			t.Fatalf("opening the goods shop list changed shop metadata: first=%v second=%v", shop, second.GetShops()[i])
+		}
+	}
+}
+
+// Home only builds an availability projection. It must match the full shop
+// catalog both before and after ownership changes remove unique merchandise.
+func assertHomeShowcaseShopRoster(t *testing.T, shops []*papi.ShopInfo, unlocked bool) {
+	t.Helper()
+	want := make([]string, 0, len(shops))
+	for _, shop := range shops {
+		want = append(want, shop.GetId())
+	}
+	for range 2 {
+		ctx, cancel := showcaseGRPCCallContext(t)
+		home, err := papi.NewHomeClient(testConfig.GrpcConn).Enter(ctx, &papi.HomeEnterRequest{})
+		cancel()
+		if err != nil {
+			t.Fatalf("Home.Enter failed while checking Showcase entrances: %v", err)
+		}
+		stored, err := opuser.FindUserShowcaseToyShopIds(context.Background(), testConfig.TestUserSuid)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !slices.Equal(stored.ShopIds, want) {
+			t.Fatalf("Home and Showcase catalogs differ: home=%v showcase=%v", stored.ShopIds, want)
+		}
+		if unlocked && !slices.Equal(home.GetShowcaseToyShopIds(), want) {
+			t.Fatalf("Home hid an available Showcase shop: home=%v showcase=%v", home.GetShowcaseToyShopIds(), want)
 		}
 	}
 }

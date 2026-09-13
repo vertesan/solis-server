@@ -38,12 +38,23 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 	if err != nil {
 		return nil, err
 	}
-	conditions, err := opmaster.FindAllConditions(ctx)
-	if err != nil {
+	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	conditionIDs := make([]string, 0, len(groups)*2+len(masters))
+	for _, group := range groups {
+		conditionIDs = append(conditionIDs, group.GetViewConditionId(), group.GetUnlockConditionId())
+	}
+	for _, master := range masters {
+		if !isGeneralMission(master) {
+			continue
+		}
+		conditionIDs = append(conditionIDs, master.GetViewConditionId())
+		if master.GetMissionType() == penum.MissionType_MissionType_ConditionClear {
+			conditionIDs = append(conditionIDs, master.GetTargetIds()...)
+		}
+	}
+	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
 		return nil, err
 	}
-	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
-	evaluator.PrimeConditions(conditions)
 	catalog := &ActiveMissionCatalog{
 		Missions: make(map[string]*pmaster.Mission), Events: make(map[string]*pmaster.EventMission),
 		Unlocked: make(map[string]bool), LoveGroups: make(map[string]string), evaluator: evaluator,
@@ -57,11 +68,11 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 			if id != love.GetLoveId() {
 				continue
 			}
-			loveCatalog, err := moshikoi.LoadCatalog(ctx, id)
+			loveConfig, err := moshikoi.LoadConfig(id)
 			if err != nil {
 				return nil, err
 			}
-			for _, groupID := range append(append([]string{}, loveCatalog.Config.EventMissionIDs...), loveCatalog.Config.LimitedEventMissionIDs...) {
+			for _, groupID := range append(append([]string{}, loveConfig.EventMissionIDs...), loveConfig.LimitedEventMissionIDs...) {
 				catalog.LoveGroups[groupID] = id
 			}
 		}
@@ -98,12 +109,7 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 		catalog.Unlocked[group.GetId()] = unlocked
 	}
 	for _, master := range masters {
-		if master.GetCompanyEnjoyCharacterId() != "" || master.GetCompanyTrustMissionCategoryType() != 0 || master.GetCompanyEnjoyCharacterMissionCategoryType() != 0 {
-			continue
-		}
-		// Photo-option unlock markers are not receivable Mission tasks; their
-		// master tiers have no reward sets and the official List excludes them.
-		if master.GetCategoryType() == penum.MissionCategoryType_MissionCategoryType_Photo {
+		if !isGeneralMission(master) {
 			continue
 		}
 		if master.GetEventMissionId() != "" && !catalog.Unlocked[master.GetEventMissionId()] {
@@ -125,6 +131,15 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 		}
 	}
 	return catalog, nil
+}
+
+func isGeneralMission(master *pmaster.Mission) bool {
+	// Company tasks have their own API. Photo-option unlock markers have no
+	// reward sets and are not receivable tasks in the official Mission list.
+	return master.GetCompanyEnjoyCharacterId() == "" &&
+		master.GetCompanyTrustMissionCategoryType() == 0 &&
+		master.GetCompanyEnjoyCharacterMissionCategoryType() == 0 &&
+		master.GetCategoryType() != penum.MissionCategoryType_MissionCategoryType_Photo
 }
 
 // ReconcileUserMissions is called at login/home entry, before gameplay can
@@ -169,7 +184,11 @@ func (c *ActiveMissionCatalog) Reconcile(ctx context.Context, suid string, now i
 			return err
 		}
 	}
-	rows, err := opuser.FindAllUserMissions(ctx, suid)
+	ids := make([]string, 0, len(c.Missions))
+	for id := range c.Missions {
+		ids = append(ids, id)
+	}
+	rows, err := opuser.FindUserMissionsByIds(ctx, suid, ids)
 	if err != nil {
 		return err
 	}

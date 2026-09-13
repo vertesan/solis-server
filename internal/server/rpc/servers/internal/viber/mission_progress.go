@@ -63,7 +63,11 @@ func updateUserMissions(
 	reach bool,
 	targetIds ...string,
 ) ([]*ptransaction.UserMission, error) {
-	userMissions, err := opuser.FindAllUserMissions(ctx, suid)
+	userMissions, err := opuser.FindUserMissionsByStatuses(ctx, suid, []penum.MissionStatusType{
+		penum.MissionStatusType_MissionStatusType_Progress,
+		penum.MissionStatusType_MissionStatusType_Clear,
+		penum.MissionStatusType_MissionStatusType_NotReceived,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -176,11 +180,10 @@ func updateUserMissions(
 
 	result := make([]*ptransaction.UserMission, 0, len(changedOrder))
 	for _, id := range changedOrder {
-		mission := changed[id]
-		if err := opuser.UpsertUserMission(ctx, suid, mission); err != nil {
-			return nil, err
-		}
-		result = append(result, mission)
+		result = append(result, changed[id])
+	}
+	if err := opuser.UpsertManyUserMissions(ctx, suid, result); err != nil {
+		return nil, err
 	}
 	return result, nil
 }

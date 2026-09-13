@@ -19,6 +19,15 @@ func FindCondition(ctx context.Context, id string) (*pmaster.Condition, error) {
 	)
 }
 
+func FindConditions(ctx context.Context, ids []string) ([]*pmaster.Condition, error) {
+	if len(ids) == 0 {
+		return []*pmaster.Condition{}, nil
+	}
+	return mcommon.FindMany[mmodel.Condition, pmaster.Condition](
+		ctx, mname.Condition, bson.M{"Id": bson.M{"$in": ids}},
+	)
+}
+
 func FindAllConditions(ctx context.Context) ([]*pmaster.Condition, error) {
 	return mcommon.FindMany[mmodel.Condition, pmaster.Condition](
 		ctx,

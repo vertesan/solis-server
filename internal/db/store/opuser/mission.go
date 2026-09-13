@@ -9,6 +9,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -21,6 +22,24 @@ func FindAllUserMissions(ctx context.Context, suid string) ([]*ptransaction.User
 		ctx,
 		uname.UserMission,
 		bson.M{"SUID": suid},
+	)
+}
+
+func FindUserMissionsByIds(ctx context.Context, suid string, ids []string) ([]*ptransaction.UserMission, error) {
+	if len(ids) == 0 {
+		return []*ptransaction.UserMission{}, nil
+	}
+	return ucommon.FindAll[ptransaction.UserMission](
+		ctx, uname.UserMission, bson.M{"SUID": suid, "missionId": bson.M{"$in": ids}},
+	)
+}
+
+func FindUserMissionsByStatuses(ctx context.Context, suid string, statuses []penum.MissionStatusType) ([]*ptransaction.UserMission, error) {
+	if len(statuses) == 0 {
+		return []*ptransaction.UserMission{}, nil
+	}
+	return ucommon.FindAll[ptransaction.UserMission](
+		ctx, uname.UserMission, bson.M{"SUID": suid, "statusType": bson.M{"$in": statuses}},
 	)
 }
 

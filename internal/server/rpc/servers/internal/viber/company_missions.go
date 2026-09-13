@@ -60,12 +60,14 @@ func ReconcileCompanyMissions(ctx context.Context, suid string) error {
 		_, err := ReachCharacterHomeTalkMissions(ctx, suid, "")
 		return err
 	}
-	conditions, err := opmaster.FindAllConditions(ctx)
-	if err != nil {
-		return err
+	conditionIDs := make([]string, 0, len(candidates))
+	for _, master := range candidates {
+		conditionIDs = append(conditionIDs, master.GetViewConditionId())
 	}
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, time.Now().UnixMilli())
-	evaluator.PrimeConditions(conditions)
+	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
+		return err
+	}
 
 	sort.SliceStable(candidates, func(i, j int) bool { return candidates[i].GetId() < candidates[j].GetId() })
 	created := make([]*ptransaction.UserMission, 0)

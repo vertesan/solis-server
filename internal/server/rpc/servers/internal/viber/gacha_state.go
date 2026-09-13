@@ -82,6 +82,13 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	}
 	notices := loadGachaNotices(ctx)
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	conditionIDs := make([]string, 0, 2*len(catalog.Ordered))
+	for _, gacha := range catalog.Ordered {
+		conditionIDs = append(conditionIDs, gacha.GetViewConditionId(), gacha.GetUnlockConditionId())
+	}
+	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
+		return nil, err
+	}
 	visible := make([]*papi.GachaInfo, 0, len(catalog.Ordered))
 	for _, masterGacha := range catalog.Ordered {
 		shown, err := evaluator.Satisfied(masterGacha.GetViewConditionId())
@@ -97,8 +104,12 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 		if err != nil {
 			return nil, err
 		}
-		if err := opuser.UpsertUserGachaInfo(ctx, suid, info); err != nil {
-			return nil, err
+		// Home is opened frequently. Preserve the same reconciliation, including
+		// daily resets and catalog changes, without rewriting identical rows.
+		if !proto.Equal(stateByID[masterGacha.GetId()], info) {
+			if err := opuser.UpsertUserGachaInfo(ctx, suid, info); err != nil {
+				return nil, err
+			}
 		}
 		visible = append(visible, info)
 	}

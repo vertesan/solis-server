@@ -65,14 +65,20 @@ func ReconcileNarrativeSchedules(
 	if err != nil {
 		return err
 	}
-	masterConditions, err := opmaster.FindAllConditions(ctx)
-	if err != nil {
+	conditionIDs := make([]string, 0, len(masters)+len(masterTelephones))
+	for _, master := range masters {
+		conditionIDs = append(conditionIDs, master.GetUnlockConditionId())
+	}
+	for _, master := range masterTelephones {
+		conditionIDs = append(conditionIDs, master.GetUnlockConditionId())
+	}
+	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
 		return err
 	}
-	conditionsByID := make(map[string]*pmaster.Condition, len(masterConditions))
-	for _, condition := range masterConditions {
-		conditionsByID[condition.GetId()] = condition
-	}
+	// The dependency loader includes nested conditions, which are also needed
+	// when deciding story-message delays and matching specific unlock events.
+	conditionsByID := evaluator.conditions
 	userMessages, err := opuser.FindAllUserMessages(ctx, suid)
 	if err != nil {
 		return err
@@ -86,8 +92,6 @@ func ReconcileNarrativeSchedules(
 		return err
 	}
 
-	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
-	evaluator.PrimeConditions(masterConditions)
 	messagesByID := make(map[string]*ptransaction.UserMessage, len(userMessages)+len(masters))
 	for _, message := range userMessages {
 		messagesByID[message.GetMessageId()] = message

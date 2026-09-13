@@ -125,6 +125,47 @@ func (e *CommerceConditionEvaluator) PrimeConditions(conditions []*pmaster.Condi
 	}
 }
 
+// PrimeConditionIDs fetches only the conditions this evaluator may visit. Follow
+// nested conditions in batches instead of decoding the entire master table or
+// issuing a separate query for each reference. All state remains request-local.
+func (e *CommerceConditionEvaluator) PrimeConditionIDs(ids []string) error {
+	visited := make(map[string]bool)
+	pending := ids
+	for len(pending) > 0 {
+		missing := make([]string, 0, len(pending))
+		conditions := make([]*pmaster.Condition, 0, len(pending))
+		for _, id := range pending {
+			if id == "" || visited[id] {
+				continue
+			}
+			visited[id] = true
+			if condition := e.conditions[id]; condition != nil {
+				conditions = append(conditions, condition)
+			} else {
+				missing = append(missing, id)
+			}
+		}
+		if len(missing) > 0 {
+			loaded, err := opmaster.FindConditions(e.ctx, missing)
+			if err != nil {
+				return err
+			}
+			e.PrimeConditions(loaded)
+			conditions = append(conditions, loaded...)
+		}
+		pending = nil
+		for _, condition := range conditions {
+			for _, setting := range condition.GetSettings() {
+				pending = append(pending,
+					setting.GetSatisfyCondition().GetConditionId(),
+					setting.GetNotSatisfyCondition().GetConditionId(),
+				)
+			}
+		}
+	}
+	return nil
+}
+
 func (e *CommerceConditionEvaluator) Satisfied(conditionID string) (bool, error) {
 	state, err := e.evaluate(conditionID)
 	return state == commerceConditionSatisfied, err
