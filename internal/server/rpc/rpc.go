@@ -42,6 +42,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/photo_panorama"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/profile"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/quest"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/salary"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/shop"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/showcase"
@@ -150,6 +151,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterItemServer(server, &item.ItemServer{})
 	papi.RegisterCardServer(server, &card.CardServer{})
 	papi.RegisterDeckServer(server, &deck.DeckServer{})
+	papi.RegisterQuestServer(server, &quest.QuestServer{})
 	papi.RegisterDivisionServer(server, &division.DivisionServer{})
 	papi.RegisterExchangeServer(server, &exchange.ExchangeServer{})
 	papi.RegisterShopServer(server, &shop.ShopServer{})

@@ -142,6 +142,22 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		staleDailyCounts := false
+		for _, area := range areas {
+			staleDailyCounts = staleDailyCounts || area.GetDailyClearCount() != 0 && !viber.SameJSTDay(area.GetLastClearedTime(), now)
+		}
+		for _, quest := range quests {
+			staleDailyCounts = staleDailyCounts || quest.GetDailyClearCount() != 0 && !viber.SameJSTDay(quest.GetLastClearedTime(), now)
+		}
+		if staleDailyCounts {
+			masterAreas, err := opmaster.FindAllAreas(ctx)
+			if err != nil {
+				return nil, err
+			}
+			if err := viber.ReconcileQuestDailyCounters(ctx, suid, now, masterAreas, areas, quests, &papi.UpdatedData{}); err != nil {
+				return nil, err
+			}
+		}
 		gachaInfos, err := viber.ReconcileCurrentGachaInfos(ctx, suid, now)
 		if err != nil {
 			return nil, err

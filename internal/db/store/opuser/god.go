@@ -163,6 +163,8 @@ func UnlockUserAreasForGod(
 			SetFilter(bson.M{"SUID": suid, "areaId": area.AreaId}).
 			SetUpdate(bson.M{
 				"$setOnInsert": bson.M{"SUID": suid, "areaId": area.AreaId},
+				// Administrative clears do not consume daily play allowances.
+				"$set": bson.M{"dailyClearCount": area.GetDailyClearCount()},
 				"$max": bson.M{
 					"clearQuestCount": area.ClearQuestCount,
 					"lastClearedTime": area.LastClearedTime,
@@ -184,6 +186,7 @@ func UnlockUserQuestsForGod(
 			SetFilter(bson.M{"SUID": suid, "questId": quest.QuestId}).
 			SetUpdate(bson.M{
 				"$setOnInsert": bson.M{"SUID": suid, "questId": quest.QuestId},
+				"$set":         bson.M{"dailyClearCount": quest.GetDailyClearCount()},
 				"$max": bson.M{
 					"lastClearedTime":  quest.LastClearedTime,
 					"highestScore":     quest.HighestScore,

@@ -42,3 +42,4 @@ __debug_bin*
 
 # local files
 settings.local.json
+*.xlsx

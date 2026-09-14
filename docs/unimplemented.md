@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-13
+Last audited: 2026-09-14
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,14 +25,14 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 41 | 251 |
-| Concrete handlers | 41 | 213 |
-| Entirely unregistered services | 26 | 174 |
-| Missing methods on registered services | 14 | 38 |
-| Total unimplemented RPCs | 40 | 212 |
+| Registered services | 42 | 266 |
+| Concrete handlers | 42 | 226 |
+| Entirely unregistered services | 25 | 159 |
+| Missing methods on registered services | 15 | 40 |
+| Total unimplemented RPCs | 40 | 199 |
 
-The “Total unimplemented RPCs” service count is the 26 entirely unregistered
-services plus 14 registered services that are only partially implemented.
+The “Total unimplemented RPCs” service count is the 25 entirely unregistered
+services plus 15 registered services that are only partially implemented.
 
 ## Entirely unregistered services
 
@@ -169,22 +169,6 @@ unknown-service handler.
   - `/api.Pvp/ListRanking`
   - `/api.Pvp/Start`
   - `/api.Pvp/ListAsset`
-- `Quest` (15):
-  - `/api.Quest/Top`
-  - `/api.Quest/ListMain`
-  - `/api.Quest/ListDaily`
-  - `/api.Quest/ListContest`
-  - `/api.Quest/ListTower`
-  - `/api.Quest/Start`
-  - `/api.Quest/StartBulkDaily`
-  - `/api.Quest/ListTowerRanking`
-  - `/api.Quest/ListContestRanking`
-  - `/api.Quest/ListLatestClear`
-  - `/api.Quest/ListAsset`
-  - `/api.Quest/GetLatestClearLiveResult`
-  - `/api.Quest/GetRankingLiveResult`
-  - `/api.Quest/TowerTop`
-  - `/api.Quest/OutputLiveResultDetailLog`
 - `Race` (12):
   - `/api.Race/Top`
   - `/api.Race/MovePanel`
@@ -285,6 +269,9 @@ result into the client’s “return to title” response.
   - `/api.Photo/CheckSpecialShooting`
   - `/api.Photo/CreateSpecialShootings`
   - `/api.Photo/ActivateStoryEpisodeShooting`
+- `Quest` (2 of 15):
+  - `/api.Quest/Start`
+  - `/api.Quest/StartBulkDaily`
 - `Shop` (9 of 13):
   - `/api.Shop/GetConditionRewardPackageItem`
   - `/api.Shop/RegisterPurchaseTransaction`
