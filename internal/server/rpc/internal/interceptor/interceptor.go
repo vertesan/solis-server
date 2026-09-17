@@ -132,6 +132,15 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 		}
 
 		// invoke handler
+		// Simulation entropy/time must survive retries of the outer idempotency
+		// transaction; choosing them inside Quest.Start would reroll each retry.
+		if info.FullMethod == papi.Quest_Start_FullMethodName || info.FullMethod == papi.Quest_StartBulkDaily_FullMethodName {
+			ctx, err = mcontext.WithLiveRequest(ctx)
+			if err != nil {
+				logger.Error("failed preparing live request", zap.Error(err))
+				return nil, errInternal
+			}
+		}
 		var m any
 		if requestId == "" {
 			m, err = handler(ctx, req)

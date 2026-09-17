@@ -20,6 +20,15 @@ func FindUser(ctx context.Context, suid string) (*ptransaction.User, error) {
 	)
 }
 
+// LockUserQuestStart performs a real write to the existing user document inside
+// the live transaction. Concurrent starts retry before expensive input/simulation
+// work. This server-only revision is deliberately absent from User protobuf;
+// ordinary UpsertUser uses $set and therefore preserves it.
+func LockUserQuestStart(ctx context.Context, suid string) (*ptransaction.User, error) {
+	return FindAndUpdateUser(ctx, suid, bson.M{"$inc": bson.M{"questStartRevision": int64(1)}},
+		options.FindOneAndUpdate().SetReturnDocument(options.After))
+}
+
 func UpsertUser(ctx context.Context, suid string, user *ptransaction.User) error {
 	return ucommon.UpsertOne(
 		ctx,

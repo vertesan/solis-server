@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-14
+Last audited: 2026-09-17
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -26,13 +26,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
 | Registered services | 42 | 266 |
-| Concrete handlers | 42 | 226 |
+| Concrete handlers | 42 | 228 |
 | Entirely unregistered services | 25 | 159 |
-| Missing methods on registered services | 15 | 40 |
-| Total unimplemented RPCs | 40 | 199 |
+| Missing methods on registered services | 14 | 38 |
+| Total unimplemented RPCs | 39 | 197 |
 
 The “Total unimplemented RPCs” service count is the 25 entirely unregistered
-services plus 15 registered services that are only partially implemented.
+services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
 
@@ -269,9 +269,6 @@ result into the client’s “return to title” response.
   - `/api.Photo/CheckSpecialShooting`
   - `/api.Photo/CreateSpecialShootings`
   - `/api.Photo/ActivateStoryEpisodeShooting`
-- `Quest` (2 of 15):
-  - `/api.Quest/Start`
-  - `/api.Quest/StartBulkDaily`
 - `Shop` (9 of 13):
   - `/api.Shop/GetConditionRewardPackageItem`
   - `/api.Shop/RegisterPurchaseTransaction`

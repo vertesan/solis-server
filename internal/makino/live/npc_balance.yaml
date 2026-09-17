@@ -1,0 +1,17 @@
+version: npc-balance-v1
+difficultyStart: 33
+difficultyAnchor: 320
+growthAfterAnchor: linear-tangent
+primary:
+  baseAddition: 350
+  growthAtAnchor: 310000
+stamina:
+  baseAddition: 0
+  growthAtAnchor: 10000
+mental:
+  baseAddition: 30
+  growthAtAnchor: 7700
+  minimumThresholdPermil: 900
+technique:
+  baseAddition: 30
+  growthAtAnchor: 8700

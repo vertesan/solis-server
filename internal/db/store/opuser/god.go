@@ -182,15 +182,23 @@ func UnlockUserQuestsForGod(
 ) error {
 	models := make([]mongo.WriteModel, 0, len(quests))
 	for _, quest := range quests {
+		set := bson.M{"dailyClearCount": quest.GetDailyClearCount(), "highestRank": quest.GetHighestRank()}
+		if quest.GetHighestRank() == 0 {
+			// Clear legacy god-created ranking fields on non-contest quests.
+			// Personal best scores and score grades below remain untouched.
+			set["currentRankingHighestRank"] = int64(0)
+			set["currentRankingHighestScore"] = int64(0)
+			set["currentRankingHighestScoreTime"] = int64(0)
+			set["currentRankingSeasonID"] = ""
+		}
 		models = append(models, mongo.NewUpdateOneModel().
 			SetFilter(bson.M{"SUID": suid, "questId": quest.QuestId}).
 			SetUpdate(bson.M{
 				"$setOnInsert": bson.M{"SUID": suid, "questId": quest.QuestId},
-				"$set":         bson.M{"dailyClearCount": quest.GetDailyClearCount()},
+				"$set":         set,
 				"$max": bson.M{
 					"lastClearedTime":  quest.LastClearedTime,
 					"highestScore":     quest.HighestScore,
-					"highestRank":      quest.HighestRank,
 					"highestScoreRank": quest.HighestScoreRank,
 				},
 			}).

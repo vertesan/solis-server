@@ -1439,7 +1439,9 @@ func applyGodProgress(
 	counts[uname.UserStaffTrainingReset] = 1
 
 	areas := make([]*ptransaction.UserArea, 0, len(data.areas))
+	areaTypes := make(map[string]penum.AreaType, len(data.areas))
 	for _, master := range data.areas {
+		areaTypes[master.GetId()] = master.GetType()
 		areas = append(areas, &ptransaction.UserArea{
 			AreaId: master.Id, ClearQuestCount: int32(len(master.QuestIds)), LastClearedTime: now,
 		})
@@ -1451,9 +1453,13 @@ func applyGodProgress(
 
 	quests := make([]*ptransaction.UserQuest, 0, len(data.quests))
 	for _, master := range data.quests {
+		highestRank := int64(0)
+		if areaTypes[master.GetAreaId()] == penum.AreaType_AreaType_Contest {
+			highestRank = 1
+		}
 		quests = append(quests, &ptransaction.UserQuest{
 			QuestId: master.Id, LastClearedTime: now, HighestScore: master.ClearScore,
-			HighestRank: 1, HighestScoreRank: penum.ResultRankType_ResultRankType_S,
+			HighestRank: highestRank, HighestScoreRank: penum.ResultRankType_ResultRankType_S,
 		})
 	}
 	if err := opuser.UnlockUserQuestsForGod(ctx, suid, quests); err != nil {

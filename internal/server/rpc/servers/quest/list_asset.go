@@ -3,7 +3,6 @@ package quest
 import (
 	"context"
 	"slices"
-	"strings"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -23,7 +22,8 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 	suid := viber.GetSuid(ctx).String()
 	var assets []*papi.LiveCharacterAssetInfo
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-		if _, err := opmaster.FindQuest(ctx, req.GetQuestId()); err != nil {
+		quest, err := opmaster.FindQuest(ctx, req.GetQuestId())
+		if err != nil {
 			return nil, err
 		}
 		if _, err := opuser.FindUserDeck(ctx, suid, req.GetDeckNumber()); err != nil {
@@ -40,15 +40,7 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 		if err != nil {
 			return nil, err
 		}
-		slices.SortFunc(characters, func(a, b *ptransaction.UserCharacter) int {
-			return strings.Compare(a.GetCharacterId(), b.GetCharacterId())
-		})
-		owned := make(map[string]*ptransaction.UserCharacter, len(characters))
-		for _, character := range characters {
-			owned[character.GetCharacterId()] = character
-		}
 		cardCharacters := make([]string, len(positions))
-		reserved := make(map[string]bool, len(positions))
 		for index, position := range positions {
 			card, err := opuser.FindUserCard(ctx, suid, position.GetCardId())
 			if err != nil {
@@ -59,34 +51,25 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 				return nil, err
 			}
 			cardCharacters[index] = master.GetCharacterId()
-			reserved[master.GetCharacterId()] = true
 		}
-		assets = make([]*papi.LiveCharacterAssetInfo, 0, len(positions))
-		used := make(map[string]bool, len(positions))
-		for index, position := range positions {
-			id := cardCharacters[index]
-			costumeID, hairID := position.GetCostumeId(), position.GetHairId()
-			if used[id] {
-				// Official replacement selection is not captured. Choose a stable
-				// owned idol, reserving every original idol before filling duplicates.
-				id, costumeID, hairID = "", "", ""
-				for _, character := range characters {
-					if candidate := character.GetCharacterId(); !reserved[candidate] && !used[candidate] {
-						id = candidate
-						break
-					}
-				}
-			}
-			character := owned[id]
-			if character == nil {
-				return nil, viber.FailedPreconditionf("not enough owned idols for the live appearance")
-			}
-			asset, err := questCharacterAsset(ctx, character, costumeID, hairID)
+		assets, err = questDeckCharacterAssets(ctx, positions, cardCharacters, characters, nil)
+		if err != nil {
+			return nil, err
+		}
+		music, err := opmaster.FindMusic(ctx, quest.GetMusicId())
+		if err != nil {
+			return nil, err
+		}
+		// Partial editing units still prefetch only their occupied scoring slots.
+		// Cosmetic extras belong to a complete five-card live unit.
+		if len(assets) == 5 && music.GetDisplayCharacterAmount() > 5 {
+			extras, err := prepareExtraLiveAppearances(ctx, suid, music, characters, nil, assets)
 			if err != nil {
 				return nil, err
 			}
-			used[id] = true
-			assets = append(assets, asset)
+			for _, extra := range extras {
+				assets = append(assets, &papi.LiveCharacterAssetInfo{CharacterId: extra.GetCharacterId(), CostumeId: extra.GetCostumeId(), HairId: extra.GetHairId()})
+			}
 		}
 		return nil, nil
 	})
@@ -94,43 +77,4 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 		return nil, viber.GameplayError(err)
 	}
 	return &papi.QuestListAssetResponse{CharacterAssets: assets, CommonResponse: viber.NewCommonResponse(nil)}, nil
-}
-
-func questCharacterAsset(ctx context.Context, character *ptransaction.UserCharacter, costumeID, hairID string) (*papi.LiveCharacterAssetInfo, error) {
-	master, err := opmaster.FindCharacter(ctx, character.GetCharacterId())
-	if err != nil {
-		return nil, err
-	}
-	if costumeID == "" {
-		costumeID = character.GetLiveCostumeId()
-	}
-	if costumeID == "" {
-		costumeID = master.GetDefaultLiveCostumeId()
-	}
-	if costumeID == "" {
-		costumeID = master.GetDefaultCostumeId()
-	}
-	costume, err := opmaster.FindCostume(ctx, costumeID)
-	if err != nil {
-		return nil, err
-	}
-	if costume.GetCharacterId() != character.GetCharacterId() || strings.HasPrefix(costume.GetCostumeTypeId(), "sd-") {
-		return nil, viber.FailedPreconditionf("deck costume has no usable live model for this idol")
-	}
-	if hairID == "" {
-		hairID = character.GetLiveHairId()
-	}
-	if hairID == "" {
-		hairID = costume.GetDefaultHairId()
-	}
-	hair, err := opmaster.FindHair(ctx, hairID)
-	if err != nil {
-		return nil, err
-	}
-	if hair.GetCharacterId() != character.GetCharacterId() || slices.Contains(hair.GetNotWearableCostumeIds(), costumeID) ||
-		len(hair.GetWearableCostumeIds()) > 0 && !slices.Contains(hair.GetWearableCostumeIds(), costumeID) {
-		// A global live hairstyle may no longer fit a deck-specific costume.
-		hairID = costume.GetDefaultHairId()
-	}
-	return &papi.LiveCharacterAssetInfo{CharacterId: character.GetCharacterId(), CostumeId: costumeID, HairId: hairID}, nil
 }

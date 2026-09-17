@@ -8,12 +8,75 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/live"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"google.golang.org/protobuf/proto"
 )
+
+func TestQuestBossPreviewScenario(t *testing.T) {
+	setupTestUser(t)
+	areas, quests := questCatalogFixture(t)
+	main := questAreasOfType(areas, penum.AreaType_AreaType_Main)
+	var selected *pmaster.Quest
+	var selectedArea *pmaster.Area
+	var expected *papi.QuestOpponentInfo
+	for _, area := range main {
+		for _, id := range area.GetQuestIds() {
+			q := quests[id]
+			if q.GetClearScore() != 0 {
+				continue
+			}
+			roster, err := live.NPCRoster(id)
+			if err == nil {
+				selected, selectedArea, expected = q, area, roster
+				break
+			}
+		}
+		if selected != nil {
+			break
+		}
+	}
+	if selected == nil {
+		t.Fatal("master catalog has no known main boss roster")
+	}
+	for _, area := range main {
+		if area.GetOrder() < selectedArea.GetOrder() {
+			questSeedFullArea(t, area)
+		}
+	}
+	maximum, err := opmaster.FindMaxManagerLevel(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	questSetManagerLevel(t, maximum.GetLevel())
+	client := papi.NewQuestClient(testConfig.GrpcConn)
+	response := profileCall(t, client.ListMain, &papi.Empty{})
+	area := questFindMainArea(t, response.GetAreaGroups(), selectedArea.GetId())
+	var found *papi.QuestInfo
+	for _, q := range area.GetQuests() {
+		if q.GetQuestId() == selected.GetId() {
+			found = q
+			break
+		}
+	}
+	if found == nil || len(found.GetOpponentInfo().GetCardInfos()) != 5 || !proto.Equal(found.GetOpponentInfo(), expected) {
+		t.Fatal("main boss preview omitted or changed its known NPC unit")
+	}
+	top := profileCall(t, client.Top, &papi.Empty{})
+	area = questFindMainArea(t, top.GetMainAreaGroups(), selectedArea.GetId())
+	for _, q := range area.GetQuests() {
+		if q.GetQuestId() == selected.GetId() {
+			if !proto.Equal(q.GetOpponentInfo(), expected) {
+				t.Fatal("Top and ListMain disagree on NPC preview")
+			}
+			return
+		}
+	}
+	t.Fatal("Top omitted the selected boss")
+}
 
 func TestQuestMainProgressionScenario(t *testing.T) {
 	setupTestUser(t)

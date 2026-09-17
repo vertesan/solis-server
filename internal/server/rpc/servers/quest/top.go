@@ -16,6 +16,10 @@ func (s *QuestServer) Top(ctx context.Context, _ *papi.Empty) (*papi.QuestTopRes
 		if err != nil {
 			return nil, err
 		}
+		bulk, err := loadQuestBulkDailyEntries(ctx, suid, catalog)
+		if err != nil {
+			return nil, err
+		}
 		hierarchy, state, changed, err := viber.ReconcileHierarchyNotification(ctx, suid, viber.HierarchyPrivateServerRank)
 		if err != nil {
 			return nil, err
@@ -27,7 +31,7 @@ func (s *QuestServer) Top(ctx context.Context, _ *papi.Empty) (*papi.QuestTopRes
 			MainAreaGroups: catalog.Main, DailyAreas: catalog.Daily, TowerArea: catalog.Tower.GetArea(), ContestArea: catalog.Contest,
 			CurrentTowerQuestId: catalog.Tower.GetCurrentTowerQuestId(), IsDailyPlayable: catalog.DailyPlayable,
 			ContestTotalScore: catalog.ContestScore, HasUnplayedContest: catalog.HasUnplayed, IsTowerTopUnlocked: catalog.TowerUnlocked,
-			PvpInfo: &papi.QuestTopPvpInfo{}, HierarchyNotiInfo: hierarchy, BulkDailyInfos: []*papi.QuestBulkDailyInfo{}, CommonResponse: viber.NewCommonResponse(updated),
+			PvpInfo: &papi.QuestTopPvpInfo{}, HierarchyNotiInfo: hierarchy, BulkDailyInfos: questBulkDailyInfos(bulk), CommonResponse: viber.NewCommonResponse(updated),
 		}
 		return nil, nil
 	})

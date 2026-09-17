@@ -37,15 +37,25 @@ func (s *QuestServer) ListContestRanking(ctx context.Context, req *papi.QuestLis
 	if err != nil {
 		return nil, viber.GameplayError(err)
 	}
+	rank := &papi.QuestContestRankInfo{
+		Rank: 1, Score: score, UserId: public.GetPublicUserId(),
+		UserName: user.GetName(), EmblemId: user.GetEmblemId(), Cards: []*papi.LiveCardInfo{},
+	}
+	replay, err := opuser.FindQuestLiveReplayInfo(ctx, suid, master.GetId(), opuser.QuestLiveReplayBest)
+	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
+		return nil, err
+	}
+	// God-created high scores have no replay. Also do not advertise a historical
+	// deck as belonging to a score that has since been replaced independently.
+	if replay != nil && replay.Score == score {
+		rank.DeckName = replay.DeckName
+		rank.Cards = replay.Cards
+		rank.IsLiveResultDetailAvailable = true
+	}
 	return &papi.QuestListContestRankingResponse{
 		SelfHighestRank: 1,
 		SelfScore:       score,
-		Ranks: []*papi.QuestContestRankInfo{{
-			Rank: 1, Score: score, UserId: public.GetPublicUserId(),
-			UserName: user.GetName(), EmblemId: user.GetEmblemId(), Cards: []*papi.LiveCardInfo{},
-			// A high score alone cannot reconstruct the historical live or deck.
-			IsLiveResultDetailAvailable: false,
-		}},
-		CommonResponse: viber.NewCommonResponse(nil),
+		Ranks:           []*papi.QuestContestRankInfo{rank},
+		CommonResponse:  viber.NewCommonResponse(nil),
 	}, nil
 }

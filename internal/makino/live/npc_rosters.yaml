@@ -1,0 +1,2070 @@
+# NPC roster facts from veteran and round3 Quest.Top captures. No final stat overrides.
+rosters:
+  qt-main-1-007-04:
+    name: "対戦アイドル"
+    managerLevel: 31
+    cards:
+      - cardId: card-skr-05-idol-00
+        position: 1
+        level: 31
+        rarity: 5
+        lightFanAmount: 1162
+        middleFanAmount: 198
+        heavyFanAmount: 110
+        evolutionLevel: 0
+      - cardId: card-szk-03-schl-00
+        position: 2
+        level: 31
+        rarity: 3
+        lightFanAmount: 1162
+        middleFanAmount: 198
+        heavyFanAmount: 110
+        evolutionLevel: 0
+      - cardId: card-rei-03-schl-00
+        position: 3
+        level: 31
+        rarity: 3
+        lightFanAmount: 1162
+        middleFanAmount: 198
+        heavyFanAmount: 110
+        evolutionLevel: 0
+      - cardId: card-hrk-04-casl-00
+        position: 4
+        level: 31
+        rarity: 4
+        lightFanAmount: 1162
+        middleFanAmount: 198
+        heavyFanAmount: 110
+        evolutionLevel: 0
+      - cardId: card-chs-04-casl-00
+        position: 5
+        level: 31
+        rarity: 4
+        lightFanAmount: 1162
+        middleFanAmount: 198
+        heavyFanAmount: 110
+        evolutionLevel: 0
+  qt-main-1-015-06:
+    name: "対戦アイドル"
+    managerLevel: 66
+    cards:
+      - cardId: card-ktn-05-idol-00
+        position: 1
+        level: 66
+        rarity: 5
+        lightFanAmount: 11080
+        middleFanAmount: 1894
+        heavyFanAmount: 1051
+        evolutionLevel: 0
+      - cardId: card-ski-04-casl-00
+        position: 2
+        level: 66
+        rarity: 4
+        lightFanAmount: 11080
+        middleFanAmount: 1894
+        heavyFanAmount: 1051
+        evolutionLevel: 0
+      - cardId: card-suz-05-idol-00
+        position: 3
+        level: 66
+        rarity: 5
+        lightFanAmount: 11080
+        middleFanAmount: 1894
+        heavyFanAmount: 1051
+        evolutionLevel: 0
+      - cardId: card-ngs-03-schl-00
+        position: 4
+        level: 66
+        rarity: 4
+        lightFanAmount: 11080
+        middleFanAmount: 1894
+        heavyFanAmount: 1051
+        evolutionLevel: 0
+      - cardId: card-mei-04-casl-00
+        position: 5
+        level: 66
+        rarity: 4
+        lightFanAmount: 11080
+        middleFanAmount: 1894
+        heavyFanAmount: 1051
+        evolutionLevel: 0
+  qt-main-1-025-07:
+    name: "対戦アイドル"
+    managerLevel: 91
+    cards:
+      - cardId: card-ai-05-idol-00
+        position: 1
+        level: 91
+        rarity: 5
+        lightFanAmount: 27710
+        middleFanAmount: 4735
+        heavyFanAmount: 2630
+        evolutionLevel: 0
+      - cardId: card-rui-01-casl-00
+        position: 2
+        level: 91
+        rarity: 5
+        lightFanAmount: 27710
+        middleFanAmount: 4735
+        heavyFanAmount: 2630
+        evolutionLevel: 0
+      - cardId: card-yu-05-idol-00
+        position: 3
+        level: 91
+        rarity: 5
+        lightFanAmount: 27710
+        middleFanAmount: 4735
+        heavyFanAmount: 2630
+        evolutionLevel: 0
+      - cardId: card-rei-05-idol-00
+        position: 4
+        level: 91
+        rarity: 5
+        lightFanAmount: 27710
+        middleFanAmount: 4735
+        heavyFanAmount: 2630
+        evolutionLevel: 0
+      - cardId: card-hrk-03-schl-00
+        position: 5
+        level: 91
+        rarity: 5
+        lightFanAmount: 27710
+        middleFanAmount: 4735
+        heavyFanAmount: 2630
+        evolutionLevel: 0
+  qt-main-1-031-08:
+    name: "対戦アイドル"
+    managerLevel: 122
+    cards:
+      - cardId: card-rio-05-idol-00
+        position: 1
+        level: 122
+        rarity: 6
+        lightFanAmount: 57512
+        middleFanAmount: 9828
+        heavyFanAmount: 5460
+        evolutionLevel: 0
+      - cardId: card-skr-03-schl-00
+        position: 2
+        level: 122
+        rarity: 6
+        lightFanAmount: 57512
+        middleFanAmount: 9828
+        heavyFanAmount: 5460
+        evolutionLevel: 0
+      - cardId: card-rui-05-idol-00
+        position: 3
+        level: 122
+        rarity: 6
+        lightFanAmount: 57512
+        middleFanAmount: 9828
+        heavyFanAmount: 5460
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 4
+        level: 122
+        rarity: 6
+        lightFanAmount: 57512
+        middleFanAmount: 9828
+        heavyFanAmount: 5460
+        evolutionLevel: 0
+      - cardId: card-ski-03-schl-00
+        position: 5
+        level: 122
+        rarity: 6
+        lightFanAmount: 57512
+        middleFanAmount: 9828
+        heavyFanAmount: 5460
+        evolutionLevel: 0
+  qt-main-1-037-08:
+    name: "対戦アイドル"
+    managerLevel: 134
+    cards:
+      - cardId: card-suz-05-idol-00
+        position: 1
+        level: 134
+        rarity: 7
+        lightFanAmount: 67940
+        middleFanAmount: 11610
+        heavyFanAmount: 6450
+        evolutionLevel: 0
+      - cardId: card-skr-02-casl-00
+        position: 2
+        level: 134
+        rarity: 7
+        lightFanAmount: 67940
+        middleFanAmount: 11610
+        heavyFanAmount: 6450
+        evolutionLevel: 0
+      - cardId: card-smr-05-idol-00
+        position: 3
+        level: 134
+        rarity: 7
+        lightFanAmount: 67940
+        middleFanAmount: 11610
+        heavyFanAmount: 6450
+        evolutionLevel: 0
+      - cardId: card-chs-03-schl-00
+        position: 4
+        level: 134
+        rarity: 7
+        lightFanAmount: 67940
+        middleFanAmount: 11610
+        heavyFanAmount: 6450
+        evolutionLevel: 0
+      - cardId: card-kkr-05-idol-00
+        position: 5
+        level: 134
+        rarity: 7
+        lightFanAmount: 67940
+        middleFanAmount: 11610
+        heavyFanAmount: 6450
+        evolutionLevel: 0
+  qt-main-1-043-08:
+    name: "対戦アイドル"
+    managerLevel: 151
+    cards:
+      - cardId: card-ai-05-idol-00
+        position: 1
+        level: 151
+        rarity: 8
+        lightFanAmount: 81370
+        middleFanAmount: 13905
+        heavyFanAmount: 7725
+        evolutionLevel: 0
+      - cardId: card-aoi-04-casl-00
+        position: 2
+        level: 151
+        rarity: 8
+        lightFanAmount: 81370
+        middleFanAmount: 13905
+        heavyFanAmount: 7725
+        evolutionLevel: 0
+      - cardId: card-rei-05-idol-00
+        position: 3
+        level: 151
+        rarity: 8
+        lightFanAmount: 81370
+        middleFanAmount: 13905
+        heavyFanAmount: 7725
+        evolutionLevel: 0
+      - cardId: card-ngs-05-mizg-01
+        position: 4
+        level: 151
+        rarity: 8
+        lightFanAmount: 81370
+        middleFanAmount: 13905
+        heavyFanAmount: 7725
+        evolutionLevel: 0
+      - cardId: card-ski-05-idol-00
+        position: 5
+        level: 151
+        rarity: 8
+        lightFanAmount: 81370
+        middleFanAmount: 13905
+        heavyFanAmount: 7725
+        evolutionLevel: 0
+  qt-main-1-049-08:
+    name: "対戦アイドル"
+    managerLevel: 160
+    cards:
+      - cardId: card-rei-05-rock-00
+        position: 1
+        level: 160
+        rarity: 8
+        lightFanAmount: 88480
+        middleFanAmount: 15120
+        heavyFanAmount: 8400
+        evolutionLevel: 0
+      - cardId: card-chs-05-idol-00
+        position: 2
+        level: 160
+        rarity: 8
+        lightFanAmount: 88480
+        middleFanAmount: 15120
+        heavyFanAmount: 8400
+        evolutionLevel: 0
+      - cardId: card-smr-05-idol-00
+        position: 3
+        level: 160
+        rarity: 8
+        lightFanAmount: 88480
+        middleFanAmount: 15120
+        heavyFanAmount: 8400
+        evolutionLevel: 0
+      - cardId: card-yu-05-idol-00
+        position: 4
+        level: 160
+        rarity: 8
+        lightFanAmount: 88480
+        middleFanAmount: 15120
+        heavyFanAmount: 8400
+        evolutionLevel: 0
+      - cardId: card-ngs-05-idol-00
+        position: 5
+        level: 160
+        rarity: 8
+        lightFanAmount: 88480
+        middleFanAmount: 15120
+        heavyFanAmount: 8400
+        evolutionLevel: 0
+  qt-main-1-055-08:
+    name: "対戦アイドル"
+    managerLevel: 170
+    cards:
+      - cardId: card-rio-05-idol-00
+        position: 1
+        level: 170
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-ktn-05-idol-00
+        position: 2
+        level: 170
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-rui-05-idol-00
+        position: 3
+        level: 170
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-suz-05-mizg-01
+        position: 4
+        level: 170
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 5
+        level: 170
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+  qt-main-1-061-08:
+    name: "対戦アイドル"
+    managerLevel: 188
+    cards:
+      - cardId: card-rio-05-halw-00
+        position: 1
+        level: 188
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-ai-05-idol-00
+        position: 2
+        level: 188
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-ngs-05-mizg-01
+        position: 3
+        level: 188
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-rei-05-idol-00
+        position: 4
+        level: 188
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+      - cardId: card-ski-05-kifj-00
+        position: 5
+        level: 188
+        rarity: 8
+        lightFanAmount: 96380
+        middleFanAmount: 16470
+        heavyFanAmount: 9150
+        evolutionLevel: 0
+  qt-main-1-067-08:
+    name: "対戦アイドル"
+    managerLevel: 206
+    cards:
+      - cardId: card-rei-05-rock-00
+        position: 1
+        level: 200
+        rarity: 9
+        lightFanAmount: 130120
+        middleFanAmount: 22235
+        heavyFanAmount: 12353
+        evolutionLevel: 0
+      - cardId: card-chs-05-idol-00
+        position: 2
+        level: 200
+        rarity: 9
+        lightFanAmount: 130120
+        middleFanAmount: 22235
+        heavyFanAmount: 12353
+        evolutionLevel: 0
+      - cardId: card-suz-05-idol-00
+        position: 3
+        level: 200
+        rarity: 9
+        lightFanAmount: 130120
+        middleFanAmount: 22235
+        heavyFanAmount: 12353
+        evolutionLevel: 0
+      - cardId: card-rio-01-casl-00
+        position: 4
+        level: 200
+        rarity: 9
+        lightFanAmount: 130120
+        middleFanAmount: 22235
+        heavyFanAmount: 12353
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 5
+        level: 200
+        rarity: 9
+        lightFanAmount: 130120
+        middleFanAmount: 22235
+        heavyFanAmount: 12353
+        evolutionLevel: 0
+  qt-main-1-075-08:
+    name: "対戦アイドル"
+    managerLevel: 223
+    cards:
+      - cardId: card-ktn-05-idol-00
+        position: 1
+        level: 200
+        rarity: 9
+        lightFanAmount: 155205
+        middleFanAmount: 26523
+        heavyFanAmount: 14734
+        evolutionLevel: 0
+      - cardId: card-chs-04-casl-00
+        position: 2
+        level: 200
+        rarity: 9
+        lightFanAmount: 155205
+        middleFanAmount: 26523
+        heavyFanAmount: 14734
+        evolutionLevel: 0
+      - cardId: card-skr-05-idol-00
+        position: 3
+        level: 200
+        rarity: 9
+        lightFanAmount: 155205
+        middleFanAmount: 26523
+        heavyFanAmount: 14734
+        evolutionLevel: 0
+      - cardId: card-ski-03-schl-00
+        position: 4
+        level: 200
+        rarity: 9
+        lightFanAmount: 155205
+        middleFanAmount: 26523
+        heavyFanAmount: 14734
+        evolutionLevel: 0
+      - cardId: card-hrk-05-idol-00
+        position: 5
+        level: 200
+        rarity: 9
+        lightFanAmount: 155205
+        middleFanAmount: 26523
+        heavyFanAmount: 14734
+        evolutionLevel: 0
+  qt-main-1-083-08:
+    name: "対戦アイドル"
+    managerLevel: 250
+    cards:
+      - cardId: card-kor-05-idol-00
+        position: 1
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-rei-05-rock-00
+        position: 2
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-smr-03-schl-00
+        position: 3
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 4
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-ski-05-waso-00
+        position: 5
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+  qt-main-1-089-08:
+    name: "対戦アイドル"
+    managerLevel: 265
+    cards:
+      - cardId: card-kkr-05-mizg-01
+        position: 1
+        level: 200
+        rarity: 10
+        lightFanAmount: 208680
+        middleFanAmount: 35660
+        heavyFanAmount: 19811
+        evolutionLevel: 0
+      - cardId: card-ngs-05-mizg-01
+        position: 2
+        level: 200
+        rarity: 10
+        lightFanAmount: 208680
+        middleFanAmount: 35660
+        heavyFanAmount: 19811
+        evolutionLevel: 0
+      - cardId: card-szk-05-rock-00
+        position: 3
+        level: 200
+        rarity: 10
+        lightFanAmount: 208680
+        middleFanAmount: 35660
+        heavyFanAmount: 19811
+        evolutionLevel: 0
+      - cardId: card-hrk-05-chna-00
+        position: 4
+        level: 200
+        rarity: 10
+        lightFanAmount: 208680
+        middleFanAmount: 35660
+        heavyFanAmount: 19811
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 5
+        level: 200
+        rarity: 10
+        lightFanAmount: 208680
+        middleFanAmount: 35660
+        heavyFanAmount: 19811
+        evolutionLevel: 0
+  qt-main-1-095-08:
+    name: "対戦アイドル"
+    managerLevel: 280
+    cards:
+      - cardId: card-rio-05-fest-00
+        position: 1
+        level: 200
+        rarity: 10
+        lightFanAmount: 219859
+        middleFanAmount: 37571
+        heavyFanAmount: 20872
+        evolutionLevel: 0
+      - cardId: card-hrk-05-onep-00
+        position: 2
+        level: 200
+        rarity: 10
+        lightFanAmount: 219859
+        middleFanAmount: 37571
+        heavyFanAmount: 20872
+        evolutionLevel: 0
+      - cardId: card-ski-05-mizg-02
+        position: 3
+        level: 200
+        rarity: 10
+        lightFanAmount: 219859
+        middleFanAmount: 37571
+        heavyFanAmount: 20872
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 4
+        level: 200
+        rarity: 10
+        lightFanAmount: 219859
+        middleFanAmount: 37571
+        heavyFanAmount: 20872
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 5
+        level: 200
+        rarity: 10
+        lightFanAmount: 219859
+        middleFanAmount: 37571
+        heavyFanAmount: 20872
+        evolutionLevel: 0
+  qt-main-1-098-08:
+    name: "対戦アイドル"
+    managerLevel: 283
+    cards:
+      - cardId: card-ski-05-waso-00
+        position: 1
+        level: 201
+        rarity: 10
+        lightFanAmount: 222095
+        middleFanAmount: 37953
+        heavyFanAmount: 21084
+        evolutionLevel: 0
+      - cardId: card-rei-05-casl-02
+        position: 2
+        level: 201
+        rarity: 10
+        lightFanAmount: 222095
+        middleFanAmount: 37953
+        heavyFanAmount: 21084
+        evolutionLevel: 0
+      - cardId: card-hrk-02-eve-03
+        position: 3
+        level: 201
+        rarity: 10
+        lightFanAmount: 222095
+        middleFanAmount: 37953
+        heavyFanAmount: 21084
+        evolutionLevel: 0
+      - cardId: card-chs-05-flow-00
+        position: 4
+        level: 201
+        rarity: 10
+        lightFanAmount: 222095
+        middleFanAmount: 37953
+        heavyFanAmount: 21084
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 5
+        level: 201
+        rarity: 10
+        lightFanAmount: 222095
+        middleFanAmount: 37953
+        heavyFanAmount: 21084
+        evolutionLevel: 0
+  qt-main-1-101-08:
+    name: "対戦アイドル"
+    managerLevel: 286
+    cards:
+      - cardId: card-ngs-05-yukt-00
+        position: 1
+        level: 202
+        rarity: 10
+        lightFanAmount: 224330
+        middleFanAmount: 38335
+        heavyFanAmount: 21297
+        evolutionLevel: 0
+      - cardId: card-szk-05-yukt-00
+        position: 2
+        level: 202
+        rarity: 10
+        lightFanAmount: 224330
+        middleFanAmount: 38335
+        heavyFanAmount: 21297
+        evolutionLevel: 0
+      - cardId: card-kkr-02-eve-00
+        position: 3
+        level: 202
+        rarity: 10
+        lightFanAmount: 224330
+        middleFanAmount: 38335
+        heavyFanAmount: 21297
+        evolutionLevel: 0
+      - cardId: card-rio-05-wedd-00
+        position: 4
+        level: 202
+        rarity: 10
+        lightFanAmount: 224330
+        middleFanAmount: 38335
+        heavyFanAmount: 21297
+        evolutionLevel: 0
+      - cardId: card-ski-05-poli-00
+        position: 5
+        level: 202
+        rarity: 10
+        lightFanAmount: 224330
+        middleFanAmount: 38335
+        heavyFanAmount: 21297
+        evolutionLevel: 0
+  qt-main-1-104-08:
+    name: "対戦アイドル"
+    managerLevel: 289
+    cards:
+      - cardId: card-kor-05-idol-03
+        position: 1
+        level: 204
+        rarity: 10
+        lightFanAmount: 226566
+        middleFanAmount: 38717
+        heavyFanAmount: 21509
+        evolutionLevel: 0
+      - cardId: card-chs-05-yukt-00
+        position: 2
+        level: 204
+        rarity: 10
+        lightFanAmount: 226566
+        middleFanAmount: 38717
+        heavyFanAmount: 21509
+        evolutionLevel: 0
+      - cardId: card-ktn-05-add-00
+        position: 3
+        level: 204
+        rarity: 10
+        lightFanAmount: 226566
+        middleFanAmount: 38717
+        heavyFanAmount: 21509
+        evolutionLevel: 0
+      - cardId: card-ngs-05-casl-02
+        position: 4
+        level: 204
+        rarity: 10
+        lightFanAmount: 226566
+        middleFanAmount: 38717
+        heavyFanAmount: 21509
+        evolutionLevel: 0
+      - cardId: card-aoi-05-circ-00
+        position: 5
+        level: 204
+        rarity: 10
+        lightFanAmount: 226566
+        middleFanAmount: 38717
+        heavyFanAmount: 21509
+        evolutionLevel: 0
+  qt-main-1-107-08:
+    name: "対戦アイドル"
+    managerLevel: 292
+    cards:
+      - cardId: card-chs-05-flow-00
+        position: 1
+        level: 205
+        rarity: 10
+        lightFanAmount: 228803
+        middleFanAmount: 39099
+        heavyFanAmount: 21721
+        evolutionLevel: 0
+      - cardId: card-kan-05-chna-00
+        position: 2
+        level: 205
+        rarity: 10
+        lightFanAmount: 228803
+        middleFanAmount: 39099
+        heavyFanAmount: 21721
+        evolutionLevel: 0
+      - cardId: card-rei-05-casl-02
+        position: 3
+        level: 205
+        rarity: 10
+        lightFanAmount: 228803
+        middleFanAmount: 39099
+        heavyFanAmount: 21721
+        evolutionLevel: 0
+      - cardId: card-ktn-05-circ-00
+        position: 4
+        level: 205
+        rarity: 10
+        lightFanAmount: 228803
+        middleFanAmount: 39099
+        heavyFanAmount: 21721
+        evolutionLevel: 0
+      - cardId: card-szk-05-sail-00
+        position: 5
+        level: 205
+        rarity: 10
+        lightFanAmount: 228803
+        middleFanAmount: 39099
+        heavyFanAmount: 21721
+        evolutionLevel: 0
+  qt-main-1-110-08:
+    name: "対戦アイドル"
+    managerLevel: 295
+    cards:
+      - cardId: card-hrk-05-fest-00
+        position: 1
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-mei-05-casl-02
+        position: 2
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-mna-05-fest-02
+        position: 3
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-rui-05-yukt-00
+        position: 4
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-skr-05-anml-00
+        position: 5
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+  qt-main-1-113-08:
+    name: "対戦アイドル"
+    managerLevel: 301
+    cards:
+      - cardId: card-rei-05-fest-01
+        position: 1
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-mhk-05-pajm-00
+        position: 2
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-kor-05-xmas-00
+        position: 3
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-ai-05-yukt-00
+        position: 4
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-smr-05-nurs-00
+        position: 5
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+  qt-main-1-116-08:
+    name: "対戦アイドル"
+    managerLevel: 301
+    cards:
+      - cardId: card-ktn-05-poli-00
+        position: 1
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-kkr-05-mizg-02
+        position: 2
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-kan-05-chna-00
+        position: 3
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-yu-05-chna-00
+        position: 4
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+      - cardId: card-rio-05-fest-03
+        position: 5
+        level: 210
+        rarity: 10
+        lightFanAmount: 235510
+        middleFanAmount: 40245
+        heavyFanAmount: 22358
+        evolutionLevel: 0
+  qt-main-1-119-08:
+    name: "対戦アイドル"
+    managerLevel: 319
+    cards:
+      - cardId: card-mhk-05-fest-02
+        position: 1
+        level: 215
+        rarity: 10
+        lightFanAmount: 248925
+        middleFanAmount: 42537
+        heavyFanAmount: 23632
+        evolutionLevel: 0
+      - cardId: card-chs-05-rock-00
+        position: 2
+        level: 215
+        rarity: 10
+        lightFanAmount: 248925
+        middleFanAmount: 42537
+        heavyFanAmount: 23632
+        evolutionLevel: 0
+      - cardId: card-kkr-05-flow-00
+        position: 3
+        level: 215
+        rarity: 10
+        lightFanAmount: 248925
+        middleFanAmount: 42537
+        heavyFanAmount: 23632
+        evolutionLevel: 0
+      - cardId: card-mei-05-casl-02
+        position: 4
+        level: 215
+        rarity: 10
+        lightFanAmount: 248925
+        middleFanAmount: 42537
+        heavyFanAmount: 23632
+        evolutionLevel: 0
+      - cardId: card-skr-05-anml-00
+        position: 5
+        level: 215
+        rarity: 10
+        lightFanAmount: 248925
+        middleFanAmount: 42537
+        heavyFanAmount: 23632
+        evolutionLevel: 0
+  qt-main-1-122-08:
+    name: "対戦アイドル"
+    managerLevel: 328
+    cards:
+      - cardId: card-yu-05-vlnt-00
+        position: 1
+        level: 220
+        rarity: 10
+        lightFanAmount: 255633
+        middleFanAmount: 43684
+        heavyFanAmount: 24268
+        evolutionLevel: 0
+      - cardId: card-mhk-05-pajm-00
+        position: 2
+        level: 220
+        rarity: 10
+        lightFanAmount: 255633
+        middleFanAmount: 43684
+        heavyFanAmount: 24268
+        evolutionLevel: 0
+      - cardId: card-rui-05-fest-03
+        position: 3
+        level: 220
+        rarity: 10
+        lightFanAmount: 255633
+        middleFanAmount: 43684
+        heavyFanAmount: 24268
+        evolutionLevel: 0
+      - cardId: card-ai-05-chna-01
+        position: 4
+        level: 220
+        rarity: 10
+        lightFanAmount: 255633
+        middleFanAmount: 43684
+        heavyFanAmount: 24268
+        evolutionLevel: 0
+      - cardId: card-smr-05-maid-00
+        position: 5
+        level: 220
+        rarity: 10
+        lightFanAmount: 255633
+        middleFanAmount: 43684
+        heavyFanAmount: 24268
+        evolutionLevel: 0
+  qt-main-1-125-08:
+    name: "対戦アイドル"
+    managerLevel: 337
+    cards:
+      - cardId: card-chs-05-fest-03
+        position: 1
+        level: 221
+        rarity: 10
+        lightFanAmount: 262340
+        middleFanAmount: 44830
+        heavyFanAmount: 24905
+        evolutionLevel: 0
+      - cardId: card-rio-05-pajm-00
+        position: 2
+        level: 221
+        rarity: 10
+        lightFanAmount: 262340
+        middleFanAmount: 44830
+        heavyFanAmount: 24905
+        evolutionLevel: 0
+      - cardId: card-yu-05-casl-02
+        position: 3
+        level: 221
+        rarity: 10
+        lightFanAmount: 262340
+        middleFanAmount: 44830
+        heavyFanAmount: 24905
+        evolutionLevel: 0
+      - cardId: card-ktn-05-poli-00
+        position: 4
+        level: 221
+        rarity: 10
+        lightFanAmount: 262340
+        middleFanAmount: 44830
+        heavyFanAmount: 24905
+        evolutionLevel: 0
+      - cardId: card-rei-05-casl-02
+        position: 5
+        level: 221
+        rarity: 10
+        lightFanAmount: 262340
+        middleFanAmount: 44830
+        heavyFanAmount: 24905
+        evolutionLevel: 0
+  qt-tower-050:
+    name: "対戦アイドル"
+    managerLevel: 58
+    cards:
+      - cardId: card-yu-04-casl-00
+        position: 1
+        level: 58
+        rarity: 4
+        lightFanAmount: 7241
+        middleFanAmount: 1237
+        heavyFanAmount: 687
+        evolutionLevel: 0
+      - cardId: card-skr-03-schl-00
+        position: 2
+        level: 58
+        rarity: 3
+        lightFanAmount: 7241
+        middleFanAmount: 1237
+        heavyFanAmount: 687
+        evolutionLevel: 0
+      - cardId: card-ngs-04-casl-00
+        position: 3
+        level: 58
+        rarity: 4
+        lightFanAmount: 7241
+        middleFanAmount: 1237
+        heavyFanAmount: 687
+        evolutionLevel: 0
+      - cardId: card-ai-03-schl-00
+        position: 4
+        level: 58
+        rarity: 3
+        lightFanAmount: 7241
+        middleFanAmount: 1237
+        heavyFanAmount: 687
+        evolutionLevel: 0
+      - cardId: card-mei-04-casl-00
+        position: 5
+        level: 58
+        rarity: 4
+        lightFanAmount: 7241
+        middleFanAmount: 1237
+        heavyFanAmount: 687
+        evolutionLevel: 0
+  qt-tower-100:
+    name: "対戦アイドル"
+    managerLevel: 70
+    cards:
+      - cardId: card-ai-05-idol-00
+        position: 1
+        level: 70
+        rarity: 5
+        lightFanAmount: 14457
+        middleFanAmount: 2471
+        heavyFanAmount: 1372
+        evolutionLevel: 0
+      - cardId: card-yu-03-schl-00
+        position: 2
+        level: 70
+        rarity: 4
+        lightFanAmount: 14457
+        middleFanAmount: 2471
+        heavyFanAmount: 1372
+        evolutionLevel: 0
+      - cardId: card-ktn-04-casl-00
+        position: 3
+        level: 70
+        rarity: 4
+        lightFanAmount: 14457
+        middleFanAmount: 2471
+        heavyFanAmount: 1372
+        evolutionLevel: 0
+      - cardId: card-hrk-03-schl-00
+        position: 4
+        level: 70
+        rarity: 4
+        lightFanAmount: 14457
+        middleFanAmount: 2471
+        heavyFanAmount: 1372
+        evolutionLevel: 0
+      - cardId: card-skr-04-casl-00
+        position: 5
+        level: 70
+        rarity: 4
+        lightFanAmount: 14457
+        middleFanAmount: 2471
+        heavyFanAmount: 1372
+        evolutionLevel: 0
+  qt-tower-150:
+    name: "対戦アイドル"
+    managerLevel: 84
+    cards:
+      - cardId: card-smr-05-idol-00
+        position: 1
+        level: 84
+        rarity: 5
+        lightFanAmount: 24411
+        middleFanAmount: 4172
+        heavyFanAmount: 2317
+        evolutionLevel: 0
+      - cardId: card-mei-03-schl-00
+        position: 2
+        level: 84
+        rarity: 5
+        lightFanAmount: 24411
+        middleFanAmount: 4172
+        heavyFanAmount: 2317
+        evolutionLevel: 0
+      - cardId: card-szk-03-schl-00
+        position: 3
+        level: 84
+        rarity: 5
+        lightFanAmount: 24411
+        middleFanAmount: 4172
+        heavyFanAmount: 2317
+        evolutionLevel: 0
+      - cardId: card-yu-05-idol-00
+        position: 4
+        level: 84
+        rarity: 5
+        lightFanAmount: 24411
+        middleFanAmount: 4172
+        heavyFanAmount: 2317
+        evolutionLevel: 0
+      - cardId: card-rio-01-casl-00
+        position: 5
+        level: 84
+        rarity: 5
+        lightFanAmount: 24411
+        middleFanAmount: 4172
+        heavyFanAmount: 2317
+        evolutionLevel: 0
+  qt-tower-200:
+    name: "対戦アイドル"
+    managerLevel: 100
+    cards:
+      - cardId: card-rio-05-idol-00
+        position: 1
+        level: 100
+        rarity: 6
+        lightFanAmount: 34010
+        middleFanAmount: 5812
+        heavyFanAmount: 3228
+        evolutionLevel: 0
+      - cardId: card-yu-04-casl-00
+        position: 2
+        level: 100
+        rarity: 6
+        lightFanAmount: 34010
+        middleFanAmount: 5812
+        heavyFanAmount: 3228
+        evolutionLevel: 0
+      - cardId: card-ski-05-idol-00
+        position: 3
+        level: 100
+        rarity: 6
+        lightFanAmount: 34010
+        middleFanAmount: 5812
+        heavyFanAmount: 3228
+        evolutionLevel: 0
+      - cardId: card-hrk-05-idol-00
+        position: 4
+        level: 100
+        rarity: 6
+        lightFanAmount: 34010
+        middleFanAmount: 5812
+        heavyFanAmount: 3228
+        evolutionLevel: 0
+      - cardId: card-ngs-03-schl-00
+        position: 5
+        level: 100
+        rarity: 6
+        lightFanAmount: 34010
+        middleFanAmount: 5812
+        heavyFanAmount: 3228
+        evolutionLevel: 0
+  qt-tower-250:
+    name: "対戦アイドル"
+    managerLevel: 114
+    cards:
+      - cardId: card-mei-05-idol-00
+        position: 1
+        level: 114
+        rarity: 6
+        lightFanAmount: 47938
+        middleFanAmount: 8191
+        heavyFanAmount: 4551
+        evolutionLevel: 0
+      - cardId: card-suz-05-idol-00
+        position: 2
+        level: 114
+        rarity: 6
+        lightFanAmount: 47938
+        middleFanAmount: 8191
+        heavyFanAmount: 4551
+        evolutionLevel: 0
+      - cardId: card-aoi-05-idol-00
+        position: 3
+        level: 114
+        rarity: 6
+        lightFanAmount: 47938
+        middleFanAmount: 8191
+        heavyFanAmount: 4551
+        evolutionLevel: 0
+      - cardId: card-ktn-02-casl-00
+        position: 4
+        level: 114
+        rarity: 6
+        lightFanAmount: 47938
+        middleFanAmount: 8191
+        heavyFanAmount: 4551
+        evolutionLevel: 0
+      - cardId: card-ski-05-idol-00
+        position: 5
+        level: 114
+        rarity: 6
+        lightFanAmount: 47938
+        middleFanAmount: 8191
+        heavyFanAmount: 4551
+        evolutionLevel: 0
+  qt-tower-300:
+    name: "対戦アイドル"
+    managerLevel: 129
+    cards:
+      - cardId: card-smr-05-idol-00
+        position: 1
+        level: 129
+        rarity: 7
+        lightFanAmount: 63990
+        middleFanAmount: 10935
+        heavyFanAmount: 6075
+        evolutionLevel: 0
+      - cardId: card-suz-05-idol-00
+        position: 2
+        level: 129
+        rarity: 7
+        lightFanAmount: 63990
+        middleFanAmount: 10935
+        heavyFanAmount: 6075
+        evolutionLevel: 0
+      - cardId: card-szk-05-idol-00
+        position: 3
+        level: 129
+        rarity: 7
+        lightFanAmount: 63990
+        middleFanAmount: 10935
+        heavyFanAmount: 6075
+        evolutionLevel: 0
+      - cardId: card-chs-05-idol-00
+        position: 4
+        level: 129
+        rarity: 7
+        lightFanAmount: 63990
+        middleFanAmount: 10935
+        heavyFanAmount: 6075
+        evolutionLevel: 0
+      - cardId: card-yu-05-idol-00
+        position: 5
+        level: 129
+        rarity: 7
+        lightFanAmount: 63990
+        middleFanAmount: 10935
+        heavyFanAmount: 6075
+        evolutionLevel: 0
+  qt-tower-350:
+    name: "対戦アイドル"
+    managerLevel: 144
+    cards:
+      - cardId: card-skr-05-idol-00
+        position: 1
+        level: 144
+        rarity: 8
+        lightFanAmount: 75840
+        middleFanAmount: 12960
+        heavyFanAmount: 7200
+        evolutionLevel: 0
+      - cardId: card-ktn-05-idol-00
+        position: 2
+        level: 144
+        rarity: 8
+        lightFanAmount: 75840
+        middleFanAmount: 12960
+        heavyFanAmount: 7200
+        evolutionLevel: 0
+      - cardId: card-rui-05-idol-00
+        position: 3
+        level: 144
+        rarity: 8
+        lightFanAmount: 75840
+        middleFanAmount: 12960
+        heavyFanAmount: 7200
+        evolutionLevel: 0
+      - cardId: card-szk-05-idol-00
+        position: 4
+        level: 144
+        rarity: 8
+        lightFanAmount: 75840
+        middleFanAmount: 12960
+        heavyFanAmount: 7200
+        evolutionLevel: 0
+      - cardId: card-ngs-03-schl-00
+        position: 5
+        level: 144
+        rarity: 8
+        lightFanAmount: 75840
+        middleFanAmount: 12960
+        heavyFanAmount: 7200
+        evolutionLevel: 0
+  qt-tower-400:
+    name: "対戦アイドル"
+    managerLevel: 159
+    cards:
+      - cardId: card-ai-05-idol-00
+        position: 1
+        level: 159
+        rarity: 8
+        lightFanAmount: 87690
+        middleFanAmount: 14985
+        heavyFanAmount: 8325
+        evolutionLevel: 0
+      - cardId: card-mei-05-idol-00
+        position: 2
+        level: 159
+        rarity: 8
+        lightFanAmount: 87690
+        middleFanAmount: 14985
+        heavyFanAmount: 8325
+        evolutionLevel: 0
+      - cardId: card-aoi-05-idol-00
+        position: 3
+        level: 159
+        rarity: 8
+        lightFanAmount: 87690
+        middleFanAmount: 14985
+        heavyFanAmount: 8325
+        evolutionLevel: 0
+      - cardId: card-ski-05-idol-00
+        position: 4
+        level: 159
+        rarity: 8
+        lightFanAmount: 87690
+        middleFanAmount: 14985
+        heavyFanAmount: 8325
+        evolutionLevel: 0
+      - cardId: card-rei-05-idol-00
+        position: 5
+        level: 159
+        rarity: 8
+        lightFanAmount: 87690
+        middleFanAmount: 14985
+        heavyFanAmount: 8325
+        evolutionLevel: 0
+  qt-tower-450:
+    name: "対戦アイドル"
+    managerLevel: 174
+    cards:
+      - cardId: card-suz-05-idol-00
+        position: 1
+        level: 174
+        rarity: 8
+        lightFanAmount: 99540
+        middleFanAmount: 17010
+        heavyFanAmount: 9450
+        evolutionLevel: 0
+      - cardId: card-smr-05-idol-00
+        position: 2
+        level: 174
+        rarity: 8
+        lightFanAmount: 99540
+        middleFanAmount: 17010
+        heavyFanAmount: 9450
+        evolutionLevel: 0
+      - cardId: card-chs-05-idol-00
+        position: 3
+        level: 174
+        rarity: 8
+        lightFanAmount: 99540
+        middleFanAmount: 17010
+        heavyFanAmount: 9450
+        evolutionLevel: 0
+      - cardId: card-yu-05-idol-00
+        position: 4
+        level: 174
+        rarity: 8
+        lightFanAmount: 99540
+        middleFanAmount: 17010
+        heavyFanAmount: 9450
+        evolutionLevel: 0
+      - cardId: card-ngs-05-idol-00
+        position: 5
+        level: 174
+        rarity: 8
+        lightFanAmount: 99540
+        middleFanAmount: 17010
+        heavyFanAmount: 9450
+        evolutionLevel: 0
+  qt-tower-500:
+    name: "対戦アイドル"
+    managerLevel: 200
+    cards:
+      - cardId: card-skr-05-idol-00
+        position: 1
+        level: 200
+        rarity: 8
+        lightFanAmount: 120080
+        middleFanAmount: 20520
+        heavyFanAmount: 11400
+        evolutionLevel: 0
+      - cardId: card-rio-05-idol-00
+        position: 2
+        level: 200
+        rarity: 8
+        lightFanAmount: 120080
+        middleFanAmount: 20520
+        heavyFanAmount: 11400
+        evolutionLevel: 0
+      - cardId: card-rui-05-idol-00
+        position: 3
+        level: 200
+        rarity: 8
+        lightFanAmount: 120080
+        middleFanAmount: 20520
+        heavyFanAmount: 11400
+        evolutionLevel: 0
+      - cardId: card-szk-05-idol-00
+        position: 4
+        level: 200
+        rarity: 8
+        lightFanAmount: 120080
+        middleFanAmount: 20520
+        heavyFanAmount: 11400
+        evolutionLevel: 0
+      - cardId: card-hrk-05-idol-00
+        position: 5
+        level: 200
+        rarity: 8
+        lightFanAmount: 120080
+        middleFanAmount: 20520
+        heavyFanAmount: 11400
+        evolutionLevel: 0
+  qt-tower-550:
+    name: "対戦アイドル"
+    managerLevel: 209
+    cards:
+      - cardId: card-rio-05-halw-00
+        position: 1
+        level: 200
+        rarity: 8
+        lightFanAmount: 134390
+        middleFanAmount: 22965
+        heavyFanAmount: 12758
+        evolutionLevel: 0
+      - cardId: card-rei-03-schl-00
+        position: 2
+        level: 200
+        rarity: 8
+        lightFanAmount: 134390
+        middleFanAmount: 22965
+        heavyFanAmount: 12758
+        evolutionLevel: 0
+      - cardId: card-ngs-05-mizg-01
+        position: 3
+        level: 200
+        rarity: 8
+        lightFanAmount: 134390
+        middleFanAmount: 22965
+        heavyFanAmount: 12758
+        evolutionLevel: 0
+      - cardId: card-ski-05-kifj-00
+        position: 4
+        level: 200
+        rarity: 8
+        lightFanAmount: 134390
+        middleFanAmount: 22965
+        heavyFanAmount: 12758
+        evolutionLevel: 0
+      - cardId: card-hrk-03-schl-00
+        position: 5
+        level: 200
+        rarity: 8
+        lightFanAmount: 134390
+        middleFanAmount: 22965
+        heavyFanAmount: 12758
+        evolutionLevel: 0
+  qt-tower-600:
+    name: "対戦アイドル"
+    managerLevel: 222
+    cards:
+      - cardId: card-rei-05-rock-00
+        position: 1
+        level: 200
+        rarity: 8
+        lightFanAmount: 153671
+        middleFanAmount: 26260
+        heavyFanAmount: 14588
+        evolutionLevel: 0
+      - cardId: card-smr-05-idol-00
+        position: 2
+        level: 200
+        rarity: 8
+        lightFanAmount: 153671
+        middleFanAmount: 26260
+        heavyFanAmount: 14588
+        evolutionLevel: 0
+      - cardId: card-ngs-05-idol-00
+        position: 3
+        level: 200
+        rarity: 8
+        lightFanAmount: 153671
+        middleFanAmount: 26260
+        heavyFanAmount: 14588
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 4
+        level: 200
+        rarity: 8
+        lightFanAmount: 153671
+        middleFanAmount: 26260
+        heavyFanAmount: 14588
+        evolutionLevel: 0
+      - cardId: card-ski-04-casl-00
+        position: 5
+        level: 200
+        rarity: 8
+        lightFanAmount: 153671
+        middleFanAmount: 26260
+        heavyFanAmount: 14588
+        evolutionLevel: 0
+  qt-tower-650:
+    name: "対戦アイドル"
+    managerLevel: 231
+    cards:
+      - cardId: card-ngs-05-flow-00
+        position: 1
+        level: 200
+        rarity: 9
+        lightFanAmount: 167756
+        middleFanAmount: 28667
+        heavyFanAmount: 15926
+        evolutionLevel: 0
+      - cardId: card-rio-05-idol-00
+        position: 2
+        level: 200
+        rarity: 9
+        lightFanAmount: 167756
+        middleFanAmount: 28667
+        heavyFanAmount: 15926
+        evolutionLevel: 0
+      - cardId: card-rui-05-idol-00
+        position: 3
+        level: 200
+        rarity: 9
+        lightFanAmount: 167756
+        middleFanAmount: 28667
+        heavyFanAmount: 15926
+        evolutionLevel: 0
+      - cardId: card-hrk-05-idol-00
+        position: 4
+        level: 200
+        rarity: 9
+        lightFanAmount: 167756
+        middleFanAmount: 28667
+        heavyFanAmount: 15926
+        evolutionLevel: 0
+      - cardId: card-smr-05-mizg-01
+        position: 5
+        level: 200
+        rarity: 9
+        lightFanAmount: 167756
+        middleFanAmount: 28667
+        heavyFanAmount: 15926
+        evolutionLevel: 0
+  qt-tower-700:
+    name: "対戦アイドル"
+    managerLevel: 250
+    cards:
+      - cardId: card-rio-05-halw-00
+        position: 1
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-ai-05-idol-00
+        position: 2
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-yu-03-schl-00
+        position: 3
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-rei-05-idol-00
+        position: 4
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+      - cardId: card-ngs-05-mizg-01
+        position: 5
+        level: 200
+        rarity: 9
+        lightFanAmount: 197501
+        middleFanAmount: 33750
+        heavyFanAmount: 18749
+        evolutionLevel: 0
+  qt-tower-750:
+    name: "対戦アイドル"
+    managerLevel: 270
+    cards:
+      - cardId: card-aoi-05-vlnt-00
+        position: 1
+        level: 200
+        rarity: 10
+        lightFanAmount: 212406
+        middleFanAmount: 36297
+        heavyFanAmount: 20165
+        evolutionLevel: 0
+      - cardId: card-rei-05-rock-00
+        position: 2
+        level: 200
+        rarity: 10
+        lightFanAmount: 212406
+        middleFanAmount: 36297
+        heavyFanAmount: 20165
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 3
+        level: 200
+        rarity: 10
+        lightFanAmount: 212406
+        middleFanAmount: 36297
+        heavyFanAmount: 20165
+        evolutionLevel: 0
+      - cardId: card-smr-05-frut-00
+        position: 4
+        level: 200
+        rarity: 10
+        lightFanAmount: 212406
+        middleFanAmount: 36297
+        heavyFanAmount: 20165
+        evolutionLevel: 0
+      - cardId: card-ski-05-mizg-02
+        position: 5
+        level: 200
+        rarity: 10
+        lightFanAmount: 212406
+        middleFanAmount: 36297
+        heavyFanAmount: 20165
+        evolutionLevel: 0
+  qt-tower-800:
+    name: "対戦アイドル"
+    managerLevel: 290
+    cards:
+      - cardId: card-ski-05-waso-00
+        position: 1
+        level: 204
+        rarity: 10
+        lightFanAmount: 227312
+        middleFanAmount: 38844
+        heavyFanAmount: 21580
+        evolutionLevel: 0
+      - cardId: card-szk-05-rock-00
+        position: 2
+        level: 204
+        rarity: 10
+        lightFanAmount: 227312
+        middleFanAmount: 38844
+        heavyFanAmount: 21580
+        evolutionLevel: 0
+      - cardId: card-skr-05-idol-00
+        position: 3
+        level: 204
+        rarity: 10
+        lightFanAmount: 227312
+        middleFanAmount: 38844
+        heavyFanAmount: 21580
+        evolutionLevel: 0
+      - cardId: card-mhk-05-poli-00
+        position: 4
+        level: 204
+        rarity: 10
+        lightFanAmount: 227312
+        middleFanAmount: 38844
+        heavyFanAmount: 21580
+        evolutionLevel: 0
+      - cardId: card-mei-05-fest-00
+        position: 5
+        level: 204
+        rarity: 10
+        lightFanAmount: 227312
+        middleFanAmount: 38844
+        heavyFanAmount: 21580
+        evolutionLevel: 0
+  qt-tower-825:
+    name: "対戦アイドル"
+    managerLevel: 295
+    cards:
+      - cardId: card-rei-05-fest-00
+        position: 1
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-ski-05-kifj-00
+        position: 2
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-aoi-05-idol-00
+        position: 3
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-suz-05-seik-00
+        position: 4
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+      - cardId: card-kkr-05-mizg-01
+        position: 5
+        level: 207
+        rarity: 10
+        lightFanAmount: 231038
+        middleFanAmount: 39482
+        heavyFanAmount: 21933
+        evolutionLevel: 0
+  qt-tower-850:
+    name: "対戦アイドル"
+    managerLevel: 300
+    cards:
+      - cardId: card-kor-05-idol-03
+        position: 1
+        level: 209
+        rarity: 10
+        lightFanAmount: 234765
+        middleFanAmount: 40118
+        heavyFanAmount: 22287
+        evolutionLevel: 0
+      - cardId: card-ktn-05-add-00
+        position: 2
+        level: 209
+        rarity: 10
+        lightFanAmount: 234765
+        middleFanAmount: 40118
+        heavyFanAmount: 22287
+        evolutionLevel: 0
+      - cardId: card-ski-05-mizg-02
+        position: 3
+        level: 209
+        rarity: 10
+        lightFanAmount: 234765
+        middleFanAmount: 40118
+        heavyFanAmount: 22287
+        evolutionLevel: 0
+      - cardId: card-szk-05-chna-00
+        position: 4
+        level: 209
+        rarity: 10
+        lightFanAmount: 234765
+        middleFanAmount: 40118
+        heavyFanAmount: 22287
+        evolutionLevel: 0
+      - cardId: card-aoi-05-circ-00
+        position: 5
+        level: 209
+        rarity: 10
+        lightFanAmount: 234765
+        middleFanAmount: 40118
+        heavyFanAmount: 22287
+        evolutionLevel: 0
+  qt-tower-875:
+    name: "対戦アイドル"
+    managerLevel: 305
+    cards:
+      - cardId: card-rio-05-fest-01
+        position: 1
+        level: 212
+        rarity: 10
+        lightFanAmount: 238491
+        middleFanAmount: 40755
+        heavyFanAmount: 22641
+        evolutionLevel: 0
+      - cardId: card-rei-05-casl-02
+        position: 2
+        level: 212
+        rarity: 10
+        lightFanAmount: 238491
+        middleFanAmount: 40755
+        heavyFanAmount: 22641
+        evolutionLevel: 0
+      - cardId: card-kan-05-chna-00
+        position: 3
+        level: 212
+        rarity: 10
+        lightFanAmount: 238491
+        middleFanAmount: 40755
+        heavyFanAmount: 22641
+        evolutionLevel: 0
+      - cardId: card-chs-05-flow-00
+        position: 4
+        level: 212
+        rarity: 10
+        lightFanAmount: 238491
+        middleFanAmount: 40755
+        heavyFanAmount: 22641
+        evolutionLevel: 0
+      - cardId: card-ktn-05-circ-00
+        position: 5
+        level: 212
+        rarity: 10
+        lightFanAmount: 238491
+        middleFanAmount: 40755
+        heavyFanAmount: 22641
+        evolutionLevel: 0
+  qt-tower-900:
+    name: "対戦アイドル"
+    managerLevel: 310
+    cards:
+      - cardId: card-kkr-05-mizg-01
+        position: 1
+        level: 214
+        rarity: 10
+        lightFanAmount: 242218
+        middleFanAmount: 41391
+        heavyFanAmount: 22995
+        evolutionLevel: 0
+      - cardId: card-ngs-05-fest-02
+        position: 2
+        level: 214
+        rarity: 10
+        lightFanAmount: 242218
+        middleFanAmount: 41391
+        heavyFanAmount: 22995
+        evolutionLevel: 0
+      - cardId: card-rio-05-wedd-00
+        position: 3
+        level: 214
+        rarity: 10
+        lightFanAmount: 242218
+        middleFanAmount: 41391
+        heavyFanAmount: 22995
+        evolutionLevel: 0
+      - cardId: card-rei-05-chia-00
+        position: 4
+        level: 214
+        rarity: 10
+        lightFanAmount: 242218
+        middleFanAmount: 41391
+        heavyFanAmount: 22995
+        evolutionLevel: 0
+      - cardId: card-suz-05-seik-00
+        position: 5
+        level: 214
+        rarity: 10
+        lightFanAmount: 242218
+        middleFanAmount: 41391
+        heavyFanAmount: 22995
+        evolutionLevel: 0
+  qt-tower-925:
+    name: "対戦アイドル"
+    managerLevel: 315
+    cards:
+      - cardId: card-kor-05-nurs-00
+        position: 1
+        level: 217
+        rarity: 10
+        lightFanAmount: 245944
+        middleFanAmount: 42028
+        heavyFanAmount: 23349
+        evolutionLevel: 0
+      - cardId: card-hrk-05-onep-00
+        position: 2
+        level: 217
+        rarity: 10
+        lightFanAmount: 245944
+        middleFanAmount: 42028
+        heavyFanAmount: 23349
+        evolutionLevel: 0
+      - cardId: card-rei-05-fest-01
+        position: 3
+        level: 217
+        rarity: 10
+        lightFanAmount: 245944
+        middleFanAmount: 42028
+        heavyFanAmount: 23349
+        evolutionLevel: 0
+      - cardId: card-ai-05-chna-01
+        position: 4
+        level: 217
+        rarity: 10
+        lightFanAmount: 245944
+        middleFanAmount: 42028
+        heavyFanAmount: 23349
+        evolutionLevel: 0
+      - cardId: card-smr-05-maid-00
+        position: 5
+        level: 217
+        rarity: 10
+        lightFanAmount: 245944
+        middleFanAmount: 42028
+        heavyFanAmount: 23349
+        evolutionLevel: 0
+  qt-tower-950:
+    name: "対戦アイドル"
+    managerLevel: 320
+    cards:
+      - cardId: card-hrk-05-pajm-00
+        position: 1
+        level: 219
+        rarity: 10
+        lightFanAmount: 249671
+        middleFanAmount: 42665
+        heavyFanAmount: 23702
+        evolutionLevel: 0
+      - cardId: card-chs-05-maid-00
+        position: 2
+        level: 219
+        rarity: 10
+        lightFanAmount: 249671
+        middleFanAmount: 42665
+        heavyFanAmount: 23702
+        evolutionLevel: 0
+      - cardId: card-ktn-05-poli-00
+        position: 3
+        level: 219
+        rarity: 10
+        lightFanAmount: 249671
+        middleFanAmount: 42665
+        heavyFanAmount: 23702
+        evolutionLevel: 0
+      - cardId: card-kan-05-fest-02
+        position: 4
+        level: 219
+        rarity: 10
+        lightFanAmount: 249671
+        middleFanAmount: 42665
+        heavyFanAmount: 23702
+        evolutionLevel: 0
+      - cardId: card-yu-05-chna-00
+        position: 5
+        level: 219
+        rarity: 10
+        lightFanAmount: 249671
+        middleFanAmount: 42665
+        heavyFanAmount: 23702
+        evolutionLevel: 0
+  qt-tower-975:
+    name: "対戦アイドル"
+    managerLevel: 325
+    cards:
+      - cardId: card-mna-05-msic-00
+        position: 1
+        level: 220
+        rarity: 10
+        lightFanAmount: 253397
+        middleFanAmount: 43302
+        heavyFanAmount: 24056
+        evolutionLevel: 0
+      - cardId: card-skr-05-anml-00
+        position: 2
+        level: 220
+        rarity: 10
+        lightFanAmount: 253397
+        middleFanAmount: 43302
+        heavyFanAmount: 24056
+        evolutionLevel: 0
+      - cardId: card-mhk-05-wedd-00
+        position: 3
+        level: 220
+        rarity: 10
+        lightFanAmount: 253397
+        middleFanAmount: 43302
+        heavyFanAmount: 24056
+        evolutionLevel: 0
+      - cardId: card-ngs-05-fest-02
+        position: 4
+        level: 220
+        rarity: 10
+        lightFanAmount: 253397
+        middleFanAmount: 43302
+        heavyFanAmount: 24056
+        evolutionLevel: 0
+      - cardId: card-rei-05-sail-00
+        position: 5
+        level: 220
+        rarity: 10
+        lightFanAmount: 253397
+        middleFanAmount: 43302
+        heavyFanAmount: 24056
+        evolutionLevel: 0
