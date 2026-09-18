@@ -33,6 +33,10 @@ func (s *QuestServer) GetLatestClearLiveResult(ctx context.Context, req *papi.Qu
 	if err != nil {
 		return nil, viber.GameplayError(err)
 	}
+	response.RankPatterns, err = questReplayRankPatterns(ctx, req.GetQuestId(), response.GetRankPatterns())
+	if err != nil {
+		return nil, viber.GameplayError(err)
+	}
 	response.CommonResponse = viber.NewCommonResponse(nil)
 	return response, nil
 }

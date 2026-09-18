@@ -97,6 +97,7 @@ var autoRewardResourceTypes = map[string]penum.ResourceType{
 	"item":                                 penum.ResourceType_ResourceType_Item,
 	"accessory":                            penum.ResourceType_ResourceType_Accessory,
 	"costume":                              penum.ResourceType_ResourceType_Costume,
+	"emblem":                               penum.ResourceType_ResourceType_Emblem,
 	"gold":                                 penum.ResourceType_ResourceType_Gold,
 	"stone":                                penum.ResourceType_ResourceType_Stone,
 	"paid_stone":                           penum.ResourceType_ResourceType_PaidStone,
@@ -186,7 +187,8 @@ func ConsumeExchangeResource(
 	case penum.ResourceType_ResourceType_Item:
 		return consumeExchangeItems(ctx, suid, resourceId, amount, updated)
 	case penum.ResourceType_ResourceType_Stone, penum.ResourceType_ResourceType_PaidStone:
-		return consumeExchangeBalance(ctx, suid, resourceType, amount, updated)
+		_, err := ConsumeExchangeBalance(ctx, suid, resourceType, amount, updated)
+		return err
 	default:
 		pointType, ok := exchangePointType(resourceType)
 		if !ok {
@@ -285,30 +287,57 @@ func consumeExchangePoint(ctx context.Context, suid string, pointType penum.Poin
 	return nil
 }
 
-func consumeExchangeBalance(ctx context.Context, suid string, resourceType penum.ResourceType, amount int64, updated *papi.UpdatedData) error {
-	if amount > math.MaxInt32 {
-		return ErrExchangeInsufficientResource
+// ConsumeExchangeBalance spends red (free) diamonds before blue (paid) diamonds
+// for a Stone cost. PaidStone costs accept only blue diamonds. Results describe
+// the actual wallet debits; granting Stone still grants only free diamonds.
+func ConsumeExchangeBalance(ctx context.Context, suid string, resourceType penum.ResourceType, amount int64, updated *papi.UpdatedData) ([]*ptransaction.ConsumptionResult, error) {
+	if amount <= 0 {
+		return nil, status.Error(codes.FailedPrecondition, "exchange cost must be positive")
 	}
 	balance, err := opuser.FindUserBalance(ctx, suid)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	if resourceType == penum.ResourceType_ResourceType_PaidStone {
-		if int64(balance.PaidBalance) < amount {
-			return ErrExchangeInsufficientResource
-		}
-		balance.PaidBalance -= int32(amount)
-	} else {
-		if int64(balance.FreeBalance) < amount {
-			return ErrExchangeInsufficientResource
-		}
-		balance.FreeBalance -= int32(amount)
+	freeBefore, paidBefore := int64(balance.GetFreeBalance()), int64(balance.GetPaidBalance())
+	if freeBefore < 0 || paidBefore < 0 {
+		return nil, status.Error(codes.FailedPrecondition, "diamond balance is invalid")
 	}
+	var freeCost, paidCost int64
+	switch resourceType {
+	case penum.ResourceType_ResourceType_Stone:
+		if freeBefore+paidBefore < amount {
+			return nil, ErrExchangeInsufficientResource
+		}
+		freeCost = min(freeBefore, amount)
+		paidCost = amount - freeCost
+	case penum.ResourceType_ResourceType_PaidStone:
+		if paidBefore < amount {
+			return nil, ErrExchangeInsufficientResource
+		}
+		paidCost = amount
+	default:
+		return nil, status.Error(codes.FailedPrecondition, "diamond resource type is required")
+	}
+	balance.FreeBalance -= int32(freeCost)
+	balance.PaidBalance -= int32(paidCost)
 	if err := opuser.UpsertUserBalance(ctx, suid, balance); err != nil {
-		return err
+		return nil, err
 	}
 	updated.Balance = balance
-	return nil
+	results := make([]*ptransaction.ConsumptionResult, 0, 2)
+	if freeCost > 0 {
+		results = append(results, &ptransaction.ConsumptionResult{
+			ResourceType: penum.ResourceType_ResourceType_Stone,
+			Amount:       freeCost, BeforeAmount: freeBefore, AfterAmount: freeBefore - freeCost,
+		})
+	}
+	if paidCost > 0 {
+		results = append(results, &ptransaction.ConsumptionResult{
+			ResourceType: penum.ResourceType_ResourceType_PaidStone,
+			Amount:       paidCost, BeforeAmount: paidBefore, AfterAmount: paidBefore - paidCost,
+		})
+	}
+	return results, nil
 }
 
 // GrantExchangeRewards applies one reward resource and returns every resource

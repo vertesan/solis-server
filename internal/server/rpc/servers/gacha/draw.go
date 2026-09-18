@@ -588,62 +588,18 @@ func consumeGacha(
 			results = append(results, stackResults...)
 			continue
 		}
-		before, err := gachaResourceAmount(ctx, suid, resource.GetResourceType(), resourceID)
-		if err != nil {
-			return nil, err
+		switch resource.GetResourceType() {
+		case penum.ResourceType_ResourceType_Stone, penum.ResourceType_ResourceType_PaidStone:
+			balanceResults, err := viber.ConsumeExchangeBalance(ctx, suid, resource.GetResourceType(), amount, updated)
+			if err != nil {
+				return nil, err
+			}
+			results = append(results, balanceResults...)
+		default:
+			return nil, status.Errorf(codes.Unimplemented, "gacha consumption resource type %s is unsupported", resource.GetResourceType())
 		}
-		if err := viber.ConsumeExchangeResource(
-			ctx, suid, resource.GetResourceType(), resourceID, amount, updated,
-		); err != nil {
-			return nil, err
-		}
-		results = append(results, &ptransaction.ConsumptionResult{
-			ResourceType: resource.GetResourceType(),
-			ResourceId:   resourceID,
-			Amount:       amount,
-			BeforeAmount: before,
-			AfterAmount:  before - amount,
-		})
 	}
 	return results, nil
-}
-
-func gachaResourceAmount(
-	ctx context.Context,
-	suid string,
-	resourceType penum.ResourceType,
-	resourceID string,
-) (int64, error) {
-	switch resourceType {
-	case penum.ResourceType_ResourceType_Item:
-		items, err := opuser.FindUserItems(ctx, suid, resourceID)
-		if err != nil {
-			return 0, err
-		}
-		now := time.Now().UnixMilli()
-		var amount int64
-		for _, item := range items {
-			if item.GetAmount() <= 0 || item.GetExpiredTime() > 0 && item.GetExpiredTime() <= now {
-				continue
-			}
-			if item.GetAmount() > math.MaxInt64-amount {
-				return 0, status.Error(codes.FailedPrecondition, "gacha resource amount overflows")
-			}
-			amount += item.GetAmount()
-		}
-		return amount, nil
-	case penum.ResourceType_ResourceType_Stone, penum.ResourceType_ResourceType_PaidStone:
-		balance, err := opuser.FindUserBalance(ctx, suid)
-		if err != nil {
-			return 0, err
-		}
-		if resourceType == penum.ResourceType_ResourceType_PaidStone {
-			return int64(balance.GetPaidBalance()), nil
-		}
-		return int64(balance.GetFreeBalance()), nil
-	default:
-		return 0, status.Errorf(codes.Unimplemented, "gacha consumption resource type %s is unsupported", resourceType)
-	}
 }
 
 func guaranteedGachaBatchPool(

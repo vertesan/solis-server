@@ -74,6 +74,19 @@ func TestQuestContestRankPopupScenario(t *testing.T) {
 	if stored.GetHighestRank() != 1 || stored.GetCurrentRankingHighestRank() != 1 {
 		t.Fatal("contest lifetime/current rank did not persist")
 	}
+	seasons, err := opmaster.FindAllQuestContestRankingSeasons(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	activeSeason, activeStart := "", int64(-1)
+	for _, season := range seasons {
+		if season.GetStartTime() <= stored.GetLastClearedTime() && season.GetStartTime() > activeStart {
+			activeSeason, activeStart = season.GetId(), season.GetStartTime()
+		}
+	}
+	if activeSeason == "" || stored.GetCurrentRankingSeasonID() != activeSeason {
+		t.Fatalf("contest record lacks current master season: %q want%q", stored.GetCurrentRankingSeasonID(), activeSeason)
+	}
 	if len(q.GetAchievedRankRewards()) > 0 && len(first.GetReward().GetAchievedRankRewards()) == 0 {
 		t.Fatal("first contest clear omitted its ranking milestone reward")
 	}
@@ -108,6 +121,38 @@ func TestQuestContestRankPopupScenario(t *testing.T) {
 	assertQuestRankTransition(t, regained, 1, 1)
 	if !regained.GetResult().GetCleared() || len(regained.GetReward().GetAchievedRankRewards()) != 0 {
 		t.Fatal("regaining a previously reached rank repeated its milestone")
+	}
+	// Reproduce the real-device record: a prior private clear has lifetime rank
+	// one and a high score but no season ID. Lower scores must retain the record
+	// while publishing the matching season, rather than acting like a new rank.
+	legacy := questRankStored(t, q.GetId())
+	legacy.CurrentRankingSeasonID = ""
+	if err := opuser.UpsertUserQuest(ctx, testConfig.TestUserSuid, legacy); err != nil {
+		t.Fatal(err)
+	}
+	questRankSetAttributes(t, number, 1000000)
+	repeated := questStartMeasured(t, client, request)
+	assertQuestRankTransition(t, repeated, 1, 1)
+	repaired := questRankStored(t, q.GetId())
+	if !repeated.GetResult().GetCleared() || repeated.GetResult().GetUserInfos()[0].GetUserResult().GetScore() >= legacy.GetHighestScore() ||
+		repaired.GetHighestScore() != legacy.GetHighestScore() || repaired.GetCurrentRankingHighestScore() != legacy.GetCurrentRankingHighestScore() ||
+		repaired.GetCurrentRankingSeasonID() != activeSeason || len(repeated.GetReward().GetAchievedRankRewards()) != 0 {
+		t.Fatal("lower-score repeat lost season/lifetime identity or repeated rank reward")
+	}
+	// A real season change clears only seasonal state, not lifetime rank or
+	// high score. The new season's first score may be lower than lifetime best.
+	priorSeason := proto.Clone(repaired).(*ptransaction.UserQuest)
+	priorSeason.CurrentRankingSeasonID = "past-fixture-season"
+	if err := opuser.UpsertUserQuest(ctx, testConfig.TestUserSuid, priorSeason); err != nil {
+		t.Fatal(err)
+	}
+	seasonClear := questStartMeasured(t, client, request)
+	assertQuestRankTransition(t, seasonClear, 1, 1)
+	seasonState := questRankStored(t, q.GetId())
+	if seasonState.GetCurrentRankingSeasonID() != activeSeason || seasonState.GetHighestScore() != priorSeason.GetHighestScore() ||
+		seasonState.GetCurrentRankingHighestScore() != seasonClear.GetResult().GetUserInfos()[0].GetUserResult().GetScore() ||
+		seasonState.GetCurrentRankingHighestScore() >= seasonState.GetHighestScore() || len(seasonClear.GetReward().GetAchievedRankRewards()) != 0 {
+		t.Fatal("season rollover mixed lifetime/season score or repeated lifetime rank reward")
 	}
 
 	beforeFailure := questRankStored(t, q.GetId())

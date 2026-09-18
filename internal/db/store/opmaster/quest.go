@@ -17,3 +17,7 @@ func FindQuest(ctx context.Context, id string) (*pmaster.Quest, error) {
 func FindAllAreaGroups(ctx context.Context) ([]*pmaster.AreaGroup, error) {
 	return mcommon.FindMany[mmodel.AreaGroup, pmaster.AreaGroup](ctx, mname.AreaGroup, bson.M{})
 }
+
+func FindAllQuestContestRankingSeasons(ctx context.Context) ([]*pmaster.QuestContestRankingSeason, error) {
+	return mcommon.FindMany[mmodel.QuestContestRankingSeason, pmaster.QuestContestRankingSeason](ctx, mname.QuestContestRankingSeason, bson.M{})
+}

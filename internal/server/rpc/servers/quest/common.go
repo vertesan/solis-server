@@ -563,7 +563,15 @@ const questContestRankGrowth = 0.003
 
 func questStartRankPatterns(q *pmaster.Quest, mode penum.AreaType) []*papi.QuestRankPattern {
 	if mode != penum.AreaType_AreaType_Daily && mode != penum.AreaType_AreaType_Contest {
-		return nil
+		// Main/tower lives use these three display thresholds even though their
+		// final rankType remains Unknown and they have no score-grade rewards.
+		// NPC battles intentionally use zero thresholds, as in official traces.
+		clear := max(int64(0), q.GetClearScore())
+		return []*papi.QuestRankPattern{
+			{RankType: penum.ResultRankType_ResultRankType_B, ThresholdScore: int64(min(float64(math.MaxInt64-1024), math.Floor(float64(clear)*1.2)))},
+			{RankType: penum.ResultRankType_ResultRankType_C, ThresholdScore: clear},
+			{RankType: penum.ResultRankType_ResultRankType_D, ThresholdScore: 0},
+		}
 	}
 	clear := q.GetClearScore()
 	if clear <= 0 {
@@ -613,6 +621,61 @@ func questStartScoreRank(patterns []*papi.QuestRankPattern, score int64) (penum.
 		return penum.ResultRankType_ResultRankType_D, 0
 	}
 	return penum.ResultRankType_ResultRankType_Unknown, 0
+}
+
+// Replays saved before non-contest display thresholds were implemented contain
+// no patterns. Repair only the response projection; retain historical traces.
+func questReplayRankPatterns(ctx context.Context, id string, patterns []*papi.QuestRankPattern) ([]*papi.QuestRankPattern, error) {
+	if len(patterns) > 0 {
+		return patterns, nil
+	}
+	q, err := opmaster.FindQuest(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	area, err := opmaster.FindArea(ctx, q.GetAreaId())
+	if err != nil {
+		return nil, err
+	}
+	return questStartRankPatterns(q, area.GetType()), nil
+}
+
+func reconcileQuestContestSeason(ctx context.Context, quest *ptransaction.UserQuest, now int64) error {
+	seasons, err := opmaster.FindAllQuestContestRankingSeasons(ctx)
+	if err != nil {
+		return err
+	}
+	var active *pmaster.QuestContestRankingSeason
+	for _, season := range seasons {
+		if season.GetId() != "" && season.GetStartTime() <= now && (active == nil || season.GetStartTime() > active.GetStartTime()) {
+			active = season
+		}
+	}
+	if active == nil {
+		return viber.FailedPreconditionf("contest has no active ranking season")
+	}
+	if quest.GetCurrentRankingSeasonID() == active.GetId() {
+		return nil
+	}
+	// Earlier private-server results omitted the season ID. Preserve scores
+	// whose timestamp proves they belong to this season; never invent a new
+	// lifetime milestone or carry an older season's score into a new one.
+	score, scoreTime := int64(0), int64(0)
+	if quest.GetCurrentRankingSeasonID() == "" {
+		if quest.GetCurrentRankingHighestScoreTime() >= active.GetStartTime() {
+			score, scoreTime = quest.GetCurrentRankingHighestScore(), quest.GetCurrentRankingHighestScoreTime()
+		}
+		if quest.GetHighestScoreTime() >= active.GetStartTime() && quest.GetHighestScore() > score {
+			score, scoreTime = quest.GetHighestScore(), quest.GetHighestScoreTime()
+		}
+	}
+	quest.CurrentRankingSeasonID = active.GetId()
+	quest.CurrentRankingHighestScore, quest.CurrentRankingHighestScoreTime = score, scoreTime
+	quest.CurrentRankingHighestRank = 0
+	if score > 0 {
+		quest.CurrentRankingHighestRank = 1
+	}
+	return nil
 }
 
 // questLiveFormation preserves lineup references, not frozen card/equipment stats.
@@ -723,6 +786,9 @@ func startQuest(ctx context.Context, req *papi.QuestStartRequest, formation *que
 		previousHighestRank := int32(0)
 		if area.GetType() == penum.AreaType_AreaType_Contest {
 			previousHighestRank = int32(min(int64(math.MaxInt32), max(int64(0), old.GetHighestRank())))
+			if err := reconcileQuestContestSeason(ctx, old, now); err != nil {
+				return nil, err
+			}
 		} else {
 			// Repair non-contest placement values written by older god mode.
 			old.HighestRank, old.CurrentRankingHighestRank = 0, 0
@@ -764,6 +830,9 @@ func startQuest(ctx context.Context, req *papi.QuestStartRequest, formation *que
 		}
 		patterns := questStartRankPatterns(q, area.GetType())
 		rank, plus := questStartScoreRank(patterns, score)
+		if area.GetType() != penum.AreaType_AreaType_Daily && area.GetType() != penum.AreaType_AreaType_Contest {
+			rank, plus = penum.ResultRankType_ResultRankType_Unknown, 0
+		}
 		reward := &papi.QuestReward{}
 		wasCleared, previousHigh := old.GetLastClearedTime() > 0, old.GetHighestScore()
 		isBest := result.GetCleared() && score > previousHigh
@@ -842,7 +911,9 @@ func startQuest(ctx context.Context, req *papi.QuestStartRequest, formation *que
 				}
 				old.HighestRank = 1
 				old.CurrentRankingHighestRank = 1
-				old.CurrentRankingHighestScore, old.CurrentRankingHighestScoreTime = old.HighestScore, old.HighestScoreTime
+				if score > old.GetCurrentRankingHighestScore() {
+					old.CurrentRankingHighestScore, old.CurrentRankingHighestScoreTime = score, now
+				}
 			}
 			if err := opuser.UpsertUserArea(ctx, suid, areaState); err != nil {
 				return nil, err

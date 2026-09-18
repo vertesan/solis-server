@@ -31,7 +31,11 @@ func (s *QuestServer) GetRankingLiveResult(ctx context.Context, req *papi.QuestG
 	if err != nil {
 		return nil, viber.GameplayError(err)
 	}
+	patterns, err := questReplayRankPatterns(ctx, req.GetQuestId(), replay.GetRankPatterns())
+	if err != nil {
+		return nil, viber.GameplayError(err)
+	}
 	return &papi.QuestGetRankingLiveResultResponse{
-		Result: replay.GetResult(), RankPatterns: replay.GetRankPatterns(), CommonResponse: viber.NewCommonResponse(nil),
+		Result: replay.GetResult(), RankPatterns: patterns, CommonResponse: viber.NewCommonResponse(nil),
 	}, nil
 }
