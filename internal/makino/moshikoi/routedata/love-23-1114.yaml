@@ -1,0 +1,95 @@
+# Branches follow docs/love-23-1114-routemap.md and adv_love_2311 scripts.
+# Choices use the 1-based API, rather than the map's 0-based alternative numbers.
+# Favorability weights reuse the existing series' scale as a private-server
+# approximation; no Nagisa response establishes the exact numeric awards.
+# The TRUE end-roll follows the Rei asset convention; the corresponding
+# mov_adv_event_2311_02_02_movie-01 asset exists in the manifest.
+loveId: love-23-1114
+endingConditions:
+  cd-event-love-23-1114-normal-mission_love-end_emb: love-end-love-23-1114-008-happy-001
+  cd-event-love-23-1114-limited-mission_love-end_emb-sp: love-end-love-23-1114-008-happy-001
+endings:
+  - {id: love-end-love-23-1114-002-bad, name: スズキスズキエンド, favorability: 206}
+  - {id: love-end-love-23-1114-008-happy-001, name: TRUE エンド, favorability: 2059, endRollAssetId: event_2311_02_02}
+  - {id: love-end-love-23-1114-008-happy-002, name: 充実した日々エンド, favorability: 1441}
+  - {id: love-end-love-23-1114-008-happy-003, name: 小説の糧エンド, favorability: 1441}
+  - {id: love-end-love-23-1114-008-normal-001, name: 現実は甘くないエンド, favorability: 618}
+  - {id: love-end-love-23-1114-008-normal-002, name: 互いの道エンド, favorability: 618}
+  - {id: love-end-love-23-1114-008-bad-001, name: 今更エンド, favorability: 206}
+  - {id: love-end-love-23-1114-008-bad-002, name: 見つめなおしエンド, favorability: 206}
+episodes:
+  love-event-story-love-23-1114-001:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-23-1114-002
+  love-event-story-love-23-1114-002:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 2, choice: 2}], ending: love-end-love-23-1114-002-bad}
+    next: love-event-story-love-23-1114-003
+  love-event-story-love-23-1114-003:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-23-1114-004
+  love-event-story-love-23-1114-004:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 2, scores: [-35, 35]}
+    next: love-event-story-love-23-1114-005
+  love-event-story-love-23-1114-005:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+      - {index: 3, count: 2, best: 2, scores: [-35, 35]}
+    next: love-event-story-love-23-1114-006
+  love-event-story-love-23-1114-006:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 2, choice: 2}], next: love-event-story-love-23-1114-007-bad}
+    next: love-event-story-love-23-1114-007
+  love-event-story-love-23-1114-007:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    outcomes:
+      - next: love-event-story-love-23-1114-008-happy
+        all:
+          - {episode: love-event-story-love-23-1114-001, group: 2, choice: 1}
+          - {episode: love-event-story-love-23-1114-002, group: 1, choice: 1}
+          - {episode: love-event-story-love-23-1114-003, group: 1, choice: 2}
+          - {episode: love-event-story-love-23-1114-003, group: 2, choice: 1}
+          - {episode: love-event-story-love-23-1114-004, group: 1, choice: 1}
+          - {episode: love-event-story-love-23-1114-004, group: 2, choice: 2}
+          - {episode: love-event-story-love-23-1114-005, group: 1, choice: 2}
+          - {episode: love-event-story-love-23-1114-005, group: 2, choice: 1}
+          - {episode: love-event-story-love-23-1114-005, group: 3, choice: 2}
+          - {group: 1, choice: 2}
+          - {group: 2, choice: 1}
+    next: love-event-story-love-23-1114-008-normal
+  love-event-story-love-23-1114-007-bad: &bad
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-1114-008-bad-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-1114-008-bad-002}
+  love-event-story-love-23-1114-008-bad:
+    <<: *bad
+  love-event-story-love-23-1114-008-happy:
+    groups:
+      - {index: 1, count: 3, best: 1, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-1114-008-happy-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-1114-008-happy-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-23-1114-008-happy-003}
+  love-event-story-love-23-1114-008-normal:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-23-1114-008-normal-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-23-1114-008-normal-002}

@@ -1,0 +1,26 @@
+# Permanent Nagisa event. Entrance banner/groups follow the official round6
+# Home/Enter capture; original start/unlock comes from its mission conditions.
+loveId: love-23-1114
+name: もし恋 ~もしも君と恋をしたら~
+description: 伊吹渚編
+startTime: 1699930800000
+unlockConditionId: cd-clear-area-main-002
+bannerAssetId: img_banner_l_event-love-24-0604
+characterId: char-ngs
+# LoveHomeAction uses this costume; Character.loveInfo supplies the color.
+costumeId: cos-ngs-casl-00
+characterAssetId: img_chr_mem_ngs
+color: FF6AA0
+storyReadItemId: item-love-23-1114-story
+presentItemId: item-love-23-1114-present
+promoteItemId: item-love-23-1114-lesson-boost
+lessonMaxHours: 12
+eventMissionIds:
+  - event-love-23-1114-normal
+  - event-love-23-1114-normal-card
+limitedEventMissionIds:
+  - event-love-23-1114-limited
+# Master levels/episodes do not encode unlock thresholds; use the established
+# standard-series progression until Nagisa's level-roadmap traffic is captured.
+episodeUnlockLevels: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+hintUnlockLevels: {1: 9, 2: 10}

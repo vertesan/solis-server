@@ -56,7 +56,7 @@ type Catalog struct {
 	TitleAssetID string
 }
 
-func SupportedLoveIDs() []string { return []string{"love-23-0514"} }
+func SupportedLoveIDs() []string { return []string{"love-23-0514", "love-23-1114"} }
 
 func LoadConfig(loveID string) (*EventConfig, error) {
 	if !slices.Contains(SupportedLoveIDs(), loveID) {
