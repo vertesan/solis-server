@@ -7,6 +7,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -74,6 +75,11 @@ func (s *PhotoServer) Enhance(ctx context.Context, req *papi.PhotoEnhanceRequest
 		photo.Level = req.GetLevel()
 		if err := recalculatePhotoAbilities(ctx, photo.GetAbilities(), photo.GetLevel()); err != nil {
 			return nil, err
+		}
+		if photo.GetIsDreamBase() {
+			if err := dream.ReconcilePhotoEnhance(ctx, suid, photo); err != nil {
+				return nil, err
+			}
 		}
 		if err := opuser.UpsertUserPhoto(ctx, suid, photo); err != nil {
 			return nil, err

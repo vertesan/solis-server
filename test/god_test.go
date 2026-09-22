@@ -13,6 +13,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	makinouser "github.com/vertesan/solis-server/internal/makino/user"
@@ -403,13 +404,23 @@ func TestUserGod(t *testing.T) {
 	}
 	expectedEventInfo := proto.Clone(globalEventInfo).(*papi.HomeEventInfo)
 	unlockTestHomeEvents(expectedEventInfo.ProtoReflect())
-	// Love, mission and birthday entrances are per-user projections; all
+	// Love, Dream, mission and birthday entrances are dynamic projections; all
 	// unrelated events must still track the current global catalog exactly.
+	dreamInfo := homeResponse.GetEventInfo().GetDreamInfo()
+	if dreamInfo == nil || !dreamInfo.GetIsUnlocked() || dreamInfo.GetEndTime() != 0 || dreamInfo.GetGenerateAreaItemId() != dream.ManualItemID {
+		t.Fatalf("god Dream entrance is not permanently unlocked: %v", dreamInfo)
+	}
+	dreamMonth, err := dream.MonthlyCatalog(ctx, dreamInfo.GetStartTime())
+	if err != nil || dreamInfo.GetEventMissionId() != dreamMonth.EventMissionID {
+		t.Fatalf("god Dream entrance references the wrong monthly missions: %v", err)
+	}
 	actualRotatingEvents := proto.Clone(homeResponse.EventInfo).(*papi.HomeEventInfo)
 	actualRotatingEvents.LoveEventInfos = nil
+	actualRotatingEvents.DreamInfo = nil
 	actualRotatingEvents.EventMissionInfos = nil
 	actualRotatingEvents.HomeBirthdayInfo = nil
 	expectedEventInfo.LoveEventInfos = nil
+	expectedEventInfo.DreamInfo = nil
 	expectedEventInfo.EventMissionInfos = nil
 	expectedEventInfo.HomeBirthdayInfo = nil
 	if !proto.Equal(actualRotatingEvents, expectedEventInfo) {

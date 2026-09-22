@@ -5,6 +5,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/model/user/uname"
 	"github.com/vertesan/solis-server/internal/db/store/opuser/internal/ucommon"
+	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 
 	"go.mongodb.org/mongo-driver/v2/bson"
@@ -50,30 +51,28 @@ func UpsertManyUserPhotos(ctx context.Context, suid string, photos []*ptransacti
 }
 
 func DeleteUserPhoto(ctx context.Context, suid string, photoId string) error {
-	return ucommon.Delete(
-		ctx,
-		uname.UserPhoto,
-		bson.M{"SUID": suid, "photoId": photoId},
-	)
+	return DeleteUserPhotos(ctx, suid, []string{photoId})
 }
 
 func DeleteUserPhotos(ctx context.Context, suid string, photoIds []string) error {
 	if len(photoIds) == 0 {
 		return nil
 	}
-	return ucommon.Delete(
-		ctx,
-		uname.UserPhoto,
-		bson.M{"SUID": suid, "photoId": bson.M{"$in": photoIds}},
-	)
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		if err := ucommon.Delete(ctx, uname.UserPhoto, bson.M{"SUID": suid, "photoId": bson.M{"$in": photoIds}}); err != nil {
+			return nil, err
+		}
+		return nil, ucommon.Delete(ctx, uname.UserDreamArea, bson.M{"SUID": suid, "basePhotoId": bson.M{"$in": photoIds}})
+	})
 }
 
 func DeleteAllUserPhotos(ctx context.Context, suid string) error {
-	return ucommon.Delete(
-		ctx,
-		uname.UserPhoto,
-		bson.M{"SUID": suid},
-	)
+	return transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
+		if err := ucommon.Delete(ctx, uname.UserPhoto, bson.M{"SUID": suid}); err != nil {
+			return nil, err
+		}
+		return nil, ucommon.Delete(ctx, uname.UserDreamArea, bson.M{"SUID": suid})
+	})
 }
 
 // FindUserPhotoGift returns a fully generated photo that is waiting in the

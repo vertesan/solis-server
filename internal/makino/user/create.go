@@ -688,6 +688,9 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		if err := opuser.UpsertUserBirthdayState(ctx, &umodel.UserBirthdayState{SUID: suid}); err != nil {
 			return nil, err
 		}
+		if err := opuser.UpsertUserDreamState(ctx, &umodel.UserDreamState{SUID: suid}); err != nil {
+			return nil, err
+		}
 		if err := opuser.UpsertUserSalary(ctx, salary.NewState(suid, now)); err != nil {
 			return nil, err
 		}

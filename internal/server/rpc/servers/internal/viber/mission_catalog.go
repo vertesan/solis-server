@@ -8,6 +8,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
@@ -22,6 +23,7 @@ type ActiveMissionCatalog struct {
 	Events            map[string]*pmaster.EventMission
 	Unlocked          map[string]bool
 	LoveGroups        map[string]string
+	DreamGroup        string
 	evaluator         *CommerceConditionEvaluator
 	photos            []*ptransaction.UserPhoto
 	photosLoaded      bool
@@ -59,6 +61,11 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 		Missions: make(map[string]*pmaster.Mission), Events: make(map[string]*pmaster.EventMission),
 		Unlocked: make(map[string]bool), LoveGroups: make(map[string]string), evaluator: evaluator,
 	}
+	dreamMonthly, err := dream.MonthlyCatalog(ctx, now)
+	if err != nil {
+		return nil, err
+	}
+	catalog.DreamGroup = dreamMonthly.EventMissionID
 	loves, err := opuser.FindAllUserLoves(ctx, suid)
 	if err != nil {
 		return nil, err
@@ -78,6 +85,17 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 		}
 	}
 	for _, group := range groups {
+		if strings.HasPrefix(group.GetId(), "event-dream-") {
+			if group.GetId() == catalog.DreamGroup {
+				catalog.Events[group.GetId()] = group
+				unlocked, err := evaluator.Satisfied(dream.UnlockConditionID)
+				if err != nil {
+					return nil, err
+				}
+				catalog.Unlocked[group.GetId()] = unlocked
+			}
+			continue
+		}
 		permanent := catalog.LoveGroups[group.GetId()] != ""
 		// Unsupported Love series remain unavailable even when a revival's
 		// calendar condition happens to be active in the current master data.
@@ -115,7 +133,7 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 		if master.GetEventMissionId() != "" && !catalog.Unlocked[master.GetEventMissionId()] {
 			continue
 		}
-		if catalog.LoveGroups[master.GetEventMissionId()] != "" {
+		if catalog.LoveGroups[master.GetEventMissionId()] != "" || master.GetEventMissionId() == catalog.DreamGroup {
 			id := master.GetViewConditionId()
 			if condition := evaluator.conditions[id]; condition != nil {
 				evaluator.PrimeConditions([]*pmaster.Condition{PermanentLoveMissionCondition(condition)})
@@ -156,7 +174,7 @@ func ReconcileUserMissions(ctx context.Context, suid string, now int64, updated 
 	for id, group := range catalog.Events {
 		// Feature-specific events (Love, Dream, Tour...) expose their tasks
 		// inside that feature, not as campaign entrances on the main home.
-		if group.GetEventMissionType() != penum.EventMissionType_EventMissionType_Campaign {
+		if group.GetEventMissionType() != penum.EventMissionType_EventMissionType_Campaign || id == catalog.DreamGroup {
 			continue
 		}
 		infos = append(infos, &papi.HomeEventMissionInfo{Id: id, Unlocked: catalog.Unlocked[id], Order: group.GetOrder()})
@@ -171,6 +189,9 @@ func ReconcileUserMissions(ctx context.Context, suid string, now int64, updated 
 }
 
 func (c *ActiveMissionCatalog) Reconcile(ctx context.Context, suid string, now int64, updated *papi.UpdatedData) error {
+	if _, err := dream.ReconcileMonthly(ctx, suid, now, updated); err != nil {
+		return err
+	}
 	loveIDs := map[string]bool{}
 	for _, loveID := range c.LoveGroups {
 		loveIDs[loveID] = true
@@ -207,7 +228,7 @@ func (c *ActiveMissionCatalog) Reconcile(ctx context.Context, suid string, now i
 	changed := map[string]*ptransaction.UserMission{}
 	completed := []string{}
 	for id, master := range c.Missions {
-		if c.LoveGroups[master.GetEventMissionId()] != "" {
+		if c.LoveGroups[master.GetEventMissionId()] != "" || master.GetEventMissionId() == c.DreamGroup {
 			continue
 		}
 		row := byID[id]
@@ -294,6 +315,17 @@ func (c *ActiveMissionCatalog) currentValue(master *pmaster.Mission, row *ptrans
 		return total.GetPhotoShootCount(), nil
 	case penum.MissionType_MissionType_PhotoRetouchTotalCount:
 		return total.GetPhotoRetouchCount(), nil
+	case penum.MissionType_MissionType_DreamAreaGenerateTotalCount:
+		return total.GetDreamAreaGenerateCount(), nil
+	case penum.MissionType_MissionType_DreamQuestClearTotalCount, penum.MissionType_MissionType_DreamQuestClearDifficultyLevelAchievement:
+		state, err := opuser.FindUserDreamState(c.evaluator.ctx, c.evaluator.suid)
+		if err != nil {
+			return 0, err
+		}
+		if master.GetMissionType() == penum.MissionType_MissionType_DreamQuestClearTotalCount {
+			return state.QuestClearCount, nil
+		}
+		return int64(state.MaxDifficulty), nil
 	case penum.MissionType_MissionType_StaffTrainTotalCount:
 		return total.GetStaffTrainCount(), nil
 	case penum.MissionType_MissionType_GuildCheckInTotalCount:

@@ -52,7 +52,7 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 			}
 			cardCharacters[index] = master.GetCharacterId()
 		}
-		assets, err = questDeckCharacterAssets(ctx, positions, cardCharacters, characters, nil)
+		assets, err = viber.LiveDeckCharacterAssets(ctx, positions, cardCharacters, characters, nil)
 		if err != nil {
 			return nil, err
 		}
@@ -63,7 +63,7 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 		// Partial editing units still prefetch only their occupied scoring slots.
 		// Cosmetic extras belong to a complete five-card live unit.
 		if len(assets) == 5 && music.GetDisplayCharacterAmount() > 5 {
-			extras, err := prepareExtraLiveAppearances(ctx, suid, music, characters, nil, assets)
+			extras, err := viber.PrepareExtraLiveAppearances(ctx, suid, music, characters, nil, assets)
 			if err != nil {
 				return nil, err
 			}

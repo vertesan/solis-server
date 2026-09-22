@@ -5,10 +5,12 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
+	"google.golang.org/protobuf/proto"
 )
 
 func (s *PhotoServer) GetDreamBasePhotoEnhanceLevelInfos(
@@ -60,6 +62,18 @@ func (s *PhotoServer) GetDreamBasePhotoEnhanceLevelInfos(
 				return nil, viber.FailedPreconditionf("photo %q has abilities without level data", req.GetBasePhotoId())
 			}
 			break
+		}
+		projected := proto.Clone(photo).(*ptransaction.UserPhoto)
+		projected.Level = level
+		projected.DreamMaterialPhotoLevel += level - photo.GetLevel()
+		for i, effect := range effects {
+			projected.Abilities[i].EffectValue = effect.GetEffectValue()
+		}
+		if err := dream.ProjectPhotoEnhance(ctx, suid, projected); err != nil {
+			return nil, viber.GameplayError(err)
+		}
+		for i, ability := range projected.GetAbilities() {
+			effects[i].EffectValue = ability.GetEffectValue()
 		}
 		levelInfos = append(levelInfos, &papi.DreamBasePhotoEnhanceLevelInfo{
 			Level:            level,

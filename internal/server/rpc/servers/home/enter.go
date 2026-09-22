@@ -14,6 +14,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/makino/birthday"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/proto/papi"
@@ -224,6 +225,20 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		eventInfo.EventMissionInfos, err = viber.ReconcileUserMissions(ctx, suid, now, updatedData)
 		if err != nil {
 			return nil, err
+		}
+		dreamMonthly, err := dream.MonthlyCatalog(ctx, now)
+		if err != nil {
+			return nil, err
+		}
+		dreamUnlocked, err := viber.NewCommerceConditionEvaluator(ctx, suid, now).Satisfied(dream.UnlockConditionID)
+		if err != nil {
+			return nil, err
+		}
+		eventInfo.DreamInfo = &papi.HomeDreamInfo{
+			Name: "イメージトレーニング", StartTime: dreamMonthly.StartTime,
+			AssetId: "event-dream-defalut", BannerAssetId: dreamMonthly.Group.GetAssetId(), Order: 60,
+			UnlockConditionId: dream.UnlockConditionID, IsUnlocked: dreamUnlocked,
+			GenerateAreaItemId: dream.ManualItemID, EventMissionId: dreamMonthly.EventMissionID,
 		}
 		if godState != nil && godState.UnlockCurrentEvents {
 			unlockHomeEventInfo(eventInfo.ProtoReflect())

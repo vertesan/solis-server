@@ -43,7 +43,7 @@ func (s *QuestServer) StartBulkDaily(ctx context.Context, _ *papi.Empty) (*papi.
 			result, err := startQuest(questCtx, &papi.QuestStartRequest{
 				QuestId: questID, DeckNumber: entry.DeckNumber, PlayCount: entry.PlayCount, IsSkip: true,
 				// UseDailyTicket deliberately remains false: bulk never spends items.
-			}, &questLiveFormation{Name: entry.DeckName, Positions: entry.DeckPositions})
+			}, &viber.LiveFormation{Name: entry.DeckName, Positions: entry.DeckPositions})
 			if err != nil {
 				// Validation/persistence errors roll back the entire batch. A valid
 				// simulated defeat is not an error: it leaves this area's passes

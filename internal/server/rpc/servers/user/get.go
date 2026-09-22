@@ -10,6 +10,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
@@ -41,6 +42,9 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 			return nil, err
 		}
 		now := time.Now().UnixMilli()
+		if _, err := dream.ReconcileMonthly(ctx, suid, now, &papi.UpdatedData{}); err != nil {
+			return nil, err
+		}
 		for _, character := range characters {
 			if _, err := viber.ReconcileActivityCharacterStamina(ctx, suid, character, now); err != nil {
 				return nil, err

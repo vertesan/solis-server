@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-17
+Last audited: 2026-09-19
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -25,13 +25,13 @@ inputs are unsupported or its behavior is intentionally minimal.
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 42 | 266 |
-| Concrete handlers | 42 | 228 |
-| Entirely unregistered services | 25 | 159 |
+| Registered services | 43 | 273 |
+| Concrete handlers | 43 | 235 |
+| Entirely unregistered services | 24 | 152 |
 | Missing methods on registered services | 14 | 38 |
-| Total unimplemented RPCs | 39 | 197 |
+| Total unimplemented RPCs | 38 | 190 |
 
-The “Total unimplemented RPCs” service count is the 25 entirely unregistered
+The “Total unimplemented RPCs” service count is the 24 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -71,14 +71,6 @@ unknown-service handler.
   - `/api.Dice/ChooseLiveBonus`
   - `/api.Dice/ListRanking`
   - `/api.Dice/SaveDeck`
-- `Dream` (7):
-  - `/api.Dream/Top`
-  - `/api.Dream/ListMaterialPhoto`
-  - `/api.Dream/ListQuest`
-  - `/api.Dream/GenerateArea`
-  - `/api.Dream/StartQuest`
-  - `/api.Dream/SkipQuest`
-  - `/api.Dream/ResetArea`
 - `Duty` (3):
   - `/api.Duty/Top`
   - `/api.Duty/ExchangeReward`

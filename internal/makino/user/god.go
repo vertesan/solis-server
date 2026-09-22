@@ -14,6 +14,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/dream"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/makino/salary"
@@ -145,6 +146,17 @@ func GodUser(ctx context.Context, publicUserId, serverUserId string, feature God
 		}
 		if err := salary.RefreshSnapshot(ctx, auth.ServerUserId, time.Now()); err != nil {
 			return nil, err
+		}
+		// Manuals are already included by the master-driven item grant. Keep
+		// monthly entitlement independent, without consuming photos or inventing areas.
+		dreamUpdated := &papi.UpdatedData{}
+		if _, err := dream.ReconcileMonthly(ctx, auth.ServerUserId, time.Now().UnixMilli(), dreamUpdated); err != nil {
+			return nil, err
+		}
+		result.Collections[uname.UserDreamState] = 1
+		if len(dreamUpdated.GetMissions()) > 0 {
+			result.Collections[uname.UserMission] += len(dreamUpdated.GetMissions())
+			result.Collections[uname.UserGift] = 1
 		}
 		salaries, err := opuser.FindAllUserSalaries(ctx, auth.ServerUserId)
 		if err != nil {

@@ -121,6 +121,7 @@ func TestGachaScenario(t *testing.T) {
 		}
 		missionBefore := testGachaMissionSnapshot(t)
 		giftBefore := testPendingGachaGiftAmount(t, penum.ResourceType_ResourceType_Item, "item-card_limit_break")
+		notifiedBefore := testGachaGiftNotified(t)
 		buttonBefore := findTestGachaButton(info, button.GetId())
 		ctx, cancel, err := getFullGrpcCtx()
 		if err != nil {
@@ -149,7 +150,7 @@ func TestGachaScenario(t *testing.T) {
 				t.Fatalf("master-card-reward gacha returned unexpected CardReward metadata: %v", reward)
 			}
 		}
-		assertGachaDuplicateCardProgress(t, cardBefore, missionBefore, giftBefore, response)
+		assertGachaDuplicateCardProgress(t, cardBefore, missionBefore, giftBefore, notifiedBefore, response)
 		assertGachaDrawRewardClassification(t, masterGacha, button, buttonBefore.GetTotalCount(), 1, response)
 		if response.GetGachaMovie() != nil {
 			t.Fatalf("guaranteed-rarity draw returned unobserved gachaMovie data: %v", response.GetGachaMovie())
@@ -202,6 +203,7 @@ func TestGachaScenario(t *testing.T) {
 	}
 	missionsBeforeDraw := testGachaMissionSnapshot(t)
 	limitBreakGiftBefore := testPendingGachaGiftAmount(t, penum.ResourceType_ResourceType_Item, "item-card_limit_break")
+	notifiedBeforeDraw := testGachaGiftNotified(t)
 	grpcCtx, cancel, err = getFullGrpcCtx()
 	if err != nil {
 		t.Fatal(err)
@@ -215,7 +217,7 @@ func TestGachaScenario(t *testing.T) {
 		t.Fatalf("Gacha.Draw returned incomplete results: %v", draw)
 	}
 	assertGachaRewardResultsCanonical(t, draw.GetRewardResults())
-	assertGachaDuplicateCardProgress(t, cardBeforeDraw, missionsBeforeDraw, limitBreakGiftBefore, draw)
+	assertGachaDuplicateCardProgress(t, cardBeforeDraw, missionsBeforeDraw, limitBreakGiftBefore, notifiedBeforeDraw, draw)
 	assertGachaDrawRewardClassification(t, drawMaster, drawButton, buttonBefore.GetTotalCount(), 1, draw)
 	if draw.GetGachaMovie() != nil {
 		t.Fatalf("Gacha.Draw returned unobserved gachaMovie data: %v", draw.GetGachaMovie())
@@ -301,6 +303,7 @@ func TestGachaScenario(t *testing.T) {
 		}
 		missionsBefore := testGachaMissionSnapshot(t)
 		giftBefore, giftCountBefore := testPendingGachaGifts(t, penum.ResourceType_ResourceType_Item, "item-card_limit_break")
+		notifiedBefore := testGachaGiftNotified(t)
 		ctx, cancel, err := getFullGrpcCtx()
 		if err != nil {
 			t.Fatal(err)
@@ -311,7 +314,7 @@ func TestGachaScenario(t *testing.T) {
 			t.Fatalf("overflow Gacha.Draw failed: %v", err)
 		}
 		assertGachaRewardResultsCanonical(t, overflowDraw.GetRewardResults())
-		assertGachaDuplicateCardProgress(t, before, missionsBefore, giftBefore, overflowDraw)
+		assertGachaDuplicateCardProgress(t, before, missionsBefore, giftBefore, notifiedBefore, overflowDraw)
 		var overflowAmount int64
 		for _, result := range overflowDraw.GetRewardResults() {
 			if result.GetResourceType() != penum.ResourceType_ResourceType_Card {
@@ -1233,6 +1236,7 @@ func assertGachaDuplicateCardProgress(
 	cardBefore map[string]*ptransaction.UserCard,
 	missionBefore map[string]*ptransaction.UserMission,
 	limitBreakGiftBefore int64,
+	notifiedBefore bool,
 	draw *papi.GachaDrawResponse,
 ) {
 	t.Helper()
@@ -1363,11 +1367,25 @@ func assertGachaDuplicateCardProgress(
 				break
 			}
 		}
-		if !foundNotification {
+		// A monthly Dream gift may already have lit the mailbox. The shared
+		// notification helper emits only changes, not redundant true->true rows.
+		if !foundNotification && !notifiedBefore {
 			t.Fatal("duplicate-card overflow did not return an active gift notification")
+		}
+		if !testGachaGiftNotified(t) {
+			t.Fatal("duplicate-card overflow left mailbox notification inactive")
 		}
 	}
 	assertGachaRarityMissionProgress(t, missionBefore, rarityGains, draw.GetCommonResponse().GetUpdatedData())
+}
+
+func testGachaGiftNotified(t *testing.T) bool {
+	t.Helper()
+	row, err := opuser.FindUserNotification(context.Background(), testConfig.TestUserSuid, penum.NotificationType_NotificationType_Gift)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return row.GetValid()
 }
 
 func expectedGachaDuplicateRewards(
