@@ -53,9 +53,48 @@ func TestDreamLiveSettlementScenario(t *testing.T) {
 	}
 	cardsBefore := questStartUserDeckCards(t, deck)
 	manualsBefore := questStartUsablePasses(t, manualID)
+	// Dream prefetches the ordinary saved deck without a master quest ID:
+	// the generated stage is selected by basePhotoId only when StartQuest runs.
+	positionsBefore, err := opuser.FindUserDeckPositions(ctx, suid, deck)
+	if err != nil {
+		t.Fatal(err)
+	}
+	listed := profileCall(t, papi.NewQuestClient(testConfig.GrpcConn).ListAsset, &papi.QuestListAssetRequest{DeckNumber: deck})
+	if len(listed.GetCharacterAssets()) != 5 || listed.GetCommonResponse() == nil {
+		t.Fatal("Dream asset prefetch omitted the saved deck's five appearances or common response")
+	}
+	if proto.Size(listed.GetCommonResponse().GetUpdatedData()) != 0 || proto.Size(listed.GetCommonResponse().GetDeletedData()) != 0 {
+		t.Fatal("Dream asset prefetch unexpectedly mutated client state")
+	}
+	afterPrefetch, err := opuser.FindUserDreamArea(ctx, suid, base.GetPhotoId())
+	if err != nil || !proto.Equal(area.Data, afterPrefetch.Data) {
+		t.Fatalf("Dream asset prefetch changed area progress: %v", err)
+	}
+	photoAfterPrefetch, err := opuser.FindUserPhoto(ctx, suid, base.GetPhotoId())
+	if err != nil || !proto.Equal(beforePhoto, photoAfterPrefetch) || questStartUsablePasses(t, manualID) != manualsBefore {
+		t.Fatalf("Dream asset prefetch changed the photo or generation manuals: %v", err)
+	}
+	positionsAfter, err := opuser.FindUserDeckPositions(ctx, suid, deck)
+	if err != nil || len(positionsBefore) != len(positionsAfter) {
+		t.Fatalf("Dream asset prefetch changed the saved deck: %v", err)
+	}
+	for i, position := range positionsBefore {
+		if !proto.Equal(position, positionsAfter[i]) {
+			t.Fatal("Dream asset prefetch persisted a cosmetic substitution")
+		}
+	}
 	failure := profileCall(t, client.StartQuest, request)
 	if failure.GetResult().GetCleared() || failure.GetClearedQuestNumber() != 0 || len(failure.GetAbilityChangeInfos()) != 0 || len(failure.GetCommonResponse().GetUpdatedData().GetPhotos()) != 0 || len(failure.GetMusicMasteryRewards()) != 0 {
 		t.Fatal("failed Dream live advanced the stage or granted rewards")
+	}
+	if len(failure.GetResult().GetUserInfos()) == 0 || len(failure.GetResult().GetUserInfos()[0].GetUserDeck().GetCards()) != len(listed.GetCharacterAssets()) {
+		t.Fatal("Dream live omitted the prefetched deck")
+	}
+	for i, card := range failure.GetResult().GetUserInfos()[0].GetUserDeck().GetCards() {
+		asset := listed.GetCharacterAssets()[i]
+		if card.GetDisplayCharacterId() != asset.GetCharacterId() || card.GetDisplayCostumeId() != asset.GetCostumeId() || card.GetDisplayHairId() != asset.GetHairId() {
+			t.Fatalf("Dream slot %d differs from its prefetched appearance: %v", i+1, asset)
+		}
 	}
 	area, err = opuser.FindUserDreamArea(ctx, suid, base.GetPhotoId())
 	if err != nil {

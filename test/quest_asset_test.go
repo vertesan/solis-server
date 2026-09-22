@@ -57,6 +57,12 @@ func TestQuestAssetScenario(t *testing.T) {
 	if !proto.Equal(response, repeated) {
 		t.Fatal("repeated prefetch changed the deterministic live appearance")
 	}
+	// Dream uses this same endpoint without a master quest ID. It still uses
+	// the saved deck and must preserve partial-unit appearance semantics.
+	withoutQuest := &papi.QuestListAssetRequest{DeckNumber: number}
+	if dreamAssets := profileCall(t, client.ListAsset, withoutQuest); !proto.Equal(response, dreamAssets) {
+		t.Fatal("quest-independent prefetch changed the partial deck's appearances")
+	}
 	after, err := opuser.FindUserDeckPositions(ctx, testConfig.TestUserSuid, number)
 	if err != nil {
 		t.Fatal(err)
@@ -77,14 +83,21 @@ func TestQuestAssetScenario(t *testing.T) {
 		t.Fatal("unspecified deck appearance did not use the user's live settings")
 	}
 	profileReject(t, codes.InvalidArgument, client.ListAsset, &papi.QuestListAssetRequest{QuestId: request.GetQuestId()})
+	profileReject(t, codes.InvalidArgument, client.ListAsset, &papi.QuestListAssetRequest{})
+	profileReject(t, codes.InvalidArgument, client.ListAsset, &papi.QuestListAssetRequest{DeckNumber: -1})
 	profileReject(t, codes.NotFound, client.ListAsset, &papi.QuestListAssetRequest{QuestId: "quest-does-not-exist", DeckNumber: number})
 	profileReject(t, codes.FailedPrecondition, client.ListAsset, &papi.QuestListAssetRequest{QuestId: request.GetQuestId(), DeckNumber: number, UserBuddyDeckPositions: positions})
+	profileReject(t, codes.FailedPrecondition, client.ListAsset, &papi.QuestListAssetRequest{DeckNumber: number, UserBuddyDeckPositions: positions})
 
 	// Empty units may be prefetched; live eligibility belongs to Quest.Start.
 	profileCall(t, deckClient.Save, &papi.DeckSaveRequest{Number: number, Name: "空"})
 	if assets := profileCall(t, client.ListAsset, request).GetCharacterAssets(); len(assets) != 0 {
 		t.Fatal("empty deck returned unrelated characters")
 	}
+	if assets := profileCall(t, client.ListAsset, withoutQuest).GetCharacterAssets(); len(assets) != 0 {
+		t.Fatal("quest-independent prefetch returned characters for an empty deck")
+	}
 	profileCall(t, deckClient.Delete, &papi.DeckDeleteRequest{Number: number})
 	profileReject(t, codes.NotFound, client.ListAsset, request)
+	profileReject(t, codes.NotFound, client.ListAsset, withoutQuest)
 }

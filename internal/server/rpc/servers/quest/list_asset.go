@@ -8,13 +8,14 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/pmaster"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 )
 
 func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetRequest) (*papi.QuestListAssetResponse, error) {
-	if req.GetQuestId() == "" || req.GetDeckNumber() <= 0 {
-		return nil, viber.InvalidArgumentf("questId and a saved deck number are required")
+	if req.GetDeckNumber() <= 0 {
+		return nil, viber.InvalidArgumentf("a saved deck number is required")
 	}
 	if len(req.GetUserBuddyDeckPositions()) != 0 {
 		return nil, viber.FailedPreconditionf("friend buddy decks are unavailable on this server")
@@ -22,9 +23,13 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 	suid := viber.GetSuid(ctx).String()
 	var assets []*papi.LiveCharacterAssetInfo
 	err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-		quest, err := opmaster.FindQuest(ctx, req.GetQuestId())
-		if err != nil {
-			return nil, err
+		var quest *pmaster.Quest
+		if req.GetQuestId() != "" {
+			var err error
+			quest, err = opmaster.FindQuest(ctx, req.GetQuestId())
+			if err != nil {
+				return nil, err
+			}
 		}
 		if _, err := opuser.FindUserDeck(ctx, suid, req.GetDeckNumber()); err != nil {
 			return nil, err
@@ -55,6 +60,12 @@ func (s *QuestServer) ListAsset(ctx context.Context, req *papi.QuestListAssetReq
 		assets, err = viber.LiveDeckCharacterAssets(ctx, positions, cardCharacters, characters, nil)
 		if err != nil {
 			return nil, err
+		}
+		// Dream prefetches its saved deck with no master quest ID. In that
+		// case only the deck's appearances are known; do not invent a quest
+		// or append music-specific extra performers.
+		if quest == nil {
+			return nil, nil
 		}
 		music, err := opmaster.FindMusic(ctx, quest.GetMusicId())
 		if err != nil {
