@@ -13,6 +13,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
 	"github.com/vertesan/solis-server/internal/makino/consts"
+	"github.com/vertesan/solis-server/internal/makino/exercise"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/makino/salary"
 	"github.com/vertesan/solis-server/internal/makino/user/card"
@@ -683,6 +684,9 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 		}
 
 		if err := moshikoi.InitializeUser(ctx, suid); err != nil {
+			return nil, err
+		}
+		if err := exercise.InitializeUser(ctx, suid); err != nil {
 			return nil, err
 		}
 		if err := opuser.UpsertUserBirthdayState(ctx, &umodel.UserBirthdayState{SUID: suid}); err != nil {

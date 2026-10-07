@@ -316,6 +316,44 @@ func GrantLiveMastery(ctx context.Context, suid, musicID string, characters []st
 	return nil
 }
 
+// NewLiveInput loads only shared master rules. Exercise supplies an isolated
+// training roster rather than importing the requesting user's owned bonuses.
+func NewLiveInput(ctx context.Context, q *pmaster.Quest, seed uint64) (*live.Input, *pmaster.Music, error) {
+	settingID, err := config.GetGameSettingId()
+	if err != nil {
+		return nil, nil, err
+	}
+	setting, err := opmaster.FindSetting(ctx, settingID)
+	if err != nil {
+		return nil, nil, err
+	}
+	input := &live.Input{Quest: q, Setting: setting, Seed: seed, Cards: map[int32]live.CardData{}, Skills: map[string]*pmaster.Skill{}, Efficacies: map[string]*pmaster.SkillEfficacy{}, Triggers: map[string]*pmaster.SkillTrigger{}, Targets: map[string]*pmaster.SkillTarget{}}
+	if input.Chart, err = opmaster.FindLiveChart(ctx, q.GetMusicChartPatternId()); err != nil {
+		return nil, nil, err
+	}
+	sort.Slice(input.Chart, func(i, j int) bool { return input.Chart[i].GetNumber() < input.Chart[j].GetNumber() })
+	if len(input.Chart) == 0 {
+		return nil, nil, FailedPreconditionf("quest has no chart")
+	}
+	if input.Pressure, err = opmaster.FindLivePressure(ctx, q.GetQuestPressureId()); err != nil {
+		return nil, nil, err
+	}
+	if input.AudienceAdvantages, err = opmaster.FindLiveAudienceAdvantages(ctx, q.GetQuestAudienceAdvantageId()); err != nil {
+		return nil, nil, err
+	}
+	music, err := opmaster.FindMusic(ctx, q.GetMusicId())
+	if err != nil {
+		return nil, nil, err
+	}
+	if input.ComboAdvantages, err = opmaster.FindLiveComboAdvantages(ctx, music.GetComboAdvantageId()); err != nil {
+		return nil, nil, err
+	}
+	if input.StaminaConsumption, err = opmaster.FindLiveStaminaConsumption(ctx); err != nil {
+		return nil, nil, err
+	}
+	return input, music, nil
+}
+
 // PrepareLiveInput resolves all user/master references within the caller's
 // snapshot transaction. It performs no writes and no simulator-time DB lookups.
 func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequest, q *pmaster.Quest, seed uint64, formation *LiveFormation) (*live.Input, error) {
@@ -325,38 +363,11 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 	if len(req.GetUserBuddyDeckPositions()) > 0 {
 		return nil, status.Error(codes.Unimplemented, "friend buddy live units are not supported")
 	}
-	settingID, err := config.GetGameSettingId()
+	input, music, err := NewLiveInput(ctx, q, seed)
 	if err != nil {
 		return nil, err
 	}
-	setting, err := opmaster.FindSetting(ctx, settingID)
-	if err != nil {
-		return nil, err
-	}
-	input := &live.Input{Quest: q, Setting: setting, Seed: seed, Cards: map[int32]live.CardData{}, Skills: map[string]*pmaster.Skill{}, Efficacies: map[string]*pmaster.SkillEfficacy{}, Triggers: map[string]*pmaster.SkillTrigger{}, Targets: map[string]*pmaster.SkillTarget{}}
-	if input.Chart, err = opmaster.FindLiveChart(ctx, q.GetMusicChartPatternId()); err != nil {
-		return nil, err
-	}
-	sort.Slice(input.Chart, func(i, j int) bool { return input.Chart[i].GetNumber() < input.Chart[j].GetNumber() })
-	if len(input.Chart) == 0 {
-		return nil, FailedPreconditionf("quest has no chart")
-	}
-	if input.Pressure, err = opmaster.FindLivePressure(ctx, q.GetQuestPressureId()); err != nil {
-		return nil, err
-	}
-	if input.AudienceAdvantages, err = opmaster.FindLiveAudienceAdvantages(ctx, q.GetQuestAudienceAdvantageId()); err != nil {
-		return nil, err
-	}
-	music, err := opmaster.FindMusic(ctx, q.GetMusicId())
-	if err != nil {
-		return nil, err
-	}
-	if input.ComboAdvantages, err = opmaster.FindLiveComboAdvantages(ctx, music.GetComboAdvantageId()); err != nil {
-		return nil, err
-	}
-	if input.StaminaConsumption, err = opmaster.FindLiveStaminaConsumption(ctx); err != nil {
-		return nil, err
-	}
+	setting := input.Setting
 	if formation == nil {
 		return nil, InvalidArgumentf("live formation is required")
 	}
@@ -453,7 +464,7 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 	self := &papi.LiveUserInfo{Index: 1, UserId: public.GetPublicUserId(), Name: user.GetName(), EmblemId: user.GetEmblemId(), UserDeck: &papi.LiveUserDeck{DeckName: deck.GetName()}}
 	input.Users = append(input.Users, self)
 	seenCards, seenPhotos := map[string]bool{}, map[string]bool{}
-	var photoBonuses []preparedPhotoBonus
+	var photoBonuses []PreparedPhotoBonus
 	accessoryCounts := map[string]int64{}
 	originalIDs := make([]string, len(positions))
 	for i, p := range positions {
@@ -530,10 +541,10 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 			return nil, err
 		}
 		c.DisplayCharacterId, c.DisplayCostumeId, c.DisplayHairId = appearance.GetCharacterId(), appearance.GetCostumeId(), appearance.GetHairId()
-		input.Cards[c.Index] = live.CardData{CharacterID: mc.GetId(), GroupID: mc.GetCharacterGroupId(), Type: m.GetType(), Attribute: liveCardAttribute(m), LightFans: int64(uc.GetLightFanAmount()), MiddleFans: int64(uc.GetMiddleFanAmount()), HeavyFans: int64(uc.GetHeavyFanAmount()), Bonuses: bonuses}
+		input.Cards[c.Index] = live.CardData{CharacterID: mc.GetId(), GroupID: mc.GetCharacterGroupId(), Type: m.GetType(), Attribute: LiveCardAttribute(m), LightFans: int64(uc.GetLightFanAmount()), MiddleFans: int64(uc.GetMiddleFanAmount()), HeavyFans: int64(uc.GetHeavyFanAmount()), Bonuses: bonuses}
 		self.UserDeck.Cards = append(self.UserDeck.Cards, c)
 	}
-	if err := applyPreparedPhotoBonuses(ctx, input, self, photoBonuses); err != nil {
+	if err := ApplyPreparedPhotoBonuses(ctx, input, self, photoBonuses); err != nil {
 		return nil, err
 	}
 	var characterAdvantage *pmaster.QuestCharacterAdvantage
@@ -544,7 +555,7 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 		}
 	}
 	for _, c := range self.GetUserDeck().GetCards() {
-		if err := applyPreparedStats(c, input.Cards[c.Index].Bonuses); err != nil {
+		if err := ApplyLiveCardStats(c, input.Cards[c.Index].Bonuses); err != nil {
 			return nil, err
 		}
 		c.StartStamina = c.Stamina
@@ -570,10 +581,10 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 		}
 		input.Cards[index] = data
 	}
-	if err := prepareQuestBonus(ctx, input); err != nil {
+	if err := PrepareLiveQuestBonus(ctx, input); err != nil {
 		return nil, err
 	}
-	if err := resolveLiveSkills(ctx, input); err != nil {
+	if err := ResolveLiveSkills(ctx, input); err != nil {
 		return nil, err
 	}
 	var actors []live.CardData
@@ -597,7 +608,7 @@ func PrepareLiveInput(ctx context.Context, suid string, req *papi.QuestStartRequ
 // Attribute is stable card metadata, not the currently largest buffed stat.
 // The master has no attribute field; its unique highest ratio identifies it.
 // No current master ties exist; future ties prefer Vocal, Dance, then Visual.
-func liveCardAttribute(m *pmaster.Card) penum.AttributeType {
+func LiveCardAttribute(m *pmaster.Card) penum.AttributeType {
 	attribute, highest := penum.AttributeType_AttributeType_Vocal, m.GetVocalRatioPermil()
 	if m.GetDanceRatioPermil() > highest {
 		attribute, highest = penum.AttributeType_AttributeType_Dance, m.GetDanceRatioPermil()
@@ -638,7 +649,7 @@ func parameterPhotoTypes(typ penum.ParameterType) (penum.PhotoAbilityType, penum
 	}
 }
 
-func accessoryPhotoTypes(typ penum.AccessoryParameterType) (penum.PhotoAbilityType, penum.PhotoAbilityType, bool) {
+func AccessoryPhotoTypes(typ penum.AccessoryParameterType) (penum.PhotoAbilityType, penum.PhotoAbilityType, bool) {
 	switch typ {
 	case penum.AccessoryParameterType_AccessoryParameterType_Dance:
 		return parameterPhotoTypes(penum.ParameterType_ParameterType_Dance)
@@ -719,7 +730,7 @@ func addLiveBonus(b map[penum.PhotoAbilityType]int64, k penum.PhotoAbilityType, 
 	return nil
 }
 
-func applyPreparedStats(c *papi.LiveDeckCard, b map[penum.PhotoAbilityType]int64) error {
+func ApplyLiveCardStats(c *papi.LiveDeckCard, b map[penum.PhotoAbilityType]int64) error {
 	values := []struct {
 		value     *int64
 		parameter penum.ParameterType
@@ -813,7 +824,7 @@ func prepareOwnedLiveAbilities(ctx context.Context, owned []*ptransaction.UserCa
 	return bonuses, passives, equipment, nil
 }
 
-func prepareLiveEquipment(ctx context.Context, suid string, q *pmaster.Quest, p *ptransaction.UserDeckPosition, u *ptransaction.UserCard, character *pmaster.Character, cardType penum.CardType, c *papi.LiveDeckCard, b map[penum.PhotoAbilityType]int64, equipment liveEquipmentBoost, photos *[]preparedPhotoBonus, seenPhotos map[string]bool, counts map[string]int64) error {
+func prepareLiveEquipment(ctx context.Context, suid string, q *pmaster.Quest, p *ptransaction.UserDeckPosition, u *ptransaction.UserCard, character *pmaster.Character, cardType penum.CardType, c *papi.LiveDeckCard, b map[penum.PhotoAbilityType]int64, equipment liveEquipmentBoost, photos *[]PreparedPhotoBonus, seenPhotos map[string]bool, counts map[string]int64) error {
 	for part, id := range []string{p.GetPart1AccessoryId(), p.GetPart2AccessoryId()} {
 		if id == "" {
 			continue
@@ -843,7 +854,7 @@ func prepareLiveEquipment(ctx context.Context, suid string, q *pmaster.Quest, p 
 				flat = flat * (1000 + boost) / 1000
 				ratio = ratio * (1000 + boost) / 1000
 			}
-			flatType, ratioType, ok := accessoryPhotoTypes(pair.typ)
+			flatType, ratioType, ok := AccessoryPhotoTypes(pair.typ)
 			if !ok {
 				return FailedPreconditionf("unsupported accessory parameter %v", pair.typ)
 			}
@@ -922,7 +933,7 @@ func prepareLiveEquipment(ctx context.Context, suid string, q *pmaster.Quest, p 
 			if err != nil {
 				return err
 			}
-			*photos = append(*photos, preparedPhotoBonus{source: c.GetIndex(), definition: d, amount: effect})
+			*photos = append(*photos, PreparedPhotoBonus{Source: c.GetIndex(), Definition: d, Amount: effect})
 		}
 	}
 	return nil
@@ -962,20 +973,20 @@ func preparedPhotoBonusType(typ penum.PhotoAbilityType) bool {
 	}
 }
 
-type preparedPhotoBonus struct {
-	source     int32
-	definition *pmaster.PhotoAbility
-	amount     int64
+type PreparedPhotoBonus struct {
+	Source     int32
+	Definition *pmaster.PhotoAbility
+	Amount     int64
 }
 
 // Resolve all recipients before finalizing any card's stats, so a neighbor's
 // photo affects earlier and later positions identically. Definitions are loaded
 // once per preparation, never from inside the per-beat engine.
-func applyPreparedPhotoBonuses(ctx context.Context, input *live.Input, user *papi.LiveUserInfo, bonuses []preparedPhotoBonus) error {
+func ApplyPreparedPhotoBonuses(ctx context.Context, input *live.Input, user *papi.LiveUserInfo, bonuses []PreparedPhotoBonus) error {
 	ids := map[string]bool{}
 	for _, bonus := range bonuses {
-		if bonus.definition.GetAbilityTargetId() != "" {
-			ids[bonus.definition.GetAbilityTargetId()] = true
+		if bonus.Definition.GetAbilityTargetId() != "" {
+			ids[bonus.Definition.GetAbilityTargetId()] = true
 		}
 	}
 	targets := map[string]*pmaster.PhotoAbilityTarget{}
@@ -997,11 +1008,11 @@ func applyPreparedPhotoBonuses(ctx context.Context, input *live.Input, user *pap
 		byIndex[card.GetIndex()] = card
 	}
 	for _, bonus := range bonuses {
-		d := bonus.definition
-		if bonus.amount < 0 {
+		d := bonus.Definition
+		if bonus.Amount < 0 {
 			return FailedPreconditionf("negative photo effect")
 		}
-		recipients, err := live.PhotoTargetIndexes(cards, input.Cards, bonus.source, targets[d.GetAbilityTargetId()])
+		recipients, err := live.PhotoTargetIndexes(cards, input.Cards, bonus.Source, targets[d.GetAbilityTargetId()])
 		if err != nil {
 			return FailedPreconditionf("%v", err)
 		}
@@ -1009,7 +1020,7 @@ func applyPreparedPhotoBonuses(ctx context.Context, input *live.Input, user *pap
 			data := input.Cards[index]
 			switch d.GetAbilityType() {
 			case penum.PhotoAbilityType_PhotoAbilityType_PassiveSkill:
-				if bonus.amount <= 0 || bonus.amount > math.MaxInt32 {
+				if bonus.Amount <= 0 || bonus.Amount > math.MaxInt32 {
 					return FailedPreconditionf("invalid photo passive level")
 				}
 				card := byIndex[index]
@@ -1019,20 +1030,20 @@ func applyPreparedPhotoBonuses(ctx context.Context, input *live.Input, user *pap
 						photoIndex++
 					}
 				}
-				card.Skills = append(card.Skills, &papi.LiveDeckCardSkill{Index: photoIndex, SkillId: d.GetSkillId(), SkillLevel: int32(bonus.amount), PossessionType: penum.SkillPossessionType_SkillPossessionType_Photo})
+				card.Skills = append(card.Skills, &papi.LiveDeckCardSkill{Index: photoIndex, SkillId: d.GetSkillId(), SkillLevel: int32(bonus.Amount), PossessionType: penum.SkillPossessionType_SkillPossessionType_Photo})
 			case penum.PhotoAbilityType_PhotoAbilityType_ReceivedStrengthEffectValueIncrease,
 				penum.PhotoAbilityType_PhotoAbilityType_ReceivedStrengthEffectCountIncrease,
 				penum.PhotoAbilityType_PhotoAbilityType_AffectStrengthEffectValueIncrease,
 				penum.PhotoAbilityType_PhotoAbilityType_AffectStrengthEffectCountIncrease:
-				if bonus.amount > math.MaxInt32 || d.GetStatusEffectType() == penum.StatusEffectType_StatusEffectType_Unknown {
+				if bonus.Amount > math.MaxInt32 || d.GetStatusEffectType() == penum.StatusEffectType_StatusEffectType_Unknown {
 					return FailedPreconditionf("invalid status-restricted photo modifier")
 				}
-				data.StrengthModifiers = append(data.StrengthModifiers, live.StrengthModifier{Type: d.GetAbilityType(), StatusTypes: []penum.StatusEffectType{d.GetStatusEffectType()}, Amount: int32(bonus.amount)})
+				data.StrengthModifiers = append(data.StrengthModifiers, live.StrengthModifier{Type: d.GetAbilityType(), StatusTypes: []penum.StatusEffectType{d.GetStatusEffectType()}, Amount: int32(bonus.Amount)})
 			default:
 				if !preparedPhotoBonusType(d.GetAbilityType()) {
 					return status.Errorf(codes.Unimplemented, "photo ability %v is unsupported", d.GetAbilityType())
 				}
-				if err := addLiveBonus(data.Bonuses, d.GetAbilityType(), bonus.amount); err != nil {
+				if err := addLiveBonus(data.Bonuses, d.GetAbilityType(), bonus.Amount); err != nil {
 					return err
 				}
 			}
@@ -1127,14 +1138,14 @@ func prepareNPC(ctx context.Context, input *live.Input, roster *papi.QuestOppone
 		if err := prepareNPCAppearance(ctx, c, character); err != nil {
 			return err
 		}
-		input.Cards[c.Index] = live.CardData{CharacterID: m.GetCharacterId(), GroupID: character.GetCharacterGroupId(), Type: m.GetType(), Attribute: liveCardAttribute(m), LightFans: int64(r.GetLightFanAmount()), MiddleFans: int64(r.GetMiddleFanAmount()), HeavyFans: int64(r.GetHeavyFanAmount()), Bonuses: map[penum.PhotoAbilityType]int64{}}
+		input.Cards[c.Index] = live.CardData{CharacterID: m.GetCharacterId(), GroupID: character.GetCharacterGroupId(), Type: m.GetType(), Attribute: LiveCardAttribute(m), LightFans: int64(r.GetLightFanAmount()), MiddleFans: int64(r.GetMiddleFanAmount()), HeavyFans: int64(r.GetHeavyFanAmount()), Bonuses: map[penum.PhotoAbilityType]int64{}}
 		side.UserDeck.Cards = append(side.UserDeck.Cards, c)
 	}
 	input.Users = append(input.Users, side)
 	return nil
 }
 
-func prepareQuestBonus(ctx context.Context, input *live.Input) error {
+func PrepareLiveQuestBonus(ctx context.Context, input *live.Input) error {
 	if input.Quest.GetLiveBonusGroupId() == "" {
 		return nil
 	}
@@ -1185,7 +1196,7 @@ func prepareQuestBonus(ctx context.Context, input *live.Input) error {
 	return nil
 }
 
-func resolveLiveSkills(ctx context.Context, input *live.Input) error {
+func ResolveLiveSkills(ctx context.Context, input *live.Input) error {
 	ids := map[string]bool{}
 	for _, u := range input.Users {
 		for _, c := range u.GetUserDeck().GetCards() {

@@ -153,6 +153,7 @@ func ensureUserIndexes(ctx context.Context) error {
 		{uname.UserQuest, bson.D{{Key: "SUID", Value: 1}, {Key: "questId", Value: 1}}},
 		{uname.UserDreamArea, bson.D{{Key: "SUID", Value: 1}, {Key: "basePhotoId", Value: 1}}},
 		{uname.UserDreamState, bson.D{{Key: "SUID", Value: 1}}},
+		{uname.UserExerciseDeck, bson.D{{Key: "SUID", Value: 1}, {Key: "exerciseId", Value: 1}}},
 		{uname.UserQuestLiveHistory, bson.D{{Key: "SUID", Value: 1}, {Key: "questId", Value: 1}}},
 		{uname.UserQuestLiveReplay, bson.D{{Key: "SUID", Value: 1}, {Key: "questId", Value: 1}, {Key: "_id", Value: 1}}},
 		{uname.UserQuestLiveChunk, bson.D{{Key: "SUID", Value: 1}, {Key: "questId", Value: 1}, {Key: "replayId", Value: 1}, {Key: "number", Value: 1}}},

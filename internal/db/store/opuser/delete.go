@@ -88,6 +88,7 @@ func getUserCollection() []collection {
 		{Name: uname.UserBirthdayState, SUIDField: suidField},
 		{Name: uname.UserDreamState, SUIDField: suidField},
 		{Name: uname.UserDreamArea, SUIDField: suidField},
+		{Name: uname.UserExerciseDeck, SUIDField: suidField},
 		{Name: uname.UserSalary, SUIDField: suidField},
 		{Name: uname.UserLeagueDeckPosition, SUIDField: suidField},
 		{Name: uname.UserDuty, SUIDField: suidField},

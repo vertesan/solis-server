@@ -1,6 +1,6 @@
 # Unimplemented gRPC APIs
 
-Last audited: 2026-09-19
+Last audited: 2026-10-05
 
 This inventory uses the generated API declarations in
 `internal/proto/papi/papi_grpc.pb.go` as the source of truth. It compares them
@@ -20,18 +20,23 @@ This is an implementation-presence audit, not a review of game-logic
 completeness. A concrete handler is counted as implemented even if particular
 inputs are unsupported or its behavior is intentionally minimal.
 
+Known Exercise limitation: `/api.Exercise/Start` rejects battle lessons
+`exercise-basic-16`, `17`, `18`, `19`, and `21` until their opponent rosters are
+available. These are not encoded in the master data or supplied captures;
+zero-target-score battles must not be treated as automatic score-live clears.
+
 ## Summary
 
 | Category | Services | RPCs |
 | --- | ---: | ---: |
 | Generated API surface | 67 | 425 |
-| Registered services | 43 | 273 |
-| Concrete handlers | 43 | 235 |
-| Entirely unregistered services | 24 | 152 |
+| Registered services | 44 | 277 |
+| Concrete handlers | 44 | 239 |
+| Entirely unregistered services | 23 | 148 |
 | Missing methods on registered services | 14 | 38 |
-| Total unimplemented RPCs | 38 | 190 |
+| Total unimplemented RPCs | 37 | 186 |
 
-The “Total unimplemented RPCs” service count is the 24 entirely unregistered
+The “Total unimplemented RPCs” service count is the 23 entirely unregistered
 services plus 14 registered services that are only partially implemented.
 
 ## Entirely unregistered services
@@ -75,11 +80,6 @@ unknown-service handler.
   - `/api.Duty/Top`
   - `/api.Duty/ExchangeReward`
   - `/api.Duty/ReceiveTotalObtainReward`
-- `Exercise` (4):
-  - `/api.Exercise/Top`
-  - `/api.Exercise/SaveDeck`
-  - `/api.Exercise/Start`
-  - `/api.Exercise/ListAsset`
 - `FishHeaven` (5):
   - `/api.FishHeaven/Top`
   - `/api.FishHeaven/ClearMiniGameTutorial`

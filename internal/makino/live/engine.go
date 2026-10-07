@@ -196,6 +196,9 @@ func newSimulation(in *Input) (*simulation, error) {
 	if in.Quest.DifficultyLevel <= 0 || in.Quest.MaxCapacity <= 0 || in.Quest.MentalThreshold <= 0 || in.Pressure.WeightPermil <= 0 {
 		return nil, fmt.Errorf("invalid live difficulty, capacity or pressure")
 	}
+	if in.BeatScoreCoefficientPermil < 0 || in.BeatScoreCoefficientPermil > 1000 {
+		return nil, fmt.Errorf("invalid live beat score coefficient")
+	}
 	if len(in.Users) < 1 || len(in.Users) > 2 || len(in.Chart) == 0 || len(in.Chart) > maxChartEvents {
 		return nil, fmt.Errorf("invalid live unit/chart size")
 	}

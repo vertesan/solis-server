@@ -780,7 +780,7 @@ func startQuest(ctx context.Context, req *papi.QuestStartRequest, formation *vib
 					return nil, err
 				}
 			}
-			if err := unlockQuestMusic(ctx, suid, q.GetMusicId(), updated); err != nil {
+			if err := viber.UnlockLiveMusic(ctx, suid, q.GetMusicId(), updated); err != nil {
 				return nil, err
 			}
 			if _, err := viber.ReconcileUserMissions(ctx, suid, now, updated); err != nil {
@@ -1271,27 +1271,6 @@ func settleQuestMissions(ctx context.Context, suid string, req *papi.QuestStartR
 	}
 	// Condition/function-lock missions are reconciled once after all progress
 	// has been written, rather than per reward or card.
-	return nil
-}
-
-func unlockQuestMusic(ctx context.Context, suid, musicID string, updated *papi.UpdatedData) error {
-	if musicID == "" {
-		return nil
-	}
-	rows, err := opuser.FindAllUserMusics(ctx, suid)
-	if err != nil {
-		return err
-	}
-	for _, row := range rows {
-		if row.GetMusicId() == musicID {
-			return nil
-		}
-	}
-	row := &ptransaction.UserMusic{MusicId: musicID}
-	if err := opuser.UpsertUserMusic(ctx, suid, row); err != nil {
-		return err
-	}
-	updated.Musics = append(updated.Musics, row)
 	return nil
 }
 

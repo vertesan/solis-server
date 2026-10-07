@@ -23,6 +23,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/dream"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/exchange"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/excursion"
+	"github.com/vertesan/solis-server/internal/server/rpc/servers/exercise"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/friend"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/gacha"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/gift"
@@ -154,6 +155,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterDeckServer(server, &deck.DeckServer{})
 	papi.RegisterQuestServer(server, &quest.QuestServer{})
 	papi.RegisterDreamServer(server, &dream.DreamServer{})
+	papi.RegisterExerciseServer(server, &exercise.ExerciseServer{})
 	papi.RegisterDivisionServer(server, &division.DivisionServer{})
 	papi.RegisterExchangeServer(server, &exchange.ExchangeServer{})
 	papi.RegisterShopServer(server, &shop.ShopServer{})

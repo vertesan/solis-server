@@ -51,4 +51,10 @@ type Input struct {
 	Triggers           map[string]*pmaster.SkillTrigger
 	Targets            map[string]*pmaster.SkillTarget
 	Seed               uint64
+	// Exercise captures have no unbuffed criticals, but CriticalRateUp still
+	// produces them. Keep that mode-specific rule separate from normal lives.
+	DisableBaseCriticalRate bool
+	// A captured Exercise song's inferred beat coefficient. Zero preserves
+	// normal-live normalization by the number of beat events in the chart.
+	BeatScoreCoefficientPermil int32
 }

@@ -19,6 +19,15 @@ func (e *simulation) beatScore(a *actor, critical bool) int64 {
 	// beatCount is computed once from the playable chart, not its last musical
 	// position or the number of all event types. It is nonzero in a beat event.
 	base := (float64(e.attribute(a, penum.AttributeType_AttributeType_Dance))*float64(q.GetBeatDanceWeightPermil()) + float64(e.attribute(a, penum.AttributeType_AttributeType_Vocal))*float64(q.GetBeatVocalWeightPermil()) + float64(e.attribute(a, penum.AttributeType_AttributeType_Visual))*float64(q.GetBeatVisualWeightPermil())) / 1000 * 8 / float64(e.beatCount)
+	if e.input.BeatScoreCoefficientPermil > 0 {
+		// Exercise captures fit a song-specific coefficient, not 8/chart
+		// beats. Floor each weighted attribute separately before adding:
+		// capture060/chart203 distinguishes this from flooring the sum.
+		weighted := math.Floor(float64(e.attribute(a, penum.AttributeType_AttributeType_Vocal))*float64(q.GetBeatVocalWeightPermil())/1000) +
+			math.Floor(float64(e.attribute(a, penum.AttributeType_AttributeType_Dance))*float64(q.GetBeatDanceWeightPermil())/1000) +
+			math.Floor(float64(e.attribute(a, penum.AttributeType_AttributeType_Visual))*float64(q.GetBeatVisualWeightPermil())/1000)
+		base = weighted * float64(e.input.BeatScoreCoefficientPermil) / 1000
+	}
 	bonus := 1 + float64(e.effectValue(a, penum.StatusEffectType_StatusEffectType_ScoreUp)+e.effectValue(a, penum.StatusEffectType_StatusEffectType_BeatScoreUp)+e.effectValue(a, penum.StatusEffectType_StatusEffectType_BeatBoost)+a.data.Bonuses[penum.PhotoAbilityType_PhotoAbilityType_BeatScoreMultiply])/1000
 	value := base*bonus*e.comboFactor(a)*e.fanFactor(a)*e.criticalFactor(a, critical)*characterScoreFactor(a)*e.jitter() + float64(a.data.Bonuses[penum.PhotoAbilityType_PhotoAbilityType_BeatScoreAdd])
 	return e.scoreValue(value)
@@ -196,6 +205,9 @@ func (e *simulation) criticalRate(a *actor) float64 {
 	// Provisional player conjecture accepted by the user; do not invent a floor
 	// or carry the older workbook's unproven 50% base cap into this formula.
 	base := float64(a.card.Technique) / 1000 / float64(e.input.Quest.DifficultyLevel)
+	if e.input.DisableBaseCriticalRate {
+		base = 0
+	}
 	return min(1, max(0, base+float64(e.effectValue(a, penum.StatusEffectType_StatusEffectType_CriticalRateUp))/1000))
 }
 
