@@ -1,0 +1,99 @@
+# Branches follow docs/love-24-0517-routemap.md and adv_love_2405 scripts.
+# Choices use the 1-based API, rather than the map's 0-based alternatives.
+# Numeric favorability awards reuse the prior series' private-server scale;
+# no Mei response establishes the official weights. TRUE end-roll association
+# follows the established naming convention; its movie asset exists:
+# mov_adv_event_2405_02_02_movie-01.
+loveId: love-24-0517
+endingConditions:
+  cd-event-love-24-0517-normal-mission_love-end_emb: love-end-love-24-0517-008-happy-003
+  cd-event-love-24-0517-limited-mission_love-end_emb-sp: love-end-love-24-0517-008-happy-003
+endings:
+  - {id: love-end-love-24-0517-003-bad, name: ブワッブワッエンド, favorability: 206}
+  - {id: love-end-love-24-0517-008-happy-001, name: 部活よりも恋愛エンド, favorability: 1441}
+  - {id: love-end-love-24-0517-008-happy-002, name: 駅伝優勝エンド, favorability: 1441}
+  - {id: love-end-love-24-0517-008-happy-003, name: TRUE エンド, favorability: 2059, endRollAssetId: event_2405_02_02}
+  - {id: love-end-love-24-0517-008-normal-001, name: 結婚約束エンド, favorability: 618}
+  - {id: love-end-love-24-0517-008-normal-002, name: お友達からよろしくエンド, favorability: 618}
+  - {id: love-end-love-24-0517-008-bad-001, name: 謝罪エンド, favorability: 206}
+  - {id: love-end-love-24-0517-008-bad-002, name: 未読無視エンド, favorability: 206}
+episodes:
+  love-event-story-love-24-0517-001:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-24-0517-002
+  love-event-story-love-24-0517-002:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-24-0517-003
+  love-event-story-love-24-0517-003:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 3, count: 2, best: 1, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 3, choice: 2}], ending: love-end-love-24-0517-003-bad}
+    next: love-event-story-love-24-0517-004
+  love-event-story-love-24-0517-004:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+    next: love-event-story-love-24-0517-005
+  love-event-story-love-24-0517-005:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+      - {index: 3, count: 2, best: 2, scores: [-35, 35]}
+    next: love-event-story-love-24-0517-006
+  love-event-story-love-24-0517-006:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 2, choice: 1}], next: love-event-story-love-24-0517-007-bad}
+    next: love-event-story-love-24-0517-007
+  love-event-story-love-24-0517-007:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    outcomes:
+      - next: love-event-story-love-24-0517-008-happy
+        all:
+          - {episode: love-event-story-love-24-0517-001, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-0517-001, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-0517-002, group: 1, choice: 2}
+          - {episode: love-event-story-love-24-0517-002, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-0517-003, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-0517-003, group: 2, choice: 2}
+          - {episode: love-event-story-love-24-0517-004, group: 1, choice: 2}
+          - {episode: love-event-story-love-24-0517-005, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-0517-005, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-0517-005, group: 3, choice: 2}
+          - {episode: love-event-story-love-24-0517-006, group: 1, choice: 1}
+          - {group: 1, choice: 2}
+          - {group: 2, choice: 1}
+    next: love-event-story-love-24-0517-008-normal
+  # Both master Story rows play love_2405_08_03. The route enters the episode7
+  # variant directly after episode6, matching the map and story-count mission.
+  love-event-story-love-24-0517-007-bad: &bad
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-0517-008-bad-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-0517-008-bad-002}
+  love-event-story-love-24-0517-008-bad:
+    <<: *bad
+  love-event-story-love-24-0517-008-happy:
+    groups:
+      - {index: 1, count: 3, best: 3, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-0517-008-happy-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-0517-008-happy-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-24-0517-008-happy-003}
+  love-event-story-love-24-0517-008-normal:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-0517-008-normal-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-0517-008-normal-002}

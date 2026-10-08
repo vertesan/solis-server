@@ -1,0 +1,121 @@
+# Branches follow docs/love-24-1114-routemap.md and the adv_love_2411 scripts.
+# Choices use the API's 1-based indices, not the map's 0-based alternatives.
+# Favorability weights/ending awards reuse existing-series values as an
+# approximation. Yu route points are separate from favorability: they are
+# encoded by the four minimum point combinations below, never by these scores.
+# The TRUE end-roll asset exists; its association follows the established
+# mov_adv_event_2411_02_02_movie-01 naming convention rather than captured RPCs.
+loveId: love-24-1114
+endingConditions:
+  cd-event-love-24-1114-normal-mission_love-end_emb: love-end-love-24-1114-008-happy-001
+  cd-event-love-24-1114-limited-mission_love-end_emb-sp: love-end-love-24-1114-008-happy-001
+endings:
+  - {id: love-end-love-24-1114-003-bad, name: スズキスズキスズキEND, favorability: 206}
+  - {id: love-end-love-24-1114-008-happy-001, name: TRUEEND, favorability: 2059, endRollAssetId: event_2411_02_02}
+  - {id: love-end-love-24-1114-008-happy-002, name: 永遠に君の味方END, favorability: 1441}
+  - {id: love-end-love-24-1114-008-happy-003, name: 解釈違いEND, favorability: 1441}
+  - {id: love-end-love-24-1114-008-normal-001, name: 秘密の恋愛END, favorability: 618}
+  - {id: love-end-love-24-1114-008-normal-002, name: かけがえのない友達END, favorability: 618}
+  - {id: love-end-love-24-1114-008-normal-003, name: 生涯独身END, favorability: 618}
+  - {id: love-end-love-24-1114-008-bad-001, name: コワイコワイEND, favorability: 206}
+  - {id: love-end-love-24-1114-008-bad-002, name: 泡沫の夢END, favorability: 206}
+episodes:
+  love-event-story-love-24-1114-001:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+    next: love-event-story-love-24-1114-002
+  love-event-story-love-24-1114-002:
+    groups:
+      # The hinted choices avoid Yu points; neither grants happy-route flags.
+      - {index: 1, count: 2, best: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [0, 0]}
+    next: love-event-story-love-24-1114-003
+  love-event-story-love-24-1114-003:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-24-1114-004
+  love-event-story-love-24-1114-004:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    outcomes:
+      # Despite its 003-bad identifier, this ending occurs in episode4.
+      - {all: [{group: 2, choice: 2}], ending: love-end-love-24-1114-003-bad}
+    next: love-event-story-love-24-1114-005
+  # The legacy 004-bad master row points to missing script love_2411_04_02.
+  # It is not part of the supplied playable route; do not alias it to episode4.
+  love-event-story-love-24-1114-005:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-24-1114-006
+  love-event-story-love-24-1114-006:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35]}
+    next: love-event-story-love-24-1114-007
+  love-event-story-love-24-1114-007:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35]}
+      - {index: 2, count: 2, scores: [0, 0], requires: [{group: 1, choice: 2}]}
+      - {index: 3, count: 2, best: 1, scores: [35, -35], requires: [{group: 1, choice: 2}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], next: love-event-story-love-24-1114-008-bad}
+      # Yu points: EP2/G1 choice1 = 1, EP2/G2 choice2 = 1,
+      # EP5/G1 choice1 = 3, EP7/G3 choice2 = 2. These four minimal
+      # combinations are exactly the point totals >=4; they outrank flags.
+      - next: love-event-story-love-24-1114-008-bad
+        all:
+          - {episode: love-event-story-love-24-1114-005, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-002, group: 1, choice: 1}
+      - next: love-event-story-love-24-1114-008-bad
+        all:
+          - {episode: love-event-story-love-24-1114-005, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-002, group: 2, choice: 2}
+      - next: love-event-story-love-24-1114-008-bad
+        all:
+          - {episode: love-event-story-love-24-1114-005, group: 1, choice: 1}
+          - {group: 3, choice: 2}
+      - next: love-event-story-love-24-1114-008-bad
+        all:
+          - {episode: love-event-story-love-24-1114-002, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-002, group: 2, choice: 2}
+          - {group: 3, choice: 2}
+      - next: love-event-story-love-24-1114-008-happy
+        all:
+          - {episode: love-event-story-love-24-1114-003, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-003, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-1114-004, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-004, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-1114-005, group: 2, choice: 1}
+          - {episode: love-event-story-love-24-1114-006, group: 1, choice: 1}
+          - {episode: love-event-story-love-24-1114-006, group: 2, choice: 1}
+          - {group: 1, choice: 2}
+          - {group: 3, choice: 1}
+    next: love-event-story-love-24-1114-008-normal
+  love-event-story-love-24-1114-008-happy:
+    groups:
+      - {index: 1, count: 3, best: 1, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-1114-008-happy-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-1114-008-happy-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-24-1114-008-happy-003}
+  love-event-story-love-24-1114-008-normal:
+    groups:
+      - {index: 1, count: 3, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-1114-008-normal-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-1114-008-normal-002}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-24-1114-008-normal-003}
+  love-event-story-love-24-1114-008-bad:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    branches:
+      # The longer opening follows the unanswered phone in episode7;
+      # the point-triggered route skips directly to the later reunion.
+      - {group: 1, match: 1, otherwise: 2, all: [{episode: love-event-story-love-24-1114-007, group: 1, choice: 1}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-24-1114-008-bad-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-24-1114-008-bad-002}

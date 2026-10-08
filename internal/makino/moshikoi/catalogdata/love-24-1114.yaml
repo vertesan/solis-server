@@ -1,0 +1,26 @@
+# Permanent Yu event. The original opening time and main-live gate come from
+# cd-date-event-mission-love-24-1114-normal; the banner exists in the manifest.
+loveId: love-24-1114
+name: もし恋 ~もしも君と恋をしたら~
+description: 鈴村優編
+startTime: 1731553200000
+unlockConditionId: cd-clear-area-main-002
+bannerAssetId: img_banner_l_event-love-24-1114
+characterId: char-yu
+# LoveHomeAction supplies the costume; Character.loveInfo supplies the color.
+costumeId: cos-yu-casl-02
+characterAssetId: img_chr_mem_yu
+color: AECE6E
+storyReadItemId: item-love-24-1114-story
+presentItemId: item-love-24-1114-present
+promoteItemId: item-love-24-1114-lesson-boost
+lessonMaxHours: 12
+eventMissionIds:
+  - event-love-24-1114-normal
+  - event-love-24-1114-normal-card
+limitedEventMissionIds:
+  - event-love-24-1114-limited
+# Master data does not encode these thresholds. Retain the established
+# standard-series progression until Yu's level-roadmap traffic is available.
+episodeUnlockLevels: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+hintUnlockLevels: {1: 9, 2: 10}

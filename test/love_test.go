@@ -29,15 +29,15 @@ func TestLoveLessonAndRegistrationScenario(t *testing.T) {
 	client := papi.NewLoveClient(testConfig.GrpcConn)
 	catalog := loveCatalog(t)
 	title := loveCall(t, client.Title, &papi.Empty{})
-	if len(title.GetLoveInfos()) != 2 || title.GetLoveInfos()[0].GetLoveId() != testLoveID ||
+	if len(title.GetLoveInfos()) != len(moshikoi.SupportedLoveIDs()) || title.GetLoveInfos()[0].GetLoveId() != testLoveID ||
 		title.GetLoveInfos()[0].GetEndTime() != 0 || !title.GetLoveInfos()[0].GetIsUnplayed() {
-		t.Fatalf("fresh title did not expose both permanent events with Rei first: %v", title)
+		t.Fatalf("fresh title did not expose the permanent events with Rei first: %v", title)
 	}
 	if !title.GetLoveInfos()[0].GetIsUnlocked() {
 		loveReject(t, codes.FailedPrecondition, client.Register, &papi.LoveRegisterRequest{LoveId: testLoveID, Name: "Manager"})
 	}
 	unlockTestLove(t)
-	loveReject(t, codes.NotFound, client.Register, &papi.LoveRegisterRequest{LoveId: "love-24-0517", Name: "Manager"})
+	loveReject(t, codes.NotFound, client.Register, &papi.LoveRegisterRequest{LoveId: "love-not-supported", Name: "Manager"})
 	loveReject(t, codes.InvalidArgument, client.Register, &papi.LoveRegisterRequest{LoveId: testLoveID})
 	registered := loveCall(t, client.Register, &papi.LoveRegisterRequest{LoveId: testLoveID, Name: "Manager"})
 	assertLoveDelta(t, registered.GetCommonResponse(), false)
@@ -296,6 +296,36 @@ func TestLoveGodReplayScenario(t *testing.T) {
 	playNagisaEpisode(t, client, nagisaCatalog, "001", 1, 1)
 	playNagisaEpisode(t, client, nagisaCatalog, "002", 1, 1)
 	assertNagisaVisibility(t)
+	for _, series := range []struct {
+		id      string
+		endings int
+	}{{"love-24-0517", 8}, {"love-24-1114", 9}} {
+		catalog, err := moshikoi.LoadCatalog(context.Background(), series.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		top := loveCall(t, client.Top, &papi.LoveTopRequest{LoveId: series.id})
+		stored, err := moshikoi.UserLove(context.Background(), testConfig.TestUserSuid, series.id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if top.GetPlayerName() == "" || !top.GetSaveInfo().GetUnlocked() || len(stored.GetUnlockedLoveStoryEndIDs()) != series.endings ||
+			catalog.Level(top.GetExp()) != catalog.Levels[len(catalog.Levels)-1].GetLevel() {
+			t.Fatalf("god did not fully initialize %s: %v", series.id, top)
+		}
+		setLoveItem(t, catalog.Config.StoryReadItemID, 0)
+		loveCall(t, client.Reset, &papi.LoveResetRequest{LoveId: series.id})
+		for _, suffix := range []string{"001", "002"} {
+			episodeID := "love-event-story-" + series.id + "-" + suffix
+			loveCall(t, client.Start, &papi.LoveStartRequest{StoryEpisodeId: episodeID})
+			loveCall(t, client.Finish, &papi.LoveFinishRequest{StoryEpisodeId: episodeID, SelectStoryChoiceInfos: []*papi.LoveSelectStoryChoiceInfo{
+				{GroupIndex: 1, Index: 1, IsValid: true}, {GroupIndex: 2, Index: 1, IsValid: true},
+			}})
+		}
+		if loveItemAmount(t, catalog.Config.StoryReadItemID) != 0 {
+			t.Fatalf("god replay charged story points for %s", series.id)
+		}
+	}
 }
 
 func loveCatalog(t *testing.T) *moshikoi.Catalog {
@@ -439,7 +469,7 @@ func assertLoveVisibility(t *testing.T, god bool) {
 		t.Fatal("User.Get omitted or changed persisted Love progress")
 	}
 	home := loveCall(t, papi.NewHomeClient(testConfig.GrpcConn).Enter, &papi.HomeEnterRequest{})
-	if len(home.GetEventInfo().GetLoveEventInfos()) != 2 {
+	if len(home.GetEventInfo().GetLoveEventInfos()) != len(moshikoi.SupportedLoveIDs()) {
 		t.Fatalf("Home.Enter exposed unsupported Love events: %v", home.GetEventInfo().GetLoveEventInfos())
 	}
 	event := home.GetEventInfo().GetLoveEventInfos()[0]
