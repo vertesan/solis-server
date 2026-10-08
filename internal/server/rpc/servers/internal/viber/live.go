@@ -345,6 +345,21 @@ func NewLiveInput(ctx context.Context, q *pmaster.Quest, seed uint64) (*live.Inp
 	if err != nil {
 		return nil, nil, err
 	}
+	// Use the song's reference chart, not the current quest's easier/harder
+	// variant. Some event/360 songs have no canonical -001 chart; in that case
+	// the resolver uses this quest's explicit chart with the same approximation.
+	reference := input.Chart
+	referenceID := "chart-" + strings.TrimPrefix(music.GetId(), "music-") + "-001"
+	if referenceID != q.GetMusicChartPatternId() {
+		reference, err = opmaster.FindLiveChart(ctx, referenceID)
+		if err != nil {
+			return nil, nil, err
+		}
+	}
+	input.BeatScoreCoefficientPermil, err = live.BeatScoreCoefficientPermil(music.GetId(), reference, input.Chart)
+	if err != nil {
+		return nil, nil, err
+	}
 	if input.ComboAdvantages, err = opmaster.FindLiveComboAdvantages(ctx, music.GetComboAdvantageId()); err != nil {
 		return nil, nil, err
 	}

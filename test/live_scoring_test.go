@@ -23,10 +23,11 @@ func TestLiveScoringTablesScenario(t *testing.T) {
 	}
 	for i, chart := range result.GetCharts() {
 		for _, beat := range chart.GetBeats() {
-			// 8 * Vocal1000 / 11 normal beats, before jitter and combo.
-			lower, upper := int64(690), int64(763)
+			// round(8000/(11+1)) = 667 permil × Vocal1000,
+			// before jitter and combo.
+			lower, upper := int64(633), int64(700)
 			if i == 10 {
-				lower, upper = 725, 801
+				lower, upper = 665, 735
 			}
 			if beat.GetIsCritical() || beat.GetScore() < lower || beat.GetScore() > upper {
 				t.Fatalf("beat %d score %d outside %d..%d; combo master factor must not be added twice", i+1, beat.GetScore(), lower, upper)
@@ -34,7 +35,7 @@ func TestLiveScoringTablesScenario(t *testing.T) {
 		}
 	}
 	// Force criticals and add ten percentage points to the critical multiplier.
-	// One normal beat: 8000 base × (1.5 + .1) × jitter = 12160..13440,
+	// One normal beat: 4000 base × (1.5 + .1) × jitter = 6080..6720,
 	// not an extra 1.1 multiplier.
 	in.Chart = in.Chart[:1]
 	for _, card := range in.Users[0].UserDeck.Cards {
@@ -48,7 +49,7 @@ func TestLiveScoringTablesScenario(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, beat := range critical.GetCharts()[0].GetBeats() {
-		if !beat.GetIsCritical() || beat.GetScore() < 12160 || beat.GetScore() > 13440 {
+		if !beat.GetIsCritical() || beat.GetScore() < 6080 || beat.GetScore() > 6720 {
 			t.Fatalf("critical multiplier: %v", beat)
 		}
 	}

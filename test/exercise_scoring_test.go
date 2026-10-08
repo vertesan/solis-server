@@ -192,12 +192,13 @@ func TestExerciseBeatCoefficientScenario(t *testing.T) {
 		in.Cards[index] = data
 	}
 	for _, beat := range run().GetCharts()[0].GetBeats() {
-		// The existing 8*1007/4 formula resumes when the override is absent.
-		if beat.GetScore() < 1913 || beat.GetScore() > 2115 {
-			t.Fatal("exercise coefficient changed normal-live default scoring")
+		// Missing overrides use the shared chart-derived coefficient:
+		// round(8000/(4+1)) = 1600 permil, times the weighted Vocal1007.
+		if beat.GetScore() < 1530 || beat.GetScore() > 1691 {
+			t.Fatal("exercise coefficient did not use shared fallback scoring")
 		}
 	}
-	for _, invalid := range []int32{-1, 1001} {
+	for _, invalid := range []int32{-1, 4001} {
 		in.BeatScoreCoefficientPermil = invalid
 		if result, err := live.Simulate(context.Background(), in); err == nil || result != nil {
 			t.Fatal("invalid beat coefficient accepted")

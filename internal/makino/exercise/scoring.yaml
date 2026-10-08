@@ -18,8 +18,8 @@ disableBaseCriticalExercises:
 # runs. Base = sum(floor(attribute * quest weight / 1000)) * K; the coefficients
 # fit all 6,870 ordinary beat snapshots, including buffs and criticals.
 # The coefficients fit the observed +/-5% jitter; their official derivation is
-# unknown. Scope these values to Exercise, not ordinary Quest/Dream lives.
-# Other songs retain the Live engine's 8 / ordinary-beat-count approximation.
+# unknown. These overrides preserve the captured Exercise outcomes.
+# Other songs use the shared reference-chart round(8000/(beat count+1)) rule.
 beatScoreCoefficientPermil:
   music-hsm-001: 57
   music-sun-001: 54

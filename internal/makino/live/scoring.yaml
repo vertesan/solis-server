@@ -1,0 +1,5 @@
+# Capture-verified exceptions to round(8000 / (reference beat count + 1)).
+# IDOLY PRIDE uses 57 in both Exercise and ordinary Lives, despite the current
+# standard chart predicting 60. Its historical/official derivation is unknown.
+beatScoreCoefficientPermilOverrides:
+  music-hsm-001: 57

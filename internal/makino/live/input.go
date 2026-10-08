@@ -54,7 +54,8 @@ type Input struct {
 	// Exercise captures have no unbuffed criticals, but CriticalRateUp still
 	// produces them. Keep that mode-specific rule separate from normal lives.
 	DisableBaseCriticalRate bool
-	// A captured Exercise song's inferred beat coefficient. Zero preserves
-	// normal-live normalization by the number of beat events in the chart.
+	// Song-level coefficient resolved from its reference chart or a calibrated
+	// override. Zero derives the same approximation from Chart at simulation
+	// initialization for callers that have no separate reference chart.
 	BeatScoreCoefficientPermil int32
 }

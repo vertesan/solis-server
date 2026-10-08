@@ -108,7 +108,9 @@ func TestLiveConfirmedScoreFormulaScenario(t *testing.T) {
 			if kind == "beat" {
 				score, critical = chart.Beats[0].GetScore(), chart.Beats[0].GetIsCritical()
 				weighted := (float64(110000)*600 + 140000*200 + 120000*200) / 1000
-				base = 8 * weighted / 84 * (1 + .75 + .025*6 + .1*3 + .05*4)
+				// Without a separate reference chart, 84 beats resolve to
+				// round(8000/(84+1)) = 94 permil, not the raw 8/84 ratio.
+				base = weighted * .094 * (1 + .75 + .025*6 + .1*3 + .05*4)
 				fixed = 3456789
 			} else {
 				skill := chart.GetActivatedSkill()
@@ -160,9 +162,10 @@ func TestLiveBeatCountAndCharacterAdvantageScenario(t *testing.T) {
 		in.Cards[1] = data
 		boosted := round5Simulate(t, in)
 		for _, pair := range [][2]*papi.LiveBeat{{base.Charts[0].Beats[0], boosted.Charts[0].Beats[0]}, {base.Charts[2].Beats[0], boosted.Charts[2].Beats[0]}} {
-			// Exactly two beats per lane, independently of gaps, empty rows,
-			// skill opportunities, or having five versus ten participating idols.
-			assertLiveScoreFormula(t, pair[0].GetScore(), 8*1000.0/2, 10000)
+			// Exactly two beats resolve to round(8000/(2+1)) = 2667
+			// permil, independently of gaps, empty rows, skill opportunities,
+			// or having five versus ten participating idols.
+			assertLiveScoreFormula(t, pair[0].GetScore(), 2667, 10000)
 			want := (pair[0].GetScore()-10000)*2 + 10000
 			if pair[1].GetScore() < want || pair[1].GetScore() > want+1 {
 				t.Fatalf("character bonus scaled fixed score: base=%d doubled=%d want=%d..%d", pair[0].GetScore(), pair[1].GetScore(), want, want+1)

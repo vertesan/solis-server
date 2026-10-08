@@ -142,7 +142,9 @@ func prepareExerciseInput(ctx context.Context, suid string, catalog *exerciselog
 		return nil, err
 	}
 	input.DisableBaseCriticalRate = disableBaseCritical
-	input.BeatScoreCoefficientPermil = coefficient
+	if coefficient > 0 {
+		input.BeatScoreCoefficientPermil = coefficient
+	}
 	user, err := opuser.FindUser(ctx, suid)
 	if err != nil {
 		return nil, err

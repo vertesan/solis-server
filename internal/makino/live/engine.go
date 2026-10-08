@@ -71,7 +71,7 @@ type simulation struct {
 	event         eventState
 	order         int32
 	occupancy     float64
-	beatCount     int
+	beatPermil    int32
 	comboRows     []*pmaster.ComboAdvantage
 	audienceRows  []*pmaster.QuestAudienceAdvantage
 	staminaRows   []*pmaster.QuestStaminaConsumption
@@ -196,7 +196,7 @@ func newSimulation(in *Input) (*simulation, error) {
 	if in.Quest.DifficultyLevel <= 0 || in.Quest.MaxCapacity <= 0 || in.Quest.MentalThreshold <= 0 || in.Pressure.WeightPermil <= 0 {
 		return nil, fmt.Errorf("invalid live difficulty, capacity or pressure")
 	}
-	if in.BeatScoreCoefficientPermil < 0 || in.BeatScoreCoefficientPermil > 1000 {
+	if in.BeatScoreCoefficientPermil < 0 || in.BeatScoreCoefficientPermil > 4000 {
 		return nil, fmt.Errorf("invalid live beat score coefficient")
 	}
 	if len(in.Users) < 1 || len(in.Users) > 2 || len(in.Chart) == 0 || len(in.Chart) > maxChartEvents {
@@ -284,15 +284,20 @@ func newSimulation(in *Input) (*simulation, error) {
 		switch step.Type {
 		case penum.MusicChartType_MusicChartType_Unknown:
 		case penum.MusicChartType_MusicChartType_Beat:
-			// Every normal chart beat awards one beat score to every lane. Skill
-			// opportunities and empty musical positions are not normal beats.
-			e.beatCount++
 		case penum.MusicChartType_MusicChartType_ActiveSkill, penum.MusicChartType_MusicChartType_SpecialSkill:
 			if step.Position < 1 || step.Position > 5 {
 				return nil, fmt.Errorf("invalid skill chance position")
 			}
 		default:
 			return nil, fmt.Errorf("unsupported master live chart type %s", step.Type)
+		}
+	}
+	e.beatPermil = in.BeatScoreCoefficientPermil
+	if e.beatPermil == 0 {
+		var err error
+		e.beatPermil, err = BeatScoreCoefficientPermil(in.Quest.GetMusicId(), nil, in.Chart)
+		if err != nil {
+			return nil, err
 		}
 	}
 	e.occupancy = float64(e.result.TotalAudienceAmount) / float64(in.Quest.MaxCapacity)
