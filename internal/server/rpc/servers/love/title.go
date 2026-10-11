@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/internal/viber"
 	"time"
 )
@@ -11,6 +12,14 @@ import (
 func (s *LoveServer) Title(ctx context.Context, _ *papi.Empty) (*papi.LoveTitleResponse, error) {
 	response := &papi.LoveTitleResponse{LoveInfos: []*papi.LoveInfo{}, CommonResponse: viber.NewCommonResponse(nil)}
 	for _, id := range moshikoi.SupportedLoveIDs() {
+		cfg, err := moshikoi.LoadConfig(id)
+		if err != nil {
+			return nil, err
+		}
+		// Extra events have their own TitleExtra entry point and title assets.
+		if cfg.BaseType == penum.LoveBaseType_LoveBaseType_Extra {
+			continue
+		}
 		catalog, err := moshikoi.LoadCatalog(ctx, id)
 		if err != nil {
 			return nil, err

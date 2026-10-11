@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"slices"
-	"strings"
 	"testing"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
@@ -294,9 +293,5 @@ func assertRioLoveVisibility(t *testing.T) {
 		t.Fatal("User.Get omitted Rio's stored Love progression")
 	}
 	home := loveCall(t, papi.NewHomeClient(testConfig.GrpcConn).Enter, &papi.HomeEnterRequest{})
-	if !slices.ContainsFunc(home.GetEventInfo().GetLoveEventInfos(), func(event *papi.HomeLoveEventInfo) bool {
-		return strings.Contains(event.GetId(), testRioLoveID) && event.GetEndTime() == 0 && event.GetIsUnlocked() && !event.GetIsUnplayed()
-	}) {
-		t.Fatal("Home.Enter omitted the registered permanent Rio event")
-	}
+	assertHomeLoveEntrances(t, home)
 }

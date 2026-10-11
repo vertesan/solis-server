@@ -15,7 +15,6 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/makino/dream"
 	messagepath "github.com/vertesan/solis-server/internal/makino/message"
-	"github.com/vertesan/solis-server/internal/makino/moshikoi"
 	makinouser "github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
@@ -445,16 +444,7 @@ func TestUserGod(t *testing.T) {
 		}
 		seenGroups[info.GetId()] = true
 	}
-	if len(homeResponse.EventInfo.GetLoveEventInfos()) != len(moshikoi.SupportedLoveIDs()) {
-		t.Fatal("god home omitted a supported permanent Love event")
-	}
-	for _, loveID := range moshikoi.SupportedLoveIDs() {
-		if !slices.ContainsFunc(homeResponse.EventInfo.GetLoveEventInfos(), func(info *papi.HomeLoveEventInfo) bool {
-			return info.GetId() == loveID && info.GetEndTime() == 0 && info.GetIsUnlocked() && !info.GetIsUnplayed()
-		}) {
-			t.Fatalf("god home did not expose registered permanent Love event %s", loveID)
-		}
-	}
+	assertHomeLoveEntrances(t, homeResponse)
 	assertHomeEventsUnlocked(t, homeResponse.EventInfo.ProtoReflect())
 	if homeResponse.GetCompanyInfo().GetIsReceivableRewards() ||
 		homeResponse.GetCompanyInfo().GetIsReceivableEnjoyRewards() {

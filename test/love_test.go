@@ -3,7 +3,6 @@ package test
 import (
 	"context"
 	"slices"
-	"strings"
 	"testing"
 	"time"
 
@@ -29,7 +28,8 @@ func TestLoveLessonAndRegistrationScenario(t *testing.T) {
 	client := papi.NewLoveClient(testConfig.GrpcConn)
 	catalog := loveCatalog(t)
 	title := loveCall(t, client.Title, &papi.Empty{})
-	if len(title.GetLoveInfos()) != len(moshikoi.SupportedLoveIDs()) || title.GetLoveInfos()[0].GetLoveId() != testLoveID ||
+	assertLoveStandardTitle(t, title)
+	if title.GetLoveInfos()[0].GetLoveId() != testLoveID ||
 		title.GetLoveInfos()[0].GetEndTime() != 0 || !title.GetLoveInfos()[0].GetIsUnplayed() {
 		t.Fatalf("fresh title did not expose the permanent events with Rei first: %v", title)
 	}
@@ -478,13 +478,7 @@ func assertLoveVisibility(t *testing.T, god bool) {
 		t.Fatal("User.Get omitted or changed persisted Love progress")
 	}
 	home := loveCall(t, papi.NewHomeClient(testConfig.GrpcConn).Enter, &papi.HomeEnterRequest{})
-	if len(home.GetEventInfo().GetLoveEventInfos()) != len(moshikoi.SupportedLoveIDs()) {
-		t.Fatalf("Home.Enter exposed unsupported Love events: %v", home.GetEventInfo().GetLoveEventInfos())
-	}
-	event := home.GetEventInfo().GetLoveEventInfos()[0]
-	if !strings.Contains(event.GetId(), testLoveID) || event.GetEndTime() != 0 || !event.GetIsUnlocked() || event.GetIsUnplayed() {
-		t.Fatalf("Home.Enter did not expose the registered permanent Love event: %v", event)
-	}
+	assertHomeLoveEntrances(t, home)
 	if god && len(expected.GetUnlockedLoveStoryEndIDs()) != 9 {
 		t.Fatal("god Love endings were lost during replay")
 	}

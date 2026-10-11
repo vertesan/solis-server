@@ -1,7 +1,9 @@
 package test
 
 import (
+	"context"
 	"github.com/vertesan/solis-server/internal/db"
+	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/server/rpc/codec"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"log"
@@ -69,6 +71,15 @@ func init() {
 	// initialize db connection
 	if err := db.Connect(); err != nil {
 		log.Fatalf("failed to initialize test: %v", err)
+	}
+	if testConfig.Env == Dev {
+		// Match the local server profile rather than pin every integration
+		// scenario to an obsolete official-client version after a local update.
+		profile, err := opsolis.FindServerProfile(context.Background())
+		if err != nil {
+			log.Fatalf("failed to read test server profile: %v", err)
+		}
+		testConfig.XAppVersion = profile.AppVersion
 	}
 }
 

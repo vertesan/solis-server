@@ -288,19 +288,5 @@ func assertNagisaVisibility(t *testing.T) {
 		}
 	}
 	home := loveCall(t, papi.NewHomeClient(testConfig.GrpcConn).Enter, &papi.HomeEnterRequest{})
-	for _, id := range []string{testLoveID, testNagisaLoveID} {
-		found := false
-		for _, event := range home.GetEventInfo().GetLoveEventInfos() {
-			if !strings.Contains(event.GetId(), id) {
-				continue
-			}
-			if event.GetEndTime() != 0 || !event.GetIsUnlocked() || event.GetIsUnplayed() {
-				t.Fatalf("Home.Enter lost the permanent registered event %s: %v", id, event)
-			}
-			found = true
-		}
-		if !found {
-			t.Fatalf("Home.Enter omitted event %s", id)
-		}
-	}
+	assertHomeLoveEntrances(t, home)
 }

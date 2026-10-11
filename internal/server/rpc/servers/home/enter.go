@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"math"
+	"math/rand/v2"
 	"slices"
 	"strings"
 	"time"
@@ -646,10 +647,12 @@ func reconcileActiveFanEventForHome(ctx context.Context, suid string, now int64,
 }
 
 // homeLoveEvents replaces stale captured dates and flags with the supported
-// permanent catalog and caller's current progress. Daily missions are refreshed
-// before subsequent activity/photo actions can contribute to them.
+// permanent catalog and caller's current progress. Reconcile every registered
+// series before selecting a banner: hidden series still need daily refreshes.
+// Standard series share one Title entry point, while Extra titles stay separate.
 func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.UpdatedData) ([]*papi.HomeLoveEventInfo, error) {
-	infos := make([]*papi.HomeLoveEventInfo, 0)
+	standard := make([]*papi.HomeLoveEventInfo, 0)
+	extras := make([]*papi.HomeLoveEventInfo, 0)
 	for _, id := range moshikoi.SupportedLoveIDs() {
 		catalog, err := moshikoi.LoadCatalog(ctx, id)
 		if err != nil {
@@ -672,7 +675,7 @@ func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.U
 		if info.GetBaseType() == penum.LoveBaseType_LoveBaseType_Extra {
 			extraTitleAssetID = catalog.TitleAssetID
 		}
-		infos = append(infos, &papi.HomeLoveEventInfo{
+		entry := &papi.HomeLoveEventInfo{
 			Id: id, Name: catalog.Config.Name, StartTime: info.GetStartTime(), EndTime: 0,
 			BannerAssetId: catalog.Config.BannerAssetID, Order: info.GetOrder(),
 			UnlockConditionId: info.GetUnlockConditionId(), IsUnlocked: info.GetIsUnlocked(),
@@ -680,9 +683,19 @@ func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.U
 			IsLessonRewardMax: info.GetIsLessonRewardMax(), IsUnplayed: info.GetIsUnplayed(),
 			HasHiddenFavorabilityObtainItem: info.GetHasHiddenFavorabilityObtainItem(), BaseType: info.GetBaseType(),
 			LimitedExtraTitleAssetId: extraTitleAssetID,
-		})
+		}
+		if entry.GetBaseType() == penum.LoveBaseType_LoveBaseType_Extra {
+			extras = append(extras, entry)
+		} else {
+			standard = append(standard, entry)
+		}
 	}
-	return infos, nil
+	if len(standard) == 0 {
+		return extras, nil
+	}
+	// Choose anew on every Enter; no active-story preference or persisted
+	// selection is needed because every standard banner opens the same Title.
+	return append([]*papi.HomeLoveEventInfo{standard[rand.IntN(len(standard))]}, extras...), nil
 }
 
 func unlockHomeEventInfo(message protoreflect.Message) {

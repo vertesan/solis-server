@@ -409,15 +409,11 @@ func assertLove2024Visibility(t *testing.T) {
 	t.Helper()
 	user := loveCall(t, papi.NewUserClient(testConfig.GrpcConn).Get, &papi.Empty{})
 	home := loveCall(t, papi.NewHomeClient(testConfig.GrpcConn).Enter, &papi.HomeEnterRequest{})
+	assertHomeLoveEntrances(t, home)
 	for _, id := range []string{testLoveID, testNagisaLoveID, testMeiLoveID, testYuLoveID} {
 		want := moshikoi.VisibleLove(storedLove2024(t, id))
 		if !slices.ContainsFunc(user.GetLoves(), func(row *ptransaction.UserLove) bool { return proto.Equal(row, want) }) {
 			t.Fatalf("User.Get omitted persisted series %s", id)
-		}
-		if !slices.ContainsFunc(home.GetEventInfo().GetLoveEventInfos(), func(event *papi.HomeLoveEventInfo) bool {
-			return strings.Contains(event.GetId(), id) && event.GetEndTime() == 0 && event.GetIsUnlocked() && !event.GetIsUnplayed()
-		}) {
-			t.Fatalf("Home.Enter omitted permanent registered series %s", id)
 		}
 	}
 }
