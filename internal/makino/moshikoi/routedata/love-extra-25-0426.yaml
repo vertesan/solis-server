@@ -1,0 +1,204 @@
+# Branches follow docs/love-extra-25-0426-routemap.md and adv_love_2505 scripts.
+# Wire choices are 1-based. The event, episode and ending IDs intentionally
+# have different prefixes, exactly as recorded in master data and traffic.
+# Episode1/4-Rui best choices are captured. +7 per best choice, otherwise0,
+# fits the observed 49->63 delta; uncaptured best choices/weights are inferred.
+# Endings have no permanent favorability award for this extra event.
+# Unlike the map, captured026/027 sends unmatched Rui choices to her bad ending;
+# the user explicitly selected that observed fallback over an unnamed reset.
+loveId: love-extra-25-0426
+endingConditions:
+  cd-event-love-25-0426-limited-mission_love-end_emb-sp-01: love-end-love-25-0426-005-succubus-rui-happy
+  cd-event-love-25-0426-limited-mission_love-end_emb-sp-02: love-end-love-25-0426-005-succubus-chs-happy
+  cd-event-love-25-0426-limited-mission_love-end_emb-sp-03: love-end-love-25-0426-005-magical-smr-happy
+  cd-event-love-25-0426-limited-mission_love-end_emb-sp-04: love-end-love-25-0426-005-magical-ngs-happy
+  cd-event-love-25-0426-limited-mission_love-end_emb-sp-05: love-end-love-25-0426-005-succubus-rui-harem-happy
+endings:
+  - {id: love-end-love-25-0426-005-succubus-rui-happy, name: ラブラブ大魔王END, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-rui-bad, name: 悪魔召喚END, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-rui-harem-happy, name: ドキドキ取り合いEND, favorability: 0, endRollAssetId: event_2505_01_02}
+  - {id: love-end-love-25-0426-005-succubus-rui-harem-bad-01, name: 一人ぼっちの日常END, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-rui-harem-bad-02, name: ボンバーEND, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-rui-harem-bad-03, name: ビンタ×４END, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-chs-happy, name: 人間さんと仲良しEND, favorability: 0}
+  - {id: love-end-love-25-0426-005-succubus-chs-bad, name: 忘却END, favorability: 0}
+  - {id: love-end-love-25-0426-005-magical-smr-happy, name: 解けない魔法END, favorability: 0}
+  - {id: love-end-love-25-0426-005-magical-smr-bad, name: 新しい関係END, favorability: 0}
+  - {id: love-end-love-25-0426-005-magical-ngs-happy, name: 魔法少女にゃぎさEND, favorability: 0}
+  - {id: love-end-love-25-0426-005-magical-ngs-bad, name: 鈴の音END, favorability: 0}
+episodes:
+  love-event-story-25-0426-001:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [0, 7]}
+      - {index: 2, count: 2, best: 1, scores: [7, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 3, best: 3, scores: [0, 0, 7]}
+      - {index: 5, count: 2, scores: [0, 0]}
+    next: love-event-story-25-0426-002
+  love-event-story-25-0426-002:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 3, best: 2, scores: [0, 7, 0]}
+      - {index: 5, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 5, choice: 1}], next: love-event-story-25-0426-003-magical}
+      - {all: [{group: 5, choice: 2}], next: love-event-story-25-0426-003-succubus}
+  love-event-story-25-0426-003-succubus:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [7, 0]}
+      - {index: 2, count: 2, best: 1, scores: [7, 0]}
+      - {index: 3, count: 3, best: 3, scores: [0, 0, 7]}
+      - {index: 4, count: 2, scores: [0, 0]}
+      - {index: 5, count: 3, best: 3, scores: [0, 0, 7]}
+      - {index: 6, count: 2, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 6, choice: 1}], next: love-event-story-25-0426-004-succubus-rui}
+      - {all: [{group: 6, choice: 2}], next: love-event-story-25-0426-004-succubus-chs}
+  love-event-story-25-0426-003-magical:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 2, best: 2, scores: [0, 7]}
+      - {index: 5, count: 2, scores: [0, 0]}
+      - {index: 6, count: 2, scores: [0, 0], requires: [{group: 5, choice: 2}]}
+    outcomes:
+      - {all: [{group: 5, choice: 1}], next: love-event-story-25-0426-004-magical-ngs}
+      - {all: [{group: 5, choice: 2}], next: love-event-story-25-0426-004-magical-smr}
+  love-event-story-25-0426-004-succubus-rui:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [0, 7]}
+      - {index: 2, count: 2, best: 1, scores: [7, 0]}
+      - {index: 3, count: 3, best: 3, scores: [0, 0, 7]}
+      - {index: 4, count: 2, best: 2, scores: [0, 7]}
+      - {index: 5, count: 2, best: 2, scores: [0, 7]}
+    outcomes:
+      # Pattern A: all eight prescribed alternatives, plus the final branch.
+      - next: love-event-story-25-0426-005-succubus-rui-good
+        all:
+          - {episode: love-event-story-25-0426-001, group: 4, choice: 1}
+          - {episode: love-event-story-25-0426-002, group: 4, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 1, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 2, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 3, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 5, choice: 1}
+          - {group: 3, choice: 1}
+          - {group: 4, choice: 1}
+          - {group: 5, choice: 1}
+      # Pattern B follows the bad Rui branch when the player stays with Rui.
+      - next: love-event-story-25-0426-005-succubus-rui-bad
+        all:
+          - {episode: love-event-story-25-0426-001, group: 4, choice: 3}
+          - {episode: love-event-story-25-0426-002, group: 4, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 1, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 2, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 3, choice: 3}
+          - {episode: love-event-story-25-0426-003-succubus, group: 5, choice: 3}
+          - {group: 3, choice: 3}
+          - {group: 4, choice: 2}
+          - {group: 5, choice: 1}
+      - next: love-event-story-25-0426-005-bad-end
+        all:
+          - {episode: love-event-story-25-0426-001, group: 4, choice: 1}
+          - {episode: love-event-story-25-0426-002, group: 4, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 1, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 2, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 3, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 5, choice: 1}
+          - {group: 3, choice: 1}
+          - {group: 4, choice: 1}
+          - {group: 5, choice: 2}
+      - next: love-event-story-25-0426-005-happy-end
+        all:
+          - {episode: love-event-story-25-0426-001, group: 4, choice: 3}
+          - {episode: love-event-story-25-0426-002, group: 4, choice: 2}
+          - {episode: love-event-story-25-0426-003-succubus, group: 1, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 2, choice: 1}
+          - {episode: love-event-story-25-0426-003-succubus, group: 3, choice: 3}
+          - {episode: love-event-story-25-0426-003-succubus, group: 5, choice: 3}
+          - {group: 3, choice: 3}
+          - {group: 4, choice: 2}
+          - {group: 5, choice: 2}
+    # User-approved extension of the captured unmatched-pattern fallback.
+    next: love-event-story-25-0426-005-succubus-rui-bad
+  love-event-story-25-0426-004-succubus-chs:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 3, scores: [0, 0, 0]}
+      - {index: 5, count: 2, best: 2, scores: [0, 7]}
+    outcomes:
+      - next: love-event-story-25-0426-005-succubus-chs-good
+        all:
+          - {episode: love-event-story-25-0426-001, group: 4, choice: 2}
+          - {group: 5, choice: 2}
+    next: love-event-story-25-0426-005-succubus-chs-bad
+  love-event-story-25-0426-004-magical-smr:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 2, scores: [0, 0]}
+      - {index: 5, count: 2, scores: [0, 0]}
+      - {index: 6, count: 2, scores: [0, 0]}
+      - {index: 7, count: 2, scores: [0, 0]}
+      - {index: 8, count: 2, scores: [0, 0]}
+      - {index: 9, count: 2, best: 1, scores: [7, 0]}
+    outcomes:
+      - next: love-event-story-25-0426-005-magical-smr-good
+        all:
+          - {episode: love-event-story-25-0426-003-magical, group: 4, choice: 2}
+          - {group: 9, choice: 1}
+    next: love-event-story-25-0426-005-magical-smr-bad
+  love-event-story-25-0426-004-magical-ngs:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+      - {index: 4, count: 2, scores: [0, 0]}
+      - {index: 5, count: 2, best: 2, scores: [0, 7]}
+    outcomes:
+      - {all: [{group: 5, choice: 1}], next: love-event-story-25-0426-005-magical-ngs-bad}
+      - {all: [{group: 5, choice: 2}], next: love-event-story-25-0426-005-magical-ngs-good}
+  love-event-story-25-0426-005-succubus-rui-good:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-succubus-rui-happy}
+  love-event-story-25-0426-005-succubus-rui-bad:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-succubus-rui-bad}
+  love-event-story-25-0426-005-succubus-chs-good:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-succubus-chs-happy}
+  love-event-story-25-0426-005-succubus-chs-bad:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-succubus-chs-bad}
+  love-event-story-25-0426-005-magical-smr-good:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+    outcomes:
+      - {ending: love-end-love-25-0426-005-magical-smr-happy}
+  love-event-story-25-0426-005-magical-smr-bad:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-magical-smr-bad}
+  love-event-story-25-0426-005-magical-ngs-good:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+    outcomes:
+      - {ending: love-end-love-25-0426-005-magical-ngs-happy}
+  love-event-story-25-0426-005-magical-ngs-bad:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-magical-ngs-bad}
+  love-event-story-25-0426-005-happy-end:
+    outcomes:
+      - {ending: love-end-love-25-0426-005-succubus-rui-harem-happy}
+  love-event-story-25-0426-005-bad-end:
+    groups:
+      - {index: 1, count: 3, scores: [0, 0, 0]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-25-0426-005-succubus-rui-harem-bad-01}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-25-0426-005-succubus-rui-harem-bad-02}
+      - {all: [{group: 1, choice: 3}], ending: love-end-love-25-0426-005-succubus-rui-harem-bad-03}

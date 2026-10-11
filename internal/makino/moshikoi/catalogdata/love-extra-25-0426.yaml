@@ -1,0 +1,33 @@
+# Permanent extra series. Metadata, heroine appearances, and level unlocks
+# follow traffic/mixed/love-extra (TitleExtra012, Top013, HomeEnter009).
+# The runtime event ID intentionally differs from its content/asset IDs.
+loveId: love-extra-25-0426
+name: サキュ×まほ ~KISS AND MAGIC!~
+description: サキュ×まほ
+simpleName: サキュまほ
+startTime: 1745636400000
+unlockConditionId: cd-clear-area-main-002
+bannerAssetId: img_banner_l_event-love-25-0426
+assetId: love-25-0426
+titleAssetId: love-25-0426
+expAssetId: exp-love-25-0426
+baseType: 2
+hideManagerVoiceSwitch: true
+# Successive responses select different heroines even on an unchanged route.
+# A uniform selection from this observed pool is the private-server policy;
+# the official random weights are unknown.
+mainCharacters:
+  - {characterId: char-rui, costumeId: cos-rui-sucu-00, assetId: love-25-0426-rui, color: 917CD6}
+  - {characterId: char-chs, costumeId: cos-chs-sucu-00, assetId: love-25-0426-chs, color: 917CD6}
+  - {characterId: char-smr, costumeId: cos-smr-magi-00, assetId: love-25-0426-smr, color: FFB5F3}
+  - {characterId: char-ngs, costumeId: cos-ngs-pair-00, assetId: love-25-0426-ngs, color: FFB5F3}
+storyReadItemId: item-love-25-0426-story
+promoteItemId: item-love-25-0426-lesson-boost
+# There is no present item in either the master or captured LoveItemInfo.
+lessonMaxHours: 12
+eventMissionIds:
+  - event-love-25-0426-normal
+limitedEventMissionIds:
+  - event-love-25-0426-limited
+episodeUnlockLevels: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5}
+hintUnlockLevels: {1: 6, 2: 7}

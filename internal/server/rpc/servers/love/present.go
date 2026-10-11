@@ -21,6 +21,9 @@ func (s *LoveServer) Present(ctx context.Context, req *papi.LovePresentRequest) 
 		if err != nil {
 			return nil, err
 		}
+		if catalog.Config.PresentItemID == "" {
+			return nil, viber.FailedPreconditionf("presents are unavailable for this love event")
+		}
 		updated := &papi.UpdatedData{}
 		if err := viber.ReconcileLoveMissions(ctx, suid, catalog.LoveID, state.Exp, updated); err != nil {
 			return nil, err

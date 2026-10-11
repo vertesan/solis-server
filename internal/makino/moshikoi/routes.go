@@ -70,7 +70,7 @@ type RouteBranch struct {
 	All       []RouteCondition `yaml:"all"`
 }
 
-func FirstEpisodeID(loveID string) string { return "love-event-story-" + loveID + "-001" }
+func FirstEpisodeID(loveID string) string { return EpisodeIDPrefix(loveID) + "001" }
 
 func LoadRoutes(loveID string) (*Routes, error) {
 	if !slices.Contains(SupportedLoveIDs(), loveID) {
@@ -103,7 +103,7 @@ func (r *Routes) validate(loveID string) error {
 	}
 	var scoreBound, pointBound int64
 	for id, episode := range r.Episodes {
-		if episode == nil || !strings.HasPrefix(id, "love-event-story-"+loveID+"-") {
+		if episode == nil || !strings.HasPrefix(id, EpisodeIDPrefix(loveID)) {
 			return fmt.Errorf("invalid love route episode %s", id)
 		}
 		groups := make(map[int32]bool, len(episode.Groups))

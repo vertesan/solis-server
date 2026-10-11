@@ -668,6 +668,10 @@ func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.U
 		if err != nil {
 			return nil, err
 		}
+		var extraTitleAssetID string
+		if info.GetBaseType() == penum.LoveBaseType_LoveBaseType_Extra {
+			extraTitleAssetID = catalog.TitleAssetID
+		}
 		infos = append(infos, &papi.HomeLoveEventInfo{
 			Id: id, Name: catalog.Config.Name, StartTime: info.GetStartTime(), EndTime: 0,
 			BannerAssetId: catalog.Config.BannerAssetID, Order: info.GetOrder(),
@@ -675,6 +679,7 @@ func homeLoveEvents(ctx context.Context, suid string, now int64, updated *papi.U
 			EventMissionIds: info.GetEventMissionIds(), LimitedEventMissionIds: info.GetLimitedEventMissionIds(),
 			IsLessonRewardMax: info.GetIsLessonRewardMax(), IsUnplayed: info.GetIsUnplayed(),
 			HasHiddenFavorabilityObtainItem: info.GetHasHiddenFavorabilityObtainItem(), BaseType: info.GetBaseType(),
+			LimitedExtraTitleAssetId: extraTitleAssetID,
 		})
 	}
 	return infos, nil

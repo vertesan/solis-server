@@ -8,9 +8,19 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 )
 
+// Extra series use their runtime ID for state/master ownership, but omit
+// "love-extra-" in episode IDs and use "love-" in the underlying Story IDs.
+func EpisodeIDPrefix(loveID string) string {
+	return "love-event-story-" + strings.TrimPrefix(loveID, "love-extra-") + "-"
+}
+
 func SupportedStoryLoveID(storyID string) string {
 	for _, id := range SupportedLoveIDs() {
-		if strings.HasPrefix(storyID, "st-"+id+"-") {
+		contentID := id
+		if strings.HasPrefix(id, "love-extra-") {
+			contentID = "love-" + strings.TrimPrefix(id, "love-extra-")
+		}
+		if strings.HasPrefix(storyID, "st-"+contentID+"-") {
 			return id
 		}
 	}

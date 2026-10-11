@@ -58,7 +58,7 @@ func validateLoveName(name string) error {
 
 func loadLoveStory(ctx context.Context, suid, episodeID string) (*moshikoi.Catalog, *umodel.UserLoveState, *ptransaction.UserLove, *moshikoi.Routes, error) {
 	for _, loveID := range moshikoi.SupportedLoveIDs() {
-		if !strings.HasPrefix(episodeID, "love-event-story-"+loveID+"-") {
+		if !strings.HasPrefix(episodeID, moshikoi.EpisodeIDPrefix(loveID)) {
 			continue
 		}
 		catalog, state, love, err := loadLove(ctx, suid, loveID)

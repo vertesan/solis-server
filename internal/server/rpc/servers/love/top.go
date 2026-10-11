@@ -80,9 +80,9 @@ func (s *LoveServer) Top(ctx context.Context, req *papi.LoveTopRequest) (*papi.L
 			StoryEndInfos:            info.StoryEndInfos,
 			LoveLevelInfos:           levelInfos,
 			BannerAssetId:            catalog.Config.BannerAssetID,
-			ExpAssetId:               "exp-" + catalog.LoveID,
-			MainCharacterInfo:        catalog.MainCharacterInfo(),
-			LoveSimpleName:           "もし恋",
+			ExpAssetId:               catalog.Config.ExpAssetID,
+			MainCharacterInfo:        info.GetMainCharacterInfo(),
+			LoveSimpleName:           catalog.Config.SimpleName,
 			CommonResponse:           viber.NewCommonResponse(updated),
 		}
 		return nil, nil
