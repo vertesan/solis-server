@@ -57,7 +57,7 @@ type Catalog struct {
 }
 
 func SupportedLoveIDs() []string {
-	return []string{"love-23-0514", "love-23-1114", "love-24-0517", "love-24-1114"}
+	return []string{"love-23-0514", "love-23-1114", "love-24-0517", "love-24-1114", "love-26-0313"}
 }
 
 func LoadConfig(loveID string) (*EventConfig, error) {

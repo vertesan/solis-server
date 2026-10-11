@@ -39,10 +39,13 @@ type EpisodeRoute struct {
 }
 
 type RouteChoiceGroup struct {
-	Index    int32            `yaml:"index"`
-	Count    int32            `yaml:"count"`
-	Best     int32            `yaml:"best"`
-	Scores   []int64          `yaml:"scores"`
+	Index  int32   `yaml:"index"`
+	Count  int32   `yaml:"count"`
+	Best   int32   `yaml:"best"`
+	Scores []int64 `yaml:"scores"`
+	// Points govern route thresholds, independently of persistent favorability.
+	// Omitted on older series; recomputed from the current saved selections.
+	Points   []int64          `yaml:"points"`
 	Requires []RouteCondition `yaml:"requires"`
 }
 
@@ -53,9 +56,11 @@ type RouteCondition struct {
 }
 
 type RouteOutcome struct {
-	All    []RouteCondition `yaml:"all"`
-	Next   string           `yaml:"next"`
-	Ending string           `yaml:"ending"`
+	All       []RouteCondition `yaml:"all"`
+	Next      string           `yaml:"next"`
+	Ending    string           `yaml:"ending"`
+	MinPoints *int64           `yaml:"minPoints"`
+	MaxPoints *int64           `yaml:"maxPoints"`
 }
 
 type RouteBranch struct {
@@ -96,7 +101,7 @@ func (r *Routes) validate(loveID string) error {
 		}
 		endings[ending.ID] = true
 	}
-	var scoreBound int64
+	var scoreBound, pointBound int64
 	for id, episode := range r.Episodes {
 		if episode == nil || !strings.HasPrefix(id, "love-event-story-"+loveID+"-") {
 			return fmt.Errorf("invalid love route episode %s", id)
@@ -107,6 +112,15 @@ func (r *Routes) validate(loveID string) error {
 				return fmt.Errorf("invalid choice group in %s", id)
 			}
 			groups[group.Index] = true
+			if len(group.Points) != 0 && len(group.Points) != int(group.Count) {
+				return fmt.Errorf("invalid route point choices in %s", id)
+			}
+			for _, points := range group.Points {
+				if points < 0 || points > math.MaxInt64-pointBound {
+					return fmt.Errorf("invalid or overflowing love route points")
+				}
+				pointBound += points
+			}
 			for _, score := range group.Scores {
 				if score == math.MinInt64 {
 					return fmt.Errorf("love route score overflows")
@@ -127,6 +141,10 @@ func (r *Routes) validate(loveID string) error {
 			return fmt.Errorf("invalid next love episode %s", id)
 		}
 		for _, outcome := range episode.Outcomes {
+			if outcome.MinPoints != nil && *outcome.MinPoints < 0 || outcome.MaxPoints != nil && *outcome.MaxPoints < 0 ||
+				outcome.MinPoints != nil && outcome.MaxPoints != nil && *outcome.MinPoints > *outcome.MaxPoints {
+				return fmt.Errorf("invalid route point interval in %s", id)
+			}
 			if (outcome.Next == "") == (outcome.Ending == "") || outcome.Next != "" && r.Episodes[outcome.Next] == nil || outcome.Ending != "" && !endings[outcome.Ending] {
 				return fmt.Errorf("invalid outcome in %s", id)
 			}
@@ -244,7 +262,14 @@ func (r *Routes) Resolve(episodeID string, selections []umodel.LoveStorySelectio
 	if episode == nil {
 		return "", "", fmt.Errorf("unknown love story episode")
 	}
+	points, err := r.routePoints(selections)
+	if err != nil {
+		return "", "", err
+	}
 	for _, outcome := range episode.Outcomes {
+		if outcome.MinPoints != nil && points < *outcome.MinPoints || outcome.MaxPoints != nil && points > *outcome.MaxPoints {
+			continue
+		}
 		if routeConditionsMatch(episodeID, outcome.All, selections) {
 			return outcome.Next, outcome.Ending, nil
 		}
@@ -253,6 +278,29 @@ func (r *Routes) Resolve(episodeID string, selections []umodel.LoveStorySelectio
 		return "", "", fmt.Errorf("love route has no matching outcome")
 	}
 	return episode.Next, "", nil
+}
+
+// Saved choices are the source of truth. Loading or replaying a route replaces
+// its points automatically; presents and previously unlocked endings cannot
+// change them, and no additional mutable counter is persisted in MongoDB.
+func (r *Routes) routePoints(selections []umodel.LoveStorySelection) (int64, error) {
+	var total int64
+	for _, selection := range selections {
+		episode := r.Episode(selection.StoryEpisodeID)
+		if episode == nil {
+			continue
+		}
+		for _, group := range episode.Groups {
+			if group.Index == selection.GroupIndex && selection.Index > 0 && int(selection.Index) <= len(group.Points) {
+				points := group.Points[selection.Index-1]
+				if points < 0 || total > math.MaxInt64-points {
+					return 0, fmt.Errorf("invalid or overflowing love route points")
+				}
+				total += points
+			}
+		}
+	}
+	return total, nil
 }
 
 func (r *Routes) Favorability(selections []umodel.LoveStorySelection) int64 {

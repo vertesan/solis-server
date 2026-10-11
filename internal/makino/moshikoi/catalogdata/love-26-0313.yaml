@@ -1,0 +1,26 @@
+# Permanent Rio event. Its master condition opens on March18, despite the
+# March13 series ID; use the recorded timestamp rather than infer from the ID.
+loveId: love-26-0313
+name: もし恋 ~もしも君と恋をしたら~
+description: 神崎莉央編
+startTime: 1773802800000
+unlockConditionId: cd-clear-area-main-002
+bannerAssetId: img_banner_l_event-love-26-0313
+characterId: char-rio
+# LoveHomeAction supplies the costume; Character.loveInfo supplies the color.
+costumeId: cos-rio-casl-02
+characterAssetId: img_chr_mem_rio
+color: E04BA1
+storyReadItemId: item-love-26-0313-story
+presentItemId: item-love-26-0313-present
+promoteItemId: item-love-26-0313-lesson-boost
+lessonMaxHours: 12
+eventMissionIds:
+  - event-love-26-0313-normal
+  - event-love-26-0313-normal-card
+limitedEventMissionIds:
+  - event-love-26-0313-limited
+# Master data does not encode these thresholds. Retain the established
+# standard-series progression until Rio's level-roadmap traffic is available.
+episodeUnlockLevels: {1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8}
+hintUnlockLevels: {1: 9, 2: 10}

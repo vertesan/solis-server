@@ -299,7 +299,7 @@ func TestLoveGodReplayScenario(t *testing.T) {
 	for _, series := range []struct {
 		id      string
 		endings int
-	}{{"love-24-0517", 8}, {"love-24-1114", 9}} {
+	}{{"love-24-0517", 8}, {"love-24-1114", 9}, {"love-26-0313", 9}} {
 		catalog, err := moshikoi.LoadCatalog(context.Background(), series.id)
 		if err != nil {
 			t.Fatal(err)
@@ -318,9 +318,13 @@ func TestLoveGodReplayScenario(t *testing.T) {
 		for _, suffix := range []string{"001", "002"} {
 			episodeID := "love-event-story-" + series.id + "-" + suffix
 			loveCall(t, client.Start, &papi.LoveStartRequest{StoryEpisodeId: episodeID})
-			loveCall(t, client.Finish, &papi.LoveFinishRequest{StoryEpisodeId: episodeID, SelectStoryChoiceInfos: []*papi.LoveSelectStoryChoiceInfo{
+			choices := []*papi.LoveSelectStoryChoiceInfo{
 				{GroupIndex: 1, Index: 1, IsValid: true}, {GroupIndex: 2, Index: 1, IsValid: true},
-			}})
+			}
+			if series.id == "love-26-0313" {
+				choices = append(choices, &papi.LoveSelectStoryChoiceInfo{GroupIndex: 3, Index: 1, IsValid: true})
+			}
+			loveCall(t, client.Finish, &papi.LoveFinishRequest{StoryEpisodeId: episodeID, SelectStoryChoiceInfos: choices})
 		}
 		if loveItemAmount(t, catalog.Config.StoryReadItemID) != 0 {
 			t.Fatalf("god replay charged story points for %s", series.id)

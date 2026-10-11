@@ -1,0 +1,90 @@
+# Branches and negative points follow docs/love-26-0313-routemap.md and the
+# adv_love_2603 scripts. Choices use the API's 1-based alternative indices.
+# Route points are separate from favorability. Favorability weights/ending
+# awards reuse the existing private-server scale; they are not capture-verified.
+# The TRUE end-roll follows the established naming convention; its asset
+# mov_adv_event_2603_02_02_movie-01 exists, but the RPC association is inferred.
+loveId: love-26-0313
+endingConditions:
+  cd-event-love-26-0313-normal-mission_love-end_emb: love-end-love-26-0313-008-happy-001
+  cd-event-love-26-0313-limited-mission_love-end_emb-sp: love-end-love-26-0313-008-happy-001
+endings:
+  - {id: love-end-love-26-0313-001-bad, name: コドクボッチEND, favorability: 206}
+  - {id: love-end-love-26-0313-008-happy-001, name: TRUEEND, favorability: 2059, endRollAssetId: event_2603_02_02}
+  - {id: love-end-love-26-0313-008-happy-002, name: 君の専属マネージャーEND, favorability: 1441}
+  - {id: love-end-love-26-0313-008-normal-001, name: 半額弁当END, favorability: 618}
+  - {id: love-end-love-26-0313-008-normal-002, name: もしも瑠依と恋をしたらEND, favorability: 618}
+  - {id: love-end-love-26-0313-008-normal-003, name: 時を刻む恋慕END, favorability: 618}
+  - {id: love-end-love-26-0313-008-bad-001, name: コネコネEND, favorability: 206}
+  - {id: love-end-love-26-0313-008-bad-002, name: 借金END, favorability: 206}
+  - {id: love-end-love-26-0313-008-bad-003, name: 瑠依のヒモEND, favorability: 206}
+episodes:
+  love-event-story-love-26-0313-001:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35], points: [0, 2]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, best: 1, scores: [0, 0]}
+    outcomes:
+      - {all: [{group: 3, choice: 2}], ending: love-end-love-26-0313-001-bad}
+    next: love-event-story-love-26-0313-002
+  love-event-story-love-26-0313-002:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35], points: [0, 1]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35], points: [0, 1]}
+      - {index: 3, count: 2, scores: [0, 0]}
+    next: love-event-story-love-26-0313-003
+  love-event-story-love-26-0313-003:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35], points: [2, 0]}
+      - {index: 2, count: 2, best: 2, scores: [-35, 35], points: [1, 0]}
+    next: love-event-story-love-26-0313-004
+  love-event-story-love-26-0313-004:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35], points: [1, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+    next: love-event-story-love-26-0313-005
+  love-event-story-love-26-0313-005:
+    groups:
+      - {index: 1, count: 2, best: 2, scores: [-35, 35], points: [3, 0]}
+      - {index: 2, count: 2, scores: [0, 0]}
+      - {index: 3, count: 2, scores: [0, 0]}
+    next: love-event-story-love-26-0313-006
+  love-event-story-love-26-0313-006:
+    groups:
+      - {index: 1, count: 3, scores: [0, 0, 0]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35], points: [0, 1]}
+      - {index: 3, count: 2, best: 2, scores: [-35, 35], points: [1, 0]}
+      - {index: 4, count: 2, best: 2, scores: [-35, 35], points: [1, 0], requires: [{group: 3, choice: 2}]}
+    next: love-event-story-love-26-0313-007
+  love-event-story-love-26-0313-007:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [35, -35], points: [0, 2]}
+      - {index: 2, count: 2, best: 1, scores: [35, -35], points: [0, 3]}
+    outcomes:
+      - {maxPoints: 1, next: love-event-story-love-26-0313-008-happy}
+      - {minPoints: 11, next: love-event-story-love-26-0313-008-bad}
+    next: love-event-story-love-26-0313-008-normal
+  love-event-story-love-26-0313-008-happy:
+    groups:
+      - {index: 1, count: 2, best: 1, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0], requires: [{group: 1, choice: 1}]}
+    outcomes:
+      # Either dinner/bath alternative in group2 reaches the same TRUE ending.
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-26-0313-008-happy-001}
+      - {all: [{group: 1, choice: 2}], ending: love-end-love-26-0313-008-happy-002}
+  love-event-story-love-26-0313-008-normal:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0], requires: [{group: 1, choice: 2}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-26-0313-008-normal-001}
+      - {all: [{group: 1, choice: 2}, {group: 2, choice: 1}], ending: love-end-love-26-0313-008-normal-002}
+      - {all: [{group: 1, choice: 2}, {group: 2, choice: 2}], ending: love-end-love-26-0313-008-normal-003}
+  love-event-story-love-26-0313-008-bad:
+    groups:
+      - {index: 1, count: 2, scores: [0, 0]}
+      - {index: 2, count: 2, scores: [0, 0], requires: [{group: 1, choice: 2}]}
+    outcomes:
+      - {all: [{group: 1, choice: 1}], ending: love-end-love-26-0313-008-bad-001}
+      - {all: [{group: 1, choice: 2}, {group: 2, choice: 1}], ending: love-end-love-26-0313-008-bad-002}
+      - {all: [{group: 1, choice: 2}, {group: 2, choice: 2}], ending: love-end-love-26-0313-008-bad-003}
