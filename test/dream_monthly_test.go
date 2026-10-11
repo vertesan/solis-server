@@ -156,6 +156,9 @@ func TestDreamHomeMissionIntegrationScenario(t *testing.T) {
 	if !info.GetIsUnlocked() {
 		t.Fatal("god user has not unlocked Dream event")
 	}
+	top := profileCall(t, papi.NewDreamClient(testConfig.GrpcConn).Top, &papi.Empty{})
+	assertDummyNoticeInfo(t, "Dream.Top season", top.GetSeasonInfo().GetNoticeInfo())
+	assertDummyNoticeInfo(t, "Dream.Top growth", top.GetGrowthPermilNoticeInfo())
 	event := profileCall(t, papi.NewMissionClient(testConfig.GrpcConn).Event, &papi.MissionEventRequest{EventMissionId: info.GetEventMissionId()})
 	if !event.GetInfo().GetUnlocked() || len(event.GetInfo().GetUserMissions()) == 0 {
 		t.Fatalf("monthly missions not available: %v", event)

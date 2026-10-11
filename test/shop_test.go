@@ -299,6 +299,12 @@ func assertPurchasedLoginPackageInfos(
 		info := purchased.GetShopInfo()
 		pack := purchased.GetLoginBonusPackageItem()
 		shopID := info.GetId()
+		if info.GetNoticeInfo() == nil {
+			t.Fatalf("Home.Login purchased package %q has no notice", shopID)
+		}
+		if info.GetNoticeInfo().GetId() == "" {
+			assertDummyNoticeInfo(t, "Home.Login package "+shopID, info.GetNoticeInfo())
+		}
 		if _, duplicate := seen[shopID]; duplicate {
 			t.Fatalf("Home.Login returned duplicate login package %q", shopID)
 		}

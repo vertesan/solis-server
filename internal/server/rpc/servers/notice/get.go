@@ -9,7 +9,7 @@ import (
 
 func (s *NoticeServer) Get(ctx context.Context, req *papi.NoticeGetRequest) (*papi.NoticeGetResponse, error) {
 	return &papi.NoticeGetResponse{
-		Notice:              &papi.NoticeInfo{},
+		Notice:              viber.NewDummyNoticeInfo(),
 		RoootAssociateToken: "",
 		CommonResponse:      viber.NewCommonResponse(nil),
 	}, nil

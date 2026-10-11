@@ -106,6 +106,9 @@ func TestLoginBonusAPIs(t *testing.T) {
 	if list.GetCommonResponse() == nil {
 		t.Fatalf("LoginBonus.List returned incomplete response: %v", list)
 	}
+	for _, info := range list.GetInfos() {
+		assertDummyNoticeInfo(t, "LoginBonus.List "+info.GetUserLoginBonus().GetLoginBonusId(), info.GetNoticeInfo())
+	}
 	var candidate *ptransaction.UserLoginBonus
 	for _, info := range list.GetInfos() {
 		state := info.GetUserLoginBonus()

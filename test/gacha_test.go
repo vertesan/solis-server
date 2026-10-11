@@ -71,7 +71,11 @@ func TestGachaScenario(t *testing.T) {
 	if list.GetCommonResponse() == nil || len(list.GetGachas()) == 0 {
 		t.Fatalf("Gacha.List returned no current catalog: %v", list)
 	}
-	noticeIDs := testGachaNoticeCatalogIDs(t)
+	notices := testGachaNoticeCatalog(t)
+	homeNotices := make(map[string]*papi.NoticeInfo, len(homeBeforeList.GetGachaInfos()))
+	for _, info := range homeBeforeList.GetGachaInfos() {
+		homeNotices[info.GetId()] = info.GetNoticeInfo()
+	}
 	if !sameStrings(testGachaInfoIDs(homeBeforeList.GetGachaInfos()), testGachaInfoIDs(list.GetGachas())) {
 		t.Fatalf("Home.Enter and Gacha.List current roster differ: home=%v list=%v", testGachaInfoIDs(homeBeforeList.GetGachaInfos()), testGachaInfoIDs(list.GetGachas()))
 	}
@@ -90,16 +94,19 @@ func TestGachaScenario(t *testing.T) {
 		expectedNoticeID := testGachaNoticeID(info.GetId())
 		if expectedNoticeID == "" {
 			exactID := "info-" + info.GetId()
-			if _, exists := noticeIDs[exactID]; exists {
+			if _, exists := notices[exactID]; exists {
 				expectedNoticeID = exactID
 			}
 		}
-		if _, exists := noticeIDs[expectedNoticeID]; exists {
-			if info.GetNoticeInfo().GetId() != expectedNoticeID {
-				t.Fatalf("Gacha.List notice alias for %q = %q, want %q", info.GetId(), info.GetNoticeInfo().GetId(), expectedNoticeID)
+		if expected := notices[expectedNoticeID]; expected != nil {
+			if !proto.Equal(info.GetNoticeInfo(), expected) {
+				t.Fatalf("Gacha.List changed catalog notice %q for %q: %v", expectedNoticeID, info.GetId(), info.GetNoticeInfo())
 			}
-		} else if info.GetNoticeInfo() != nil {
-			t.Fatalf("Gacha.List synthesized unresolved notice %q for gacha %q", info.GetNoticeInfo().GetId(), info.GetId())
+		} else {
+			assertDummyNoticeInfo(t, "Gacha.List "+info.GetId(), info.GetNoticeInfo())
+		}
+		if !proto.Equal(homeNotices[info.GetId()], info.GetNoticeInfo()) {
+			t.Fatalf("Home.Enter and Gacha.List notice differ for %q", info.GetId())
 		}
 	}
 	assertGuaranteedRarityGachaCatalogs(t, client, list.GetGachas())
@@ -1636,16 +1643,16 @@ func testGachaMissionTargetsMatch(targets []string, cardID, characterID string) 
 	return false
 }
 
-func testGachaNoticeCatalogIDs(t *testing.T) map[string]struct{} {
+func testGachaNoticeCatalog(t *testing.T) map[string]*papi.NoticeInfo {
 	t.Helper()
-	result := make(map[string]struct{})
+	result := make(map[string]*papi.NoticeInfo)
 	catalog, err := opsolis.FindNoticeCatalog(context.Background())
 	if err != nil {
 		return result
 	}
 	for _, group := range [][]*papi.NoticeInfo{catalog.Notices, catalog.MalfunctionNotices, catalog.PrNotices} {
 		for _, notice := range group {
-			result[notice.GetId()] = struct{}{}
+			result[notice.GetId()] = notice
 		}
 	}
 	return result

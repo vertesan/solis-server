@@ -63,6 +63,7 @@ func (s *LoveServer) Top(ctx context.Context, req *papi.LoveTopRequest) (*papi.L
 			levelInfos = append(levelInfos, entry)
 		}
 		response = &papi.LoveTopResponse{
+			NoticeInfo:      viber.NewDummyNoticeInfo(),
 			LoveName:        catalog.Config.Name,
 			PlayerName:      state.PlayerName,
 			Exp:             state.Exp,

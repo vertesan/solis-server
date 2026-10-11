@@ -297,6 +297,7 @@ func TestLoveExtraLessonAndUnavailablePresentScenario(t *testing.T) {
 	if top.GetItemInfo().GetHiddenFavorabilityObtainItemId() != "" {
 		t.Fatal("Extra Top exposed a present item despite this feature being unavailable")
 	}
+	assertDummyNoticeInfo(t, "Love.Top Extra", top.GetNoticeInfo())
 	level := catalog.LevelData(state.Exp)
 	steps := catalog.Config.PromoteMinutes * 60 / catalog.Config.LessonStepSeconds
 	expectedExp := steps * level.GetLessonStepRewardExp()

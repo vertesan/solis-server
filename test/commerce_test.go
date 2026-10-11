@@ -143,6 +143,10 @@ func TestCommerceAPIs(t *testing.T) {
 		expected.IsPurchased = actual.GetIsPurchased()
 		expected.Progress = actual.GetProgress()
 		expected.MaxProgress = actual.GetMaxProgress()
+		if expected.GetNoticeInfo() == nil {
+			assertDummyNoticeInfo(t, "Shop.List "+actual.GetId(), actual.GetNoticeInfo())
+			expected.NoticeInfo = &papi.NoticeInfo{LinkType: penum.LinkType_LinkType_WebView}
+		}
 		if !proto.Equal(actual, expected) {
 			t.Fatalf("Shop.List response is inconsistent with current catalog: shop=%v catalog=%v", actual, expected)
 		}

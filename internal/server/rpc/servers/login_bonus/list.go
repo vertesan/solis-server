@@ -87,7 +87,7 @@ func (s *LoginBonusServer) List(ctx context.Context, _ *papi.Empty) (*papi.Login
 					return nil, err
 				}
 			}
-			infos = append(infos, &papi.LoginBonusInfo{UserLoginBonus: state})
+			infos = append(infos, &papi.LoginBonusInfo{UserLoginBonus: state, NoticeInfo: viber.NewDummyNoticeInfo()})
 		}
 		response = &papi.LoginBonusListResponse{Infos: infos, CommonResponse: viber.NewCommonResponse(nil)}
 		return nil, nil

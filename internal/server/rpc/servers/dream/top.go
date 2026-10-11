@@ -33,7 +33,19 @@ func (s *DreamServer) Top(ctx context.Context, req *papi.Empty) (*papi.DreamTopR
 		for _, area := range areas {
 			byID[area.BasePhotoID] = area.Data
 		}
-		response = &papi.DreamTopResponse{CommonResponse: viber.NewCommonResponse(updated), SeasonInfo: &papi.DreamSeasonInfo{Id: monthly.SeasonID, Name: "イメージトレーニング", StartTime: monthly.StartTime, EndTime: monthly.EndTime - 1, GenerateAreaItemId: mdream.ManualItemID, AssetId: "event-dream-defalut"}}
+		response = &papi.DreamTopResponse{
+			CommonResponse:         viber.NewCommonResponse(updated),
+			GrowthPermilNoticeInfo: viber.NewDummyNoticeInfo(),
+			SeasonInfo: &papi.DreamSeasonInfo{
+				Id:                 monthly.SeasonID,
+				Name:               "イメージトレーニング",
+				StartTime:          monthly.StartTime,
+				EndTime:            monthly.EndTime - 1,
+				GenerateAreaItemId: mdream.ManualItemID,
+				AssetId:            "event-dream-defalut",
+				NoticeInfo:         viber.NewDummyNoticeInfo(),
+			},
+		}
 		missions, err := opuser.FindAllUserMissions(ctx, suid)
 		if err != nil {
 			return nil, err

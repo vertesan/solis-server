@@ -194,6 +194,12 @@ func RenderCurrentGachaInfo(
 	}
 	if notice := notices[noticeID]; notice != nil {
 		info.NoticeInfo = proto.Clone(notice).(*papi.NoticeInfo)
+	} else if notices == nil && previous.GetNoticeInfo() != nil {
+		// Draw/selection updates reuse the rendered state without loading the
+		// notice catalog. Keep their existing announcement intact.
+		info.NoticeInfo = proto.Clone(previous.GetNoticeInfo()).(*papi.NoticeInfo)
+	} else {
+		info.NoticeInfo = NewDummyNoticeInfo()
 	}
 
 	switch masterGacha.GetGachaType() {

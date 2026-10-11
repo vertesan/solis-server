@@ -60,6 +60,9 @@ func (s *ShopServer) List(ctx context.Context, _ *papi.Empty) (*papi.ShopListRes
 					return nil, err
 				}
 			}
+			if info.NoticeInfo == nil {
+				info.NoticeInfo = viber.NewDummyNoticeInfo()
+			}
 			shops = append(shops, info)
 		}
 	}

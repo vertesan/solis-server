@@ -42,6 +42,7 @@ func TestLoveLessonAndRegistrationScenario(t *testing.T) {
 	registered := loveCall(t, client.Register, &papi.LoveRegisterRequest{LoveId: testLoveID, Name: "Manager"})
 	assertLoveDelta(t, registered.GetCommonResponse(), false)
 	top := loveCall(t, client.Top, &papi.LoveTopRequest{LoveId: testLoveID})
+	assertDummyNoticeInfo(t, "Love.Top standard", top.GetNoticeInfo())
 	if top.GetPlayerName() != "Manager" || top.GetSaveInfo().GetUnlocked() ||
 		!slices.Equal(top.GetStoryEpisodeIds(), []string{loveEpisode("001")}) {
 		t.Fatalf("unexpected fresh Love.Top progression: %v", top)

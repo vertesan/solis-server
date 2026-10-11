@@ -79,6 +79,9 @@ func RenderLoginBonusShop(
 	}
 	active := LoginBonusShopIsActive(purchase, entry)
 	info := proto.Clone(entry.Info).(*papi.ShopInfo)
+	if info.NoticeInfo == nil {
+		info.NoticeInfo = NewDummyNoticeInfo()
+	}
 	info.IsPurchased = active
 	info.Progress = progress
 	info.MaxProgress = int32(len(bonuses))
