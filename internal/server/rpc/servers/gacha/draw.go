@@ -121,20 +121,48 @@ func (s *GachaServer) Draw(ctx context.Context, req *papi.GachaDrawRequest) (*pa
 			}
 			premiumRewardResourceID = pool[0].GetResourceId()
 		}
-		guaranteedPool, cardRarities, err := guaranteedGachaBatchPool(
-			ctx, pool, button.GetDrawCount(), drawRules.GuaranteedCardBatchSize, drawRules.GuaranteedCardMinimumRarity,
-		)
+		var normalTiers []normalGachaTier
+		var guaranteedPool []*pmaster.RewardResource
+		var cardRarities map[string]int32
+		if isNormalCardGacha(masterGacha) {
+			// Prepare once: normal draws first choose the rarity, then a card
+			// uniformly within it, without reloading master data for every draw.
+			normalTiers, err = buildNormalGachaTiers(ctx, pool)
+			cardRarities = make(map[string]int32, len(pool))
+			for _, tier := range normalTiers {
+				for _, reward := range tier.rewards {
+					cardRarities[reward.GetResourceId()] = tier.rarity
+				}
+				if button.GetDrawCount() == drawRules.GuaranteedCardBatchSize &&
+					tier.rarity >= drawRules.GuaranteedCardMinimumRarity {
+					guaranteedPool = append(guaranteedPool, tier.rewards...)
+				}
+			}
+			if err == nil && button.GetDrawCount() == drawRules.GuaranteedCardBatchSize && len(guaranteedPool) == 0 {
+				return nil, status.Errorf(codes.FailedPrecondition, "gacha has no cards at guaranteed rarity %d", drawRules.GuaranteedCardMinimumRarity)
+			}
+		} else {
+			guaranteedPool, cardRarities, err = guaranteedGachaBatchPool(
+				ctx, pool, button.GetDrawCount(), drawRules.GuaranteedCardBatchSize, drawRules.GuaranteedCardMinimumRarity,
+			)
+		}
 		if err != nil {
 			return nil, err
 		}
 		batchHasGuaranteedRarity := false
 		for drawIndex := int64(0); drawIndex < drawCount; drawIndex++ {
 			var selected *pmaster.RewardResource
+			guaranteedDraw := len(guaranteedPool) > 0 &&
+				(drawIndex+1)%int64(drawRules.GuaranteedCardBatchSize) == 0 && !batchHasGuaranteedRarity
 			if premiumRemaining == 1 {
 				selected = proto.Clone(pool[0]).(*pmaster.RewardResource)
-			} else if len(guaranteedPool) > 0 &&
-				(drawIndex+1)%int64(drawRules.GuaranteedCardBatchSize) == 0 &&
-				!batchHasGuaranteedRarity {
+			} else if len(normalTiers) > 0 {
+				minimumRarity := int32(0)
+				if guaranteedDraw {
+					minimumRarity = drawRules.GuaranteedCardMinimumRarity
+				}
+				selected, err = selectNormalGachaReward(normalTiers, minimumRarity)
+			} else if guaranteedDraw {
 				selected, err = selectGachaReward(ctx, guaranteedPool, masterGacha, state.GetSelectedCardIds())
 			} else {
 				selected, err = selectGachaReward(ctx, pool, masterGacha, state.GetSelectedCardIds())
@@ -695,6 +723,43 @@ func resolveGachaMasterReward(ctx context.Context, rewardID string) ([]*pmaster.
 		return nil, err
 	}
 	return reward.GetResources(), nil
+}
+
+// Select rarity before the card so integer probability-display rounding never
+// biases a card's draw chance. Guaranteed slots use the same eligible-tier odds.
+func selectNormalGachaReward(tiers []normalGachaTier, minimumRarity int32) (*pmaster.RewardResource, error) {
+	var total int64
+	for _, tier := range tiers {
+		if tier.rarity < minimumRarity {
+			continue
+		}
+		if tier.weight <= 0 || len(tier.rewards) == 0 || tier.weight > math.MaxInt64-total {
+			return nil, status.Error(codes.FailedPrecondition, "normal gacha rarity weights are invalid")
+		}
+		total += tier.weight
+	}
+	if total == 0 {
+		return nil, status.Error(codes.FailedPrecondition, "normal gacha has no eligible rarity")
+	}
+	value, err := rand.Int(rand.Reader, big.NewInt(total))
+	if err != nil {
+		return nil, err
+	}
+	target := value.Int64()
+	for _, tier := range tiers {
+		if tier.rarity < minimumRarity {
+			continue
+		}
+		if target < tier.weight {
+			index, err := rand.Int(rand.Reader, big.NewInt(int64(len(tier.rewards))))
+			if err != nil {
+				return nil, err
+			}
+			return proto.Clone(tier.rewards[index.Int64()]).(*pmaster.RewardResource), nil
+		}
+		target -= tier.weight
+	}
+	return nil, status.Error(codes.Internal, "failed to select normal gacha reward")
 }
 
 func selectGachaReward(

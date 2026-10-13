@@ -182,8 +182,20 @@ func TestGachaScenario(t *testing.T) {
 	for _, entry := range probability.GetProbabilityInfos() {
 		probabilityTotal += int64(entry.GetProbability())
 	}
-	if probabilityTotal != 100000 {
-		t.Fatalf("Gacha.Probability total = %d, want 100000", probabilityTotal)
+	expectedProbabilityTotal := int64(100000)
+	if drawMaster.GetGachaType() == penum.GachaType_GachaType_Normal && strings.HasPrefix(drawMaster.GetId(), "gacha-normal-") {
+		expectedProbabilityTotal = 0
+		budgets := testNormalGachaRarityBudgets(t)
+		for _, rarity := range probability.GetRarityProbabilityInfos() {
+			poolSize := int64(len(rarity.GetProbabilityInfos()))
+			if poolSize == 0 {
+				t.Fatalf("normal gacha returned an empty rarity-%d pool", rarity.GetRarity())
+			}
+			expectedProbabilityTotal += budgets[rarity.GetRarity()] / poolSize * poolSize
+		}
+	}
+	if probabilityTotal != expectedProbabilityTotal {
+		t.Fatalf("Gacha.Probability total = %d, want %d", probabilityTotal, expectedProbabilityTotal)
 	}
 
 	buttonBefore := findTestGachaButton(drawInfo, drawButton.GetId())
@@ -442,8 +454,15 @@ func TestGachaScenario(t *testing.T) {
 		itemID := resource.GetResourceIds()[0]
 		totalCost := int64(resource.GetAmount()) * int64(execCount)
 		now := time.Now().UnixMilli()
-		for i := int64(0); i < min(totalCost, 3); i++ {
-			item := &ptransaction.UserItem{ItemId: itemID, Amount: 1, ExpiredTime: now + 60_000 + i}
+		stackCount := min(totalCost, 3)
+		for i := int64(0); i < stackCount; i++ {
+			amount := int64(1)
+			if i == stackCount-1 {
+				// Fund the full master-derived cost in this fixture, rather than
+				// relying on god promotion to include the chosen gacha's ticket.
+				amount = totalCost - i
+			}
+			item := &ptransaction.UserItem{ItemId: itemID, Amount: amount, ExpiredTime: now + 60_000 + i}
 			if err := opuser.UpsertUserItem(context.Background(), testConfig.TestUserSuid, item); err != nil {
 				t.Fatal(err)
 			}

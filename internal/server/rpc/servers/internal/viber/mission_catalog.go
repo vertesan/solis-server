@@ -97,9 +97,10 @@ func LoadActiveMissionCatalog(ctx context.Context, suid string, now int64) (*Act
 			continue
 		}
 		permanent := catalog.LoveGroups[group.GetId()] != ""
-		// Unsupported Love series remain unavailable even when a revival's
-		// calendar condition happens to be active in the current master data.
-		if strings.HasPrefix(group.GetId(), "event-love-") && !permanent {
+		// Keep only registered supported Love events and the Dream season
+		// above. Old campaigns (including beginner missions) stay unavailable
+		// even if their date/level conditions happen to be satisfied.
+		if !permanent {
 			continue
 		}
 		if permanent {

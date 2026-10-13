@@ -87,10 +87,9 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		// data. Never expose stale, captured item IDs as "new item" badges.
 		notiShowcaseShopItem.ShopId = viber.ShowcaseGoodsShopID
 		notiShowcaseShopItem.ShopItemIds = []string{}
-		eventInfo, err := opsolis.FindHomeEventInfo(ctx)
-		if err != nil {
-			return nil, err
-		}
+		// Only supported permanent events (and the personal birthday event)
+		// belong on Home; historical server-wide campaign snapshots do not.
+		eventInfo := &papi.HomeEventInfo{}
 		eventInfo.LoveEventInfos, err = homeLoveEvents(ctx, suid, now, updatedData)
 		if err != nil {
 			return nil, err
@@ -223,8 +222,8 @@ func (s *HomeServer) Enter(ctx context.Context, req *papi.HomeEnterRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
-		eventInfo.EventMissionInfos, err = viber.ReconcileUserMissions(ctx, suid, now, updatedData)
-		if err != nil {
+		// Love and Dream expose their missions inside their own event pages.
+		if _, err := viber.ReconcileUserMissions(ctx, suid, now, updatedData); err != nil {
 			return nil, err
 		}
 		dreamMonthly, err := dream.MonthlyCatalog(ctx, now)

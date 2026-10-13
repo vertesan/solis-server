@@ -5,6 +5,7 @@ import (
 	"errors"
 	"math"
 	"sort"
+	"strings"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
@@ -35,6 +36,9 @@ func currentGachaInfo(
 	masterGacha *pmaster.Gacha,
 	now int64,
 ) (*papi.GachaInfo, error) {
+	if !viber.IsGachaEnabled(masterGacha) {
+		return nil, status.Error(codes.PermissionDenied, "gacha is disabled")
+	}
 	previous, err := opuser.FindUserGachaInfo(ctx, suid, masterGacha.GetId())
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, err
@@ -89,6 +93,60 @@ const (
 	gachaProbabilityTotal   = 100000
 )
 
+func isNormalCardGacha(masterGacha *pmaster.Gacha) bool {
+	// Guaranteed-rarity tickets also use GachaType_Normal. Only the ordinary
+	// diamond gacha (including its ticket button) uses the all-card pool.
+	return masterGacha.GetGachaType() == penum.GachaType_GachaType_Normal &&
+		strings.HasPrefix(masterGacha.GetId(), "gacha-normal-")
+}
+
+type normalGachaTier struct {
+	rarity  int32
+	weight  int64
+	rewards []*pmaster.RewardResource
+}
+
+func buildNormalGachaTiers(ctx context.Context, pool []*pmaster.RewardResource) ([]normalGachaTier, error) {
+	if len(pool) == 0 {
+		return nil, status.Error(codes.FailedPrecondition, "normal gacha reward pool is empty")
+	}
+	rules, err := viber.LoadGachaRules()
+	if err != nil {
+		return nil, err
+	}
+	cards, err := opmaster.FindAllCards(ctx)
+	if err != nil {
+		return nil, err
+	}
+	cardRarities := make(map[string]int32, len(cards))
+	for _, card := range cards {
+		cardRarities[card.GetId()] = card.GetInitialRarity()
+	}
+	byRarity := make(map[int32][]*pmaster.RewardResource)
+	for _, reward := range pool {
+		if reward.GetResourceType() != penum.ResourceType_ResourceType_Card || reward.GetAmount() != 1 {
+			return nil, status.Error(codes.FailedPrecondition, "normal gacha pool must contain single-card rewards")
+		}
+		rarity := cardRarities[reward.GetResourceId()]
+		if rules.StandardCardRarityProbabilities[rarity] <= 0 {
+			return nil, status.Errorf(codes.FailedPrecondition, "card %q has unsupported gacha rarity %d", reward.GetResourceId(), rarity)
+		}
+		byRarity[rarity] = append(byRarity[rarity], reward)
+	}
+	tiers := make([]normalGachaTier, 0, len(byRarity))
+	var total int64
+	for rarity, rewards := range byRarity {
+		weight := rules.StandardCardRarityProbabilities[rarity]
+		if weight > math.MaxInt64-total {
+			return nil, status.Error(codes.FailedPrecondition, "normal gacha rarity weights overflow")
+		}
+		total += weight
+		tiers = append(tiers, normalGachaTier{rarity: rarity, weight: weight, rewards: rewards})
+	}
+	sort.Slice(tiers, func(i, j int) bool { return tiers[i].rarity > tiers[j].rarity })
+	return tiers, nil
+}
+
 func buildGachaPool(
 	ctx context.Context,
 	masterGacha *pmaster.Gacha,
@@ -123,6 +181,26 @@ func buildGachaPool(
 	rules, err := viber.LoadGachaRules()
 	if err != nil {
 		return nil, err
+	}
+	if isNormalCardGacha(masterGacha) {
+		cards, err := opmaster.FindAllCards(ctx)
+		if err != nil {
+			return nil, err
+		}
+		// Pickup IDs describe the banner, not the server's draw pool. Include
+		// every card in a configured rarity tier, including limited cards.
+		pool = make([]*pmaster.RewardResource, 0, len(cards))
+		for _, card := range cards {
+			if rules.StandardCardRarityProbabilities[card.GetInitialRarity()] <= 0 {
+				continue
+			}
+			pool = append(pool, &pmaster.RewardResource{
+				ResourceType: penum.ResourceType_ResourceType_Card,
+				ResourceId:   card.GetId(),
+				Amount:       1,
+			})
+		}
+		return pool, nil
 	}
 	if rarityPool := guaranteedGachaRarityPool(rules, masterGacha.GetId()); rarityPool != nil {
 		if rarityPool.UseMasterCardRewards {

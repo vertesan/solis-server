@@ -45,7 +45,7 @@ func (s *LoginBonusServer) List(ctx context.Context, _ *papi.Empty) (*papi.Login
 		evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, now)
 		infos := make([]*papi.LoginBonusInfo, 0, len(masters))
 		for _, master := range masters {
-			if master.GetId() == "" || len(master.GetRewardIds()) == 0 {
+			if master.GetId() == "" || len(master.GetRewardIds()) == 0 || !loginBonusEnabled(master) {
 				continue
 			}
 			open, err := evaluator.Satisfied(master.GetOpenConditionId())

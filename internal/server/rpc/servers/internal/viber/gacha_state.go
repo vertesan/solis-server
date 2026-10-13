@@ -84,6 +84,9 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
 	conditionIDs := make([]string, 0, 2*len(catalog.Ordered))
 	for _, gacha := range catalog.Ordered {
+		if !IsGachaEnabled(gacha) {
+			continue
+		}
 		conditionIDs = append(conditionIDs, gacha.GetViewConditionId(), gacha.GetUnlockConditionId())
 	}
 	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
@@ -91,6 +94,9 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	}
 	visible := make([]*papi.GachaInfo, 0, len(catalog.Ordered))
 	for _, masterGacha := range catalog.Ordered {
+		if !IsGachaEnabled(masterGacha) {
+			continue
+		}
 		shown, err := evaluator.Satisfied(masterGacha.GetViewConditionId())
 		if err != nil {
 			return nil, err

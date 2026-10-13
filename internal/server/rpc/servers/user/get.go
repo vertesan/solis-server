@@ -266,6 +266,14 @@ func (s *UserServer) Get(ctx context.Context, _ *papi.Empty) (*papi.UserGetRespo
 		if err != nil {
 			return nil, err
 		}
+		// The private server has no multiplayer likes or daily heart recovery.
+		// Clear balances from older users so the client does not prompt them to spend hearts.
+		if showcaseLike.GetRewardLikeCount() != 0 {
+			showcaseLike.RewardLikeCount = 0
+			if err := opuser.UpsertUserShowcaseLike(ctx, suid, showcaseLike); err != nil {
+				return nil, err
+			}
+		}
 		showcaseMusics, err := opuser.FindAllUserShowcaseMusics(ctx, suid)
 		if err != nil {
 			return nil, err

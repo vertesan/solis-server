@@ -60,6 +60,9 @@ func calculateGachaProbabilities(
 	if len(pool) == 0 {
 		return []*papi.ProbabilityInfo{}, []*papi.RarityProbabilityInfo{}, nil
 	}
+	if isNormalCardGacha(masterGacha) {
+		return normalGachaProbabilities(ctx, pool)
+	}
 	selected := viber.StringSet(state.GetSelectedCardIds())
 	pickups := viber.StringSet(masterGacha.GetPickupCardIds())
 	weights, err := gachaRewardWeights(ctx, masterGacha, state.GetSelectedCardIds(), pool)
@@ -67,8 +70,18 @@ func calculateGachaProbabilities(
 		return nil, nil, err
 	}
 	var totalWeight int64
-	for _, weight := range weights {
+	lastWeightedIndex := -1
+	for i, weight := range weights {
+		if weight < 0 {
+			return nil, nil, status.Error(codes.FailedPrecondition, "gacha reward probability is invalid")
+		}
+		if weight > 0 {
+			lastWeightedIndex = i
+		}
 		totalWeight += weight
+	}
+	if totalWeight <= 0 {
+		return nil, nil, status.Error(codes.FailedPrecondition, "gacha reward weights are empty")
 	}
 
 	probabilities := make([]*papi.ProbabilityInfo, 0, len(pool))
@@ -76,9 +89,14 @@ func calculateGachaProbabilities(
 	isPremium := masterGacha.GetGachaType() == penum.GachaType_GachaType_Premium
 	for i, reward := range pool {
 		probability := weights[i]
+		// A rarity's pickup/selection budget can leave ordinary cards with no
+		// weight. Draw never selects them, so do not advertise them as rewards.
+		if probability == 0 {
+			continue
+		}
 		if !isPremium {
 			probability = int64(gachaProbabilityTotal) * weights[i] / totalWeight
-			if i == len(pool)-1 {
+			if i == lastWeightedIndex {
 				probability = remaining
 			}
 			remaining -= probability
@@ -149,4 +167,44 @@ func calculateGachaProbabilities(
 		})
 	}
 	return probabilities, rarityProbabilities, nil
+}
+
+func normalGachaProbabilities(ctx context.Context, pool []*pmaster.RewardResource) ([]*papi.ProbabilityInfo, []*papi.RarityProbabilityInfo, error) {
+	tiers, err := buildNormalGachaTiers(ctx, pool)
+	if err != nil {
+		return nil, nil, err
+	}
+	var totalWeight int64
+	for _, tier := range tiers {
+		totalWeight += tier.weight
+	}
+	probabilities := make([]*papi.ProbabilityInfo, 0, len(pool))
+	rarities := make([]*papi.RarityProbabilityInfo, 0, len(tiers))
+	remaining := int64(gachaProbabilityTotal)
+	for i, tier := range tiers {
+		tierProbability := int64(gachaProbabilityTotal) * tier.weight / totalWeight
+		if i == len(tiers)-1 {
+			tierProbability = remaining
+		}
+		remaining -= tierProbability
+		// Keep the tier's actual rate (e.g. ★5 = 3.5%) in its header. Each
+		// card displays the same truncated fraction; display rounding never
+		// affects the two-stage sampler's exact tier/card probabilities.
+		individual := int32(tierProbability / int64(len(tier.rewards)))
+		entries := make([]*papi.ProbabilityInfo, 0, len(tier.rewards))
+		for _, reward := range tier.rewards {
+			entry := &papi.ProbabilityInfo{
+				ResourceType: reward.GetResourceType(), ResourceId: reward.GetResourceId(),
+				Amount: int64(reward.GetAmount()), Probability: individual,
+			}
+			entries = append(entries, entry)
+			probabilities = append(probabilities, entry)
+		}
+		rarities = append(rarities, &papi.RarityProbabilityInfo{
+			Rarity: tier.rarity, Probability: int32(tierProbability), ProbabilityInfos: entries,
+			GachaRewardPatternType: penum.GachaRewardPatternType_GachaRewardPatternType_NotSelectCard,
+			IndividualProbability:  individual,
+		})
+	}
+	return probabilities, rarities, nil
 }

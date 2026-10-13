@@ -31,6 +31,9 @@ func (s *LoginBonusServer) Receive(ctx context.Context, req *papi.LoginBonusRece
 			}
 			return nil, err
 		}
+		if !loginBonusEnabled(master) {
+			return nil, status.Error(codes.PermissionDenied, "login bonus is not available")
+		}
 		evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, time.Now().UnixMilli())
 		open, err := evaluator.Satisfied(master.GetOpenConditionId())
 		if err != nil {

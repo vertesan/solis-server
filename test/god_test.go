@@ -397,14 +397,7 @@ func TestUserGod(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	globalEventInfo, err := opsolis.FindHomeEventInfo(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	expectedEventInfo := proto.Clone(globalEventInfo).(*papi.HomeEventInfo)
-	unlockTestHomeEvents(expectedEventInfo.ProtoReflect())
-	// Love, Dream, mission and birthday entrances are dynamic projections; all
-	// unrelated events must still track the current global catalog exactly.
+	// God mode must not restore disabled campaigns from the global catalog.
 	dreamInfo := homeResponse.GetEventInfo().GetDreamInfo()
 	if dreamInfo == nil || !dreamInfo.GetIsUnlocked() || dreamInfo.GetEndTime() != 0 || dreamInfo.GetGenerateAreaItemId() != dream.ManualItemID {
 		t.Fatalf("god Dream entrance is not permanently unlocked: %v", dreamInfo)
@@ -416,33 +409,12 @@ func TestUserGod(t *testing.T) {
 	actualRotatingEvents := proto.Clone(homeResponse.EventInfo).(*papi.HomeEventInfo)
 	actualRotatingEvents.LoveEventInfos = nil
 	actualRotatingEvents.DreamInfo = nil
-	actualRotatingEvents.EventMissionInfos = nil
 	actualRotatingEvents.HomeBirthdayInfo = nil
-	expectedEventInfo.LoveEventInfos = nil
-	expectedEventInfo.DreamInfo = nil
-	expectedEventInfo.EventMissionInfos = nil
-	expectedEventInfo.HomeBirthdayInfo = nil
-	if !proto.Equal(actualRotatingEvents, expectedEventInfo) {
-		t.Fatalf("home events are not based on the current global rotation: got=%v want=%v", actualRotatingEvents, expectedEventInfo)
+	if !proto.Equal(actualRotatingEvents, &papi.HomeEventInfo{}) {
+		t.Fatalf("god home restored disabled event entrances: %v", actualRotatingEvents)
 	}
 	if homeResponse.GetEventInfo().GetHomeBirthdayInfo() != nil {
 		t.Fatal("god mode started a birthday event without a registered birthday")
-	}
-	missionGroups, err := opmaster.FindAllEventMissions(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	groupsByID := make(map[string]*pmaster.EventMission, len(missionGroups))
-	for _, group := range missionGroups {
-		groupsByID[group.GetId()] = group
-	}
-	seenGroups := make(map[string]bool)
-	for _, info := range homeResponse.GetEventInfo().GetEventMissionInfos() {
-		master := groupsByID[info.GetId()]
-		if master == nil || seenGroups[info.GetId()] || master.GetEventMissionType() != penum.EventMissionType_EventMissionType_Campaign || info.GetOrder() != master.GetOrder() || !info.GetUnlocked() {
-			t.Fatalf("god home returned invalid master-driven mission entrance: %v", info)
-		}
-		seenGroups[info.GetId()] = true
 	}
 	assertHomeLoveEntrances(t, homeResponse)
 	assertHomeEventsUnlocked(t, homeResponse.EventInfo.ProtoReflect())
@@ -1680,27 +1652,6 @@ func collectTestMessageStoryPrerequisites(
 		}
 		if dependencyID := setting.GetSatisfyCondition().GetConditionId(); dependencyID != "" {
 			collectTestMessageStoryPrerequisites(dependencyID, conditions, storyIDs, visited)
-		}
-	}
-}
-
-func unlockTestHomeEvents(message protoreflect.Message) {
-	fields := message.Descriptor().Fields()
-	for index := 0; index < fields.Len(); index++ {
-		field := fields.Get(index)
-		if field.Kind() == protoreflect.BoolKind && (field.JSONName() == "isUnlocked" || field.JSONName() == "unlocked") {
-			message.Set(field, protoreflect.ValueOfBool(true))
-			continue
-		}
-		if field.IsList() && field.Message() != nil {
-			list := message.Get(field).List()
-			for itemIndex := 0; itemIndex < list.Len(); itemIndex++ {
-				unlockTestHomeEvents(list.Get(itemIndex).Message())
-			}
-			continue
-		}
-		if field.Message() != nil && message.Has(field) {
-			unlockTestHomeEvents(message.Get(field).Message())
 		}
 	}
 }

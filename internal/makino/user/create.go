@@ -95,7 +95,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 			TutorialClearedTime:                milliNow,
 			ComebackStartTime:                  0,
 			PhotoLimitExtendedCount:            0,
-			InviteHostUserId:                   "",
+			InviteHostUserId:                   "00000000",
 			BuddyCardId:                        "card-ai-03-schl-00",
 			NextPhotoImageIds: []string{
 				uuid.NewString(),
@@ -432,7 +432,7 @@ func CreateUser(ctx context.Context, publicUserId string, suid string, password 
 
 		// UserShowcaseLike
 		if err := opuser.UpsertUserShowcaseLike(ctx, suid, &ptransaction.UserShowcaseLike{
-			RewardLikeCount: 30,
+			RewardLikeCount: 0,
 			DailyLikeCount:  0,
 		}); err != nil {
 			return nil, err
