@@ -1,6 +1,8 @@
 package sname
 
 const MasterTagPack = "masterTagPack"
+const MasterTagPackOrig = "masterTagPackOrig"
+const MasterImportJob = "masterImportJob"
 const OctoManifest = "octoManifest"
 const Qseed = "qseed"
 const ServerProfile = "serverProfile"

@@ -20,7 +20,7 @@ import (
 	"go.uber.org/zap"
 )
 
-func Initialize() (retErr error) {
+func Initialize(beforeUpdate ...func(context.Context) error) (retErr error) {
 	if retErr = Connect(); retErr != nil {
 		return fmt.Errorf("failed to connect to database: %w", retErr)
 	}
@@ -32,6 +32,13 @@ func Initialize() (retErr error) {
 
 	if retErr = migration.MigrationCheck(); retErr != nil {
 		return fmt.Errorf("failed to run MigrationCheck: %w", retErr)
+	}
+	// Publication recovery must run before an official update can replace the
+	// manifests whose superseded files still need cleanup.
+	for _, recover := range beforeUpdate {
+		if retErr = recover(context.Background()); retErr != nil {
+			return fmt.Errorf("failed recovering master publication: %w", retErr)
+		}
 	}
 	if retErr = update.DataUpdateCheck(); retErr != nil {
 		return fmt.Errorf("failed to run DataUpdateCheck: %w", retErr)

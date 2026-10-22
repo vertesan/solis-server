@@ -37,6 +37,15 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 	if *timeout <= 0 {
 		return errors.New("--timeout must be positive")
 	}
+	timeoutExplicit := false
+	flags.Visit(func(value *flag.Flag) {
+		if value.Name == "timeout" {
+			timeoutExplicit = true
+		}
+	})
+	if args[0] == "master" && !timeoutExplicit {
+		*timeout = 10 * time.Minute
+	}
 	ctx, cancel := context.WithTimeout(ctx, *timeout)
 	defer cancel()
 	switch args[0] {
@@ -44,15 +53,18 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		return runUser(ctx, *serverURL, args[1:], stdout, stderr)
 	case "server":
 		return runServer(ctx, args[1:], stdout, stderr)
+	case "master":
+		return runMaster(ctx, *serverURL, args[1:], stdout, stderr)
 	default:
 		return errors.New("unknown command; use makino --help")
 	}
 }
 
 func printUsage(out io.Writer) {
-	fmt.Fprintln(out, `Usage: makino [--server URL] [--timeout 30s] <user|server> <command> [flags]
+	fmt.Fprintln(out, `Usage: makino [--server URL] [--timeout DURATION] <user|server|master> <command> [flags]
 
-Global flags must precede user/server. The .env file in the working directory
+Global flags must precede user/server/master. The timeout defaults to 30s, or
+10m for master commands. The .env file in the working directory
 is loaded by the binary. User commands require SOLIS_ADMIN_AUTH and use
 MAKINO_SERVER_URL (default http://localhost:50052) unless --server is supplied.
 Use HTTPS when connecting to a remote admin server.
@@ -67,5 +79,11 @@ User commands:
 Server catalogs:
   server <catalog> --help
     Manage database-backed catalogs; requires SOLIS_DB_URI.
-    Use makino server --help for the supported catalog names and operations.`)
+    Use makino server --help for the supported catalog names and operations.
+
+Master data:
+  master --help
+    Export editable YAML, import customized databases, or reset to the official
+    baseline, with or without a running game server. Makino and the server must
+    share resources/db; MongoDB must be running.`)
 }

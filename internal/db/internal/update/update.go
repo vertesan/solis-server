@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path"
+	"sort"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	mversion "github.com/vertesan/solis-server/internal/db/store/opmaster/version"
@@ -29,53 +30,8 @@ import (
 // check and update both master data and octo manifest data
 func DataUpdateCheck() error {
 	ctx := context.Background()
-	serverProfile, err := opsolis.FindServerProfile(ctx)
-	if err != nil {
+	if err := MasterDataUpdateCheck(ctx); err != nil {
 		return err
-	}
-	zap.L().Sugar().Infof("server profile master version: %s", serverProfile.MasterVersion)
-
-	masterTag, err := utils.ReadJsonFile[ptransaction.MasterTag](path.Join(config.GetManifestDir(), "mastertag.json"))
-	if err != nil {
-		return fmt.Errorf("failed to unmarshal masterTag: %w", err)
-	}
-
-	// masterTagPack
-	if serverProfile.MasterVersion != masterTag.Version {
-		zap.L().Sugar().Infof("mastertag json version: %s", masterTag.Version)
-		// download encrypted database files from official server
-		zap.L().Info("download master files from official server...")
-		if err := downloadAllEncryptedDb(masterTag); err != nil {
-			return fmt.Errorf("failed to download master files: %w", err)
-		}
-		zap.L().Info("download completed")
-
-		// upsert all masterTagPacks and master version for serverProfile
-		err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
-			for _, masterTagPack := range masterTag.MasterTagPacks {
-				if err := opsolis.UpsertMasterTagPack(ctx, masterTagPack); err != nil {
-					return nil, err
-				}
-			}
-			if err := opsolis.UpdateServerProfileMasterVersion(ctx, masterTag.Version); err != nil {
-				return nil, err
-			}
-			return nil, nil
-		})
-		if err != nil {
-			return fmt.Errorf("failed to upsert masterTagPack: %w", err)
-		}
-		zap.L().Info("masterTagPack collection update completed")
-	}
-
-	// refresh serverProfile after updating
-	serverProfile, err = opsolis.FindServerProfile(ctx)
-	if err != nil {
-		return err
-	}
-
-	if err := checkAndUpdateAllMaster(serverProfile.MasterVersion); err != nil {
-		return fmt.Errorf("failed to update master database: %w", err)
 	}
 
 	// octoManifest
@@ -113,8 +69,67 @@ func DataUpdateCheck() error {
 	return nil
 }
 
-func checkAndUpdateAllMaster(profileVersion string) error {
-	ctx := context.Background()
+// MasterDataUpdateCheck runs before the server accepts requests. The official
+// manifest has an opaque version hash, so a different source version denotes
+// an official release; custom active versions do not affect that comparison.
+func MasterDataUpdateCheck(ctx context.Context) error {
+	serverProfile, err := opsolis.FindServerProfile(ctx)
+	if err != nil {
+		return err
+	}
+	zap.L().Sugar().Infof("server profile master version: %s", serverProfile.MasterVersion)
+
+	masterTag, err := utils.ReadJsonFile[ptransaction.MasterTag](path.Join(config.GetManifestDir(), "mastertag.json"))
+	if err != nil {
+		return fmt.Errorf("failed to unmarshal masterTag: %w", err)
+	}
+
+	baseline := serverProfile.MasterVersionOrig
+	if baseline == "" {
+		// Preserve the pre-customization update trigger. Establishing the first
+		// backup requires a normal official update (or the administrator changing
+		// masterVersion); do not synthesize an original from active documents.
+		baseline = serverProfile.MasterVersion
+	}
+	if baseline != masterTag.Version {
+		zap.L().Sugar().Infof("mastertag json version: %s", masterTag.Version)
+		// download encrypted database files from official server
+		zap.L().Info("download master files from official server...")
+		if err := downloadAllEncryptedDb(masterTag); err != nil {
+			return fmt.Errorf("failed to download master files: %w", err)
+		}
+		zap.L().Info("download completed")
+
+		previous, err := opsolis.GetAllMasterTagPack(ctx)
+		if err != nil {
+			return err
+		}
+		if err := replaceAllMaster(ctx, masterTag.MasterTagPacks, masterTag.Version, func(ctx context.Context) error {
+			currentTypes := make(map[string]bool, len(masterTag.MasterTagPacks))
+			for _, pack := range masterTag.MasterTagPacks {
+				currentTypes[pack.Type] = true
+			}
+			for _, pack := range previous {
+				if !currentTypes[pack.Type] {
+					if err := mversion.DeleteMasterDb(ctx, pack.Type); err != nil {
+						return err
+					}
+				}
+			}
+			return opsolis.ReplaceOfficialMasterTag(ctx, masterTag)
+		}); err != nil {
+			return fmt.Errorf("failed to publish official master data: %w", err)
+		}
+		return nil
+	}
+
+	if err := checkAndUpdateAllMaster(ctx, serverProfile.MasterVersion); err != nil {
+		return fmt.Errorf("failed to update master database: %w", err)
+	}
+	return nil
+}
+
+func checkAndUpdateAllMaster(ctx context.Context, profileVersion string) error {
 	ver, err := mversion.GetMasterVersion(ctx)
 	if err != nil {
 		return err
@@ -130,11 +145,18 @@ func checkAndUpdateAllMaster(profileVersion string) error {
 	if err != nil {
 		return fmt.Errorf("failed to get master tag pack: %w", err)
 	}
+	return replaceAllMaster(ctx, tags, profileVersion, nil)
+}
+
+// replaceAllMaster advances master._version in the same transaction as its
+// contents. Official publication also attaches the active/original manifests
+// and both profile versions to that transaction.
+func replaceAllMaster(ctx context.Context, tags []*ptransaction.MasterTagPack, profileVersion string, publishManifest func(context.Context) error) error {
 	// prepare an indexMap for creating indexes after transaction
 	indexMap := make(map[string]bson.D)
 
 	// start a transaction to migrate master databases from SQLite to MongoDB
-	err = transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
+	err := transaction.WithTransaction(ctx, func(ctx context.Context) (interface{}, error) {
 		for _, tag := range tags {
 			filePath := path.Join(config.GetDBDir(), tag.FileName)
 			data, err := crypto.DecryptMasterDbFile(tag.Type, filePath, tag.CryptoKey)
@@ -143,13 +165,20 @@ func checkAndUpdateAllMaster(profileVersion string) error {
 			}
 			// create indexMap
 			if len(data) > 0 {
-				var indexes bson.D
+				var keys []string
 				for key := range data[0] {
 					if key != "data" {
-						indexes = append(indexes, bson.E{Key: key, Value: 1})
+						keys = append(keys, key)
 					}
 				}
-				indexMap[tag.Type] = indexes
+				sort.Strings(keys)
+				var indexes bson.D
+				for _, key := range keys {
+					indexes = append(indexes, bson.E{Key: key, Value: 1})
+				}
+				if len(indexes) > 0 {
+					indexMap[tag.Type] = indexes
+				}
 			}
 			// update db
 			if err := mversion.DeleteMasterDb(ctx, tag.Type); err != nil {
@@ -158,6 +187,14 @@ func checkAndUpdateAllMaster(profileVersion string) error {
 			if err := mversion.InsertMasterDb(ctx, tag.Type, data); err != nil {
 				return nil, err
 			}
+		}
+		if publishManifest != nil {
+			if err := publishManifest(ctx); err != nil {
+				return nil, err
+			}
+		}
+		if err := mversion.UpsertMasterVersion(ctx, profileVersion); err != nil {
+			return nil, err
 		}
 		return nil, nil
 	})
@@ -171,11 +208,6 @@ func checkAndUpdateAllMaster(profileVersion string) error {
 		if err := mversion.CreateIndexToMasterDb(ctx, k, v); err != nil {
 			return err
 		}
-	}
-
-	// finally, upsert master version in master._version
-	if err := mversion.UpsertMasterVersion(ctx, profileVersion); err != nil {
-		return err
 	}
 
 	zap.L().Info("master database update completed")

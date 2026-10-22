@@ -28,6 +28,21 @@ func UpdateServerProfileMasterVersion(ctx context.Context, version string) error
 	)
 }
 
+// UpdateServerProfileOfficialMasterVersion advances the active version and the
+// clean official baseline together. Custom publications must use
+// UpdateServerProfileMasterVersion instead, preserving this baseline.
+func UpdateServerProfileOfficialMasterVersion(ctx context.Context, version string) error {
+	return scommon.UpdateOne(
+		ctx,
+		sname.ServerProfile,
+		bson.M{},
+		&struct {
+			MasterVersion     string `bson:"masterVersion"`
+			MasterVersionOrig string `bson:"masterVersionOrig"`
+		}{MasterVersion: version, MasterVersionOrig: version},
+	)
+}
+
 func DeleteServerProfile(ctx context.Context) error {
 	return scommon.Delete(
 		ctx,

@@ -10,6 +10,7 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
+	"github.com/vertesan/solis-server/internal/makino/masterdata"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/server/http"
 	"github.com/vertesan/solis-server/internal/server/rpc"
@@ -18,8 +19,16 @@ import (
 )
 
 func StartServers(base *zap.Logger) (retErr error) {
+	ownership, err := masterdata.AcquireOwnership()
+	if err != nil {
+		return fmt.Errorf("acquire master resource ownership: %w", err)
+	}
+	// Registered before database cleanup so ownership remains held through
+	// shutdown, pending publication completion, and database disconnection.
+	defer func() { retErr = errors.Join(retErr, ownership.Close()) }()
+
 	// init database connection
-	err := db.Initialize()
+	err = db.Initialize(masterdata.Default.Recover)
 	if err != nil {
 		return fmt.Errorf("failed initializing db: %w", err)
 	}
@@ -36,6 +45,9 @@ func StartServers(base *zap.Logger) (retErr error) {
 	if err != nil {
 		return fmt.Errorf("failed retrieving serverProfile from db: %w", err)
 	}
+	if err := masterdata.RefreshSnapshot(context.Background()); err != nil {
+		return fmt.Errorf("failed loading active master snapshot: %w", err)
+	}
 
 	// spawn child loggers
 	grpcLogger := base.Named("GRPC").With(zap.String("layer", "grpc")).Sugar()
@@ -45,6 +57,8 @@ func StartServers(base *zap.Logger) (retErr error) {
 	signalCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	group, ctx := errgroup.WithContext(signalCtx)
+	masterdata.Default.Start(ctx)
+	defer masterdata.Default.Wait()
 
 	// start servers in goroutine
 	group.Go(func() error {

@@ -16,6 +16,7 @@ type ServerProfile struct {
 	AppVersion         string `bson:"appVersion"`
 	Platform           string `bson:"platform"`
 	MasterVersion      string `bson:"masterVersion"`
+	MasterVersionOrig  string `bson:"masterVersionOrig"`
 	FirebaseProductKey string `bson:"firebaseProductKey"`
 	FirebaseProjectId  string `bson:"firebaseProjectId"`
 	PackageName        string `bson:"packageName"`

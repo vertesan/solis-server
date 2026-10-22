@@ -10,7 +10,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/db/transaction"
+	"github.com/vertesan/solis-server/internal/makino/masterdata"
 	"github.com/vertesan/solis-server/internal/proto/papi"
+	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
@@ -58,6 +60,15 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 	) (resp any, err error) {
 		logger := base.With(zap.String("api", info.FullMethod))
 		logger.Info("[gRPC]")
+		// Admission precedes every master read and idempotency/user write. Keep
+		// Health available, but Master/Get participates in the same drain.
+		if info.FullMethod != papi.Health_Check_FullMethodName {
+			leave, accepted := masterdata.Default.Gate.Enter()
+			if !accepted {
+				return masterAction(ctx, penum.ErrorCode_ErrorCode_InMaintenance, "メンテナンス中です")
+			}
+			defer leave()
+		}
 
 		// retrieve metadata
 		md, ok := metadata.FromIncomingContext(ctx)
@@ -67,6 +78,9 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 
 		// verify metadata
 		if err := verifyMetadata(md, info); err != nil {
+			if errors.Is(err, errInvalidMasterVersion) {
+				return masterAction(ctx, penum.ErrorCode_ErrorCode_OutdatedMasterData, "マスターデータが更新されました")
+			}
 			logger.Error("failed verifying metadata", zap.Error(err))
 			return nil, err
 		}
@@ -214,6 +228,17 @@ func titleActionHeader(message string) metadata.MD {
 	})
 }
 
+func masterAction(ctx context.Context, code penum.ErrorCode, message string) (any, error) {
+	header := responseHeader()
+	header.Set("x-error-action", "title")
+	header.Set("x-error-message-bin", message)
+	header.Set("x-error-code", strconv.FormatInt(int64(code), 10))
+	if err := grpc.SetHeader(ctx, header); err != nil {
+		return nil, err
+	}
+	return &papi.Empty{}, nil
+}
+
 func requiresDailyRelogin(ctx context.Context, suid string, now time.Time) (bool, error) {
 	userAuth, err := opuser.GetUserAuthByServerId(ctx, suid)
 	if err != nil {
@@ -287,7 +312,7 @@ func verifyMetadata(md metadata.MD, info *grpc.UnaryServerInfo) error {
 	if len(masterVersion) == 0 {
 		return errMissingMasterVersion
 	}
-	if masterVersion[0] != depot.ServerProfile.MasterVersion {
+	if masterVersion[0] != masterdata.Current().Version() {
 		return errInvalidMasterVersion
 	}
 
