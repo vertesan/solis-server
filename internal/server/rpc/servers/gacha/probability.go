@@ -24,6 +24,7 @@ func (s *GachaServer) Probability(ctx context.Context, req *papi.GachaProbabilit
 	if err != nil {
 		return nil, err
 	}
+	ctx = viber.WithGachaRules(ctx, catalog.Rules)
 	masterGacha := catalog.Gachas[req.GetGachaId()]
 	if masterGacha == nil {
 		return nil, status.Error(codes.NotFound, "gacha not found")

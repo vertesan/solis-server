@@ -2,28 +2,21 @@ package viber
 
 import (
 	"context"
-	"embed"
-	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/model/solis/smodel"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
+	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
-	"go.yaml.in/yaml/v3"
-	"google.golang.org/protobuf/encoding/protojson"
+	"go.mongodb.org/mongo-driver/v2/mongo"
 	"google.golang.org/protobuf/proto"
 )
-
-// Only the captured shop presentation is static; goods continue to come from
-// master data. ReadFile keeps the decoded YAML payload local to each call.
-//
-//go:embed catalogdata/showcase_shop_notice.yaml
-var showcaseShopNoticeFiles embed.FS
 
 const (
 	ShowcaseGoodsShopID   = "shop_top_shop-showcase-goods-catalog"
@@ -139,7 +132,7 @@ func buildShowcaseCommerceCatalog(ctx context.Context, suid string, firstOnly bo
 	if firstOnly {
 		return catalog, nil
 	}
-	notice, err := loadShowcaseShopNotice()
+	notice, err := loadShowcaseShopNotice(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -151,24 +144,16 @@ func buildShowcaseCommerceCatalog(ctx context.Context, suid string, firstOnly bo
 	return catalog, nil
 }
 
-func loadShowcaseShopNotice() (*papi.NoticeInfo, error) {
-	data, err := showcaseShopNoticeFiles.ReadFile("catalogdata/showcase_shop_notice.yaml")
+func loadShowcaseShopNotice(ctx context.Context) (*papi.NoticeInfo, error) {
+	catalog, err := opsolis.FindNoticeCatalog(ctx)
+	if errors.Is(err, mongo.ErrNoDocuments) || (err == nil && catalog.ShowcaseShopNotice == nil) {
+		// Clearing notices must not leave a nil field that freezes the client.
+		return NewDummyNoticeInfo(), nil
+	}
 	if err != nil {
-		return nil, fmt.Errorf("read showcase shop notice: %w", err)
+		return nil, err
 	}
-	var snapshot map[string]any
-	if err := yaml.Unmarshal(data, &snapshot); err != nil {
-		return nil, fmt.Errorf("decode showcase shop notice: %w", err)
-	}
-	protobufJSON, err := json.Marshal(snapshot)
-	if err != nil {
-		return nil, fmt.Errorf("normalize showcase shop notice: %w", err)
-	}
-	notice := &papi.NoticeInfo{}
-	if err := protojson.Unmarshal(protobufJSON, notice); err != nil {
-		return nil, fmt.Errorf("decode showcase shop notice protobuf: %w", err)
-	}
-	return notice, nil
+	return catalog.ShowcaseShopNotice, nil
 }
 
 func IsShowcaseCommerceShopID(shopID string) bool {

@@ -60,7 +60,7 @@ func upsertShopCatalog(ctx context.Context) error {
 
 func commerceExchangeBooths() ([]*papi.ExchangeBooth, error) {
 	response := new(papi.ExchangeListResponse)
-	if err := unmarshalMigrationProtoYAML("catalogdata/exchange.yaml", response); err != nil {
+	if err := unmarshalCatalogProtoYAML("exchange/exchange.yaml", response); err != nil {
 		return nil, err
 	}
 	return response.Booths, nil
@@ -68,7 +68,7 @@ func commerceExchangeBooths() ([]*papi.ExchangeBooth, error) {
 
 func commerceShopEntries() ([]*smodel.ShopCatalogEntry, error) {
 	response := new(papi.ShopListResponse)
-	if err := unmarshalMigrationProtoYAML("catalogdata/shops.yaml", response); err != nil {
+	if err := unmarshalCatalogProtoYAML("shop/shops.yaml", response); err != nil {
 		return nil, err
 	}
 
@@ -84,19 +84,19 @@ func commerceShopEntries() ([]*smodel.ShopCatalogEntry, error) {
 		byId[entry.ShopId] = entry
 	}
 
-	if err := assignCommerceShopItems(byId, "shop_top_shop", "catalogdata/normal_items.yaml"); err != nil {
+	if err := assignCommerceShopItems(byId, "shop_top_shop", "shop/normal_items.yaml"); err != nil {
 		return nil, err
 	}
-	if err := assignCommerceShopItems(byId, "shop_top_dia", "catalogdata/dia_items.yaml"); err != nil {
+	if err := assignCommerceShopItems(byId, "shop_top_dia", "shop/dia_items.yaml"); err != nil {
 		return nil, err
 	}
-	if err := assignCommerceShopItems(byId, "shop_top_premium-shop-pack-22-0624", "catalogdata/premium_gacha_ticket_items.yaml"); err != nil {
+	if err := assignCommerceShopItems(byId, "shop_top_premium-shop-pack-22-0624", "shop/premium_gacha_ticket_items.yaml"); err != nil {
 		return nil, err
 	}
-	if err := assignCommerceLoginPackage(byId, "shop_login_login-pack-01", "catalogdata/login_pack_01.yaml"); err != nil {
+	if err := assignCommerceLoginPackage(byId, "shop_login_login-pack-01", "shop/login_pack_01.yaml"); err != nil {
 		return nil, err
 	}
-	if err := assignCommerceLoginPackage(byId, "shop_login_login-pack-02", "catalogdata/login_pack_02.yaml"); err != nil {
+	if err := assignCommerceLoginPackage(byId, "shop_login_login-pack-02", "shop/login_pack_02.yaml"); err != nil {
 		return nil, err
 	}
 	for _, entry := range entries {
@@ -162,7 +162,7 @@ func assignCommerceShopItems(entries map[string]*smodel.ShopCatalogEntry, shopId
 		return fmt.Errorf("commerce shop %q is missing from list snapshot", shopId)
 	}
 	response := new(papi.ShopListItemResponse)
-	if err := unmarshalMigrationProtoYAML(path, response); err != nil {
+	if err := unmarshalCatalogProtoYAML(path, response); err != nil {
 		return err
 	}
 	entry.Items = response.ShopItems
@@ -175,7 +175,7 @@ func assignCommerceLoginPackage(entries map[string]*smodel.ShopCatalogEntry, sho
 		return fmt.Errorf("commerce shop %q is missing from list snapshot", shopId)
 	}
 	response := new(papi.ShopGetLoginBonusPackageItemResponse)
-	if err := unmarshalMigrationProtoYAML(path, response); err != nil {
+	if err := unmarshalCatalogProtoYAML(path, response); err != nil {
 		return err
 	}
 	entry.LoginBonusPackageItem = response.LoginBonusPackageItem

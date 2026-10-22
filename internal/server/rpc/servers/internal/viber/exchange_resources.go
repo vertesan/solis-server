@@ -5,13 +5,12 @@ import (
 	"errors"
 	"math"
 	"sort"
-	"strconv"
-	"strings"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/reward"
 	"github.com/vertesan/solis-server/internal/makino/salary"
 	usercostume "github.com/vertesan/solis-server/internal/makino/user/costume"
 	userphoto "github.com/vertesan/solis-server/internal/makino/user/photo"
@@ -33,26 +32,7 @@ func FindMasterReward(ctx context.Context, rewardId string) (*pmaster.Reward, er
 }
 
 func ParseAutoReward(rewardId string) ([]*pmaster.RewardResource, error) {
-	if !strings.HasPrefix(rewardId, "rd_auto;") {
-		return nil, nil
-	}
-	parts := strings.Split(rewardId, ";")
-	if len(parts) != 4 {
-		return nil, status.Error(codes.FailedPrecondition, "malformed automatic reward")
-	}
-	resourceType, ok := autoRewardResourceTypes[parts[1]]
-	if !ok {
-		return nil, status.Errorf(codes.Unimplemented, "automatic reward type %q is unsupported", parts[1])
-	}
-	amount, err := strconv.ParseInt(parts[3], 10, 32)
-	if err != nil || amount <= 0 {
-		return nil, status.Error(codes.FailedPrecondition, "malformed automatic reward amount")
-	}
-	return []*pmaster.RewardResource{{
-		ResourceType: resourceType,
-		ResourceId:   parts[2],
-		Amount:       int32(amount),
-	}}, nil
+	return reward.ParseAuto(rewardId)
 }
 
 // ResolveRewardResources expands either an inline rd_auto reward or a master
@@ -91,25 +71,6 @@ func ResolveRewardResources(ctx context.Context, rewardID string, count int32) (
 		return nil, status.Error(codes.FailedPrecondition, "reward has no resources")
 	}
 	return resolved, nil
-}
-
-var autoRewardResourceTypes = map[string]penum.ResourceType{
-	"item":                                 penum.ResourceType_ResourceType_Item,
-	"accessory":                            penum.ResourceType_ResourceType_Accessory,
-	"costume":                              penum.ResourceType_ResourceType_Costume,
-	"emblem":                               penum.ResourceType_ResourceType_Emblem,
-	"gold":                                 penum.ResourceType_ResourceType_Gold,
-	"stone":                                penum.ResourceType_ResourceType_Stone,
-	"paid_stone":                           penum.ResourceType_ResourceType_PaidStone,
-	"activate_photo_shooting_story_ticket": penum.ResourceType_ResourceType_ActivatePhotoShootingStoryTicket,
-	"card_rarity_exp":                      penum.ResourceType_ResourceType_CardRarityExp,
-	"photo_recipe":                         penum.ResourceType_ResourceType_PhotoRecipe,
-	"showcase_toy":                         penum.ResourceType_ResourceType_ShowcaseToy,
-	"showcase_music":                       penum.ResourceType_ResourceType_ShowcaseMusic,
-	"photo_pose":                           penum.ResourceType_ResourceType_PhotoPose,
-	"photo_all_in_one":                     penum.ResourceType_ResourceType_PhotoAllInOne,
-	"company_point":                        penum.ResourceType_ResourceType_CompanyPoint,
-	"guild_medal":                          penum.ResourceType_ResourceType_GuildMedal,
 }
 
 func ValidateExchangeResources(costType penum.ResourceType, rewards []*pmaster.RewardResource) error {

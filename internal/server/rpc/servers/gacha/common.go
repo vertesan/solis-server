@@ -36,18 +36,16 @@ func currentGachaInfo(
 	masterGacha *pmaster.Gacha,
 	now int64,
 ) (*papi.GachaInfo, error) {
-	if !viber.IsGachaEnabled(masterGacha) {
+	if !catalog.IsEnabled(masterGacha.GetId()) {
 		return nil, status.Error(codes.PermissionDenied, "gacha is disabled")
 	}
 	previous, err := opuser.FindUserGachaInfo(ctx, suid, masterGacha.GetId())
 	if err != nil && !errors.Is(err, mongo.ErrNoDocuments) {
 		return nil, err
 	}
-	rules, err := viber.LoadGachaRules()
-	if err != nil {
-		return nil, err
-	}
-	evaluator := viber.NewCommerceConditionEvaluator(ctx, suid, now)
+	rules := catalog.Rules
+	ctx = viber.WithGachaRules(ctx, rules)
+	evaluator := catalog.ConditionEvaluator(ctx, suid, now, masterGacha.GetId())
 	shown, err := evaluator.Satisfied(masterGacha.GetViewConditionId())
 	if err != nil {
 		return nil, err
@@ -58,8 +56,11 @@ func currentGachaInfo(
 	return viber.RenderCurrentGachaInfo(ctx, evaluator, catalog, rules, masterGacha, previous, nil, now)
 }
 
-func gachaTermEnd(ctx context.Context, conditionID string) int64 {
-	_, end := gachaTerm(ctx, conditionID)
+func gachaTermEnd(ctx context.Context, catalog *viber.GachaMasterCatalog, masterGacha *pmaster.Gacha) int64 {
+	if catalog.IgnoresDates(masterGacha.GetId()) {
+		return 0
+	}
+	_, end := gachaTerm(ctx, masterGacha.GetViewConditionId())
 	return end
 }
 
@@ -110,7 +111,7 @@ func buildNormalGachaTiers(ctx context.Context, pool []*pmaster.RewardResource) 
 	if len(pool) == 0 {
 		return nil, status.Error(codes.FailedPrecondition, "normal gacha reward pool is empty")
 	}
-	rules, err := viber.LoadGachaRules()
+	rules, err := viber.LoadGachaRules(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +179,7 @@ func buildGachaPool(
 	if len(pool) > 0 {
 		return pool, nil
 	}
-	rules, err := viber.LoadGachaRules()
+	rules, err := viber.LoadGachaRules(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +308,7 @@ func gachaRewardWeights(
 		return uniformGachaWeights(len(pool)), nil
 	}
 
-	rules, err := viber.LoadGachaRules()
+	rules, err := viber.LoadGachaRules(ctx)
 	if err != nil {
 		return nil, err
 	}

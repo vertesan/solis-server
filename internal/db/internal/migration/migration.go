@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 
@@ -29,6 +30,15 @@ func MigrationCheck() error {
 			return fmt.Errorf("failed database migration level 1: %w", err)
 		}
 		zap.L().Info("database initialization completed")
+	}
+
+	// Existing level-1 installations receive only missing managed catalogs,
+	// never a replay of the initial shop/notice data or an additional level.
+	seedCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	err = ensureManagedCatalogs(seedCtx)
+	cancel()
+	if err != nil {
+		return fmt.Errorf("failed initializing managed catalogs: %w", err)
 	}
 
 	// Index definitions evolve independently from one-time seed data. Ensure

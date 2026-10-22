@@ -3,6 +3,7 @@ package admin
 import (
 	"errors"
 
+	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
@@ -15,6 +16,7 @@ import (
 )
 
 type UserDeleteRequest struct {
+	PublicUserId string `json:"publicUserId,omitempty"`
 	ServerUserId string `json:"serverUserId,omitempty"`
 }
 
@@ -25,12 +27,21 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 		return fiber.NewError(400, "bad request body")
 	}
 
-	userAuth, err := opuser.GetUserAuthByServerId(c, request.ServerUserId)
+	if (request.PublicUserId == "") == (request.ServerUserId == "") {
+		return fiber.NewError(fiber.StatusBadRequest, "exactly one of publicUserId or serverUserId is required")
+	}
+	var userAuth *umodel.UserAuth
+	var err error
+	if request.PublicUserId != "" {
+		userAuth, err = opuser.GetUserAuthByPublicId(c, request.PublicUserId)
+	} else {
+		userAuth, err = opuser.GetUserAuthByServerId(c, request.ServerUserId)
+	}
 	if err != nil {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(400, "user not found")
 		}
-		logger.Error("failed to GetUserAuthByPublicId", zap.Error(err))
+		logger.Error("failed to look up user for deletion", zap.Error(err))
 		return fiber.NewError(500, "internal error")
 	}
 

@@ -60,9 +60,10 @@ var supportedCommerceConditionFields = map[string]struct{}{
 }
 
 type CommerceConditionEvaluator struct {
-	ctx  context.Context
-	suid string
-	now  int64
+	ctx                 context.Context
+	suid                string
+	now                 int64
+	ignoreOfficialDates bool
 
 	conditions map[string]*pmaster.Condition
 	results    map[string]commerceConditionState
@@ -298,15 +299,15 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 	}
 	if value := setting.GetTerm(); value != nil {
 		hasKnownField = true
-		if value.GetNowAfter() <= 0 && value.GetNowBefore() <= 0 {
+		if !e.ignoreOfficialDates && value.GetNowAfter() <= 0 && value.GetNowBefore() <= 0 {
 			return commerceConditionIndeterminate, nil
 		}
-		if value.GetNowAfter() > 0 && e.now < value.GetNowAfter() ||
-			value.GetNowBefore() > 0 && e.now > value.GetNowBefore() {
+		if !e.ignoreOfficialDates && (value.GetNowAfter() > 0 && e.now < value.GetNowAfter() ||
+			value.GetNowBefore() > 0 && e.now > value.GetNowBefore()) {
 			merge(commerceConditionUnsatisfied)
 		}
 	}
-	if value := setting.GetGameStartTerm(); value != nil {
+	if value := setting.GetGameStartTerm(); value != nil && !e.ignoreOfficialDates {
 		hasKnownField = true
 		if value.GetGameStartDatetimeAfter() <= 0 && value.GetGameStartDatetimeBefore() <= 0 {
 			return commerceConditionIndeterminate, nil
@@ -323,6 +324,9 @@ func (e *CommerceConditionEvaluator) evaluateSetting(setting *pmaster.ConditionS
 			value.GetGameStartDatetimeBefore() > 0 && gameStartTime > value.GetGameStartDatetimeBefore() {
 			merge(commerceConditionUnsatisfied)
 		}
+	}
+	if e.ignoreOfficialDates && setting.GetGameStartTerm() != nil {
+		hasKnownField = true
 	}
 	if value := setting.GetManagerLevel(); value != nil {
 		hasKnownField = true

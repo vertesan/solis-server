@@ -1,11 +1,30 @@
 package viber
 
 import (
+	"context"
 	"strings"
 
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
 )
+
+// ConditionEvaluator only relaxes absolute official dates for an explicitly
+// selected private-server rotation. All other user prerequisites still apply.
+func (catalog *GachaMasterCatalog) ConditionEvaluator(ctx context.Context, suid string, now int64, gachaID string) *CommerceConditionEvaluator {
+	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	evaluator.ignoreOfficialDates = catalog.IgnoresDates(gachaID)
+	return evaluator
+}
+
+func (catalog *GachaMasterCatalog) IsEnabled(gachaID string) bool {
+	_, enabled := catalog.enabledGachaIds[gachaID]
+	return enabled
+}
+
+func (catalog *GachaMasterCatalog) IgnoresDates(gachaID string) bool {
+	_, explicit := catalog.explicitGachaIds[gachaID]
+	return explicit && catalog.IgnoreOfficialDates
+}
 
 // IsGachaEnabled keeps the permanent card catalog small without changing item,
 // premium-reward, or showcase-toy gachas. This policy applies before user rows

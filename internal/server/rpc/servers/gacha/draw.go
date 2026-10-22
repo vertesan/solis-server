@@ -40,6 +40,7 @@ func (s *GachaServer) Draw(ctx context.Context, req *papi.GachaDrawRequest) (*pa
 		if err != nil {
 			return nil, err
 		}
+		ctx = viber.WithGachaRules(ctx, catalog.Rules)
 		button := catalog.Buttons[req.GetGachaButtonId()]
 		if button == nil {
 			return nil, status.Error(codes.NotFound, "gacha button not found")
@@ -103,7 +104,7 @@ func (s *GachaServer) Draw(ctx context.Context, req *papi.GachaDrawRequest) (*pa
 		premiumRemaining := int32(0)
 		premiumRewardResourceID := ""
 		premiumGuaranteeCount := int32(0)
-		drawRules, err := viber.LoadGachaRules()
+		drawRules, err := viber.LoadGachaRules(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -229,7 +230,7 @@ func (s *GachaServer) Draw(ctx context.Context, req *papi.GachaDrawRequest) (*pa
 			masterGacha.GetExchangeResourceType(),
 			masterGacha.GetExchangeResourceId(),
 			drawCount,
-			gachaTermEnd(ctx, masterGacha.GetViewConditionId()),
+			gachaTermEnd(ctx, catalog, masterGacha),
 			updated,
 		)
 		if err != nil {
@@ -237,7 +238,7 @@ func (s *GachaServer) Draw(ctx context.Context, req *papi.GachaDrawRequest) (*pa
 		}
 		drawResultList = append(drawResultList, exchangeResults...)
 
-		bonusExpiration, err := gachaButtonBonusExpiration(ctx, masterGacha.GetViewConditionId())
+		bonusExpiration, err := gachaButtonBonusExpiration(ctx, catalog, masterGacha)
 		if err != nil {
 			return nil, err
 		}
@@ -518,12 +519,12 @@ func grantGachaDrawReward(
 	return viber.GrantGachaReward(ctx, suid, reward, overflowGifts, updated)
 }
 
-func gachaButtonBonusExpiration(ctx context.Context, conditionID string) (int64, error) {
-	end := gachaTermEnd(ctx, conditionID)
+func gachaButtonBonusExpiration(ctx context.Context, catalog *viber.GachaMasterCatalog, masterGacha *pmaster.Gacha) (int64, error) {
+	end := gachaTermEnd(ctx, catalog, masterGacha)
 	if end <= 0 {
 		return 0, nil
 	}
-	rules, err := viber.LoadGachaRules()
+	rules, err := viber.LoadGachaRules(ctx)
 	if err != nil {
 		return 0, err
 	}

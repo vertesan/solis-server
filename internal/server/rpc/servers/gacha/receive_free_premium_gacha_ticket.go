@@ -56,7 +56,7 @@ func (s *GachaServer) ReceiveFreePremiumGachaTicket(
 		if _, err := opmaster.FindItem(ctx, itemID); err != nil {
 			return nil, err
 		}
-		expiresAt := gachaTermEnd(ctx, masterGacha.GetViewConditionId())
+		expiresAt := gachaTermEnd(ctx, catalog, masterGacha)
 		items, err := opuser.FindUserItems(ctx, suid, itemID)
 		if err != nil {
 			return nil, err

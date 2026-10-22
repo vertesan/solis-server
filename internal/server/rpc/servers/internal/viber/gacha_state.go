@@ -8,6 +8,7 @@ import (
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
+	"github.com/vertesan/solis-server/internal/makino/catalog"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/pmaster"
@@ -18,10 +19,14 @@ import (
 )
 
 type GachaMasterCatalog struct {
-	Gachas    map[string]*pmaster.Gacha
-	Buttons   map[string]*pmaster.GachaButton
-	Exchanges map[string]*pmaster.GachaExchange
-	Ordered   []*pmaster.Gacha
+	Gachas              map[string]*pmaster.Gacha
+	Buttons             map[string]*pmaster.GachaButton
+	Exchanges           map[string]*pmaster.GachaExchange
+	Ordered             []*pmaster.Gacha
+	Rules               *GachaRules
+	IgnoreOfficialDates bool
+	explicitGachaIds    map[string]struct{}
+	enabledGachaIds     map[string]struct{}
 }
 
 type WeightedGachaReward struct {
@@ -30,6 +35,17 @@ type WeightedGachaReward struct {
 }
 
 func LoadGachaMasterCatalog(ctx context.Context) (*GachaMasterCatalog, error) {
+	rotation, err := opsolis.FindGachaCatalog(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("load ongoing gacha catalog: %w", err)
+	}
+	if err := rotation.Validate(); err != nil {
+		return nil, err
+	}
+	rules, err := LoadGachaRules(ctx)
+	if err != nil {
+		return nil, err
+	}
 	gachas, err := opmaster.FindAllGachas(ctx)
 	if err != nil {
 		return nil, err
@@ -43,13 +59,34 @@ func LoadGachaMasterCatalog(ctx context.Context) (*GachaMasterCatalog, error) {
 		return nil, err
 	}
 	catalog := &GachaMasterCatalog{
-		Gachas:    make(map[string]*pmaster.Gacha, len(gachas)),
-		Buttons:   make(map[string]*pmaster.GachaButton, len(buttons)),
-		Exchanges: make(map[string]*pmaster.GachaExchange, len(exchanges)),
-		Ordered:   gachas,
+		Gachas:              make(map[string]*pmaster.Gacha, len(gachas)),
+		Buttons:             make(map[string]*pmaster.GachaButton, len(buttons)),
+		Exchanges:           make(map[string]*pmaster.GachaExchange, len(exchanges)),
+		Rules:               rules,
+		IgnoreOfficialDates: rotation.IgnoreOfficialDates,
+		explicitGachaIds:    StringSet(rotation.GachaIds),
+		enabledGachaIds:     make(map[string]struct{}),
 	}
 	for _, gacha := range gachas {
 		catalog.Gachas[gacha.GetId()] = gacha
+	}
+	if rotation.UseMasterCatalog {
+		for _, gacha := range gachas {
+			if IsGachaEnabled(gacha) {
+				catalog.Ordered = append(catalog.Ordered, gacha)
+				catalog.enabledGachaIds[gacha.GetId()] = struct{}{}
+			}
+		}
+	}
+	for _, id := range rotation.GachaIds {
+		gacha := catalog.Gachas[id]
+		if gacha == nil {
+			return nil, status.Errorf(codes.FailedPrecondition, "configured gacha %q is missing from master data", id)
+		}
+		if _, enabled := catalog.enabledGachaIds[id]; !enabled {
+			catalog.Ordered = append(catalog.Ordered, gacha)
+			catalog.enabledGachaIds[id] = struct{}{}
+		}
 	}
 	for _, button := range buttons {
 		catalog.Buttons[button.GetId()] = button
@@ -68,10 +105,8 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	if err != nil {
 		return nil, err
 	}
-	rules, err := LoadGachaRules()
-	if err != nil {
-		return nil, err
-	}
+	rules := catalog.Rules
+	ctx = WithGachaRules(ctx, rules)
 	states, err := opuser.FindAllUserGachaInfos(ctx, suid)
 	if err != nil {
 		return nil, err
@@ -82,22 +117,27 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 	}
 	notices := loadGachaNotices(ctx)
 	evaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	reopenedEvaluator := NewCommerceConditionEvaluator(ctx, suid, now)
+	reopenedEvaluator.ignoreOfficialDates = true
 	conditionIDs := make([]string, 0, 2*len(catalog.Ordered))
 	for _, gacha := range catalog.Ordered {
-		if !IsGachaEnabled(gacha) {
-			continue
-		}
 		conditionIDs = append(conditionIDs, gacha.GetViewConditionId(), gacha.GetUnlockConditionId())
 	}
 	if err := evaluator.PrimeConditionIDs(conditionIDs); err != nil {
 		return nil, err
 	}
+	if len(catalog.explicitGachaIds) > 0 && catalog.IgnoreOfficialDates {
+		if err := reopenedEvaluator.PrimeConditionIDs(conditionIDs); err != nil {
+			return nil, err
+		}
+	}
 	visible := make([]*papi.GachaInfo, 0, len(catalog.Ordered))
 	for _, masterGacha := range catalog.Ordered {
-		if !IsGachaEnabled(masterGacha) {
-			continue
+		gachaEvaluator := evaluator
+		if catalog.IgnoresDates(masterGacha.GetId()) {
+			gachaEvaluator = reopenedEvaluator
 		}
-		shown, err := evaluator.Satisfied(masterGacha.GetViewConditionId())
+		shown, err := gachaEvaluator.Satisfied(masterGacha.GetViewConditionId())
 		if err != nil {
 			return nil, err
 		}
@@ -105,7 +145,7 @@ func ReconcileCurrentGachaInfos(ctx context.Context, suid string, now int64) ([]
 			continue
 		}
 		info, err := RenderCurrentGachaInfo(
-			ctx, evaluator, catalog, rules, masterGacha, stateByID[masterGacha.GetId()], notices, now,
+			ctx, gachaEvaluator, catalog, rules, masterGacha, stateByID[masterGacha.GetId()], notices, now,
 		)
 		if err != nil {
 			return nil, err
@@ -238,7 +278,7 @@ func RenderCurrentGachaInfo(
 }
 
 func BuildPremiumGachaPool(ctx context.Context, masterGacha *pmaster.Gacha) ([]WeightedGachaReward, error) {
-	rules, err := LoadGachaRules()
+	rules, err := LoadGachaRules(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -333,28 +373,7 @@ func premiumRewardID(gachaID string) string {
 }
 
 func validateGachaCatalogRewards(ctx context.Context, rewards []*pmaster.RewardResource) error {
-	for _, reward := range rewards {
-		if reward.GetResourceId() == "" || reward.GetAmount() <= 0 {
-			return status.Error(codes.FailedPrecondition, "gacha catalog reward is invalid")
-		}
-		var err error
-		switch reward.GetResourceType() {
-		case penum.ResourceType_ResourceType_Card:
-			_, err = opmaster.FindCard(ctx, reward.GetResourceId())
-		case penum.ResourceType_ResourceType_Item:
-			_, err = opmaster.FindItem(ctx, reward.GetResourceId())
-		case penum.ResourceType_ResourceType_Accessory:
-			_, err = opmaster.FindAccessory(ctx, reward.GetResourceId())
-		case penum.ResourceType_ResourceType_ShowcaseToy:
-			_, err = opmaster.FindShowcaseToy(ctx, reward.GetResourceId())
-		default:
-			return status.Errorf(codes.Unimplemented, "gacha catalog reward type %s is unsupported", reward.GetResourceType())
-		}
-		if err != nil {
-			return fmt.Errorf("invalid gacha catalog resource %q: %w", reward.GetResourceId(), err)
-		}
-	}
-	return nil
+	return catalog.ValidateGachaRewards(ctx, rewards)
 }
 
 func loadGachaNotices(ctx context.Context) map[string]*papi.NoticeInfo {

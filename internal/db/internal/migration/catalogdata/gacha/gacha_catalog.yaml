@@ -1,0 +1,5 @@
+# Keep automatic permanent gachas and allow administrators to add explicit IDs.
+useMasterCatalog: true
+gachaIds: []
+# Applies only to explicit IDs; automatically selected gachas retain their dates.
+ignoreOfficialDates: true

@@ -39,6 +39,8 @@ __debug_bin*
 /solis-server
 /solis
 /cmd/solis/solis
+/makino
+/cmd/makino/makino
 
 # local files
 settings.local.json

@@ -13,7 +13,7 @@ import (
 // migrationFiles stores only the embedded file index. ReadFile allocates the
 // requested YAML payload locally so one-time migration data can be reclaimed.
 //
-//go:embed catalogdata/*.yaml initdata/*.yaml
+//go:embed catalogdata initdata/*.yaml
 var migrationFiles embed.FS
 
 func unmarshalMigrationYAML(path string, target any) error {
@@ -40,4 +40,12 @@ func unmarshalMigrationProtoYAML(path string, message proto.Message) error {
 		return fmt.Errorf("failed to decode protobuf migration data %q: %w", path, err)
 	}
 	return nil
+}
+
+func unmarshalCatalogYAML(name string, target any) error {
+	return unmarshalMigrationYAML("catalogdata/"+name, target)
+}
+
+func unmarshalCatalogProtoYAML(name string, message proto.Message) error {
+	return unmarshalMigrationProtoYAML("catalogdata/"+name, message)
 }

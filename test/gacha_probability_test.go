@@ -2,16 +2,15 @@ package test
 
 import (
 	"context"
-	"os"
 	"strings"
 	"testing"
 
 	"github.com/vertesan/solis-server/internal/db/store/opmaster"
+	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/proto/papi"
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
-	"go.yaml.in/yaml/v3"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -200,18 +199,12 @@ func TestGachaProbabilityCatalogScenario(t *testing.T) {
 
 func testNormalGachaRarityBudgets(t *testing.T) map[int32]int64 {
 	t.Helper()
-	data, err := os.ReadFile("../internal/server/rpc/servers/internal/viber/catalogdata/gacha.yaml")
+	rules, err := opsolis.FindGachaRules(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
-	var rules struct {
-		Probabilities map[int32]int64 `yaml:"standardCardRarityProbabilities"`
-	}
-	if err := yaml.Unmarshal(data, &rules); err != nil {
-		t.Fatal(err)
-	}
-	if len(rules.Probabilities) == 0 {
+	if len(rules.StandardCardRarityProbabilities) == 0 {
 		t.Fatal("normal gacha has no configured rarity budgets")
 	}
-	return rules.Probabilities
+	return rules.StandardCardRarityProbabilities
 }

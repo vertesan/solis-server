@@ -41,7 +41,11 @@ func loadLevel1Data() (*level1Data, error) {
 	}
 
 	noticeResponse := new(papi.NoticeListResponse)
-	if err := unmarshalMigrationProtoYAML("initdata/notice_catalog.yaml", noticeResponse); err != nil {
+	if err := unmarshalCatalogProtoYAML("notice/notice_catalog.yaml", noticeResponse); err != nil {
+		return nil, err
+	}
+	showcaseNotice := new(papi.NoticeInfo)
+	if err := unmarshalCatalogProtoYAML("notice/showcase_shop_notice.yaml", showcaseNotice); err != nil {
 		return nil, err
 	}
 
@@ -67,6 +71,7 @@ func loadLevel1Data() (*level1Data, error) {
 			Notices:            noticeResponse.Notices,
 			MalfunctionNotices: noticeResponse.MalfunctionNotices,
 			PrNotices:          noticeResponse.PrNotices,
+			ShowcaseShopNotice: showcaseNotice,
 		},
 		homeEventInfo: homeEventInfo,
 	}, nil

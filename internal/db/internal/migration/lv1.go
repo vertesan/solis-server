@@ -70,6 +70,9 @@ func level1Migration() error {
 		if err := UpsertCommerceCatalogs(ctx); err != nil {
 			return nil, err
 		}
+		if err := ensureManagedCatalogs(ctx); err != nil {
+			return nil, err
+		}
 
 		// update migration flag
 		if err := opsolis.UpsertMigration(ctx, &smodel.Migration{Migration: 1}); err != nil {

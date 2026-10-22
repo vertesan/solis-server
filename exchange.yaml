@@ -1,0 +1,3298 @@
+booths:
+    - backgroundColorCode: "526072"
+      bannerAssetId: rev-dress
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 1787583599000
+      exchanges:
+        - assetId: ""
+          description: 神崎莉央の衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-1
+          leftCount: 1
+          name: ウィズユアソングス×1
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-rio-msic-00;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-rio-msic-00-not-26-0731
+        - assetId: ""
+          description: 神崎莉央の衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-2
+          leftCount: 1
+          name: ジャンピングオールライト×1
+          nextResetTime: 0
+          order: 2
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-rio-arab-00;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-rio-arab-00-not-26-0731
+        - assetId: ""
+          description: 神崎莉央の衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-3
+          leftCount: 1
+          name: 舞踊闘衣×1
+          nextResetTime: 0
+          order: 3
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-rio-chna-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-rio-chna-01-not-26-0731
+        - assetId: ""
+          description: 神崎莉央の衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-5
+          leftCount: 1
+          name: カルプ×1
+          nextResetTime: 0
+          order: 5
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-rio-yukt-00;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-rio-yukt-00-not-26-0731
+        - assetId: ""
+          description: 井川葵の衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-10
+          leftCount: 1
+          name: 舞踊闘衣×1
+          nextResetTime: 0
+          order: 10
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-aoi-chna-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-aoi-chna-01-not-26-0731
+        - assetId: ""
+          description: 赤崎こころの衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-16
+          leftCount: 1
+          name: ジャンピングオールライト×1
+          nextResetTime: 0
+          order: 16
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-kkr-arab-00;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-kkr-arab-00-not-26-0731
+        - assetId: ""
+          description: 赤崎こころの衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-17
+          leftCount: 1
+          name: 舞踊闘衣×1
+          nextResetTime: 0
+          order: 17
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-kkr-chna-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-kkr-chna-01-not-26-0731
+        - assetId: ""
+          description: 赤崎こころの衣装
+          exchangeLimit: 1
+          id: exchange-dress-medal-26-0731-item-18
+          leftCount: 1
+          name: カルプ×1
+          nextResetTime: 0
+          order: 18
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;costume;cos-kkr-yukt-00;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-cos-kkr-yukt-00-not-26-0731
+        - assetId: ""
+          description: プロモーションの時間を10時間分すぐに進行する
+          exchangeLimit: 0
+          id: exchange-dress-medal-26-0731-item-22
+          leftCount: 0
+          name: SPスキップウォッチ×3
+          nextResetTime: 0
+          order: 22
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_promotion_shorten-sp;3
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_dress
+      id: exchange-dress-medal-26-0731
+      limited: true
+      linkDetail: ""
+      linkType: 0
+      name: 復刻衣装メダル交換所
+      nextResetTime: 0
+      order: 20
+      requiredResourceId: item-exchange-dress-medal-26-0731
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-dress-medal-26-0731
+    - backgroundColorCode: "526072"
+      bannerAssetId: medal-gacha-buttonbadge-birthday
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 1786589999000
+      exchanges:
+        - assetId: ""
+          description: 伊吹渚の缶バッジです。
+          exchangeLimit: 0
+          id: exchange-gacha_medal-buttonbadge-birthday-26-0803-item-1
+          leftCount: 0
+          name: 缶バッジ 伊吹渚
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 10
+          resetTimingType: 4
+          rewardId: rd_auto;showcase_toy;toy-goods-buttonbadge_card-ngs-05-birt-03;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_buttonbadge-gacha-birthday
+      id: exchange-gacha_medal-buttonbadge-birthday-26-0803
+      limited: true
+      linkDetail: ""
+      linkType: 0
+      name: |-
+        渚誕生日ガチャ2026
+        誕生日缶バッジ
+      nextResetTime: 0
+      order: 25
+      requiredResourceId: item-gacha_medal-buttonbadge-birthday-26-0803
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-time-medal-buttonbadge-birthday-26-0803
+    - backgroundColorCode: "526072"
+      bannerAssetId: medal-gacha-buttonbadge
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 1787194799000
+      exchanges:
+        - assetId: ""
+          description: 神崎莉央の缶バッジです。
+          exchangeLimit: 0
+          id: exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-1
+          leftCount: 0
+          name: 缶バッジ 神崎莉央
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 10
+          resetTimingType: 4
+          rewardId: rd_auto;showcase_toy;toy-goods-buttonbadge_card-rio-05-casl-04;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 井川葵の缶バッジです。
+          exchangeLimit: 0
+          id: exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-2
+          leftCount: 0
+          name: 缶バッジ 井川葵
+          nextResetTime: 0
+          order: 2
+          requiredResourceAmount: 10
+          resetTimingType: 4
+          rewardId: rd_auto;showcase_toy;toy-goods-buttonbadge_card-aoi-05-casl-04;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 小美山愛の缶バッジです。
+          exchangeLimit: 0
+          id: exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-3
+          leftCount: 0
+          name: 缶バッジ 小美山愛
+          nextResetTime: 0
+          order: 3
+          requiredResourceAmount: 10
+          resetTimingType: 4
+          rewardId: rd_auto;showcase_toy;toy-goods-buttonbadge_card-ai-05-casl-04;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 赤崎こころの缶バッジです。
+          exchangeLimit: 0
+          id: exchange-gacha_medal-buttonbadge-excursion-01-26-0731-item-4
+          leftCount: 0
+          name: 缶バッジ 赤崎こころ
+          nextResetTime: 0
+          order: 4
+          requiredResourceAmount: 10
+          resetTimingType: 4
+          rewardId: rd_auto;showcase_toy;toy-goods-buttonbadge_card-kkr-05-casl-04;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_buttonbadge-gacha
+      id: exchange-gacha_medal-buttonbadge-excursion-01-26-0731
+      limited: true
+      linkDetail: ""
+      linkType: 0
+      name: |-
+        黒百合達のoff time
+        限定缶バッジ
+      nextResetTime: 0
+      order: 32
+      requiredResourceId: item-gacha_medal-buttonbadge-lm-set-bloom-26-0731
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-time-medal-buttonbadge-lm-set-bloom-26-0731
+    - backgroundColorCode: "526072"
+      bannerAssetId: exchange-acc-limit-001
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: ダンススピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-1
+          leftCount: 0
+          name: ダンススピリット×1
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-1-dance-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: ビジュアルスピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-2
+          leftCount: 0
+          name: ビジュアルスピリット×1
+          nextResetTime: 0
+          order: 2
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-1-visual-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: ボーカルスピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-3
+          leftCount: 0
+          name: ボーカルスピリット×1
+          nextResetTime: 0
+          order: 3
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-1-vocal-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: メンタルスピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-4
+          leftCount: 0
+          name: メンタルスピリット×1
+          nextResetTime: 0
+          order: 4
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-2-mental-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: スタミナスピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-5
+          leftCount: 0
+          name: スタミナスピリット×1
+          nextResetTime: 0
+          order: 5
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-2-stamina-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: クリティカルスピリット
+          exchangeLimit: 0
+          id: exchange-acc-limit-001-item-6
+          leftCount: 0
+          name: クリティカルスピリット×1
+          nextResetTime: 0
+          order: 6
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;accessory;ac-2-technique-21;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: acc-limit
+      id: exchange-acc-limit-001
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: スピリットアクセ交換所
+      nextResetTime: 0
+      order: 100
+      requiredResourceId: item-exchange-acc-limit-001
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: cd-exchange-acc-limit-001
+      unlocked: true
+      viewConditionId: cd-exchange-acc-limit-001
+    - backgroundColorCode: FD5858
+      bannerAssetId: idolmedal
+      colorCode: FD9090
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: |-
+            アイドルを才能開花させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 20
+          id: exchange-idle_medal-item-26-0801-0831-03
+          leftCount: 20
+          name: ブルームピース×10
+          nextResetTime: 0
+          order: 50
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_limit_break;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            30枚で★5確定補助券ガチャを1回引くことができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 9
+          id: exchange-idle_medal-item-26-0801-0831-04
+          leftCount: 9
+          name: ★5確定ガチャ補助券×5
+          nextResetTime: 0
+          order: 51
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-gacha_ticket_piece-r5;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            フォトの品質アップをすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 8
+          id: exchange-idle_medal-item-26-0801-0831-05
+          leftCount: 8
+          name: アドバンスフィルム×5
+          nextResetTime: 0
+          order: 52
+          requiredResourceAmount: 50
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_enhance;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトの品質アップをすることができる
+          exchangeLimit: 0
+          id: exchange-idle_medal-item-26-0801-0831-06
+          leftCount: 0
+          name: アドバンスフィルム×5
+          nextResetTime: 0
+          order: 53
+          requiredResourceAmount: 125
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_enhance;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_idol
+      id: exchange-idle_medal-26-0801-0831
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: アイドルメダル交換
+      nextResetTime: 0
+      order: 100
+      requiredResourceId: item-gacha_medal
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-time-exchange-idle_medal-26-0801-0831
+    - backgroundColorCode: "526072"
+      bannerAssetId: rarity_exp-21-1228
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: リーダー達のレアショット 長瀬琴乃の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-37
+          leftCount: 0
+          name: ★5長瀬琴乃 開花Pt×100
+          nextResetTime: 0
+          order: 330
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ktn-05-prem-00
+          unlockConditionId: cd-card-ktn-05-prem-00
+          unlocked: true
+          viewConditionId: cd-possession-card-ktn-05-prem-00-not-rarity-max
+        - assetId: ""
+          description: 花火に鼓動が高鳴る夜 長瀬麻奈の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-36
+          leftCount: 0
+          name: ★5長瀬麻奈 開花Pt×100
+          nextResetTime: 0
+          order: 360
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-mna-05-prem-00
+          unlockConditionId: cd-card-mna-05-prem-00
+          unlocked: true
+          viewConditionId: cd-possession-card-mna-05-prem-00-not-rarity-max
+        - assetId: ""
+          description: ダンシングキューピッド 一ノ瀬怜の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-75
+          leftCount: 0
+          name: ★5一ノ瀬怜 開花Pt×100
+          nextResetTime: 0
+          order: 994
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-rei-05-chia-00
+          unlockConditionId: cd-card-rei-05-chia-00
+          unlocked: true
+          viewConditionId: cd-possession-card-rei-05-chia-00-not-rarity-max
+        - assetId: ""
+          description: 私の理想のデートプラン 佐伯遙子の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-76
+          leftCount: 0
+          name: ★5佐伯遙子 開花Pt×100
+          nextResetTime: 0
+          order: 995
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-hrk-05-pajm-00
+          unlockConditionId: cd-card-hrk-05-pajm-00
+          unlocked: true
+          viewConditionId: cd-possession-card-hrk-05-pajm-00-not-rarity-max
+        - assetId: ""
+          description: 飛び立つための羽休め 奥山すみれの開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-79
+          leftCount: 0
+          name: ★5奥山すみれ 開花Pt×100
+          nextResetTime: 0
+          order: 998
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-smr-05-idol-04
+          unlockConditionId: cd-card-smr-05-idol-04
+          unlocked: true
+          viewConditionId: cd-possession-card-smr-05-idol-04-not-rarity-max
+        - assetId: ""
+          description: もしも幼なじみと恋をしたら 伊吹渚の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-80
+          leftCount: 0
+          name: ★5伊吹渚 開花Pt×100
+          nextResetTime: 0
+          order: 999
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ngs-05-casl-02
+          unlockConditionId: cd-card-ngs-05-casl-02
+          unlocked: true
+          viewConditionId: cd-possession-card-ngs-05-casl-02-not-rarity-max
+        - assetId: ""
+          description: 主役はkanaかな？ kanaの開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-81
+          leftCount: 0
+          name: ★5kana 開花Pt×100
+          nextResetTime: 0
+          order: 1000
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-kan-05-chna-00
+          unlockConditionId: cd-card-kan-05-chna-00
+          unlocked: true
+          viewConditionId: cd-possession-card-kan-05-chna-00-not-rarity-max
+        - assetId: ""
+          description: ダーティーアクセル 井川葵の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-82
+          leftCount: 0
+          name: ★5井川葵 開花Pt×100
+          nextResetTime: 0
+          order: 1001
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-aoi-05-circ-00
+          unlockConditionId: cd-card-aoi-05-circ-00
+          unlocked: true
+          viewConditionId: cd-possession-card-aoi-05-circ-00-not-rarity-max
+        - assetId: ""
+          description: 大輪彩る夏夜の一瞬 兵藤雫の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-86
+          leftCount: 0
+          name: ★5兵藤雫 開花Pt×100
+          nextResetTime: 0
+          order: 1005
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-szk-05-yukt-00
+          unlockConditionId: cd-card-szk-05-yukt-00
+          unlocked: true
+          viewConditionId: cd-possession-card-szk-05-yukt-00-not-rarity-max
+        - assetId: ""
+          description: 俊傑は我が道を貫く franの開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-58
+          leftCount: 0
+          name: ★5fran 開花Pt×100
+          nextResetTime: 0
+          order: 1010
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-kor-05-idol-03
+          unlockConditionId: cd-card-kor-05-idol-03
+          unlocked: true
+          viewConditionId: cd-possession-card-kor-05-idol-03-not-rarity-max
+        - assetId: ""
+          description: お姫様抱っこで夢の中 白石千紗の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-60
+          leftCount: 0
+          name: ★5白石千紗 開花Pt×100
+          nextResetTime: 0
+          order: 1012
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-chs-05-pajm-00
+          unlockConditionId: cd-card-chs-05-pajm-00
+          unlocked: true
+          viewConditionId: cd-possession-card-chs-05-pajm-00-not-rarity-max
+        - assetId: ""
+          description: クールにキメるぼっち収録 小美山愛の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-61
+          leftCount: 0
+          name: ★5小美山愛 開花Pt×100
+          nextResetTime: 0
+          order: 1013
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ai-05-rock-00
+          unlockConditionId: cd-card-ai-05-rock-00
+          unlocked: true
+          viewConditionId: cd-possession-card-ai-05-rock-00-not-rarity-max
+        - assetId: ""
+          description: パクパク満腹笑顔 川咲さくらの開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-63
+          leftCount: 0
+          name: ★5川咲さくら 開花Pt×100
+          nextResetTime: 0
+          order: 1015
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-skr-05-chna-00
+          unlockConditionId: cd-card-skr-05-chna-00
+          unlocked: true
+          viewConditionId: cd-possession-card-skr-05-chna-00-not-rarity-max
+        - assetId: ""
+          description: ゆるり妄想温泉の旅 佐伯遙子の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-40
+          leftCount: 0
+          name: ★5佐伯遙子 開花Pt×100
+          nextResetTime: 0
+          order: 1019
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-hrk-05-onep-00
+          unlockConditionId: cd-card-hrk-05-onep-00
+          unlocked: true
+          viewConditionId: cd-possession-card-hrk-05-onep-00-not-rarity-max
+        - assetId: ""
+          description: 隠しきれない顔の火照り 早坂芽衣の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-47
+          leftCount: 0
+          name: ★5早坂芽衣 開花Pt×100
+          nextResetTime: 0
+          order: 1026
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-mei-05-mizg-02
+          unlockConditionId: cd-card-mei-05-mizg-02
+          unlocked: true
+          viewConditionId: cd-possession-card-mei-05-mizg-02-not-rarity-max
+        - assetId: ""
+          description: セクシーシューティング 小美山愛の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-28
+          leftCount: 0
+          name: ★5小美山愛 開花Pt×100
+          nextResetTime: 0
+          order: 1029
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ai-05-tact-00
+          unlockConditionId: cd-card-ai-05-tact-00
+          unlocked: true
+          viewConditionId: cd-possession-card-ai-05-tact-00-not-rarity-max
+        - assetId: ""
+          description: 胸に秘めていた情熱 白石沙季の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-35
+          leftCount: 0
+          name: ★5白石沙季 開花Pt×100
+          nextResetTime: 0
+          order: 1036
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ski-05-waso-00
+          unlockConditionId: cd-card-ski-05-waso-00
+          unlocked: true
+          viewConditionId: cd-possession-card-ski-05-waso-00-not-rarity-max
+        - assetId: ""
+          description: この瞬間の主役 伊吹渚の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-1
+          leftCount: 0
+          name: ★5伊吹渚 開花Pt×100
+          nextResetTime: 0
+          order: 1037
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-ngs-05-flow-00
+          unlockConditionId: cd-card-ngs-05-flow-00
+          unlocked: true
+          viewConditionId: cd-possession-card-ngs-05-flow-00-not-rarity-max
+        - assetId: ""
+          description: 夢は、きっと叶う 兵藤雫の開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-2
+          leftCount: 0
+          name: ★5兵藤雫 開花Pt×100
+          nextResetTime: 0
+          order: 1038
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-szk-05-chna-00
+          unlockConditionId: cd-card-szk-05-chna-00
+          unlocked: true
+          viewConditionId: cd-possession-card-szk-05-chna-00-not-rarity-max
+        - assetId: ""
+          description: 常夏ウォーターパーク 奥山すみれの開花Pt
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-9
+          leftCount: 0
+          name: ★5奥山すみれ 開花Pt×100
+          nextResetTime: 0
+          order: 1045
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd-rarity_exp-card-smr-05-mizg-01
+          unlockConditionId: cd-card-smr-05-mizg-01
+          unlocked: true
+          viewConditionId: cd-possession-card-smr-05-mizg-01-not-rarity-max
+        - assetId: ""
+          description: ★5確定ガチャ補助券
+          exchangeLimit: 0
+          id: exchange-rarity_exp_medal-21-1228-item-27
+          leftCount: 0
+          name: ★5確定ガチャ補助券×10
+          nextResetTime: 0
+          order: 1063
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-gacha_ticket_piece-r5;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_rarity_exp
+      id: exchange-rarity_exp_medal-21-1228
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: 開花Ptメダル交換
+      nextResetTime: 0
+      order: 105
+      requiredResourceId: item-rarity_exp_medal-21-1228
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-ever-event_rarity_exp-21-1228
+    - backgroundColorCode: B889FC
+      bannerAssetId: pvpmedal
+      colorCode: C39DFD
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-pvp_medal-item-26-0801-0831-03
+          leftCount: 1
+          name: 月のテンペスト
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 3600
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-pvp-5-3;1
+          unlockConditionId: cd-manager_level_gte-120
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-pvp_medal-item-26-0801-0831-02
+          leftCount: 1
+          name: サニーピース
+          nextResetTime: 0
+          order: 2
+          requiredResourceAmount: 3600
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-pvp-5-2;1
+          unlockConditionId: cd-manager_level_gte-100
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-pvp_medal-item-26-0801-0831-01
+          leftCount: 1
+          name: TRINITYAiLE
+          nextResetTime: 0
+          order: 3
+          requiredResourceAmount: 3600
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-pvp-5-1;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-pvp_medal-item-26-0801-0831-04
+          leftCount: 1
+          name: LizNoir
+          nextResetTime: 0
+          order: 4
+          requiredResourceAmount: 900
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-pvp-4-1;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            30枚で★5確定補助券ガチャを1回引くことができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 6
+          id: exchange-pvp_medal-item-26-0801-0831-05
+          leftCount: 6
+          name: ★5確定ガチャ補助券×5
+          nextResetTime: 0
+          order: 5
+          requiredResourceAmount: 850
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-gacha_ticket_piece-r5;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            30枚で補助券ガチャを1回引くことができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 15
+          id: exchange-pvp_medal-item-26-0801-0831-11
+          leftCount: 15
+          name: ガチャ補助券×10
+          nextResetTime: 0
+          order: 6
+          requiredResourceAmount: 120
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-gacha_ticket_piece;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            アピールのLvを上昇させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 20
+          id: exchange-pvp_medal-item-26-0801-0831-17
+          leftCount: 20
+          name: スキルパウダー×2000
+          nextResetTime: 0
+          order: 7
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_skill;2000
+          unlockConditionId: cd-manager_level_gte-120
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-120
+        - assetId: ""
+          description: |-
+            フォトの品質アップをすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-pvp_medal-item-26-0801-0831-06
+          leftCount: 10
+          name: アドバンスフィルム×5
+          nextResetTime: 0
+          order: 8
+          requiredResourceAmount: 300
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_enhance;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            自主トレの時間を2時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-19
+          leftCount: 2
+          name: 魚魚っとさんドリンク×1
+          nextResetTime: 0
+          order: 9
+          requiredResourceAmount: 240
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_lesson-boost;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            ファンイベントの報酬アイテムの獲得効率が2倍になる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-20
+          leftCount: 2
+          name: スイーツギフト×1
+          nextResetTime: 0
+          order: 10
+          requiredResourceAmount: 360
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_fan-reward-up;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            ファンイベントの進行速度を100%UPさせる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-pvp_medal-item-26-0801-0831-08
+          leftCount: 10
+          name: エナジーゼリー×1
+          nextResetTime: 0
+          order: 11
+          requiredResourceAmount: 120
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_speed_up;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            一定ステップの間、FEVER状態になり、応援ゲージ+1回
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-pvp_medal-item-26-0801-0831-09
+          leftCount: 10
+          name: フィーバードリンク×1
+          nextResetTime: 0
+          order: 12
+          requiredResourceAmount: 240
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_super_mode;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            ファンレターによる応援ゲージの上昇を100%UPさせる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-pvp_medal-item-26-0801-0831-10
+          leftCount: 10
+          name: 応援キャンディ×1
+          nextResetTime: 0
+          order: 13
+          requiredResourceAmount: 120
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_cheer_point_up;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            プロモーションの時間を10時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 1
+          id: exchange-pvp_medal-item-26-0801-0831-21
+          leftCount: 1
+          name: SPスキップウォッチ×1
+          nextResetTime: 0
+          order: 14
+          requiredResourceAmount: 600
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_promotion_shorten-sp;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            ハイスコアライブなどに挑戦できる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 30
+          id: exchange-pvp_medal-item-26-0801-0831-07
+          leftCount: 30
+          name: ハイスコアパス×1
+          nextResetTime: 0
+          order: 15
+          requiredResourceAmount: 120
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-quest_contest_ticket;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            エールのLvを上昇させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-pvp_medal-item-26-0801-0831-18
+          leftCount: 10
+          name: エールパウダー×20
+          nextResetTime: 0
+          order: 16
+          requiredResourceAmount: 700
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_ability;20
+          unlockConditionId: cd-manager_level_gte-110
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-110
+        - assetId: ""
+          description: |-
+            交流でアイドルにプレゼントすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-22
+          leftCount: 2
+          name: うまいぜスティック×1
+          nextResetTime: 0
+          order: 17
+          requiredResourceAmount: 500
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-enjoy-present-snack-01-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            交流でアイドルにプレゼントすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-23
+          leftCount: 2
+          name: コーヒー×1
+          nextResetTime: 0
+          order: 18
+          requiredResourceAmount: 500
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-enjoy-present-adult-01-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            交流でアイドルにプレゼントすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-24
+          leftCount: 2
+          name: 映えスイーツ×1
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 500
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-enjoy-present-sweet-01-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            交流でアイドルにプレゼントすることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-pvp_medal-item-26-0801-0831-25
+          leftCount: 2
+          name: プロテインドリンク×1
+          nextResetTime: 0
+          order: 20
+          requiredResourceAmount: 500
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-enjoy-present-stoic-01-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_venus
+      id: exchange-pvp_medal-26-0801-0831
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: VENUSメダル交換
+      nextResetTime: 0
+      order: 120
+      requiredResourceId: ""
+      requiredResourceType: 9
+      resetTimingType: 4
+      unlockConditionId: cd-time-exchange-pvp-open
+      unlocked: true
+      viewConditionId: cd-time-exchange-pvp_medal-26-0801-0831
+    - backgroundColorCode: FFB100
+      bannerAssetId: leaguemedal
+      colorCode: FFCF2E
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: |-
+            アイドルを潜在強化させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 5
+          id: exchange-league_medal-item-26-0801-0831-01
+          leftCount: 5
+          name: ポテンシャルピース×25
+          nextResetTime: 1788188400000
+          order: 1
+          requiredResourceAmount: 650
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_rank;25
+          unlockConditionId: cd-manager_level_gte-100
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            アクセサリの上限突破に使用する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 1
+          id: exchange-league_medal-item-26-0801-0831-02
+          leftCount: 1
+          name: スピリットライザー×1
+          nextResetTime: 1788188400000
+          order: 2
+          requiredResourceAmount: 500
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-accessory_limit_break-01;1
+          unlockConditionId: cd-function_lock-accessory-limit-break-exchange
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            エールのLvを上昇させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 8
+          id: exchange-league_medal-item-26-0801-0831-03
+          leftCount: 8
+          name: エールパウダー×50
+          nextResetTime: 1788188400000
+          order: 3
+          requiredResourceAmount: 250
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_ability;50
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            自主トレの時間を2時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-league_medal-item-26-0801-0831-04
+          leftCount: 2
+          name: 魚魚っとさんドリンク×1
+          nextResetTime: 1788188400000
+          order: 4
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-act_lesson-boost;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            プロモーションの時間を10時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-league_medal-item-26-0801-0831-05
+          leftCount: 2
+          name: SPスキップウォッチ×1
+          nextResetTime: 1788188400000
+          order: 6
+          requiredResourceAmount: 150
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-act_promotion_shorten-sp;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            ファンイベントの報酬アイテムの獲得効率が2倍になる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 2
+          id: exchange-league_medal-item-26-0801-0831-06
+          leftCount: 2
+          name: スイーツギフト×1
+          nextResetTime: 1788188400000
+          order: 7
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-act_fan-reward-up;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            アイドルのLvを上昇させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-league_medal-item-26-0801-0831-07
+          leftCount: 10
+          name: レッスンピース×6,000,000
+          nextResetTime: 1788188400000
+          order: 8
+          requiredResourceAmount: 50
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_enhance;6000000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            アピールのLvを上昇させることができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 5
+          id: exchange-league_medal-item-26-0801-0831-08
+          leftCount: 5
+          name: スキルパウダー×3,000
+          nextResetTime: 1788188400000
+          order: 9
+          requiredResourceAmount: 50
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_skill;3000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+        - assetId: ""
+          description: |-
+            お仕事の実行やアクセサリを合成することができる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-league_medal-item-26-0801-0831-09
+          leftCount: 10
+          name: コイン×10,000,000
+          nextResetTime: 1788188400000
+          order: 10
+          requiredResourceAmount: 50
+          resetTimingType: 3
+          rewardId: rd_auto;gold;;10000000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-league-open
+      iconAssetId: medal_league
+      id: exchange-league_medal-26-0801-0831
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: リーグメダル交換
+      nextResetTime: 0
+      order: 130
+      requiredResourceId: item-league_medal
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: cd-time-exchange-league-open
+      unlocked: true
+      viewConditionId: cd-time-exchange-league_medal-26-0801-0831
+    - backgroundColorCode: 6D98FF
+      bannerAssetId: photo-ink-basic-03
+      colorCode: 487EFF
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-01
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 1
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-001;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-02
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 2
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-002;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-03
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 3
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-003;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-04
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 4
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-004;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-05
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 5
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-005;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-06
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 6
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-006;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-07
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 7
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-007;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-08
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 8
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-008;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-09
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 9
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-009;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-10
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 10
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-019;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-11
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 11
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-020;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-12
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 12
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-021;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-13
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 13
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-022;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-14
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 14
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-023;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-15
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 15
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-024;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-16
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 16
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-034;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-17
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 17
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-035;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+        - assetId: img_item_thumb_photo-recipe-exchange-r5-125-145
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-ink-basic-03-18
+          leftCount: 1
+          name: フォトレシピ★5×1
+          nextResetTime: 1788188400000
+          order: 18
+          requiredResourceAmount: 2
+          resetTimingType: 3
+          rewardId: rd_auto;photo_recipe;photo-recipe-5-rare-3-036;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-clear-area-main-040
+      iconAssetId: photo-ink-basic-03
+      id: exchange-photo-ink-basic-03
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: 虹のレタッチインク交換
+      nextResetTime: 0
+      order: 130
+      requiredResourceId: item-photo_ink-basic-03
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-photo_ink-basic-03
+    - backgroundColorCode: "526072"
+      bannerAssetId: event-mini-tour-default
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: 30枚で★5確定補助券ガチャを1回引くことができる
+          exchangeLimit: 3
+          id: exchange-mini-tour_medal-22-0408-item-1
+          leftCount: 3
+          name: ★5確定ガチャ補助券×5
+          nextResetTime: 1788188400000
+          order: 1
+          requiredResourceAmount: 300
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-gacha_ticket_piece-r5;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 30枚で★5確定補助券ガチャを1回引くことができる
+          exchangeLimit: 3
+          id: exchange-mini-tour_medal-22-0408-item-2
+          leftCount: 3
+          name: ★5確定ガチャ補助券×5
+          nextResetTime: 1788188400000
+          order: 2
+          requiredResourceAmount: 600
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-gacha_ticket_piece-r5;5
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトレタッチとレタッチフォトの品質アップや虹のレタッチインク交換所のアイテム交換に使用する
+          exchangeLimit: 2
+          id: exchange-mini-tour_medal-22-0408-item-97
+          leftCount: 2
+          name: 虹のレタッチインク×1
+          nextResetTime: 1788188400000
+          order: 3
+          requiredResourceAmount: 1500
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-photo_ink-basic-03;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: exchange-mini-tour_medal-22-0408-item-97
+        - assetId: ""
+          description: アクセサリの上限突破に使用する
+          exchangeLimit: 2
+          id: exchange-mini-tour_medal-22-0408-item-63
+          leftCount: 2
+          name: スピリットライザー×1
+          nextResetTime: 1788188400000
+          order: 4
+          requiredResourceAmount: 1000
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-accessory_limit_break-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-function_lock-accessory-limit-break-exchange
+        - assetId: ""
+          description: エールのLvを上昇させることができる
+          exchangeLimit: 20
+          id: exchange-mini-tour_medal-22-0408-item-3
+          leftCount: 20
+          name: エールパウダー×20
+          nextResetTime: 1788188400000
+          order: 5
+          requiredResourceAmount: 250
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_ability;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-110
+        - assetId: ""
+          description: 30枚で補助券ガチャを1回引くことができる
+          exchangeLimit: 15
+          id: exchange-mini-tour_medal-22-0408-item-4
+          leftCount: 15
+          name: ガチャ補助券×10
+          nextResetTime: 1788188400000
+          order: 6
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-gacha_ticket_piece;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: ストーリーの撮影を解放できる
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-112
+          leftCount: 1
+          name: 撮影解放チケット×1
+          nextResetTime: 1788188400000
+          order: 7
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;activate_photo_shooting_story_ticket;;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-function_lock-photo-shooting-story-exchange
+        - assetId: ""
+          description: 撮影を行うことができるLvが高いほど高品質なフォトを獲得できる
+          exchangeLimit: 3
+          id: exchange-mini-tour_medal-22-0408-item-9
+          leftCount: 3
+          name: 撮影フィルムLv.8×1
+          nextResetTime: 1788188400000
+          order: 8
+          requiredResourceAmount: 300
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-photo_shooting-08;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-170
+        - assetId: ""
+          description: リフレッシュの時間を2時間分すぐに進行する
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-40
+          leftCount: 5
+          name: アワーグラス×1
+          nextResetTime: 1788188400000
+          order: 13
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-act_refresh_shorten;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: ボーカル +19300ボーカル +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-37
+          leftCount: 1
+          name: クリスタルマイク★2
+          nextResetTime: 1788188400000
+          order: 15
+          requiredResourceAmount: 700
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-vocal-18;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: ダンス +19300ダンス +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-38
+          leftCount: 1
+          name: クリスタルヒール★2
+          nextResetTime: 1788188400000
+          order: 17
+          requiredResourceAmount: 700
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-dance-18;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: ビジュアル +19300ビジュアル +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-39
+          leftCount: 1
+          name: クリスタルミラー★2
+          nextResetTime: 1788188400000
+          order: 19
+          requiredResourceAmount: 700
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-visual-18;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: ボーカル +17000ボーカル +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-34
+          leftCount: 1
+          name: クリスタルマイク★1
+          nextResetTime: 1788188400000
+          order: 21
+          requiredResourceAmount: 500
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-vocal-17;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: ダンス +17000ダンス +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-35
+          leftCount: 1
+          name: クリスタルヒール★1
+          nextResetTime: 1788188400000
+          order: 23
+          requiredResourceAmount: 500
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-dance-17;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: ビジュアル +17000ビジュアル +25.0%
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-36
+          leftCount: 1
+          name: クリスタルミラー★1
+          nextResetTime: 1788188400000
+          order: 25
+          requiredResourceAmount: 500
+          resetTimingType: 3
+          rewardId: rd_auto;accessory;ac-1-visual-17;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-140
+        - assetId: ""
+          description: アピールのLvを上昇させることができる
+          exchangeLimit: 0
+          id: exchange-mini-tour_medal-22-0408-item-49
+          leftCount: 0
+          name: スキルパウダー×2800
+          nextResetTime: 0
+          order: 52
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_skill;2800
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-manager_level_gte-180
+        - assetId: ""
+          description: ポーズ『月ストっぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-161
+          leftCount: 1
+          name: ポーズ『月ストっぽく』
+          nextResetTime: 0
+          order: 200
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0115-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-161-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『サニピっぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-162
+          leftCount: 1
+          name: ポーズ『サニピっぽく』
+          nextResetTime: 0
+          order: 201
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0206-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-162-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『トリエルっぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-163
+          leftCount: 1
+          name: ポーズ『トリエルっぽく』
+          nextResetTime: 0
+          order: 202
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0318-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-163-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『リズノワっぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-164
+          leftCount: 1
+          name: ポーズ『リズノワっぽく』
+          nextResetTime: 0
+          order: 203
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0405-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-164-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『スリクスっぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-165
+          leftCount: 1
+          name: ポーズ『スリクスっぽく』
+          nextResetTime: 0
+          order: 204
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0518-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-165-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『麻奈っぽく』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-166
+          leftCount: 1
+          name: ポーズ『麻奈っぽく』
+          nextResetTime: 0
+          order: 205
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0624-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-166-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『夏らしく(寝る)』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-167
+          leftCount: 1
+          name: ポーズ『夏らしく(寝る)』
+          nextResetTime: 0
+          order: 206
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0718-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-167-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『クロッカスの扉』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-168
+          leftCount: 1
+          name: ポーズ『クロッカスの扉』
+          nextResetTime: 0
+          order: 207
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0815-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-168-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『ココロDistance』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-169
+          leftCount: 1
+          name: ポーズ『ココロDistance』
+          nextResetTime: 0
+          order: 208
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-0917-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-169-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『つながる心Binary』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-170
+          leftCount: 1
+          name: ポーズ『つながる心Binary』
+          nextResetTime: 0
+          order: 209
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-1017-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-170-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『天使と悪魔』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-171
+          leftCount: 1
+          name: ポーズ『天使と悪魔』
+          nextResetTime: 0
+          order: 210
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-25-1119-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-171-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『チョコラブキッス』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-172
+          leftCount: 1
+          name: ポーズ『チョコラブキッス』
+          nextResetTime: 0
+          order: 211
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-26-0115-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-172-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『マイクを持って』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-173
+          leftCount: 1
+          name: ポーズ『マイクを持って』
+          nextResetTime: 0
+          order: 212
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-26-0217-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-173-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ポーズ『おしとやかに』(LizNoir)
+          exchangeLimit: 1
+          id: exchange-mini-tour_medal-22-0408-item-174
+          leftCount: 1
+          name: ポーズ『おしとやかに』
+          nextResetTime: 0
+          order: 213
+          requiredResourceAmount: 200
+          resetTimingType: 4
+          rewardId: rd_auto;photo_pose;photo-pose-26-0605-liz;1
+          unlockConditionId: cd-cd-exchange-mini-tour_medal-22-0408-item-174-not
+          unlocked: false
+          viewConditionId: cd-exchange-mini-tour_medal-26-0731
+        - assetId: ""
+          description: ぷかぷかリゾート 兵藤雫の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-57
+          leftCount: 5
+          name: ぷかぷかリゾート 兵藤雫才能開花Pt
+          nextResetTime: 0
+          order: 1055
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-szk-02-mizg-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-szk-02-mizg-01-not-rarity-max
+        - assetId: ""
+          description: 夏の夜に輝く星 白石沙季の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-58
+          leftCount: 5
+          name: 夏の夜に輝く星 白石沙季才能開花Pt
+          nextResetTime: 0
+          order: 1056
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ski-02-mizg-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ski-02-mizg-01-not-rarity-max
+        - assetId: ""
+          description: 心引き締まるレッスン合宿 神崎莉央の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-59
+          leftCount: 5
+          name: 心引き締まるレッスン合宿 神崎莉央才能開花Pt
+          nextResetTime: 0
+          order: 1057
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rio-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rio-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 図らずもバースデーライブ 佐伯遙子の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-60
+          leftCount: 0
+          name: 図らずもバースデーライブ 佐伯遙子才能開花Pt
+          nextResetTime: 0
+          order: 1058
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-hrk-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-hrk-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: ココロDistance 一ノ瀬怜の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-61
+          leftCount: 5
+          name: ココロDistance 一ノ瀬怜才能開花Pt
+          nextResetTime: 0
+          order: 1059
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rei-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rei-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 期待で胸いっぱい 成宮すずの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-62
+          leftCount: 5
+          name: 期待で胸いっぱい 成宮すず才能開花Pt
+          nextResetTime: 0
+          order: 1060
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-suz-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-suz-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 賑やかなお正月 白石千紗の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-72
+          leftCount: 5
+          name: 賑やかなお正月 白石千紗才能開花Pt
+          nextResetTime: 0
+          order: 1061
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-chs-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-chs-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 緊張の一瞬 神崎莉央の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-73
+          leftCount: 5
+          name: 緊張の一瞬 神崎莉央才能開花Pt
+          nextResetTime: 0
+          order: 1062
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rio-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rio-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 対等な関係 天動瑠依の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-74
+          leftCount: 5
+          name: 対等な関係 天動瑠依才能開花Pt
+          nextResetTime: 0
+          order: 1063
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rui-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rui-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 誰にも負けないくらい好き 長瀬琴乃の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-75
+          leftCount: 5
+          name: 誰にも負けないくらい好き 長瀬琴乃才能開花Pt
+          nextResetTime: 0
+          order: 1064
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ktn-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ktn-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 姉妹の活躍に染められて 伊吹渚の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-76
+          leftCount: 5
+          name: 姉妹の活躍に染められて 伊吹渚才能開花Pt
+          nextResetTime: 0
+          order: 1065
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ngs-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ngs-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: みんなのピースを 兵藤雫の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-83
+          leftCount: 5
+          name: みんなのピースを 兵藤雫才能開花Pt
+          nextResetTime: 0
+          order: 1066
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-szk-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-szk-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 仲良しアピール 川咲さくらの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-84
+          leftCount: 5
+          name: 仲良しアピール 川咲さくら才能開花Pt
+          nextResetTime: 0
+          order: 1067
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-skr-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-skr-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: どたばたバカンス 神崎莉央の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-85
+          leftCount: 5
+          name: どたばたバカンス 神崎莉央才能開花Pt
+          nextResetTime: 0
+          order: 1068
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rio-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rio-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: そっとしておく仲間の背中 井川葵の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-86
+          leftCount: 5
+          name: そっとしておく仲間の背中 井川葵才能開花Pt
+          nextResetTime: 0
+          order: 1069
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-aoi-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-aoi-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 距離が縮まる露天風呂 早坂芽衣の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-87
+          leftCount: 5
+          name: 距離が縮まる露天風呂 早坂芽衣才能開花Pt
+          nextResetTime: 0
+          order: 1070
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mei-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mei-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 月ストサンタからの贈り物 長瀬琴乃の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-88
+          leftCount: 5
+          name: 月ストサンタからの贈り物 長瀬琴乃才能開花Pt
+          nextResetTime: 0
+          order: 1071
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ktn-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ktn-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 初日に誓う今年の飛躍 小美山愛の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-93
+          leftCount: 5
+          name: 初日に誓う今年の飛躍 小美山愛才能開花Pt
+          nextResetTime: 0
+          order: 1072
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ai-02-eve-00;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ai-02-eve-00-not-rarity-max
+        - assetId: ""
+          description: 憧れのスクールラブ 奥山すみれの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-94
+          leftCount: 5
+          name: 憧れのスクールラブ 奥山すみれ才能開花Pt
+          nextResetTime: 0
+          order: 1073
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-smr-02-eve-00;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-smr-02-eve-00-not-rarity-max
+        - assetId: ""
+          description: こころのカワイイTV 赤崎こころの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-95
+          leftCount: 5
+          name: こころのカワイイTV 赤崎こころ才能開花Pt
+          nextResetTime: 0
+          order: 1074
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kkr-02-eve-00;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kkr-02-eve-00-not-rarity-max
+        - assetId: ""
+          description: 巡る季節と色褪せない日々 佐伯遙子の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-96
+          leftCount: 5
+          name: 巡る季節と色褪せない日々 佐伯遙子才能開花Pt
+          nextResetTime: 0
+          order: 1075
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-hrk-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-hrk-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: あなたに贈る感謝の花束 川咲さくらの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-117
+          leftCount: 0
+          name: あなたに贈る感謝の花束 川咲さくら才能開花Pt
+          nextResetTime: 0
+          order: 1076
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-skr-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-skr-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: kanaちゃんジャッジメント kanaの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-118
+          leftCount: 5
+          name: kanaちゃんジャッジメント kana才能開花Pt
+          nextResetTime: 0
+          order: 1077
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kan-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kan-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: アシスタントの瑠依さん 天動瑠依の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-119
+          leftCount: 5
+          name: アシスタントの瑠依さん 天動瑠依才能開花Pt
+          nextResetTime: 0
+          order: 1078
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rui-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rui-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 孤高の理解者 mihoの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-120
+          leftCount: 5
+          name: 孤高の理解者 miho才能開花Pt
+          nextResetTime: 0
+          order: 1079
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mhk-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mhk-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: きみと過ごしたシーパラ 長瀬麻奈の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-122
+          leftCount: 5
+          name: きみと過ごしたシーパラ 長瀬麻奈才能開花Pt
+          nextResetTime: 0
+          order: 1080
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mna-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mna-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: remember shiny days 長瀬麻奈の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-127
+          leftCount: 5
+          name: remember shiny days 長瀬麻奈才能開花Pt
+          nextResetTime: 0
+          order: 1081
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mna-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mna-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: ほっと一息故郷の湯 奥山すみれの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-128
+          leftCount: 5
+          name: ほっと一息故郷の湯 奥山すみれ才能開花Pt
+          nextResetTime: 0
+          order: 1082
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-smr-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-smr-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: おせちにもスパイスを！ 成宮すずの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-129
+          leftCount: 5
+          name: おせちにもスパイスを！ 成宮すず才能開花Pt
+          nextResetTime: 0
+          order: 1083
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-suz-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-suz-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: みんなの願いを叶えるツアー！ 兵藤雫の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-130
+          leftCount: 5
+          name: みんなの願いを叶えるツアー！ 兵藤雫才能開花Pt
+          nextResetTime: 0
+          order: 1084
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-szk-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-szk-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: 獅子達のベガス征服 mihoの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-137
+          leftCount: 5
+          name: 獅子達のベガス征服 miho才能開花Pt
+          nextResetTime: 0
+          order: 1085
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mhk-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mhk-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 熱情クールダウン 井川葵の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-138
+          leftCount: 5
+          name: 熱情クールダウン 井川葵才能開花Pt
+          nextResetTime: 0
+          order: 1086
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-aoi-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-aoi-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 月と太陽 長瀬琴乃の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-139
+          leftCount: 5
+          name: 月と太陽 長瀬琴乃才能開花Pt
+          nextResetTime: 0
+          order: 1087
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-ktn-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-ktn-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: サニピでサバイバル！ 白石千紗の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-140
+          leftCount: 5
+          name: サニピでサバイバル！ 白石千紗才能開花Pt
+          nextResetTime: 0
+          order: 1088
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-chs-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-chs-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 夢幻の楽園 franの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-141
+          leftCount: 5
+          name: 夢幻の楽園 fran才能開花Pt
+          nextResetTime: 0
+          order: 1089
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kor-02-eve-00;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kor-02-eve-00-not-rarity-max
+        - assetId: ""
+          description: 天使達の晴れ舞台  天動瑠依の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-142
+          leftCount: 5
+          name: 天使達の晴れ舞台  天動瑠依才能開花Pt
+          nextResetTime: 0
+          order: 1090
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rui-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rui-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: ニコイチTwins！ 早坂芽衣の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-147
+          leftCount: 5
+          name: ニコイチTwins！ 早坂芽衣才能開花Pt
+          nextResetTime: 0
+          order: 1091
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-mei-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-mei-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 京狐のお出迎え 鈴村優の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-148
+          leftCount: 5
+          name: 京狐のお出迎え 鈴村優才能開花Pt
+          nextResetTime: 0
+          order: 1092
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-yu-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-yu-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: レンズの向こうに渡す想い 一ノ瀬怜の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-149
+          leftCount: 5
+          name: レンズの向こうに渡す想い 一ノ瀬怜才能開花Pt
+          nextResetTime: 0
+          order: 1093
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rei-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rei-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 『劇団★見』初公演！ 川咲さくらの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-150
+          leftCount: 5
+          name: 『劇団★見』初公演！ 川咲さくら才能開花Pt
+          nextResetTime: 0
+          order: 1094
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-skr-02-eve-03;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-skr-02-eve-03-not-rarity-max
+        - assetId: ""
+          description: 未来へのオールイン franの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-157
+          leftCount: 5
+          name: 未来へのオールイン fran才能開花Pt
+          nextResetTime: 0
+          order: 1096
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kor-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kor-02-eve-01-not-rarity-max
+        - assetId: ""
+          description: 会いたかったよお父さん kanaの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-158
+          leftCount: 5
+          name: 会いたかったよお父さん kana才能開花Pt
+          nextResetTime: 0
+          order: 1097
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kan-02-eve-02;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kan-02-eve-02-not-rarity-max
+        - assetId: ""
+          description: 学園祭でミュージカル！ 天動瑠依の才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-159
+          leftCount: 5
+          name: 学園祭でミュージカル！ 天動瑠依才能開花Pt
+          nextResetTime: 0
+          order: 1098
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-rui-02-eve-04;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-rui-02-eve-04-not-rarity-max
+        - assetId: ""
+          description: こころ掴む海外ツアー 赤崎こころの才能開花Ptを上昇させることができる
+          exchangeLimit: 5
+          id: exchange-mini-tour_medal-22-0408-item-160
+          leftCount: 5
+          name: こころ掴む海外ツアー 赤崎こころ才能開花Pt
+          nextResetTime: 0
+          order: 1099
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;card_rarity_exp;card-kkr-02-eve-01;20
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-possession-card-kkr-02-eve-01-not-rarity-max
+      iconAssetId: medal_event_mini-tour
+      id: exchange-mini-tour_medal-22-0408
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: ミニイベントメダル交換
+      nextResetTime: 0
+      order: 150
+      requiredResourceId: item-mini-tour_medal-tour-21-0721
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-ever-event_mini-tour-22-0408
+    - backgroundColorCode: B889FC
+      bannerAssetId: gacha
+      colorCode: C39DFD
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: |-
+            ハイスコアライブなどに挑戦できる
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 60
+          id: exchange-gacha_medal-item-26-0801-0831-01
+          leftCount: 60
+          name: ハイスコアパス×1
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-quest_contest_ticket;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: ハイスコアライブなどに挑戦できる
+          exchangeLimit: 0
+          id: exchange-gacha_medal-item-26-0801-0831-02
+          leftCount: 0
+          name: ハイスコアパス×1
+          nextResetTime: 0
+          order: 2
+          requiredResourceAmount: 4
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-quest_contest_ticket;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            リフレッシュの時間を2時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 10
+          id: exchange-gacha_medal-item-26-0801-0831-03
+          leftCount: 10
+          name: アワーグラス×1
+          nextResetTime: 0
+          order: 3
+          requiredResourceAmount: 3
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_refresh_shorten;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: |-
+            プロモーションの時間を2時間分すぐに進行する
+            在庫リセット
+            9/1(火) 00:00
+          exchangeLimit: 30
+          id: exchange-gacha_medal-item-26-0801-0831-04
+          leftCount: 30
+          name: スキップウォッチ×1
+          nextResetTime: 0
+          order: 4
+          requiredResourceAmount: 4
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-act_promotion_shorten;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: pt_gacha
+      id: exchange-gacha_point-26-0801-0831
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: 共通ガチャPt交換
+      nextResetTime: 0
+      order: 160
+      requiredResourceId: item-gacha_point
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-time-exchange-gacha_point-26-0801-0831
+    - backgroundColorCode: FD5858
+      bannerAssetId: medal-friend
+      colorCode: FD9090
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: ★5確定ガチャ3rdを引くことができる
+          exchangeLimit: 1
+          id: exchange-friend-medal-23-0926-item-11
+          leftCount: 1
+          name: ★5確定ガチャチケ3rd×1
+          nextResetTime: 0
+          order: 1
+          requiredResourceAmount: 150
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-gacha_ticket-r5-23-0624;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アイドルを才能開花させることができる
+          exchangeLimit: 10
+          id: exchange-friend-medal-23-0926-item-1
+          leftCount: 10
+          name: ブルームピース×10
+          nextResetTime: 1788188400000
+          order: 2
+          requiredResourceAmount: 25
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_limit_break;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アイドルを才能開花させることができる
+          exchangeLimit: 10
+          id: exchange-friend-medal-23-0926-item-2
+          leftCount: 10
+          name: ブルームピース×10
+          nextResetTime: 1788188400000
+          order: 3
+          requiredResourceAmount: 50
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_limit_break;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトの品質アップをすることができる
+          exchangeLimit: 10
+          id: exchange-friend-medal-23-0926-item-3
+          leftCount: 10
+          name: アドバンスフィルム×10
+          nextResetTime: 1788188400000
+          order: 4
+          requiredResourceAmount: 25
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-photo_enhance;10
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アイドルのLvを上昇させることができる
+          exchangeLimit: 1
+          id: exchange-friend-medal-23-0926-item-7
+          leftCount: 1
+          name: レッスンピース×10,000,000
+          nextResetTime: 1788188400000
+          order: 5
+          requiredResourceAmount: 25
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_enhance;10000000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アイドルのLvを上昇させることができる
+          exchangeLimit: 0
+          id: exchange-friend-medal-23-0926-item-8
+          leftCount: 0
+          name: レッスンピース×5,000,000
+          nextResetTime: 0
+          order: 6
+          requiredResourceAmount: 25
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_enhance;5000000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アピールのLvを上昇させることができる
+          exchangeLimit: 1
+          id: exchange-friend-medal-23-0926-item-9
+          leftCount: 1
+          name: スキルパウダー×8,000
+          nextResetTime: 1788188400000
+          order: 7
+          requiredResourceAmount: 25
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-card_skill;8000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: アピールのLvを上昇させることができる
+          exchangeLimit: 0
+          id: exchange-friend-medal-23-0926-item-10
+          leftCount: 0
+          name: スキルパウダー×4,000
+          nextResetTime: 0
+          order: 8
+          requiredResourceAmount: 25
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-card_skill;4000
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトレタッチとレタッチフォトの品質アップに使用する
+          exchangeLimit: 0
+          id: exchange-friend-medal-23-0926-item-6
+          leftCount: 0
+          name: レタッチインク×300
+          nextResetTime: 0
+          order: 9
+          requiredResourceAmount: 50
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_ink-basic-01;300
+          unlockConditionId: cd-function_lock-photo_retouch-exchange
+          unlocked: true
+          viewConditionId: cd-function_lock-photo_retouch-exchange
+        - assetId: ""
+          description: フォトレタッチとレタッチフォトの品質アップに使用する
+          exchangeLimit: 0
+          id: exchange-friend-medal-23-0926-item-5
+          leftCount: 0
+          name: 金のレタッチインク×25
+          nextResetTime: 0
+          order: 10
+          requiredResourceAmount: 50
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_ink-basic-02;25
+          unlockConditionId: cd-function_lock-photo_retouch-exchange
+          unlocked: true
+          viewConditionId: cd-function_lock-photo_retouch-exchange
+        - assetId: ""
+          description: フォトレタッチとレタッチフォトの品質アップに使用する
+          exchangeLimit: 1
+          id: exchange-friend-medal-23-0926-item-4
+          leftCount: 1
+          name: 虹のレタッチインク×1
+          nextResetTime: 1788188400000
+          order: 11
+          requiredResourceAmount: 100
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-photo_ink-basic-03;1
+          unlockConditionId: cd-function_lock-photo_retouch-exchange
+          unlocked: true
+          viewConditionId: cd-function_lock-photo_retouch-exchange
+        - assetId: ""
+          description: グッズケース機能の「開封」から、缶バッジパック Vol.1を開封できる
+          exchangeLimit: 20
+          id: exchange-friend-medal-23-0926-item-12
+          leftCount: 20
+          name: 缶バッジパック Vol.1 ×1
+          nextResetTime: 1788188400000
+          order: 12
+          requiredResourceAmount: 15
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-showcase_ticket_buttonbadge-001;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-teim-exchange-friend-medal-23-0926-item-12
+        - assetId: ""
+          description: グッズケース機能の「開封」から、缶バッジパック Vol.2を開封できる
+          exchangeLimit: 20
+          id: exchange-friend-medal-25-0318-item-1
+          leftCount: 20
+          name: 缶バッジパック Vol.2 ×1
+          nextResetTime: 1788188400000
+          order: 12
+          requiredResourceAmount: 15
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-showcase_ticket_buttonbadge-002;1
+          unlockConditionId: cd-showcase-005-view
+          unlocked: true
+          viewConditionId: cd-showcase-005-view
+      iconAssetId: medal_friend
+      id: exchange-friend-medal-23-0926
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: フレンドメダル交換
+      nextResetTime: 0
+      order: 200
+      requiredResourceId: item-medal-friend
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-friend-medal-23-0926
+    - backgroundColorCode: "526072"
+      bannerAssetId: photomedal
+      colorCode: A0B4C1
+      costumeId: ""
+      endTime: 0
+      exchanges:
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-59
+          leftCount: 0
+          name: 頂点を目指して
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-25-1224-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-25-1224
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-45
+          leftCount: 1
+          name: サヨナラから始まる物語
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-1224-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-24-1224
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-52
+          leftCount: 0
+          name: あの日の頼み事
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-25-0624-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-25-0624
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-47
+          leftCount: 0
+          name: みんなでBBQ
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-25-0324-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-25-0324
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-46
+          leftCount: 0
+          name: おはよう
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-25-0124-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-25-0124
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-66
+          leftCount: 1
+          name: 認め合うアイドルと共に
+          nextResetTime: 0
+          order: 19
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-26-0624-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-26-0624
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-41
+          leftCount: 1
+          name: 話がわかりますわ！
+          nextResetTime: 0
+          order: 20
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-0924-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-24-0924
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-37
+          leftCount: 1
+          name: 誰も知らない 雲の向こう
+          nextResetTime: 0
+          order: 21
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-0824-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-24-0824
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-36
+          leftCount: 0
+          name: 私たちらしく
+          nextResetTime: 0
+          order: 22
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-0724-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-exchange-photo-medal-24-0724
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-35
+          leftCount: 1
+          name: 夢なんだから
+          nextResetTime: 0
+          order: 23
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-0624-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-31
+          leftCount: 1
+          name: もっと強くなれるね
+          nextResetTime: 0
+          order: 23
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-24-0524-prem-01;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-30
+          leftCount: 1
+          name: 一緒に
+          nextResetTime: 0
+          order: 23
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-16;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-29
+          leftCount: 0
+          name: お姉ちゃん
+          nextResetTime: 0
+          order: 23
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-15;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-25
+          leftCount: 0
+          name: 平気平気！
+          nextResetTime: 0
+          order: 24
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-13;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-17
+          leftCount: 0
+          name: 君へのエール送るよ
+          nextResetTime: 0
+          order: 25
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-11;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-16
+          leftCount: 1
+          name: 友達だよ、いつの日も
+          nextResetTime: 0
+          order: 26
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-10;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-12
+          leftCount: 1
+          name: 桜色の風
+          nextResetTime: 0
+          order: 27
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-7;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-4
+          leftCount: 0
+          name: 明るく君を照らしたい
+          nextResetTime: 0
+          order: 28
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-3;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: 編成するとパラメータがアップする
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-1
+          leftCount: 0
+          name: それでいいんだよ
+          nextResetTime: 0
+          order: 29
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;photo_all_in_one;phot-exchange-5-2;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-premiumphoto-space-adjust-21-0624-1
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-63
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 30
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-43;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-photo-medal-26-0624
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-64
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 31
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-44;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-photo-medal-26-0624
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-65
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 32
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-45;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-photo-medal-26-0624
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-5
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 36
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-1;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-6
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 37
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-2;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: フォトの効果を変更することができます。
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-7
+          leftCount: 1
+          name: フォトレシピ★5 ×1
+          nextResetTime: 0
+          order: 38
+          requiredResourceAmount: 2
+          resetTimingType: 4
+          rewardId: rd_auto;photo_recipe;photo-recipe-exchange-5-3;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+        - assetId: ""
+          description: 撮影を行うことができる ★5確定で品質160のフォトを獲得できる
+          exchangeLimit: 1
+          id: exchange-photo-medal-item-48
+          leftCount: 1
+          name: ★5確定撮影フィルムLv.9×1
+          nextResetTime: 1788188400000
+          order: 39
+          requiredResourceAmount: 1
+          resetTimingType: 3
+          rewardId: rd_auto;item;item-photo_shooting-09-25-0318;1
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: cd-time-exchange-photo-medal-25-0318-open
+        - assetId: ""
+          description: フォトの品質アップをすることができる
+          exchangeLimit: 0
+          id: exchange-photo-medal-item-2
+          leftCount: 0
+          name: アドバンスフィルム×30
+          nextResetTime: 0
+          order: 40
+          requiredResourceAmount: 1
+          resetTimingType: 4
+          rewardId: rd_auto;item;item-photo_enhance;30
+          unlockConditionId: ""
+          unlocked: true
+          viewConditionId: ""
+      iconAssetId: medal_photo
+      id: exchange-photo-medal
+      limited: false
+      linkDetail: ""
+      linkType: 0
+      name: プレミアムフォトメダル交換
+      nextResetTime: 0
+      order: 300
+      requiredResourceId: item-photo-medal
+      requiredResourceType: 1
+      resetTimingType: 4
+      unlockConditionId: ""
+      unlocked: true
+      viewConditionId: cd-exchange-photo-medal-22-0624
