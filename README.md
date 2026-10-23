@@ -1,10 +1,13 @@
 # Overview
 
 A server backend implementation for **IDOLY PRIDE**, built with Go, gRPC,
-HTTP, and MongoDB. It handles gameplay, authentication, and asset/photo delivery.
+HTTP, and MongoDB.
+
+Approximately 90% of the code was written by LLMs. I recorded all the prompts I used in [.agent/prompts/prompt.md](.agents/prompts/prompt.md), feel free to check it.
+
 Many multiplayer features are intentionally single-player: you see only yourself.
 
-The included **Makino** CLI lets you manage users, edit shops and gachas, and
+The included `makino` CLI lets you manage users, edit shops and gachas, and
 customize master data without rebuilding the server.
 
 See [gRPC API coverage](coverage.md) for implemented APIs and remaining gaps.

@@ -33,7 +33,6 @@ scripts/node_modules/
 scripts/
 docker/
 traffic/
-/.agents/prompts/
 
 # binaries
 __debug_bin*
