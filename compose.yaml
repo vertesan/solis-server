@@ -28,7 +28,7 @@ x-solis-environment: &solis-environment
 # mounted into containers. Resource/config paths here are host paths.
 x-solis-volumes: &solis-volumes
   - type: bind
-    source: ${SOLIS_RESOURCES_PATH:-./resources}
+    source: ${SOLIS_RESOURCE_DIR:-./resources}
     target: /app/resources
     bind:
       create_host_path: false
@@ -172,6 +172,20 @@ services:
     init: true
     restart: unless-stopped
     stop_grace_period: 20s
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          printf "\x00\x00\x00\x00\x00" | curl https://localhost:50051/api.Health/Check 
+          -k -s
+          -X POST 
+          -H "content-type: application/grpc" 
+          --data-binary "@-" 
+          --output "/dev/null"
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
     read_only: true
     tmpfs:
       - /tmp:rw,nosuid,nodev,size=256m,mode=1777

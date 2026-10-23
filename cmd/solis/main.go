@@ -21,7 +21,8 @@ func initLogger() *zap.Logger {
 		zapConfig = zap.NewDevelopmentConfig()
 	}
 	zapConfig.DisableCaller = true
-	zapConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	// zapConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	zapConfig.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
 	base := zap.Must(zapConfig.Build(zap.AddStacktrace(zap.DPanicLevel)))
 	zap.ReplaceGlobals(base.Named("GLOBAL").With(zap.String("layer", "global")))
 	return base

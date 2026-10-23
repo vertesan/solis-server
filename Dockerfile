@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 FROM debian:bookworm-slim AS runtime
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ca-certificates tzdata \
+    && apt-get install -y --no-install-recommends ca-certificates tzdata curl \
     && rm -rf /var/lib/apt/lists/* \
     && groupadd --gid 10001 solis \
     && useradd --uid 10001 --gid solis --no-create-home --shell /usr/sbin/nologin solis \
