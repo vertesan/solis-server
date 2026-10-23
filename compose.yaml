@@ -1,0 +1,194 @@
+name: solis
+
+x-mongo-environment: &mongo-environment
+  # These names belong to the MongoDB image, not the user's .env file.
+  MONGODB_INITDB_ROOT_USERNAME: ${SOLIS_DB_USERNAME:?Set SOLIS_DB_USERNAME in .env}
+  MONGODB_INITDB_ROOT_PASSWORD: ${SOLIS_DB_PASSWORD:?Set SOLIS_DB_PASSWORD in .env}
+
+x-solis-environment: &solis-environment
+  SOLIS_ENV: ${SOLIS_ENV:-prd}
+  SOLIS_LOG_TYPE: ${SOLIS_LOG_TYPE:-1}
+  SOLIS_SETTING_ID: ${SOLIS_SETTING_ID:-1}
+  SOLIS_GRPC_PORT: ${SOLIS_GRPC_PORT:-50051}
+  SOLIS_HTTP_PORT: ${SOLIS_HTTP_PORT:-50052}
+  SOLIS_RESOURCE_DIR: /app/resources
+  SOLIS_DB_HOST: mongodb
+  SOLIS_DB_PORT: "27017"
+  SOLIS_DB_USERNAME: ${SOLIS_DB_USERNAME:?Set SOLIS_DB_USERNAME in .env}
+  SOLIS_DB_PASSWORD: ${SOLIS_DB_PASSWORD:?Set SOLIS_DB_PASSWORD in .env}
+  SOLIS_ADMIN_AUTH: ${SOLIS_ADMIN_AUTH:?Set SOLIS_ADMIN_AUTH in .env}
+  SOLIS_JWT_HMAC_KEY: ${SOLIS_JWT_HMAC_KEY:?Set SOLIS_JWT_HMAC_KEY in .env}
+  SOLIS_JWT_RSA_PRIV_KEY_PATH: /run/secrets/jwt-private.pem
+  SOLIS_JWT_RSA_PUB_KEY_PATH: /run/secrets/jwt-public.pem
+  SOLIS_GRPC_CERT_PRIV_KEY_PATH: /run/secrets/grpc-private.pem
+  SOLIS_GRPC_CERT_PUB_KEY_PATH: /run/secrets/grpc-public.pem
+  MAKINO_SERVER_URL: http://solis:${SOLIS_HTTP_PORT:-50052}
+
+# Compose interpolates .env into the explicit environment above; the file is not
+# mounted into containers. Resource/config paths here are host paths.
+x-solis-volumes: &solis-volumes
+  - type: bind
+    source: ${SOLIS_RESOURCES_PATH:-./resources}
+    target: /app/resources
+    bind:
+      create_host_path: false
+  - type: bind
+    source: ${SOLIS_CONFIG_PATH:-./config}
+    target: /app/config
+    bind:
+      create_host_path: false
+
+services:
+  # Local Compose file secrets retain host permissions. Copy the replica key to
+  # a private volume because mongod requires strict ownership and mode 0400.
+  # Resolve MongoDB's UID from this image, including for the host data directory.
+  mongo-setup:
+    image: mongodb/mongodb-community-server:latest
+    user: "0:0"
+    entrypoint: ["python3", "-c"]
+    command:
+      - |
+        import os, pathlib, pwd, re
+        account = pwd.getpwnam("mongodb")
+        directory = pathlib.Path("/keyfile")
+        key = directory / "replica.key"
+        source = b"".join(pathlib.Path("/run/secrets/mongo-keyfile").read_bytes().split())
+        if not (6 <= len(source) <= 1024) or not re.fullmatch(rb"[A-Za-z0-9+/=]+", source):
+            raise SystemExit("Invalid MongoDB replica-set secret")
+        if key.is_symlink():
+            raise SystemExit("MongoDB replica-set keyfile must not be a symlink")
+        if not key.exists():
+            with key.open("xb") as output:
+                output.write(source)
+        elif not key.is_file() or b"".join(key.read_bytes().split()) != source:
+            raise SystemExit("MongoDB replica-set secret changed; refusing automatic key rotation")
+        os.chown(key, account.pw_uid, account.pw_gid)
+        key.chmod(0o400)
+        os.chown(directory, account.pw_uid, account.pw_gid)
+        directory.chmod(0o700)
+        os.chown("/data/db", account.pw_uid, account.pw_gid)
+        pathlib.Path("/data/db").chmod(0o750)
+    secrets:
+      - mongo-keyfile
+    volumes:
+      - mongo-keyfile:/keyfile
+      - ${SOLIS_DB_DATA_DIR:-./data/}:/data/db
+    restart: "no"
+
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile", "/run/mongo-keyfile/replica.key"]
+    environment: *mongo-environment
+    volumes:
+      - ${SOLIS_DB_DATA_DIR:-./data/}:/data/db
+      - mongo-keyfile:/run/mongo-keyfile:ro
+    depends_on:
+      mongo-setup:
+        condition: service_completed_successfully
+    # No host port: only containers on this Compose network can reach MongoDB.
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --host 127.0.0.1:27017
+          --username "$$MONGODB_INITDB_ROOT_USERNAME"
+          --password "$$MONGODB_INITDB_ROOT_PASSWORD"
+          --authenticationDatabase admin
+          --eval 'try { const s = db.adminCommand({ replSetGetStatus: 1 }); quit(s.myState === 1 ? 0 : 1); } catch (e) { quit(1); }'
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  mongo-init:
+    image: mongodb/mongodb-community-server:latest
+    environment: *mongo-environment
+    depends_on:
+      mongodb:
+        condition: service_started
+    entrypoint: ["/bin/bash", "-ec"]
+    command:
+      - |
+        mongo() {
+          mongosh --quiet --host mongodb:27017 \
+            --username "$$MONGODB_INITDB_ROOT_USERNAME" \
+            --password "$$MONGODB_INITDB_ROOT_PASSWORD" \
+            --authenticationDatabase admin --eval "$$1"
+        }
+        ready=0
+        for attempt in {1..90}; do
+          if mongo 'quit(db.adminCommand({ ping: 1 }).ok ? 0 : 1)' >/dev/null 2>&1; then ready=1; break; fi
+          sleep 2
+        done
+        test "$$ready" = 1 || { echo "MongoDB did not accept authenticated connections" >&2; exit 1; }
+        mongo '
+          try {
+            const status = rs.status();
+            if (status.set !== "rs0") throw new Error("Unexpected existing replica set; refusing to reconfigure it");
+          } catch (e) {
+            if (e.codeName !== "NotYetInitialized") throw e;
+            const result = rs.initiate({ _id: "rs0", members: [{ _id: 0, host: "mongodb:27017" }] });
+            if (result.ok !== 1) throw new Error("Replica-set initialization failed");
+          }
+        '
+        for attempt in {1..90}; do
+          if mongo 'quit(db.hello().isWritablePrimary ? 0 : 1)' >/dev/null 2>&1; then
+            echo "MongoDB replica set rs0 is ready"
+            exit 0
+          fi
+          sleep 2
+        done
+        echo "MongoDB did not become PRIMARY" >&2
+        exit 1
+    restart: "no"
+
+  solis:
+    image: solis-server:local
+    build:
+      context: .
+      target: server
+    user: "${SOLIS_UID:-10001}:${SOLIS_GID:-10001}"
+    working_dir: /app
+    environment: *solis-environment
+    volumes: *solis-volumes
+    secrets:
+      - source: jwt-private
+        target: jwt-private.pem
+      - source: jwt-public
+        target: jwt-public.pem
+      - source: grpc-private
+        target: grpc-private.pem
+      - source: grpc-public
+        target: grpc-public.pem
+    ports:
+      - "${SOLIS_BIND_ADDRESS:-127.0.0.1}:${SOLIS_GRPC_PORT:-50051}:${SOLIS_GRPC_PORT:-50051}"
+      - "${SOLIS_BIND_ADDRESS:-127.0.0.1}:${SOLIS_HTTP_PORT:-50052}:${SOLIS_HTTP_PORT:-50052}"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      mongo-init:
+        condition: service_completed_successfully
+    init: true
+    restart: unless-stopped
+    stop_grace_period: 20s
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=256m,mode=1777
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+
+volumes:
+  mongo-keyfile:
+
+secrets:
+  jwt-private:
+    file: ${SOLIS_JWT_RSA_PRIV_KEY_PATH:-./secrets/jwt-private.pem}
+  jwt-public:
+    file: ${SOLIS_JWT_RSA_PUB_KEY_PATH:-./secrets/jwt-public.pem}
+  grpc-private:
+    file: ${SOLIS_GRPC_CERT_PRIV_KEY_PATH:-./secrets/grpc-private.pem}
+  grpc-public:
+    file: ${SOLIS_GRPC_CERT_PUB_KEY_PATH:-./secrets/grpc-public.pem}
+  mongo-keyfile:
+    file: ${SOLIS_DB_REP_KEY_PATH:-./secrets/mongo-keyfile}

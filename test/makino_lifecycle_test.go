@@ -136,7 +136,7 @@ func TestMakinoLifecycleScenario(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 			defer cancel()
 			cmd := exec.CommandContext(ctx, cliBinary, args...)
-			cmd.Dir = repoDir
+			isolateTestCommand(t, cmd, repoDir)
 			var stdout, stderr bytes.Buffer
 			cmd.Stdout, cmd.Stderr = &stdout, &stderr
 			if err := cmd.Run(); err != nil {
@@ -239,7 +239,7 @@ func startMakinoTestServer(t *testing.T, binary, repoDir, logPath string, addres
 		t.Fatal(err)
 	}
 	cmd := exec.Command(binary)
-	cmd.Dir = repoDir
+	isolateTestCommand(t, cmd, repoDir)
 	cmd.Stdout, cmd.Stderr = logFile, logFile
 	if err := cmd.Start(); err != nil {
 		logFile.Close()

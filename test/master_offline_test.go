@@ -119,14 +119,13 @@ func TestMasterOfflineLifecycleScenario(t *testing.T) {
 		}
 		testConfig.HttpClient.CloseIdleConnections()
 	})
-	// An explicitly empty environment value prevents godotenv from recovering
-	// the administrator token from .env. Offline commands must not require it.
+	// Offline commands must not require the administrator token. The isolated
+	// working directory prevents .env from restoring it or the real raw paths.
 	command := func(authenticated bool, args ...string) ([]byte, string, error) {
 		t.Helper()
 		commandCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 		defer cancel()
 		cmd := exec.CommandContext(commandCtx, cliBinary, args...)
-		cmd.Dir = repoDir
 		for _, value := range os.Environ() {
 			if authenticated || !strings.HasPrefix(value, "SOLIS_ADMIN_AUTH=") {
 				cmd.Env = append(cmd.Env, value)
@@ -135,6 +134,7 @@ func TestMasterOfflineLifecycleScenario(t *testing.T) {
 		if !authenticated {
 			cmd.Env = append(cmd.Env, "SOLIS_ADMIN_AUTH=")
 		}
+		isolateTestCommand(t, cmd, repoDir)
 		var stdout, stderr bytes.Buffer
 		cmd.Stdout, cmd.Stderr = &stdout, &stderr
 		err := cmd.Run()
@@ -192,7 +192,7 @@ func TestMasterOfflineLifecycleScenario(t *testing.T) {
 	}
 	serverCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	blocked := exec.CommandContext(serverCtx, serverBinary)
-	blocked.Dir = repoDir
+	isolateTestCommand(t, blocked, repoDir)
 	output, blockedErr := blocked.CombinedOutput()
 	cancel()
 	if blockedErr == nil || !bytes.Contains(output, []byte(masterdata.ErrOwnershipBusy.Error())) {

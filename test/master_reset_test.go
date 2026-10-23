@@ -395,12 +395,12 @@ func TestMasterResetCLIScenario(t *testing.T) {
 }
 
 func TestMasterResetCLIValidation(t *testing.T) {
-	t.Setenv("SOLIS_DB_URI", "not-a-mongodb-uri")
+	t.Setenv("SOLIS_DB_USERNAME", "")
 	for _, args := range [][]string{
 		{}, {"--type", "Card", "--all"}, {"--file", "Card.yaml"}, {"--dir", "config/master"}, {"--all", "--allow-empty"},
 	} {
 		stdout, stderr, err := runMasterStdoutCLI(t, append([]string{"master", "reset"}, args...)...)
-		if err == nil || strings.Contains(stderr, "mongodb-uri") || masterExportSize(t, stdout) != 0 {
+		if err == nil || strings.Contains(stderr, "SOLIS_DB_USERNAME") || masterExportSize(t, stdout) != 0 {
 			t.Fatalf("invalid reset flags did not fail before database connection: %v, %s", err, stderr)
 		}
 	}

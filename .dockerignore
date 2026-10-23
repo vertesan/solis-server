@@ -1,0 +1,13 @@
+# Only send build inputs: never send .env, certificates, resources, traffic,
+# existing executables, or the temporary docker directory to the builder.
+**
+!Dockerfile
+!go.mod
+!go.sum
+!cmd/
+!cmd/**/
+!cmd/**/*.go
+!internal/
+!internal/**/
+!internal/**/*.go
+!internal/**/*.yaml

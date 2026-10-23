@@ -1,10 +1,11 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	_ "net/http/pprof"
+	"os"
 
-	_ "github.com/joho/godotenv/autoload"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
@@ -19,7 +20,7 @@ func initLogger() *zap.Logger {
 	} else {
 		zapConfig = zap.NewDevelopmentConfig()
 	}
-	// config.DisableCaller = true
+	zapConfig.DisableCaller = true
 	zapConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	base := zap.Must(zapConfig.Build(zap.AddStacktrace(zap.DPanicLevel)))
 	zap.ReplaceGlobals(base.Named("GLOBAL").With(zap.String("layer", "global")))
@@ -27,6 +28,10 @@ func initLogger() *zap.Logger {
 }
 
 func main() {
+	if err := config.LoadEnvironment(".env"); err != nil {
+		fmt.Fprintln(os.Stderr, "solis:", err)
+		os.Exit(1)
+	}
 	baseLogger := initLogger()
 	// profiling performance for future improvement in dev environment
 	if config.GetEnv() == "dev" {

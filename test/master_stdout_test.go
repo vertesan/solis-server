@@ -125,7 +125,7 @@ func runMasterStdoutCLI(t *testing.T, args ...string) (string, string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 	command := exec.CommandContext(ctx, binary, args...)
-	command.Dir = ".."
+	isolateTestCommand(t, command, "..")
 	stdout, stderr := masterExportTempOutput(t), masterExportTempOutput(t)
 	command.Stdout, command.Stderr = stdout, stderr
 	err := command.Run()
@@ -177,8 +177,8 @@ func TestMasterExportAllRequiresDirectory(t *testing.T) {
 		}
 	})
 	t.Run("CLI", func(t *testing.T) {
-		// An invalid URI proves flag validation happens before a DB connection.
-		t.Setenv("SOLIS_DB_URI", "not-a-mongodb-uri")
+		// Missing credentials prove flag validation happens before a DB connection.
+		t.Setenv("SOLIS_DB_USERNAME", "")
 		stdout, stderr, err := runMasterStdoutCLI(t, "master", "export", "--all")
 		if err == nil || !strings.Contains(stderr, "--dir") || masterExportSize(t, stdout) != 0 {
 			t.Fatalf("--all without --dir must fail before database access: %v, %s", err, stderr)

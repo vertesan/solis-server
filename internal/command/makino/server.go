@@ -178,7 +178,7 @@ Operations (exactly one):
   --add --dir DIRECTORY          Upsert all entries in the YAML directory.
   --clear                        Clear the catalog (no input files).
 
-Requires SOLIS_DB_URI. Changes are visible on the next game request; the server
+Requires SOLIS_DB_USERNAME/PASSWORD. Changes are visible on the next game request; the server
 does not need to restart. Invalid input rolls back the complete operation.
 Empty imports are rejected; clearing requires the explicit --clear flag.
 When --file and --dir are omitted for an import, the default input directory is

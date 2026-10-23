@@ -37,8 +37,10 @@ go build -o makino ./cmd/makino
 The binary loads `.env` from its working directory. User commands use
 `SOLIS_ADMIN_AUTH` and the HTTP admin server at `http://localhost:50052`.
 Set `MAKINO_SERVER_URL` or pass `--server URL` **before** `user` to override it.
-Use HTTPS for a remote admin server. Catalog commands use `SOLIS_DB_URI` and do
-not require the game server to be running. They never run database migrations.
+Use HTTPS for a remote admin server. Catalog commands use `SOLIS_DB_USERNAME`
+and `SOLIS_DB_PASSWORD`, with optional `SOLIS_DB_HOST`/`SOLIS_DB_PORT`
+(defaults: `localhost:27017`). They do not require the game server to be running
+and never run database migrations.
 
 ```sh
 ./makino user create --id ABCD1234 --suid 11111111-1111-1111-1111-111111111111

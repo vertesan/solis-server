@@ -110,7 +110,7 @@ func TestMasterPublicationLifecycleScenario(t *testing.T) {
 		commandCtx, cancel := context.WithTimeout(ctx, 3*time.Minute)
 		defer cancel()
 		cmd := exec.CommandContext(commandCtx, cliBinary, args...)
-		cmd.Dir = repoDir
+		isolateTestCommand(t, cmd, repoDir)
 		var output, stderr bytes.Buffer
 		cmd.Stdout = &output
 		cmd.Stderr = &stderr

@@ -27,6 +27,7 @@ go.work
 .vscode/mcp.json
 secrets/
 resources/
+/data/
 scripts/data/
 scripts/node_modules/
 scripts/

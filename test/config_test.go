@@ -12,7 +12,8 @@ func TestRequiredConfigReturnsError(t *testing.T) {
 		key  string
 		get  func() error
 	}{
-		{name: "database URI", key: "SOLIS_DB_URI", get: func() error { _, err := config.GetDBString(); return err }},
+		{name: "database username", key: "SOLIS_DB_USERNAME", get: func() error { _, err := config.GetDBString(); return err }},
+		{name: "database password", key: "SOLIS_DB_PASSWORD", get: func() error { _, err := config.GetDBString(); return err }},
 		{name: "admin auth", key: "SOLIS_ADMIN_AUTH", get: func() error { _, err := config.GetAdminAuth(); return err }},
 		{name: "RSA private key", key: "SOLIS_JWT_RSA_PRIV_KEY_PATH", get: func() error { _, err := config.GetRSAPrivateKey(); return err }},
 		{name: "RSA public key", key: "SOLIS_JWT_RSA_PUB_KEY_PATH", get: func() error { _, err := config.GetRSAPublicKey(); return err }},

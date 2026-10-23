@@ -45,6 +45,7 @@ func TestMakinoNormalShopEditScenario(t *testing.T) {
 		ctx, cancel := context.WithTimeout(ctx, time.Minute)
 		defer cancel()
 		command := exec.CommandContext(ctx, binary, args...)
+		isolateTestCommand(t, command, "..")
 		var stderr bytes.Buffer
 		command.Stderr = &stderr
 		data, err := command.Output()

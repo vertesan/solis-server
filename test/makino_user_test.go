@@ -59,7 +59,7 @@ func TestMakinoUserRequestSafetyScenario(t *testing.T) {
 	const token = "makino-test-admin-token"
 	t.Setenv("SOLIS_ADMIN_AUTH", token)
 	// User commands must not connect to MongoDB, even with an unusable DB setting.
-	t.Setenv("SOLIS_DB_URI", "not-a-mongodb-uri")
+	t.Setenv("SOLIS_DB_USERNAME", "")
 	ctx := context.Background()
 	var got admin.UserGodRequest
 	var calls int

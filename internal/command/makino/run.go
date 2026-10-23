@@ -80,7 +80,7 @@ User commands:
 
 Server catalogs:
   server <catalog> --help
-    Manage database-backed catalogs; requires SOLIS_DB_URI.
+    Manage database-backed catalogs; requires SOLIS_DB_USERNAME/PASSWORD.
     Use makino server --help for the supported catalog names and operations.
 
 Master data:

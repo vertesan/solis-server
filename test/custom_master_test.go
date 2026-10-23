@@ -440,13 +440,13 @@ func TestCustomMasterCLIScenario(t *testing.T) {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 		defer cancel()
 		cmd := exec.CommandContext(ctx, binary, args...)
-		cmd.Dir = repo
 		for _, value := range os.Environ() {
 			if !strings.HasPrefix(value, "SOLIS_ADMIN_AUTH=") {
 				cmd.Env = append(cmd.Env, value)
 			}
 		}
 		cmd.Env = append(cmd.Env, "SOLIS_ADMIN_AUTH=")
+		isolateTestCommand(t, cmd, repo)
 		output, err := os.CreateTemp(t.TempDir(), "custom-output-*.log")
 		if err != nil {
 			t.Fatal(err)

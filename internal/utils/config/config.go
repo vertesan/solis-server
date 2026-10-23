@@ -2,9 +2,12 @@ package config
 
 import (
 	"fmt"
+	"net"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
+	"strings"
 )
 
 func getOrDefault(key string, def string) string {
@@ -32,11 +35,61 @@ func GetHttpPort() string {
 }
 
 func GetDBString() (string, error) {
-	conn := os.Getenv("SOLIS_DB_URI")
-	if conn == "" {
-		return "", fmt.Errorf("SOLIS_DB_URI does not exist")
+	username := os.Getenv("SOLIS_DB_USERNAME")
+	password := os.Getenv("SOLIS_DB_PASSWORD")
+	if username == "" || password == "" {
+		return "", fmt.Errorf("SOLIS_DB_USERNAME and SOLIS_DB_PASSWORD are required")
 	}
-	return conn, nil
+	host := getOrDefault("SOLIS_DB_HOST", "localhost")
+	// Accept IPv6 with or without brackets, but never accept a URI, multiple
+	// hosts, or a port here: those would change the assembled URI's meaning.
+	if strings.HasPrefix(host, "[") && strings.HasSuffix(host, "]") {
+		host = host[1 : len(host)-1]
+		if net.ParseIP(host) == nil {
+			return "", fmt.Errorf("SOLIS_DB_HOST must be a hostname or IP address")
+		}
+	}
+	if !validDBHost(host) {
+		return "", fmt.Errorf("SOLIS_DB_HOST must be a hostname or IP address")
+	}
+	port, err := strconv.Atoi(getOrDefault("SOLIS_DB_PORT", "27017"))
+	if err != nil || port < 1 || port > 65535 {
+		return "", fmt.Errorf("SOLIS_DB_PORT must be an integer between 1 and 65535")
+	}
+	// Solis uses transactions on a single-node replica set, including when
+	// connecting through Docker's published port instead of its internal name.
+	uri := url.URL{
+		Scheme: "mongodb",
+		User:   url.UserPassword(username, password),
+		Host:   net.JoinHostPort(host, strconv.Itoa(port)),
+		Path:   "/",
+		RawQuery: url.Values{
+			"authSource":       {"admin"},
+			"replicaSet":       {"rs0"},
+			"directConnection": {"true"},
+		}.Encode(),
+	}
+	return uri.String(), nil
+}
+
+func validDBHost(host string) bool {
+	if net.ParseIP(host) != nil {
+		return true
+	}
+	if len(host) == 0 || len(host) > 253 {
+		return false
+	}
+	for _, label := range strings.Split(strings.TrimSuffix(host, "."), ".") {
+		if len(label) == 0 || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {
+			return false
+		}
+		for _, char := range label {
+			if !(char >= 'a' && char <= 'z' || char >= 'A' && char <= 'Z' || char >= '0' && char <= '9' || char == '-') {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func GetResourceDir() string {

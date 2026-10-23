@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
+	"net/url"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/internal/depot"
@@ -52,8 +52,11 @@ func Connect() error {
 	if err != nil {
 		return err
 	}
-	dbCensoredUri := regexp.MustCompile(`:[^:]+?@`).ReplaceAllString(dbUri, ":****@")
-	zap.L().Sugar().Infof("connecting to database %s", dbCensoredUri)
+	dbURL, err := url.Parse(dbUri)
+	if err != nil {
+		return errors.New("invalid generated MongoDB connection URL")
+	}
+	zap.L().Sugar().Infof("connecting to database %s", dbURL.Redacted())
 
 	client, err := mongo.Connect(clientOptions(dbUri))
 	if err != nil {
