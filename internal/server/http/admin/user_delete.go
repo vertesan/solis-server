@@ -2,13 +2,12 @@ package admin
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/makino/user"
 	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -21,10 +20,9 @@ type UserDeleteRequest struct {
 }
 
 var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	request := &UserDeleteRequest{}
 	if err := json.Unmarshal(c.Body(), request); err != nil {
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode user deletion request: %s", diver.JSONErrorDescription(err)))
 	}
 
 	if (request.PublicUserId == "") == (request.ServerUserId == "") {
@@ -41,13 +39,11 @@ var DeleteUser fiber.Handler = func(c fiber.Ctx) error {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(400, "user not found")
 		}
-		logger.Error("failed to look up user for deletion", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("look up user for deletion: %v", err))
 	}
 
 	if err := user.DeleteUser(c, userAuth.ServerUserId); err != nil {
-		logger.Error("failed to delete user", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("delete user: %v", err))
 	}
 
 	return c.JSON(&diver.CommonAdminResponse{

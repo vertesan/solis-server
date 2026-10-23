@@ -7,9 +7,8 @@ import (
 	"time"
 
 	"github.com/vertesan/solis-server/internal/server/depot"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -36,7 +35,6 @@ type InstallationsReponse struct {
 }
 
 var FirebaseInstallations fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	// check header
 	pkgId := c.Get("X-Android-Package")
 	if pkgId == "" {
@@ -49,17 +47,17 @@ var FirebaseInstallations fiber.Handler = func(c fiber.Ctx) error {
 	// unmarshal request
 	installationRequest := &InstallationsRequest{}
 	if err := json.Unmarshal(c.Body(), installationRequest); err != nil {
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode Firebase installation request: %s", diver.JSONErrorDescription(err)))
 	}
 
 	// convert project number to int64
 	appIds := strings.Split(installationRequest.AppId, ":")
 	if len(appIds) < 2 {
-		return fiber.NewError(400, "bad appId")
+		return fiber.NewError(400, "Firebase appId does not contain a project number")
 	}
 	projectNumber, err := strconv.ParseInt(appIds[1], 10, 64)
 	if err != nil {
-		return fiber.NewError(400, "bad appId")
+		return fiber.NewError(400, "Firebase appId project number is not a valid int64")
 	}
 
 	// create authToken
@@ -71,8 +69,7 @@ var FirebaseInstallations fiber.Handler = func(c fiber.Ctx) error {
 	})
 	authTokenString, err := jwto.CreateToken(authToken)
 	if err != nil {
-		logger.Error("failed creating auth token", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("sign Firebase installation auth token: %v", err))
 	}
 
 	// create refresh token

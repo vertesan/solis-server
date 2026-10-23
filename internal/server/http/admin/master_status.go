@@ -2,6 +2,7 @@ package admin
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
@@ -18,7 +19,7 @@ func MasterImportStatus(c fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusNotFound, "master import job not found")
 	}
 	if err != nil {
-		return fiber.NewError(fiber.StatusInternalServerError, "cannot read master import job")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("read master import job: %v", err))
 	}
 	return c.JSON(job)
 }

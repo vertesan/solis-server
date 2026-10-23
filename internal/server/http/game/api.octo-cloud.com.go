@@ -13,8 +13,6 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/octo"
 	"github.com/vertesan/solis-server/internal/server/depot"
 	"github.com/vertesan/solis-server/internal/utils/crypto"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v3"
 	"google.golang.org/protobuf/proto"
@@ -23,43 +21,37 @@ import (
 var fixId = "205051"
 
 var GetManifest fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	someid := c.Params("someid")
 	fromRevision := c.Params("fromv")
 
 	octoKey := c.Get("X-OCTO-KEY")
 	if octoKey != depot.ServerProfile.OctoApiKey {
-		logger.Warnf("client octo key header mismatched, gives %q", octoKey)
 		return fiber.NewError(403, "bad x-octo-key")
 	}
 
 	if someid != fixId {
-		logger.Errorf("client requested id %q, mismatched with current server fix id %q", someid, fixId)
-		return fiber.NewError(404, "not found")
+		return fiber.NewError(404, fmt.Sprintf("manifest application ID %q does not match server ID %q", someid, fixId))
 	}
 
 	octoDatabase, manifestRevision, err := manifestResponse(c, fromRevision)
 	if err != nil {
-		logger.Error("failed to retrieve a consistent manifest", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("retrieve a consistent manifest: %v", err))
 	}
 
 	// marshal manifest
 	octoBytes, err := proto.Marshal(octoDatabase)
 	if err != nil {
-		logger.Error("failed converting octoDatabase from protobuf object to bytes", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("marshal manifest protobuf: %v", err))
 	}
 
 	// encrypt manifest
 	manifestKey, err := hex.DecodeString(depot.ServerProfile.OctoManifestKey)
 	if err != nil {
-		logger.Error("failed converting manifest key hex string to byte slice", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("decode manifest encryption key: %v", err))
 	}
 	buf, err := crypto.EncryptOctoManifest(bufio.NewReader(bytes.NewReader(octoBytes)), manifestKey)
 	if err != nil {
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("encrypt manifest: %v", err))
 	}
 
 	// set response contents
@@ -70,11 +62,7 @@ var GetManifest fiber.Handler = func(c fiber.Ctx) error {
 	c.Append("Vary", "Accept")
 	c.Append("Age", "0")
 	c.RequestCtx().SetContentType("application/x-protobuf")
-	err = c.Send(buf)
-	if err != nil {
-		logger.Error("failed send back octoBytes to client", zap.Error(err))
-	}
-	return err
+	return c.Send(buf)
 }
 
 // manifestResponse builds either an empty delta or the full manifest while a

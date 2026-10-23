@@ -23,6 +23,7 @@ func StartHTTP(ctx context.Context, base *zap.SugaredLogger) error {
 		IdleTimeout:  time.Second * 60,
 		JSONEncoder:  json.Marshal,
 		JSONDecoder:  json.Unmarshal,
+		ErrorHandler: middleware.ErrorHandler(base),
 	})
 
 	// logging middleware
@@ -49,8 +50,7 @@ func StartHTTP(ctx context.Context, base *zap.SugaredLogger) error {
 
 	// catch all for debug purpose
 	app.All("*", func(c fiber.Ctx) error {
-		base.Warnf("unhandled request: [%s] %s", c.Method(), c.Path())
-		return fiber.NewError(404, "not found")
+		return fiber.NewError(404, "no HTTP handler matches the request")
 	})
 
 	port := config.GetHttpPort()

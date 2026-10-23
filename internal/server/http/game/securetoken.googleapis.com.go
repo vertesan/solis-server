@@ -1,14 +1,14 @@
 package game
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/vertesan/solis-server/internal/db/store/opuser"
 	"github.com/vertesan/solis-server/internal/server/depot"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -31,7 +31,6 @@ type TokenResponse struct {
 }
 
 var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
 		return fiber.NewError(400, "missing key query")
@@ -51,7 +50,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 
 	tokenReq := &TokenRequest{}
 	if err := json.Unmarshal(c.Body(), tokenReq); err != nil {
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode Firebase token refresh request: %s", diver.JSONErrorDescription(err)))
 	}
 
 	if tokenReq.GrantType != "refresh_token" {
@@ -61,7 +60,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	// retrieve userAuth by refresh token
 	userAuth, err := opuser.GetUserAuthByRefreshToken(c, tokenReq.RefreshToken)
 	if err != nil {
-		return fiber.NewError(500, "invernal error")
+		return fiber.NewError(500, fmt.Sprintf("look up user by Firebase refresh token: %v", err))
 	}
 
 	// check last refresh time, or rotate a new refresh token
@@ -70,7 +69,7 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	if len(userAuth.RefreshTokens) == 0 || userAuth.LastRefreshAt.Add(time.Hour*24*7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
 		if err := opuser.InsertUserAuthRefreshToken(c, userAuth.FirebaseId, refreshToken); err != nil {
-			return fiber.NewError(500, "internal error")
+			return fiber.NewError(500, fmt.Sprintf("persist Firebase refresh token: %v", err))
 		}
 	} else {
 		refreshToken = userAuth.RefreshTokens[len(userAuth.RefreshTokens)-1]
@@ -93,14 +92,12 @@ var FirebaseToken fiber.Handler = func(c fiber.Ctx) error {
 	})
 	kid, err := utils.RandomHexString(40)
 	if err != nil {
-		logger.Error("failed creating key id", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("generate Firebase token key ID: %v", err))
 	}
 	idToken.Header["kid"] = kid
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
-		logger.Error("failed creating id token", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("sign Firebase ID token: %v", err))
 	}
 
 	// set response contents

@@ -6,22 +6,18 @@ import (
 
 	"github.com/vertesan/solis-server/internal/db/store/opsolis"
 	"github.com/vertesan/solis-server/internal/utils/config"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/gofiber/fiber/v3"
 )
 
 var GetAsset fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	revision := c.Params("revision")
 	objectType := c.Params("type")
 	objectName := c.Params("object")
 
 	object, err := opsolis.FindManifestObject(c, objectName, objectType)
 	if err != nil {
-		logger.Error("failed retrieving octo asset data", zap.Error(err))
-		return fiber.NewError(404, "not found")
+		return fiber.NewError(404, fmt.Sprintf("retrieve manifest asset %q of type %q: %v", objectName, objectType, err))
 	}
 
 	// set response contents
@@ -39,8 +35,7 @@ var GetAsset fiber.Handler = func(c fiber.Ctx) error {
 		},
 	)
 	if err != nil {
-		logger.Errorf("failed sending resource file %q - %q: %v", objectType, objectName, err)
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("send resource file %q of type %q: %v", objectName, objectType, err))
 	}
 	return err
 }

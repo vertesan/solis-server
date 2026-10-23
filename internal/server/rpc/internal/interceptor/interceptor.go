@@ -59,10 +59,10 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 		handler grpc.UnaryHandler,
 	) (resp any, err error) {
 		logger := base.With(zap.String("api", info.FullMethod))
-		logger.Info("[gRPC]")
 		// Admission precedes every master read and idempotency/user write. Keep
 		// Health available, but Master/Get participates in the same drain.
 		if info.FullMethod != papi.Health_Check_FullMethodName {
+			logger.Info("[gRPC]")
 			leave, accepted := masterdata.Default.Gate.Enter()
 			if !accepted {
 				return masterAction(ctx, penum.ErrorCode_ErrorCode_InMaintenance, "メンテナンス中です")

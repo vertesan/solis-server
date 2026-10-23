@@ -1,13 +1,13 @@
 package admin
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
 	"github.com/vertesan/solis-server/internal/makino/user"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
@@ -27,10 +27,9 @@ type UserCreateResponse struct {
 }
 
 var CreateUser fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	request := &UserCreateRequest{}
 	if err := json.Unmarshal(c.Body(), request); err != nil {
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode user creation request: %s", diver.JSONErrorDescription(err)))
 	}
 	var publicUserId string
 	if request.PublicUserId != "" {
@@ -60,8 +59,7 @@ var CreateUser fiber.Handler = func(c fiber.Ctx) error {
 
 	err := user.CreateUser(c, publicUserId, serverUserId, password)
 	if err != nil {
-		logger.Error("failed to create user", zap.Error(err))
-		return fiber.NewError(500, err.Error())
+		return fiber.NewError(500, fmt.Sprintf("create user: %v", err))
 	}
 
 	return c.JSON(&UserCreateResponse{

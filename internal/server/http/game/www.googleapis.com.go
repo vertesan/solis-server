@@ -8,8 +8,6 @@ import (
 	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 	"github.com/vertesan/solis-server/internal/utils"
 	"github.com/vertesan/solis-server/internal/utils/jwto"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
-	"go.uber.org/zap"
 
 	"fmt"
 
@@ -32,41 +30,37 @@ type VerifyCustomTokenResponse struct {
 }
 
 var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
-		return diver.NewFiberError(c, 400, "missing key query")
+		return fiber.NewError(400, "missing key query")
 	}
 	if key != depot.ServerProfile.FirebaseProductKey {
-		return diver.NewFiberError(c, 400, "invalid firebase product key")
+		return fiber.NewError(400, "invalid firebase product key")
 	}
 
 	verifyRequest := &VerifyCustomTokenRequest{}
 	if err := json.Unmarshal(c.Body(), verifyRequest); err != nil {
-		logger.Error("failed to unmarshal verifyRequest body", zap.Error(err))
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode Firebase custom token verification request: %s", diver.JSONErrorDescription(err)))
 	}
 
 	_, claim, err := jwto.ParseRS256Token(verifyRequest.Token)
 	if err != nil {
-		logger.Error("failed parsing token", zap.Error(err))
-		return fiber.NewError(401, "invalid token")
+		return fiber.NewError(401, fmt.Sprintf("parse Firebase custom token: %v", err))
 	}
 
 	uidObj, ok := (*claim)["uid"]
 	if !ok {
-		return diver.NewFiberError(c, 400, "missing uid payload")
+		return fiber.NewError(400, "missing uid payload")
 	}
 	uid, ok := uidObj.(string)
 	if !ok {
-		return diver.NewFiberError(c, 400, "invalid uid")
+		return fiber.NewError(400, "uid payload must be a string")
 	}
 
 	// retrieve userAuth from db
 	userAuth, err := opuser.GetUserAuthByFirebaseId(c, uid)
 	if err != nil {
-		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
-		return fiber.NewError(403, "invalid user")
+		return fiber.NewError(403, fmt.Sprintf("look up user for Firebase custom token: %v", err))
 	}
 
 	// create idToken
@@ -86,14 +80,12 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	})
 	kid, err := utils.RandomHexString(40)
 	if err != nil {
-		logger.Error("failed creating key id", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("generate Firebase token key ID: %v", err))
 	}
 	idToken.Header["kid"] = kid
 	idTokenString, err := jwto.CreateToken(idToken)
 	if err != nil {
-		logger.Error("failed creating id token", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("sign Firebase ID token: %v", err))
 	}
 
 	// check last refresh time, or rotate a new refresh token
@@ -102,8 +94,7 @@ var FirebaseVerifyCustomToken fiber.Handler = func(c fiber.Ctx) error {
 	if len(userAuth.RefreshTokens) == 0 || userAuth.LastRefreshAt.Add(time.Hour*24*7).Before(time.Now()) {
 		refreshToken = jwto.CreateSecureRefreshToken()
 		if err := opuser.InsertUserAuthRefreshToken(c, userAuth.FirebaseId, refreshToken); err != nil {
-			logger.Error("failed to InsertRefreshToken", zap.Error(err))
-			return fiber.NewError(500, "internal error")
+			return fiber.NewError(500, fmt.Sprintf("persist Firebase refresh token: %v", err))
 		}
 	} else {
 		refreshToken = userAuth.RefreshTokens[len(userAuth.RefreshTokens)-1]
@@ -142,51 +133,47 @@ type User struct {
 }
 
 var FirebaseGetAccountInfo fiber.Handler = func(c fiber.Ctx) error {
-	logger := mcontext.GetLogger(c)
 	key := c.Query("key")
 	if key == "" {
-		return diver.NewFiberError(c, 400, "missing key query")
+		return fiber.NewError(400, "missing key query")
 	}
 	if key != depot.ServerProfile.FirebaseProductKey {
-		return diver.NewFiberError(c, 400, "invalid firebase product key")
+		return fiber.NewError(400, "invalid firebase product key")
 	}
 
 	infoRequest := &GetAccountInfoRequest{}
 	if err := json.Unmarshal(c.Body(), infoRequest); err != nil {
-		logger.Error("failed to unmarshal infoRequest body", zap.Error(err))
-		return fiber.NewError(400, "bad request body")
+		return fiber.NewError(400, fmt.Sprintf("decode Firebase account info request: %s", diver.JSONErrorDescription(err)))
 	}
 
 	_, claim, err := jwto.ParseRS256Token(infoRequest.IdToken)
 	if err != nil {
-		logger.Error("failed parsing token", zap.Error(err))
-		return fiber.NewError(401, "invalid token")
+		return fiber.NewError(401, fmt.Sprintf("parse Firebase ID token: %v", err))
 	}
 
 	// check payload
 	aud, ok := (*claim)["aud"]
 	if !ok {
-		return diver.NewFiberError(c, 401, "missing aud payload")
+		return fiber.NewError(401, "missing aud payload")
 	}
 	if aud != "solis-firebase" {
-		return diver.NewFiberError(c, 403, "invalid payload")
+		return fiber.NewError(403, "Firebase ID token audience does not match solis-firebase")
 	}
 
 	// get firebase user id
 	userIdObj, ok := (*claim)["user_id"]
 	if !ok {
-		return diver.NewFiberError(c, 401, "missing user_id payload")
+		return fiber.NewError(401, "missing user_id payload")
 	}
 	userId, ok := userIdObj.(string)
 	if !ok {
-		return diver.NewFiberError(c, 403, "invalid payload")
+		return fiber.NewError(403, "user_id payload must be a string")
 	}
 
 	// get user info from db
 	userAuth, err := opuser.GetUserAuthByFirebaseId(c, userId)
 	if err != nil {
-		logger.Error("failed to GetUserAuthByFirebaseId", zap.Error(err))
-		return fiber.NewError(500, "internal error")
+		return fiber.NewError(500, fmt.Sprintf("look up Firebase account info: %v", err))
 	}
 
 	// set response contents

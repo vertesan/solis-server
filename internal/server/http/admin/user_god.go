@@ -2,15 +2,15 @@ package admin
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/vertesan/solis-server/internal/db/model/user/umodel"
 	"github.com/vertesan/solis-server/internal/makino/user"
-	"github.com/vertesan/solis-server/internal/utils/mcontext"
+	"github.com/vertesan/solis-server/internal/server/http/internal/diver"
 
 	"github.com/goccy/go-json"
 	"github.com/gofiber/fiber/v3"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.uber.org/zap"
 )
 
 type UserGodRequest struct {
@@ -34,7 +34,7 @@ type UserGodResponse struct {
 var GodUser fiber.Handler = func(c fiber.Ctx) error {
 	request := &UserGodRequest{}
 	if err := json.Unmarshal(c.Body(), request); err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "bad request body")
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("decode user godification request: %s", diver.JSONErrorDescription(err)))
 	}
 	if (request.PublicUserId == "") == (request.ServerUserId == "") {
 		return fiber.NewError(fiber.StatusBadRequest, "exactly one of publicUserId or serverUserId is required")
@@ -62,8 +62,7 @@ var GodUser fiber.Handler = func(c fiber.Ctx) error {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(fiber.StatusBadRequest, "user not found")
 		}
-		mcontext.GetLogger(c).Error("failed to unlock user god mode", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("unlock user god mode: %v", err))
 	}
 	return c.JSON(&UserGodResponse{
 		Ok: true, ServerUserId: result.ServerUserId, Collections: result.Collections,

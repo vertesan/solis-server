@@ -8,6 +8,7 @@ import (
 	"encoding/binary"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"hash/crc32"
 	"image/jpeg"
 	"net/http"
@@ -28,7 +29,6 @@ import (
 	"github.com/gofiber/fiber/v3"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.uber.org/zap"
 )
 
 const (
@@ -57,7 +57,7 @@ type photoObjectName struct {
 var PostPhoto fiber.Handler = func(c fiber.Ctx) error {
 	name, err := parsePhotoObjectName(c.Query("name"))
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid photo name")
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("parse photo upload name: %v", err))
 	}
 	if c.Query("uploadType") != "resumable" || c.Get("X-Goog-Upload-Protocol") != "resumable" {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid upload protocol")
@@ -86,19 +86,20 @@ func startPhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.UserA
 	}
 
 	request := &firebaseStorageMetadataRequest{}
-	if err := json.Unmarshal(c.Body(), request); err != nil || request.ContentType != firebaseStorageContentType {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid upload metadata")
+	if err := json.Unmarshal(c.Body(), request); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("decode photo upload metadata: %s", diver.JSONErrorDescription(err)))
+	}
+	if request.ContentType != firebaseStorageContentType {
+		return fiber.NewError(fiber.StatusBadRequest, "photo upload metadata content type must be image/jpeg")
 	}
 	now := time.Now().UTC()
 	if err := opuser.DeleteExpiredUserPhotoImageUploads(c, now); err != nil {
-		mcontext.GetLogger(c).Error("failed to clean up expired photo upload sessions", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("clean up expired photo upload sessions: %v", err))
 	}
 
 	uploadId, err := newFirebaseUploadID()
 	if err != nil {
-		mcontext.GetLogger(c).Error("failed to create photo upload ID", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("create photo upload ID: %v", err))
 	}
 	expiresAt := now.Add(photoUploadSessionDuration)
 	metadata := &umodel.UserPhotoImageMetadata{
@@ -115,8 +116,7 @@ func startPhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.UserA
 	}
 	started, err := opuser.StartUserPhotoImageUpload(c, metadata, now.Add(-photoUploadLeaseDuration))
 	if err != nil {
-		mcontext.GetLogger(c).Error("failed to persist photo upload session", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("persist photo upload session: %v", err))
 	}
 	if !started {
 		existing, findErr := opuser.FindUserPhotoImageMetadata(c, name.Name)
@@ -124,6 +124,9 @@ func startPhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.UserA
 			existing.PublicUserId == name.PublicUserId &&
 			existing.UploadState == umodel.UserPhotoImageUploadActive {
 			return sendPhotoUploadStart(c, name.Name, existing.UploadId)
+		}
+		if findErr != nil {
+			return fiber.NewError(fiber.StatusConflict, fmt.Sprintf("retrieve existing photo upload after unsuccessful start: %v", findErr))
 		}
 		return fiber.NewError(fiber.StatusConflict, "photo upload is being finalized")
 	}
@@ -153,8 +156,7 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(fiber.StatusBadRequest, "unknown upload session")
 		}
-		mcontext.GetLogger(c).Error("failed to retrieve photo upload session", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("retrieve photo upload session: %v", err))
 	}
 	if session.SUID != userAuth.ServerUserId || session.PublicUserId != name.PublicUserId || session.UploadId != uploadId {
 		return fiber.NewError(fiber.StatusForbidden, "invalid upload session")
@@ -175,9 +177,12 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 		return fiber.NewError(fiber.StatusBadRequest, "empty photo")
 	}
 	jpegConfig, err := jpeg.DecodeConfig(bytes.NewReader(body))
-	if err != nil || jpegConfig.Width <= 0 || jpegConfig.Height <= 0 ||
+	if err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("decode JPEG photo configuration: %v", err))
+	}
+	if jpegConfig.Width <= 0 || jpegConfig.Height <= 0 ||
 		int64(jpegConfig.Width)*int64(jpegConfig.Height) > maximumPhotoPixels {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid JPEG photo")
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("invalid JPEG photo dimensions: %dx%d exceeds permitted dimensions", jpegConfig.Width, jpegConfig.Height))
 	}
 
 	finalizationId := uuid.NewString()
@@ -200,8 +205,10 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 			session = current
 			claimed = true
 		} else {
-			mcontext.GetLogger(c).Error("failed to claim photo upload session", zap.Error(err), zap.Error(findErr))
-			return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+			if findErr != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("claim photo upload session: %v; verify claim: %v", err, findErr))
+			}
+			return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("claim photo upload session: %v; stored session does not match the attempted claim", err))
 		}
 	}
 	if !claimed {
@@ -210,6 +217,9 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 			current.UploadState == umodel.UserPhotoImageUploadFinalized {
 			setFirebaseMetadataHeaders(c, uploadId, firebaseStorageUploadFinal)
 			return c.JSON(current)
+		}
+		if findErr != nil {
+			return fiber.NewError(fiber.StatusConflict, fmt.Sprintf("retrieve photo upload after unsuccessful claim: %v", findErr))
 		}
 		return fiber.NewError(fiber.StatusConflict, "upload is no longer active")
 	}
@@ -224,8 +234,7 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 	publication, err := diver.PublishPhotoImage(photoPath, body, createdAt)
 	if err != nil {
 		releasePhotoUpload(c, session)
-		mcontext.GetLogger(c).Error("failed to store photo image", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("store photo image: %v", err))
 	}
 
 	completed, err := opuser.CompleteUserPhotoImageUpload(c, metadata)
@@ -233,10 +242,13 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 		current, findErr := opuser.FindUserPhotoImageMetadata(c, name.Name)
 		if findErr == nil && samePublishedPhoto(current, metadata) {
 			if cleanupErr := publication.Commit(); cleanupErr != nil {
-				mcontext.GetLogger(c).Error("failed to remove previous photo image", zap.Error(cleanupErr))
+				mcontext.GetLogger(c).Errorw("failed to remove previous photo image", "error", cleanupErr)
 			}
 			setFirebaseMetadataHeaders(c, uploadId, firebaseStorageUploadFinal)
 			return c.JSON(current)
+		}
+		if err == nil {
+			err = errors.New("photo metadata completion did not update the upload session")
 		}
 		if findErr == nil && current.SUID == session.SUID && current.UploadId == session.UploadId &&
 			current.FinalizationId == session.FinalizationId &&
@@ -244,20 +256,26 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 			rollbackErr := publication.Rollback()
 			if rollbackErr == nil {
 				releasePhotoUpload(c, session)
+				return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata remained uncommitted; image publication rolled back: %v", err))
 			}
-			mcontext.GetLogger(c).Error("photo metadata remained uncommitted", zap.Error(err), zap.Error(rollbackErr))
+			return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata remained uncommitted: %v; roll back image publication: %v", err, rollbackErr))
 		} else if errors.Is(findErr, mongo.ErrNoDocuments) {
 			rollbackErr := publication.Rollback()
-			mcontext.GetLogger(c).Error("photo metadata disappeared during finalization", zap.Error(err), zap.Error(rollbackErr))
+			if rollbackErr != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata disappeared during finalization: %v; roll back image publication: %v", err, rollbackErr))
+			}
+			return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata disappeared during finalization; image publication rolled back: %v", err))
 		} else {
 			// A failed MongoDB write can have committed remotely. Preserve the
 			// published bytes whenever the outcome cannot be proven uncommitted.
-			mcontext.GetLogger(c).Error("photo metadata finalization outcome is ambiguous", zap.Error(err), zap.Error(findErr))
+			if findErr != nil {
+				return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata finalization outcome is ambiguous; preserving published image: %v; verify finalization: %v", err, findErr))
+			}
+			return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("photo metadata finalization outcome is ambiguous; preserving published image: %v; stored session no longer matches finalization", err))
 		}
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
 	}
 	if cleanupErr := publication.Commit(); cleanupErr != nil {
-		mcontext.GetLogger(c).Error("failed to remove previous photo image", zap.Error(cleanupErr))
+		mcontext.GetLogger(c).Errorw("failed to remove previous photo image", "error", cleanupErr)
 	}
 
 	setFirebaseMetadataHeaders(c, uploadId, firebaseStorageUploadFinal)
@@ -267,11 +285,11 @@ func finalizePhotoUpload(c fiber.Ctx, name *photoObjectName, userAuth *umodel.Us
 var GetPhoto fiber.Handler = func(c fiber.Ctx) error {
 	decodedName, err := url.PathUnescape(c.Params("*"))
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid photo name")
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("decode photo download name: %v", err))
 	}
 	name, err := parsePhotoObjectName(decodedName)
 	if err != nil {
-		return fiber.NewError(fiber.StatusBadRequest, "invalid photo name")
+		return fiber.NewError(fiber.StatusBadRequest, fmt.Sprintf("parse photo download name: %v", err))
 	}
 	responseType := c.Query("alt")
 	if responseType != "" && responseType != "media" {
@@ -292,8 +310,7 @@ var GetPhoto fiber.Handler = func(c fiber.Ctx) error {
 		if errors.Is(err, mongo.ErrNoDocuments) {
 			return fiber.NewError(fiber.StatusNotFound, "photo not found")
 		}
-		mcontext.GetLogger(c).Error("failed to retrieve photo metadata", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("retrieve photo metadata: %v", err))
 	}
 	if metadata.Generation == "" {
 		return fiber.NewError(fiber.StatusNotFound, "photo not found")
@@ -311,8 +328,7 @@ var GetPhoto fiber.Handler = func(c fiber.Ctx) error {
 
 	uploadId, err := newFirebaseUploadID()
 	if err != nil {
-		mcontext.GetLogger(c).Error("failed to create metadata request ID", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("create photo metadata request ID: %v", err))
 	}
 	setFirebaseMetadataHeaders(c, uploadId, "")
 	return c.JSON(metadata)
@@ -325,7 +341,7 @@ func authenticatePhotoOwner(c fiber.Ctx, publicUserId string) (*umodel.UserAuth,
 	}
 	_, claims, err := jwto.ParseRS256Token(parts[1])
 	if err != nil {
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid Firebase token")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, fmt.Sprintf("parse Firebase authorization token: %v", err))
 	}
 
 	issuer, issuerErr := claims.GetIssuer()
@@ -342,10 +358,7 @@ func authenticatePhotoOwner(c fiber.Ctx, publicUserId string) (*umodel.UserAuth,
 
 	userAuth, err := opuser.GetUserAuthByFirebaseId(c, userId)
 	if err != nil {
-		if !errors.Is(err, mongo.ErrNoDocuments) {
-			mcontext.GetLogger(c).Error("failed to retrieve photo owner", zap.Error(err))
-		}
-		return nil, fiber.NewError(fiber.StatusUnauthorized, "invalid Firebase user")
+		return nil, fiber.NewError(fiber.StatusUnauthorized, fmt.Sprintf("retrieve photo owner by Firebase identity: %v", err))
 	}
 	if userAuth.PublicUserId != publicUserId || userAuth.PublicUserId != tokenPublicUserId {
 		return nil, fiber.NewError(fiber.StatusForbidden, "photo owner mismatch")
@@ -473,7 +486,7 @@ func releasePhotoUpload(c fiber.Ctx, session *umodel.UserPhotoImageMetadata) {
 		expiresAt,
 	)
 	if err != nil {
-		mcontext.GetLogger(c).Error("failed to release photo upload session", zap.Error(err))
+		mcontext.GetLogger(c).Errorw("failed to release photo upload session", "error", err)
 	} else if !released {
 		mcontext.GetLogger(c).Warn("photo upload session was no longer owned while releasing it")
 	}
@@ -503,21 +516,21 @@ func setFirebaseMetadataHeaders(c fiber.Ctx, uploadId, status string) {
 
 func sendPhotoImage(c fiber.Ctx, name *photoObjectName, metadata *umodel.UserPhotoImageMetadata) error {
 	md5Digest, err := base64.StdEncoding.DecodeString(metadata.MD5Hash)
-	if err != nil || len(md5Digest) != md5.Size {
-		mcontext.GetLogger(c).Error("invalid stored photo MD5 metadata", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("decode stored photo MD5 metadata: %v", err))
+	}
+	if len(md5Digest) != md5.Size {
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("invalid stored photo MD5 length: got %d bytes, want %d", len(md5Digest), md5.Size))
 	}
 	createdAt, err := time.Parse(firebaseStorageTimeFormat, metadata.TimeCreated)
 	if err != nil {
-		mcontext.GetLogger(c).Error("invalid stored photo creation time", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("parse stored photo creation time: %v", err))
 	}
 
 	c.Set(fiber.HeaderContentType, metadata.ContentType)
 	requestId, err := newFirebaseUploadID()
 	if err != nil {
-		mcontext.GetLogger(c).Error("failed to create photo download request ID", zap.Error(err))
-		return fiber.NewError(fiber.StatusInternalServerError, "internal error")
+		return fiber.NewError(fiber.StatusInternalServerError, fmt.Sprintf("create photo download request ID: %v", err))
 	}
 	c.Set("X-GUploader-UploadID", requestId)
 	c.Set(fiber.HeaderExpires, time.Now().UTC().Format(http.TimeFormat))
@@ -544,5 +557,8 @@ func sendPhotoImage(c fiber.Ctx, name *photoObjectName, metadata *umodel.UserPho
 	if c.Fresh() {
 		return c.Status(fiber.StatusNotModified).Send(nil)
 	}
-	return c.SendFile(photoImagePath(name), fiber.SendFile{ByteRange: true, CacheDuration: -1})
+	if err := c.SendFile(photoImagePath(name), fiber.SendFile{ByteRange: true, CacheDuration: -1}); err != nil {
+		return fmt.Errorf("send photo image %q: %w", name.Name, err)
+	}
+	return nil
 }
