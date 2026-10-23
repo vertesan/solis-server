@@ -1,12 +1,13 @@
 # Overview
 
-**Solis Server** is a private backend for **IDOLY PRIDE**, built with Go, gRPC,
+A server backend implementation for **IDOLY PRIDE**, built with Go, gRPC,
 HTTP, and MongoDB. It handles gameplay, authentication, and asset/photo delivery.
 Many multiplayer features are intentionally single-player: you see only yourself.
 
 The included **Makino** CLI lets you manage users, edit shops and gachas, and
-customize master data without rebuilding the server. See
-[unimplemented APIs](docs/unimplemented.md) for the remaining gaps.
+customize master data without rebuilding the server.
+
+See [gRPC API coverage](coverage.md) for implemented APIs and remaining gaps.
 
 > [!IMPORTANT]
 > This project is not affiliated with or endorsed by the official IDOLY PRIDE
@@ -34,7 +35,7 @@ must be configured separately.
 
 ## Resources
 
-**You must obtain compatible game resources yourself; we do not provide them.**
+**Resources are not provided, you must obtain compatible game resources yourself.**
 Only use materials you are entitled to use. A resource directory looks like:
 
 ```text
@@ -43,12 +44,16 @@ resources/
 │   ├── mastertag.json           # Master database manifest
 │   └── OctoManifest.json        # Asset manifest
 ├── db/                         # Encrypted master packs, named by the manifest
-├── assets/                     # Asset bundles in their revision/type/object layout
+├── assets/
+│   ├── assetbundle/            # AssetBundles in their revision/type/object layout
+│   └── resources/              # Resources in their revision/type/object layout
 └── Photo/                      # Uploaded photos; created by the server
 ```
 
 Both manifests are required. Match the client and resource versions to the
 server profile; keep asset paths consistent with the manifests.
+
+If you are using Docker, remember to change the directory's `owner:group` to `10001:10001`.
 
 ## Building
 
@@ -118,6 +123,8 @@ replica-set key. Do not overwrite keys from an existing installation:
   openssl rand -base64 756 > secrets/mongo-keyfile
 )
 chmod 600 .env
+# change owner:group if you are using docker
+chown -R 10001:10001 secrets
 ```
 
 This certificate is for local testing; devices need matching endpoint names
