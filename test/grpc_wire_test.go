@@ -8,7 +8,6 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"io"
-	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -33,13 +32,7 @@ type grpcWireResponse struct {
 // which grpc-go's unary client rejects as a cardinality violation.
 func callGRPCWire(t *testing.T, ctx context.Context, method string, message proto.Message) grpcWireResponse {
 	t.Helper()
-	var payload []byte
-	var err error
-	if config.IsNoCodec() {
-		payload, err = proto.Marshal(message)
-	} else {
-		payload, err = (&codec.QuaClientCodec{}).Marshal(message)
-	}
+	payload, err := (&codec.QuaClientCodec{}).Marshal(message)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -47,31 +40,21 @@ func callGRPCWire(t *testing.T, ctx context.Context, method string, message prot
 	binary.BigEndian.PutUint32(frame[1:5], uint32(len(payload)))
 	copy(frame[5:], payload)
 
-	transport := &http2.Transport{}
-	scheme := "https"
-	if config.IsNoCert() {
-		scheme = "http"
-		transport.AllowHTTP = true
-		transport.DialTLSContext = func(ctx context.Context, network, address string, _ *tls.Config) (net.Conn, error) {
-			return (&net.Dialer{}).DialContext(ctx, network, address)
-		}
-	} else {
-		certificatePath, err := config.GetGrpcCertPath()
-		if err != nil {
-			t.Fatal(err)
-		}
-		certificate, err := os.ReadFile(certificatePath)
-		if err != nil {
-			t.Fatal(err)
-		}
-		roots := x509.NewCertPool()
-		if !roots.AppendCertsFromPEM(certificate) {
-			t.Fatal("could not load gRPC test certificate")
-		}
-		transport.TLSClientConfig = &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}
+	certificatePath, err := config.GetGrpcCertPath()
+	if err != nil {
+		t.Fatal(err)
 	}
+	certificate, err := os.ReadFile(certificatePath)
+	if err != nil {
+		t.Fatal(err)
+	}
+	roots := x509.NewCertPool()
+	if !roots.AppendCertsFromPEM(certificate) {
+		t.Fatal("could not load gRPC test certificate")
+	}
+	transport := &http2.Transport{TLSClientConfig: &tls.Config{RootCAs: roots, MinVersion: tls.VersionTLS12}}
 	defer transport.CloseIdleConnections()
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, scheme+"://"+testConfig.GrpcFqdn+method, bytes.NewReader(frame))
+	request, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://"+testConfig.GrpcFqdn+method, bytes.NewReader(frame))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -167,11 +150,7 @@ func TestGRPCActionWireScenario(t *testing.T) {
 		t.Fatalf("normal response was not one complete message: status=%s body length=%d", current.Status, len(current.Body))
 	}
 	user := &papi.UserGetResponse{}
-	if config.IsNoCodec() {
-		err = proto.Unmarshal(current.Body[5:], user)
-	} else {
-		err = (&codec.QuaClientCodec{}).Unmarshal(current.Body[5:], user)
-	}
+	err = (&codec.QuaClientCodec{}).Unmarshal(current.Body[5:], user)
 	if err != nil || user.GetUser() == nil {
 		t.Fatalf("normal response did not decode to the configured user: %v", err)
 	}

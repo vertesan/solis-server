@@ -32,12 +32,8 @@ func init() {
 		testConfig.HttpUrl = testConfig.HttpUrlDev
 	}
 
-	var opts []grpc.DialOption
-
-	// use codec (or not)
-	if !config.IsNoCodec() {
-		opts = append(opts, grpc.WithDefaultCallOptions(grpc.ForceCodec(&codec.QuaClientCodec{})))
-	}
+	// Every game connection uses the game codec and TLS.
+	opts := []grpc.DialOption{grpc.WithDefaultCallOptions(grpc.ForceCodec(&codec.QuaClientCodec{}))}
 
 	// TLS credentials
 	certPath, err := config.GetGrpcCertPath()

@@ -72,9 +72,9 @@ func GetGameSettingId() (int64, error) {
 }
 
 func GetRSAPrivateKey() ([]byte, error) {
-	filepath := os.Getenv("SOLIS_RSA_PRIV_KEY")
+	filepath := os.Getenv("SOLIS_JWT_RSA_PRIV_KEY_PATH")
 	if filepath == "" {
-		return nil, fmt.Errorf("SOLIS_RSA_PRIV_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_JWT_RSA_PRIV_KEY_PATH does not exist")
 	}
 	keyData, err := os.ReadFile(filepath)
 	if err != nil {
@@ -95,9 +95,9 @@ func GetRSAPrivateKey() ([]byte, error) {
 }
 
 func GetRSAPublicKey() ([]byte, error) {
-	filepath := os.Getenv("SOLIS_RSA_PUB_KEY")
+	filepath := os.Getenv("SOLIS_JWT_RSA_PUB_KEY_PATH")
 	if filepath == "" {
-		return nil, fmt.Errorf("SOLIS_RSA_PUB_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_JWT_RSA_PUB_KEY_PATH does not exist")
 	}
 	keyData, err := os.ReadFile(filepath)
 	if err != nil {
@@ -122,35 +122,25 @@ func GetRSAPublicKey() ([]byte, error) {
 }
 
 func GetHMACKey() ([]byte, error) {
-	key := os.Getenv("SOLIS_HMAC_KEY")
+	key := os.Getenv("SOLIS_JWT_HMAC_KEY")
 	if key == "" {
-		return nil, fmt.Errorf("SOLIS_HMAC_KEY does not exist")
+		return nil, fmt.Errorf("SOLIS_JWT_HMAC_KEY does not exist")
 	}
 	return []byte(key), nil
 }
 
-// Dev configs
-
-func IsNoCodec() bool {
-	return os.Getenv("SOLIS_DEV_NO_CODEC") == "1" && GetEnv() == "dev"
-}
-
-func IsNoCert() bool {
-	return GetEnv() != "dev" || os.Getenv("SOLIS_DEV_NO_CERT") == "1"
-}
-
 func GetGrpcCertKeyPath() (string, error) {
-	path := os.Getenv("SOLIS_DEV_GRPC_CERT_KEY_PATH")
+	path := os.Getenv("SOLIS_GRPC_CERT_PRIV_KEY_PATH")
 	if path == "" {
-		return "", fmt.Errorf("SOLIS_DEV_GRPC_CERT_KEY_PATH does not exist")
+		return "", fmt.Errorf("SOLIS_GRPC_CERT_PRIV_KEY_PATH does not exist")
 	}
 	return path, nil
 }
 
 func GetGrpcCertPath() (string, error) {
-	path := os.Getenv("SOLIS_DEV_GRPC_CERT_PATH")
+	path := os.Getenv("SOLIS_GRPC_CERT_PUB_KEY_PATH")
 	if path == "" {
-		return "", fmt.Errorf("SOLIS_DEV_GRPC_CERT_PATH does not exist")
+		return "", fmt.Errorf("SOLIS_GRPC_CERT_PUB_KEY_PATH does not exist")
 	}
 	return path, nil
 }

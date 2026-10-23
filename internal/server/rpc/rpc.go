@@ -69,6 +69,7 @@ func StartGRPC(ctx context.Context, logger *zap.SugaredLogger) error {
 	if err != nil {
 		return fmt.Errorf("failed to start listening: %w", err)
 	}
+	defer lis.Close()
 	s, err := initServer(logger)
 	if err != nil {
 		return err
@@ -100,45 +101,30 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	// register codec
 	encoding.RegisterCodec(&codec.QuaServerCodec{})
 
-	// declare server options
-	var opts []grpc.ServerOption
-
-	// production flavored operation (if any)
-	env := config.GetEnv()
-	if env == "prd" {
-	}
-
 	// unary interceptor
 	unaryInterceptor := interceptor.UnaryServerInterceptor(base)
 	unknownServiceHandler := grpc.UnknownServiceHandler(interceptor.UnknownServiceHandler(base))
 
-	// force (or not) customized codec
-	if !config.IsNoCodec() {
-		opts = append(opts, grpc.ForceServerCodec(&codec.QuaServerCodec{}))
+	// The game codec and TLS are required in every environment.
+	certPath, err := config.GetGrpcCertPath()
+	if err != nil {
+		return nil, err
+	}
+	keyPath, err := config.GetGrpcCertKeyPath()
+	if err != nil {
+		return nil, err
+	}
+	creds, err := credentials.NewServerTLSFromFile(certPath, keyPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load gRPC TLS certificate: %w", err)
 	}
 
-	// TLS credentials (only in dev environment)
-	if !config.IsNoCert() {
-		certPath, err := config.GetGrpcCertPath()
-		if err != nil {
-			return nil, err
-		}
-		keyPath, err := config.GetGrpcCertKeyPath()
-		if err != nil {
-			return nil, err
-		}
-		creds, err := credentials.NewServerTLSFromFile(certPath, keyPath)
-		if err != nil {
-			return nil, fmt.Errorf("failed to generate credentials: %w", err)
-		}
-		opts = append(opts, grpc.Creds(creds))
-	}
-
-	opts = append(
-		opts,
-		grpc.ConnectionTimeout(time.Second*10),
+	opts := []grpc.ServerOption{
+		grpc.ForceServerCodec(&codec.QuaServerCodec{}),
+		grpc.Creds(creds),
+		grpc.ConnectionTimeout(time.Second * 10),
 		unknownServiceHandler,
-	)
+	}
 	grpcServer := grpc.NewServer(opts...)
 	server := transport.NewUnaryRegistrar(grpcServer, unaryInterceptor)
 	papi.RegisterSystemServer(server, &system.SystemServer{})
