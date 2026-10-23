@@ -43,7 +43,7 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 			timeoutExplicit = true
 		}
 	})
-	if args[0] == "master" && !timeoutExplicit {
+	if (args[0] == "master" || args[0] == "custom") && !timeoutExplicit {
 		*timeout = 10 * time.Minute
 	}
 	ctx, cancel := context.WithTimeout(ctx, *timeout)
@@ -55,16 +55,18 @@ func Run(ctx context.Context, args []string, stdout, stderr io.Writer) error {
 		return runServer(ctx, args[1:], stdout, stderr)
 	case "master":
 		return runMaster(ctx, *serverURL, args[1:], stdout, stderr)
+	case "custom":
+		return runCustom(ctx, *serverURL, args[1:], stdout, stderr)
 	default:
 		return errors.New("unknown command; use makino --help")
 	}
 }
 
 func printUsage(out io.Writer) {
-	fmt.Fprintln(out, `Usage: makino [--server URL] [--timeout DURATION] <user|server|master> <command> [flags]
+	fmt.Fprintln(out, `Usage: makino [--server URL] [--timeout DURATION] <user|server|master|custom> <command> [flags]
 
-Global flags must precede user/server/master. The timeout defaults to 30s, or
-10m for master commands. The .env file in the working directory
+Global flags must precede user/server/master/custom. The timeout defaults to 30s,
+or 10m for master/custom commands. The .env file in the working directory
 is loaded by the binary. User commands require SOLIS_ADMIN_AUTH and use
 MAKINO_SERVER_URL (default http://localhost:50052) unless --server is supplied.
 Use HTTPS when connecting to a remote admin server.
@@ -85,5 +87,10 @@ Master data:
   master --help
     Export editable YAML, import customized databases, or reset to the official
     baseline, with or without a running game server. Makino and the server must
-    share resources/db; MongoDB must be running.`)
+    share resources/db; MongoDB must be running.
+
+Customization templates:
+  custom --help
+    Apply convenient master-data templates, or reset their affected collections
+    to the official baseline, using the same online/offline publication flow.`)
 }

@@ -93,8 +93,16 @@ func runMaster(ctx context.Context, serverURL string, args []string, stdout, std
 			return err
 		}
 	}
+	if command == "import" || command == "reset" {
+		return runMasterPublication(ctx, serverURL, dryRun, stdout, stderr, func(ctx context.Context) (*masterdata.ImportRequest, error) {
+			if command == "reset" {
+				return masterdata.PrepareReset(ctx, masterdata.ResetOptions{Type: masterType, All: all})
+			}
+			return masterdata.PrepareImport(ctx, masterdata.ImportOptions{Files: paths, All: all, AllowEmpty: allowEmpty})
+		})
+	}
 	var owner *masterdata.Ownership
-	if command == "import" || command == "reset" || command == "status" {
+	if command == "status" {
 		var err error
 		owner, err = masterdata.AcquireOwnership()
 		if err != nil && !errors.Is(err, masterdata.ErrOwnershipBusy) {
@@ -104,14 +112,7 @@ func runMaster(ctx context.Context, serverURL string, args []string, stdout, std
 		// starting. A busy lock always chooses HTTP; network errors never grant
 		// permission to bypass the live server's coordinator.
 		if owner == nil {
-			if command == "status" {
-				return getMasterStatus(ctx, serverURL, id, stdout)
-			}
-			if !dryRun {
-				if _, err := config.GetAdminAuth(); err != nil {
-					return err
-				}
-			}
+			return getMasterStatus(ctx, serverURL, id, stdout)
 		}
 		// Registered before Disconnect so the ownership lock remains held until
 		// MongoDB sessions close, including an interrupted publication.
@@ -128,30 +129,44 @@ func runMaster(ctx context.Context, serverURL string, args []string, stdout, std
 		}
 		return json.NewEncoder(stdout).Encode(job)
 	}
-	if command == "export" {
-		options := masterdata.ExportOptions{Type: masterType, File: file, Directory: directory, All: all, Force: force}
-		if file == "" && directory == "" {
-			options.Output = stdout
-			return masterdata.Export(ctx, options)
-		}
-		if err := masterdata.Export(ctx, options); err != nil {
-			return err
-		}
-		_, err := fmt.Fprintln(stdout, "master export complete")
+	options := masterdata.ExportOptions{Type: masterType, File: file, Directory: directory, All: all, Force: force}
+	if file == "" && directory == "" {
+		options.Output = stdout
+		return masterdata.Export(ctx, options)
+	}
+	if err := masterdata.Export(ctx, options); err != nil {
 		return err
 	}
+	_, err := fmt.Fprintln(stdout, "master export complete")
+	return err
+}
+
+// runMasterPublication keeps imports, resets, and customization templates on the
+// same ownership, recovery, and publication path.
+func runMasterPublication(ctx context.Context, serverURL string, dryRun bool, stdout, stderr io.Writer, prepare func(context.Context) (*masterdata.ImportRequest, error)) (retErr error) {
+	owner, err := masterdata.AcquireOwnership()
+	if err != nil && !errors.Is(err, masterdata.ErrOwnershipBusy) {
+		return err
+	}
+	// Only a free ownership lock permits local publication. HTTP failures never
+	// permit falling back to a write that bypasses a live server's coordinator.
+	if owner == nil && !dryRun {
+		if _, err := config.GetAdminAuth(); err != nil {
+			return err
+		}
+	}
+	// Keep ownership until the database sessions have closed.
+	defer func() { retErr = errors.Join(retErr, owner.Close()) }()
+	if err := db.Connect(); err != nil {
+		return err
+	}
+	defer func() { retErr = errors.Join(retErr, db.Disconnect()) }()
 	if owner != nil && !dryRun {
 		if err := owner.Recover(ctx); err != nil {
 			return fmt.Errorf("recover interrupted master publication: %w", err)
 		}
 	}
-	var request *masterdata.ImportRequest
-	var err error
-	if command == "reset" {
-		request, err = masterdata.PrepareReset(ctx, masterdata.ResetOptions{Type: masterType, All: all})
-	} else {
-		request, err = masterdata.PrepareImport(ctx, masterdata.ImportOptions{Files: paths, All: all, AllowEmpty: allowEmpty})
-	}
+	request, err := prepare(ctx)
 	if err != nil {
 		return err
 	}

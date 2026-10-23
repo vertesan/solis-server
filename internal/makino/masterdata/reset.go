@@ -18,6 +18,9 @@ import (
 type ResetOptions struct {
 	Type string
 	All  bool
+	// Types is used by customization templates to reset their affected tables
+	// together, without resetting unrelated masters or publishing partial batches.
+	Types []string
 }
 
 // PrepareReset validates the complete selection before requesting publication.
@@ -25,8 +28,28 @@ type ResetOptions struct {
 // recovered from the trusted original manifest, but are never regenerated from
 // customized rows or assigned a new content-addressed name.
 func PrepareReset(ctx context.Context, options ResetOptions) (*ImportRequest, error) {
-	if options.All == (options.Type != "") {
-		return nil, errors.New("reset requires exactly one of --type or --all")
+	selections := 0
+	if options.All {
+		selections++
+	}
+	if options.Type != "" {
+		selections++
+	}
+	if len(options.Types) != 0 {
+		selections++
+	}
+	if selections != 1 {
+		return nil, errors.New("reset requires exactly one of --type, --all, or an explicit type list")
+	}
+	names := append([]string(nil), options.Types...)
+	if options.Type != "" {
+		names = []string{options.Type}
+	}
+	sort.Strings(names)
+	for i, name := range names {
+		if name == "" || (i > 0 && names[i-1] == name) {
+			return nil, errors.New("reset type list must contain unique nonempty names")
+		}
 	}
 	version, active, err := activeManifest(ctx)
 	if err != nil {
@@ -39,20 +62,20 @@ func PrepareReset(ctx context.Context, options ResetOptions) (*ImportRequest, er
 	if err != nil {
 		return nil, err
 	}
-	names := []string{options.Type}
 	if options.All {
-		names = names[:0]
 		for name := range active {
 			names = append(names, name)
 		}
 		sort.Strings(names)
 	}
+	for _, name := range names {
+		if active[name] == nil {
+			return nil, fmt.Errorf("master type %q is not active", name)
+		}
+	}
 	request := &ImportRequest{ID: uuid.NewString(), ExpectedVersion: version, Reset: true}
 	for _, name := range names {
 		current := active[name]
-		if current == nil {
-			return nil, fmt.Errorf("master type %q is not active", name)
-		}
 		original := originals[name]
 		// Also verify/restore a missing original when the selected type is
 		// already at baseline. No version-only publication is needed in this case.
