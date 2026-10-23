@@ -121,7 +121,7 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 					logger.Error("failed setting daily relogin header", zap.Error(err))
 					return nil, err
 				}
-				return &papi.Empty{}, nil
+				return nil, nil
 			}
 		}
 		// thread logger to context
@@ -182,7 +182,7 @@ func UnaryServerInterceptor(base *zap.SugaredLogger) grpc.UnaryServerInterceptor
 				logger.Error("failed setting unimplemented header", zap.Error(err))
 				return nil, err
 			}
-			return &papi.Empty{}, nil
+			return nil, nil
 		}
 
 		return m, abstractErrorMsg(err)
@@ -207,7 +207,8 @@ func UnknownServiceHandler(base *zap.SugaredLogger) grpc.StreamHandler {
 			logger.Error("failed setting unimplemented header", zap.Error(err))
 			return err
 		}
-		return stream.SendMsg(&papi.Empty{})
+		// Returning without SendMsg sends the action headers and status only.
+		return nil
 	}
 }
 
@@ -236,7 +237,7 @@ func masterAction(ctx context.Context, code penum.ErrorCode, message string) (an
 	if err := grpc.SetHeader(ctx, header); err != nil {
 		return nil, err
 	}
-	return &papi.Empty{}, nil
+	return nil, nil
 }
 
 func requiresDailyRelogin(ctx context.Context, suid string, now time.Time) (bool, error) {

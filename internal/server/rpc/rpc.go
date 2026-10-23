@@ -53,6 +53,7 @@ import (
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/system"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/telephone"
 	"github.com/vertesan/solis-server/internal/server/rpc/servers/user"
+	"github.com/vertesan/solis-server/internal/server/rpc/transport"
 	"github.com/vertesan/solis-server/internal/utils/config"
 	"go.uber.org/zap"
 
@@ -108,7 +109,7 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	}
 
 	// unary interceptor
-	unaryInterceptor := grpc.UnaryInterceptor(interceptor.UnaryServerInterceptor(base))
+	unaryInterceptor := interceptor.UnaryServerInterceptor(base)
 	unknownServiceHandler := grpc.UnknownServiceHandler(interceptor.UnknownServiceHandler(base))
 
 	// force (or not) customized codec
@@ -136,10 +137,10 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	opts = append(
 		opts,
 		grpc.ConnectionTimeout(time.Second*10),
-		unaryInterceptor,
 		unknownServiceHandler,
 	)
-	server := grpc.NewServer(opts...)
+	grpcServer := grpc.NewServer(opts...)
+	server := transport.NewUnaryRegistrar(grpcServer, unaryInterceptor)
 	papi.RegisterSystemServer(server, &system.SystemServer{})
 	papi.RegisterMigrationServer(server, &migration.MigrationServer{})
 	papi.RegisterAuthServer(server, &auth.AuthServer{})
@@ -184,5 +185,5 @@ func initServer(base *zap.SugaredLogger) (*grpc.Server, error) {
 	papi.RegisterSalaryServer(server, &salary.SalaryServer{})
 	papi.RegisterMissionServer(server, &mission.MissionServer{})
 	papi.RegisterBirthdayServer(server, &birthday.BirthdayServer{})
-	return server, nil
+	return grpcServer, nil
 }

@@ -11,11 +11,9 @@ import (
 	"github.com/vertesan/solis-server/internal/utils/jwto"
 
 	"github.com/golang-jwt/jwt/v5"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestInterceptorDailyRelogin(t *testing.T) {
@@ -32,18 +30,9 @@ func TestInterceptorDailyRelogin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var responseHeaders metadata.MD
-	staleResponse, err := userClient.Get(staleCtx, &papi.Empty{}, grpc.Header(&responseHeaders))
+	staleResponse := callGRPCWire(t, staleCtx, papi.User_Get_FullMethodName, &papi.Empty{})
 	staleCancel()
-	if err != nil {
-		t.Fatalf("daily relogin response returned a gRPC error: %v", err)
-	}
-	if staleResponse == nil || proto.Size(staleResponse) != 0 {
-		t.Fatalf("daily relogin response was not empty: %v", staleResponse)
-	}
-	assertSingleMetadataValue(t, responseHeaders, "x-error-action", "title")
-	assertSingleMetadataValue(t, responseHeaders, "x-error-message-bin", "日付が変わりました")
-	assertSingleMetadataValue(t, responseHeaders, "x-error-code", "1003")
+	assertGRPCWireAction(t, staleResponse, "title", "1003", "日付が変わりました")
 
 	staleAuth, err := opuser.GetUserAuthByServerId(context.Background(), testConfig.TestUserSuid)
 	if err != nil {
@@ -190,46 +179,17 @@ func TestInterceptorUnimplementedService(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	var unregisteredHeaders metadata.MD
-	unregisteredResponse, err := papi.NewAdvertisementClient(testConfig.GrpcConn).Start(
-		ctx,
-		&papi.AdvertisementStartRequest{},
-		grpc.Header(&unregisteredHeaders),
-	)
+	unregisteredResponse := callGRPCWire(t, ctx, papi.Advertisement_Start_FullMethodName, &papi.AdvertisementStartRequest{})
 	cancel()
-	if err != nil {
-		t.Fatalf("unregistered service returned a gRPC error: %v", err)
-	}
-	if unregisteredResponse == nil || proto.Size(unregisteredResponse) != 0 {
-		t.Fatalf("unregistered service response was not empty: %v", unregisteredResponse)
-	}
-	assertUnimplementedTitleHeaders(t, unregisteredHeaders)
+	assertGRPCWireAction(t, unregisteredResponse, "title", "1003", "未実装の機能です")
 
 	ctx, cancel, err = getFullGrpcCtx()
 	if err != nil {
 		t.Fatal(err)
 	}
-	var registeredHeaders metadata.MD
-	registeredResponse, err := papi.NewHomeClient(testConfig.GrpcConn).SetReview(
-		ctx,
-		&papi.Empty{},
-		grpc.Header(&registeredHeaders),
-	)
+	registeredResponse := callGRPCWire(t, ctx, papi.Home_SetReview_FullMethodName, &papi.Empty{})
 	cancel()
-	if err != nil {
-		t.Fatalf("registered unimplemented method returned a gRPC error: %v", err)
-	}
-	if registeredResponse == nil || proto.Size(registeredResponse) != 0 {
-		t.Fatalf("registered unimplemented method response was not empty: %v", registeredResponse)
-	}
-	assertUnimplementedTitleHeaders(t, registeredHeaders)
-}
-
-func assertUnimplementedTitleHeaders(t *testing.T, headers metadata.MD) {
-	t.Helper()
-	assertSingleMetadataValue(t, headers, "x-error-action", "title")
-	assertSingleMetadataValue(t, headers, "x-error-message-bin", "未実装の機能です")
-	assertSingleMetadataValue(t, headers, "x-error-code", "1003")
+	assertGRPCWireAction(t, registeredResponse, "title", "1003", "未実装の機能です")
 }
 
 func fullGrpcCtxWithToken(t *testing.T, token string) (context.Context, context.CancelFunc) {

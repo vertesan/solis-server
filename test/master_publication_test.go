@@ -30,7 +30,6 @@ import (
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
 	"go.yaml.in/yaml/v3"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
@@ -162,17 +161,9 @@ func TestMasterPublicationLifecycleScenario(t *testing.T) {
 	if completed.State != "complete" || !completed.Committed {
 		t.Fatalf("publication did not complete: %s", completed.State)
 	}
-	var headers metadata.MD
 	staleCtx := metadata.AppendToOutgoingContext(oldCtx, "x-app-request-id", "9223372036854770000")
-	if _, err := papi.NewHomeClient(testConfig.GrpcConn).Enter(staleCtx, &papi.HomeEnterRequest{}, grpc.Header(&headers)); err != nil {
-		t.Fatal(err)
-	}
-	if got := headers.Get("x-error-code"); len(got) != 1 || got[0] != "1002" {
-		t.Fatalf("outdated client did not receive title refresh: %v", headers)
-	}
-	if got := headers.Get("x-error-action"); len(got) != 1 || got[0] != "title" {
-		t.Fatal("outdated client did not receive title action")
-	}
+	staleResponse := callGRPCWire(t, staleCtx, papi.Home_Enter_FullMethodName, &papi.HomeEnterRequest{})
+	assertGRPCWireAction(t, staleResponse, "title", "1002", "マスターデータが更新されました")
 	if err := transaction.WithTransaction(ctx, func(ctx context.Context) (any, error) {
 		count, err := mongo.SessionFromContext(ctx).Client().Database("user").Collection(uname.UserAppRequest).CountDocuments(ctx, bson.M{"SUID": testConfig.TestUserSuid, "requestId": "9223372036854770000"})
 		if err == nil && count != 0 {

@@ -13,9 +13,7 @@ import (
 	"github.com/vertesan/solis-server/internal/proto/penum"
 	"github.com/vertesan/solis-server/internal/proto/ptransaction"
 	"go.mongodb.org/mongo-driver/v2/mongo"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -422,13 +420,9 @@ func TestExerciseCatalogSimulationScenario(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			var headers metadata.MD
-			response, err := client.Start(rpcCtx, request, grpc.Header(&headers))
+			response := callGRPCWire(t, rpcCtx, papi.Exercise_Start_FullMethodName, request)
 			cancel()
-			if err != nil || response == nil || proto.Size(response) != 0 {
-				t.Fatalf("unsupported battle %s did not return the interceptor's empty title response: %v", row.GetId(), err)
-			}
-			assertUnimplementedTitleHeaders(t, headers)
+			assertGRPCWireAction(t, response, "title", "1003", "未実装の機能です")
 			after, err := opuser.FindUserQuest(ctx, suid, row.GetQuestId())
 			if err != nil || !proto.Equal(before, after) {
 				t.Fatalf("unsupported battle %s mutated quest progress: %v", row.GetId(), err)
